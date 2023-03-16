@@ -1,6 +1,26 @@
 package Model.CommonGoalPackage;
 
-public class VerticesGoal {
+import Model.CommonGoal;
+import Model.Shelf;
 
+import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.Stack;
+
+public class VerticesGoal extends CommonGoal {
+    private List<String> accomplished;
+    private Stack<Integer> scoringToken;
+    private String description;
+
+    public VerticesGoal (List<String> accomplished, Stack<Integer> scoringToken, String description) {
+        this.accomplished = accomplished;
+        this.scoringToken = scoringToken;
+        this.description = description;
+    }
+
+    @Override
+    public int check(Shelf s) {
+        return 0;
+    }
 
 }

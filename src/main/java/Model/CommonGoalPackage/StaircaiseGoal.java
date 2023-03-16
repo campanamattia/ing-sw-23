@@ -1,4 +1,24 @@
 package Model.CommonGoalPackage;
 
-public class StaircaiseGoal {
+import Model.CommonGoal;
+import Model.Shelf;
+
+import java.util.List;
+import java.util.Stack;
+
+public class StaircaiseGoal extends CommonGoal {
+    private List<String> accomplished;
+    private Stack<Integer> scoringToken;
+    private String description;
+
+    public StaircaiseGoal (List<String> accomplished, Stack<Integer> scoringToken, String description) {
+        this.accomplished = accomplished;
+        this.scoringToken = scoringToken;
+        this.description = description;
+    }
+
+    @Override
+    public int check(Shelf s) {
+        return 0;
+    }
 }

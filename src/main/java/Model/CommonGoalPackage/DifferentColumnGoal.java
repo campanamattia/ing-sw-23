@@ -1,4 +1,25 @@
 package Model.CommonGoalPackage;
 
-public class DifferentColumnGoal {
+import Model.CommonGoal;
+import Model.Shelf;
+
+import java.util.List;
+import java.util.Stack;
+
+public class DifferentColumnGoal extends CommonGoal {
+
+    private List<String> accomplished;
+    private Stack<Integer> scoringToken;
+    private String description;
+
+    public DifferentColumnGoal(List<String> accomplished, Stack<Integer> scoringToken, String description) {
+        this.accomplished = accomplished;
+        this.scoringToken = scoringToken;
+        this.description = description;
+    }
+
+    @Override
+    public int check(Shelf s) {
+        return 0;
+    }
 }

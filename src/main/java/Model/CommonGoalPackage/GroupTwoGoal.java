@@ -1,6 +1,25 @@
 package Model.CommonGoalPackage;
 
-public class GroupTwoGoal {
+import Model.CommonGoal;
+import Model.Shelf;
 
+import java.util.List;
+import java.util.Stack;
 
+public class GroupTwoGoal extends CommonGoal {
+
+    private List<String> accomplished;
+    private Stack<Integer> scoringToken;
+    private String description;
+
+    public GroupTwoGoal (List<String> accomplished, Stack<Integer> scoringToken, String description) {
+        this.accomplished = accomplished;
+        this.scoringToken = scoringToken;
+        this.description = description;
+    }
+
+    @Override
+    public int check(Shelf s) {
+        return 0;
+    }
 }
