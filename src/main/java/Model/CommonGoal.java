@@ -3,15 +3,15 @@ package Model;
 import java.util.*;
 
 public interface CommonGoal {
-    public List<Player> getAccomplished();
+    List<Player> getAccomplished();
 
-    public Stack<Integer> getScoringToken ();
+    Stack<Integer> getScoringToken ();
 
-    public String getDescription ();
+    String getDescription ();
 
-    public void setAccomplished(List<Player> accomplished);
+    void setAccomplished(List<Player> accomplished);
 
-    public void setScoringToken(Stack<Integer> scoringToken);
+    void setScoringToken(Stack<Integer> scoringToken);
 
-    public int check(Shelf shelf);
+    int check(Shelf shelf);
 }
