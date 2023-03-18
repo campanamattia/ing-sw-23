@@ -62,7 +62,7 @@ public class SameEightGoal implements CommonGoal {
             for(int j=4; j>=0; j--){
             }
         }
-        return 2;
+        return 3;
 
     }
 }
