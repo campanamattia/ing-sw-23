@@ -1,6 +1,10 @@
 package Model;
 
-public abstract class CommonGoal {
+import java.util.*;
 
+public abstract class CommonGoal {
+    private List<String> accomplished;
+    private Stack<Integer> scoringToken;
+    private String description;
 
 }
