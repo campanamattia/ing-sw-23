@@ -2,6 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+<<<<<<< HEAD
   <groupId>org.example</groupId>
   <artifactId>take1</artifactId>
   <version>1.0-SNAPSHOT</version>
@@ -12,6 +13,20 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+=======
+  <groupId>it.polimi.ingsw</groupId>
+  <artifactId>AM01</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>test1</name>
+  <url>https://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>19</maven.compiler.source>
+    <maven.compiler.target>19</maven.compiler.target>
+>>>>>>> fa852b39e0e85070ab1be4a8d74746cbdad6f97a
   </properties>
 
   <dependencies>
@@ -21,5 +36,14 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+<<<<<<< HEAD
+=======
+      <dependency>
+          <groupId>org.jetbrains</groupId>
+          <artifactId>annotations</artifactId>
+          <version>RELEASE</version>
+          <scope>compile</scope>
+      </dependency>
+>>>>>>> fa852b39e0e85070ab1be4a8d74746cbdad6f97a
   </dependencies>
 </project>

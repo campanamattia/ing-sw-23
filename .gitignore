@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -36,3 +37,14 @@ build/
 
 ### Mac OS ###
 .DS_Store
+=======
+git # Default ignored files
+/shelf/
+.idea/
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+target/
+>>>>>>> fa852b39e0e85070ab1be4a8d74746cbdad6f97a
