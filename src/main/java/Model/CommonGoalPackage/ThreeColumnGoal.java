@@ -1,17 +1,17 @@
 package Model.CommonGoalPackage;
 
 import Model.Color;
-import Model.CommonGoal;
 import Model.Player;
+import Model.CommonGoal;
 import Model.Shelf;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class FourRowGoal extends CommonGoal {
+public class ThreeColumnGoal extends CommonGoal {
 
-    public FourRowGoal(int nPlayer) {
+    public ThreeColumnGoal(int nPlayer) {
         assert nPlayer <= 4;
         assert nPlayer >= 2;
 
@@ -31,25 +31,25 @@ public class FourRowGoal extends CommonGoal {
             scoringToken.push(6);
             scoringToken.push(8);
         }
-        this.description = "Quattro righe formate ciascuna da 5 tessere di uno, due o tre tipi differenti. Righe diverse possono avere combinazioni diverse di tipi di tessere.";
+        this.description = "Tre colonne formate ciascuna da 6 tessere di uno, due o tre tipi differenti. Colonne diverse possono avere combinazioni diverse di tipi di tessere.";
     }
 
     @Override
     public void check(Player player) {
         Shelf shelf = player.getShelf();
-        int countRow=0;
-        for (int i = 5; i >= 0; i--) {
+        int countColumn=0;
+        for (int j=0; j<5; j++) {
             List<Color> colorRow = new ArrayList<>();
-            for (int j = 0; j < 5; j++) {
+            for (int i=5; i>=0; i--) {
                 if (shelf.getTile(i,j) != null) {
                     colorRow.add(shelf.getTile(i, j).getTileColor());
                 } else
                     break;
             }
-            if (colorRow.stream().distinct().count()<=3 && colorRow.size()==5){
-                countRow++;
+            if (colorRow.stream().distinct().count()<=3 && colorRow.size()==6){
+                countColumn++;
             }
-            if (countRow==4){
+            if (countColumn==4){
                 accomplished.add(player.getID());
                 player.updateScore(scoringToken.pop());
             }
