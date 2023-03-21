@@ -1,46 +1,70 @@
 package Model.CommonGoalPackage;
 
+import Model.Color;
 import Model.CommonGoal;
 import Model.Player;
 import Model.Shelf;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
-public class GroupFourGoal implements CommonGoal {
-    private List<Player> accomplished;
-    private Stack<Integer> scoringToken;
-    private final String description;
+public class GroupFourGoal extends CommonGoal {
+    public GroupFourGoal(int nPlayer) {
+        assert nPlayer <= 4;
+        assert nPlayer >= 2;
 
-    public GroupFourGoal(List<Player> accomplished, Stack<Integer> scoringToken) {
-        this.accomplished = accomplished;
-        this.scoringToken = scoringToken;
+        this.accomplished = new ArrayList<>();
+        this.scoringToken = new Stack<>();
+
+        if (nPlayer == 2) {
+            scoringToken.push(4);
+            scoringToken.push(8);
+        } else if (nPlayer == 3) {
+            scoringToken.push(4);
+            scoringToken.push(6);
+            scoringToken.push(8);
+        } else if (nPlayer == 4) {
+            scoringToken.push(2);
+            scoringToken.push(4);
+            scoringToken.push(6);
+            scoringToken.push(8);
+        }
         this.description = "Due gruppi separati di 4 tessere dello stesso tipo che formano un quadrato 2x2. Le tessere dei due gruppi devono essere dello stesso tipo.";
     }
 
-    public List<Player> getAccomplished() {
-        return this.accomplished;
-    }
-
-    public void setAccomplished(List<Player> accomplished) {
-        this.accomplished = accomplished;
-    }
-
-    public Stack<Integer> getScoringToken() {
-        return scoringToken;
-    }
-
-    public void setScoringToken(Stack<Integer> scoringToken) {
-        this.scoringToken = scoringToken;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     @Override
-    public int check(Shelf shelf) {
-        return 0;
+    public void check(Player player) {
+        Shelf shelf = player.getShelf();
+        boolean[][] visited = new boolean[6][5];
+        int groups = 0;
+        for (int i = 5; i >= 0; i--) {
+            for (int j = 0; j < 5; j++) {
+                if (!visited[i][j]) {
+                    if (shelf.getTile(i,j) == null)
+                        continue;
+                    Color color = shelf.getTile(i,j).getTileColor();
+                    int count = countSameAdjacent(shelf, visited, i, j, color);
+                    if (count >= 4) {
+                        groups += count/4;
+                        if (groups >= 4) {
+                            accomplished.add(player.getID());
+                            player.updateScore(scoringToken.pop());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static int countSameAdjacent (Shelf shelf, boolean[][] visited, int row, int column, Color color) {
+        if (row < 0 || row >= 6 || column >= 5 || visited[row][column] || shelf.getTile(row, column).getTileColor() != color) {
+            return 0;
+        }
+        visited[row][column] = true;
+        int count = 1;
+        count += countSameAdjacent(shelf, visited, row - 1, column, color);
+        count += countSameAdjacent(shelf, visited, row + 1, column, color);
+        count += countSameAdjacent(shelf, visited, row, column - 1, color);
+        count += countSameAdjacent(shelf, visited, row, column + 1, color);
+        return count;
     }
 }

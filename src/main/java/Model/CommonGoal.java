@@ -2,16 +2,31 @@ package Model;
 
 import java.util.*;
 
-public interface CommonGoal {
-    List<Player> getAccomplished();
+public abstract class CommonGoal {
 
-    Stack<Integer> getScoringToken ();
+    protected List<String> accomplished;
+    protected Stack<Integer> scoringToken;
+    protected String description;
 
-    String getDescription ();
+    public List<String> getAccomplished() {
+        return accomplished;
+    }
 
-    void setAccomplished(List<Player> accomplished);
+    public void setAccomplished(List<String> accomplished) {
+        this.accomplished = accomplished;
+    }
 
-    void setScoringToken(Stack<Integer> scoringToken);
+    public Stack<Integer> getScoringToken() {
+        return scoringToken;
+    }
 
-    int check(Shelf shelf);
+    public void setScoringToken(Stack<Integer> scoringToken) {
+        this.scoringToken = scoringToken;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public abstract void check(Player player);
 }

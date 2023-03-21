@@ -1,16 +1,11 @@
 package Model.CommonGoalPackage;
 
 import Model.*;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
-public class CrossGoal implements CommonGoal {
-    private List<Player> accomplished;
-    private Stack<Integer> scoringToken;
-    private final String description;
-
+public class CrossGoal extends CommonGoal {
     public CrossGoal(int nPlayer) {
         assert nPlayer>=2;
         assert nPlayer<=4;
@@ -26,50 +21,29 @@ public class CrossGoal implements CommonGoal {
             scoringToken.push(6);
             scoringToken.push(8);
         }
-        else if(nPlayer==4){
+        else {
             scoringToken.push(2);
             scoringToken.push(4);
             scoringToken.push(6);
             scoringToken.push(8);
         }
 
-        this.description = "Cinque tessere dello stesso tipo che formano una X.";
+        this.description = "Five tiles of the same type forming an X.";
     }
 
-    public List<Player> getAccomplished() {
-        return this.accomplished;
-    }
-
-    public void setAccomplished(List<Player> accomplished) {
-        this.accomplished = accomplished;
-    }
-
-    public Stack<Integer> getScoringToken() {
-        return scoringToken;
-    }
-
-    public void setScoringToken(Stack<Integer> scoringToken) {
-        this.scoringToken = scoringToken;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public int check(Shelf shelf) {
-        for (int i=4; i >= 1; i--){
-            for (int j=3; j >= 1; j--){
-                if (shelf.getTile(i, j) != null &&
-                        shelf.getTile(i,j).getTileColor() == shelf.getTile(i-1,j-1).getTileColor() &&
-                        shelf.getTile(i,j).getTileColor() == shelf.getTile(i-1,j+1).getTileColor() &&
-                        shelf.getTile(i,j).getTileColor() == shelf.getTile(i+1,j-1).getTileColor() &&
-                        shelf.getTile(i,j).getTileColor() == shelf.getTile(i+1,j+1).getTileColor()){
-                    accomplished.add(shelf.getPlayer());
-                    return scoringToken.pop();
+    public void check(@NotNull Player player) {
+        Shelf shelf = player.getShelf();
+        for (int i = 4; i >= 1; i--) {
+            for (int j = 1; j <= 3; j++) {
+                if ((shelf.getTile(i, j) != null) &&
+                        (shelf.getTile(i, j).getTileColor() == shelf.getTile(i - 1, j - 1).getTileColor()) &&
+                        (shelf.getTile(i, j).getTileColor() == shelf.getTile(i - 1, j + 1).getTileColor()) &&
+                        (shelf.getTile(i, j).getTileColor() == shelf.getTile(i + 1, j - 1).getTileColor()) &&
+                        (shelf.getTile(i, j).getTileColor() == shelf.getTile(i + 1, j + 1).getTileColor())) {
+                    accomplished.add(player.getID());
+                    player.updateScore(scoringToken.pop());
                 }
             }
         }
-        return 0;
     }
 }

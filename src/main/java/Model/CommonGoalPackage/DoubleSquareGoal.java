@@ -1,17 +1,10 @@
 package Model.CommonGoalPackage;
-import Model.CommonGoal;
-import Model.Player;
-import Model.Shelf;
-import Model.Tile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import Model.*;
 
-public class DoubleSquareGoal implements CommonGoal {
-    private List<Player> accomplished;
-    private Stack<Integer> scoringToken;
-    private final String description;
+import java.util.*;
+
+public class DoubleSquareGoal extends CommonGoal {
 
     public DoubleSquareGoal(int nPlayer) {
         assert nPlayer<=4;
@@ -36,41 +29,36 @@ public class DoubleSquareGoal implements CommonGoal {
         this.description = "Due gruppi separati di 4 tessere dello stesso tipo che formano un quadrato 2x2. Le tessere dei due gruppi devono essere dello stesso tipo.";
     }
 
-    public List<Player> getAccomplished() {
-        return this.accomplished;
-    }
-
-    public void setAccomplished(List<Player> accomplished) {
-        this.accomplished = accomplished;
-    }
-
-    public Stack<Integer> getScoringToken() {
-        return scoringToken;
-    }
-
-    public void setScoringToken(Stack<Integer> scoringToken) {
-        this.scoringToken = scoringToken;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     @Override
-    public int check(Shelf shelf) {
-        List<Tile> squareTile = new ArrayList<>();
+    public void check(Player player) {
+        Shelf shelf = player.getShelf();
+        HashMap<Coordinates,Color> squareTile = new HashMap<>();
+        Coordinates c;
         for (int i=5; i>=1; i--){
             for (int j=0; j<=3; j++){
                 if (shelf.getTile(i,j) != null &&
                         shelf.getTile(i,j).getTileColor() == shelf.getTile(i-1,j).getTileColor() &&
                         shelf.getTile(i,j).getTileColor() == shelf.getTile(i,j+1).getTileColor() &&
                         shelf.getTile(i,j).getTileColor() == shelf.getTile(i-1,j+1).getTileColor()){
-                    squareTile.add(shelf.getTile(i,j));
+                    c = new Coordinates(i,j);
+                    squareTile.put(c,shelf.getTile(i,j).getTileColor());
                 }
             }
         }
-        for (Tile tile : squareTile) {
-
+        for (Map.Entry<Coordinates, Color> entry : squareTile.entrySet()) {
+            Coordinates coordinates = entry.getKey();
+            Color color = entry.getValue();
+            for (Map.Entry<Coordinates, Color> entry2 : squareTile.entrySet()) {
+                Coordinates coordinates2 = entry2.getKey();
+                Color color2 = entry2.getValue();
+                int absX = Math.abs(coordinates.getX() - coordinates2.getX());
+                int absY = Math.abs(coordinates.getY() - coordinates2.getY());
+                if ( !coordinates.equals(coordinates2) && (absY >= 2 || absX >= 2) && color == color2) {
+                    accomplished.add(player.getID());
+                    player.updateScore(scoringToken.pop());
+                }
+            }
         }
     }
 }
+

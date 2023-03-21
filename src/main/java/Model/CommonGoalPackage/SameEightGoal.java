@@ -8,10 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class SameEightGoal implements CommonGoal {
-    private List<Player> accomplished;
-    private Stack<Integer> scoringToken;
-    private final String description;
+public class SameEightGoal extends CommonGoal {
 
     public SameEightGoal(int nPlayer) {
         assert nPlayer<=4;
@@ -35,34 +32,60 @@ public class SameEightGoal implements CommonGoal {
         }
         this.description = "Otto tessere dello stesso tipo. Non ci sono restrizioni sulla posizione di queste tessere. Cinque colonne di altezza crescente o decrescente: a partire dalla prima colonna a sinistra o a destra, ogni colonna successiva ";
     }
-    public List<Player> getAccomplished() {
-        return this.accomplished;
-    }
-
-    public void setAccomplished(List<Player> accomplished) {
-        this.accomplished = accomplished;
-    }
-
-    public Stack<Integer> getScoringToken() {
-        return scoringToken;
-    }
-
-    public void setScoringToken(Stack<Integer> scoringToken) {
-        this.scoringToken = scoringToken;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 
     @Override
-    public int check(Shelf shelf) {
+    public void check(Player player) {
+        Shelf shelf = player.getShelf();
         int countGreen=0, countBlue=0, countAzure=0, countYellow=0, countWhite=0, countPink=0;
         for (int i=5; i>=0; i--) {
             for(int j=4; j>=0; j--){
+                if (shelf.getTile(i,j) == null )
+                    continue;
+                switch (shelf.getTile(i,j).getTileColor()){
+                    case PINK -> {
+                        countPink++;
+                        if (countPink==8){
+                            accomplished.add(player.getID());
+                            player.updateScore(scoringToken.pop());
+                        }
+                    }
+                    case AZURE -> {
+                        countAzure++;
+                        if (countAzure==8){
+                            accomplished.add(player.getID());
+                            player.updateScore(scoringToken.pop());
+                        }
+                    }
+                    case BLUE -> {
+                        countBlue++;
+                        if (countBlue==8){
+                            accomplished.add(player.getID());
+                            player.updateScore(scoringToken.pop());
+                        }
+                    }
+                    case GREEN -> {
+                        countGreen++;
+                        if (countGreen==8){
+                            accomplished.add(player.getID());
+                            player.updateScore(scoringToken.pop());
+                        }
+                    }
+                    case WHITE -> {
+                        countWhite++;
+                        if (countWhite==8){
+                            accomplished.add(player.getID());
+                            player.updateScore(scoringToken.pop());
+                        }
+                    }
+                    case YELLOW -> {
+                        countYellow++;
+                        if (countYellow==8){
+                            accomplished.add(player.getID());
+                            player.updateScore(scoringToken.pop());
+                        }
+                    }
+                }
             }
         }
-        return 4;
-
     }
 }

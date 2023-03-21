@@ -8,10 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class DifferentRowGoal implements CommonGoal {
-    private List<Player> accomplished;
-    private Stack<Integer> scoringToken;
-    private String description;
+public class DifferentRowGoal extends CommonGoal {
 
     public DifferentRowGoal(int nPlayer) { //costruttore da rivedere
         assert nPlayer<=4;
@@ -35,49 +32,27 @@ public class DifferentRowGoal implements CommonGoal {
         }
         this.description = "Due righe formate ciascuna da 5 diversi tipi di tessere.";
     }
-    public List<Player> getAccomplished() {
-        return this.accomplished;
-    }
-
-    public void setAccomplished(List<Player> accomplished) {
-        this.accomplished = accomplished;
-    }
-
-    public Stack<Integer> getScoringToken() {
-        return scoringToken;
-    }
-
-    public void setScoringToken(Stack<Integer> scoringToken) {
-        this.scoringToken = scoringToken;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     @Override
-    public int check(Shelf shelf) {
+    public void check(Player player) throws NullPointerException {
+        Shelf shelf = player.getShelf();
         int countRow=0;
         for(int i=5; i>=0; i--){
             int countTile=0;
-            for (int j=4; j>=0; j--){
-                if(shelf.getTile(i,j) != null &&
-                        shelf.getTile(i,j).getTileColor() == shelf.getTile(i,j+1).getTileColor()) {
+            for (int j=0; j<4; j++){
+                if(shelf.getTile(i,j) != null && shelf.getTile(i,j+1) != null &&
+                        shelf.getTile(i,j).getTileColor() != shelf.getTile(i,j+1).getTileColor()) {
                     countTile++;
-                }
+                } else continue;
+
                 if (countTile==4) {
                     countRow++;
                 }
                 if (countRow==2){
-                    accomplished.add(shelf.getPlayer());
-                    return scoringToken.pop();
+                    accomplished.add(player.getID());
+                    player.updateScore(scoringToken.pop());
                 }
             }
         }
-        return 0;
     }
 }
