@@ -11,8 +11,8 @@ public class ChatRoom {
         this.flow = new Stack<ChatMessage>();
     }
 
-    public synchronized void addMessage(String sender, String content, LocalDateTime time){
-        this.flow.add(new ChatMessage(sender, content, time));
+    public synchronized void addMessage(ChatMessage message){
+        this.flow.add(message);
     }
 
     public synchronized List<String> getHistory(int last){

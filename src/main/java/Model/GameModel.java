@@ -1,10 +1,10 @@
 package Model;
 
 import com.google.gson.*;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.lang.*;
+
 public class GameModel implements CMD{
     private final Integer nPlayers;
     private final String firstPlayer;
@@ -13,7 +13,7 @@ public class GameModel implements CMD{
     private List<Player> players;
     private List<CommonGoal> commonGoals;
     private ChatRoom chatRoom;
-    String json;
+    private String json;
 
 
     public GameModel(int nPlayers, List<String> players) {
@@ -78,12 +78,10 @@ public class GameModel implements CMD{
     }
 
     @Override
-    public void writeChat(String player, String message, LocalDateTime time) {
-        /*
-        maybe a json file instead of
-        hypothetical deconstruction of json file
-        */
-        this.chatRoom.addMessage(player, message, time);
+    public void writeChat(String message) {
+        Gson gson = new Gson();
+        ChatMessage text = gson.fromJson(message, ChatMessage.class);
+        this.chatRoom.addMessage(text);
     }
 
     public HashMap<String, Integer> finalRank(){
@@ -101,6 +99,10 @@ public class GameModel implements CMD{
             rank.add(min.getID, min.getScore);
         }
         return rank;
+    }
+
+    public void reloadGame(String json){
+
     }
 
     public void updateStatus(){
