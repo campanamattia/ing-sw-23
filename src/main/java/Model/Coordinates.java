@@ -1,7 +1,7 @@
 package Model;
 
 public class Coordinates {
-    private  final int x;
+    private final int x;
     private final int y;
 
     public Coordinates(int x, int y){
