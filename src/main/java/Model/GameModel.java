@@ -1,6 +1,6 @@
 package Model;
 
-import org.jetbrains.annotations.NotNull;
+import com.google.gson.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -12,46 +12,44 @@ public class GameModel implements CMD{
     private Board board;
     private List<Player> players;
     private List<CommonGoal> commonGoals;
-    private CommonGoalFactory commonGoalFactory;
-    private PersonalGoalFactory personalGoalFactory;
     private ChatRoom chatRoom;
+    String json;
 
 
-    public GameModel(int nPlayers, @NotNull List<String> players) {
+    public GameModel(int nPlayers, List<String> players) {
         this.nPlayers = nPlayers;
         this.firstPlayer = players.get(0);
         this.players = new ArrayList<Player>();
         this.commonGoals = new ArrayList<CommonGoal>();
 
         this.bag = new Bag();
-        this.board = new Board();
+        this.board = new Board(nPlayers, this.bag);
         this.chatRoom = new ChatRoom();
 
-        //factory
-        Random random = new Random();
-        //creating PersonalGoalFactory
-        HashSet<Integer> enumPersonal = new HashSet<Integer>();
-        for(int i=0; i<this.nPlayers; i++) {
-            if(!enumPersonal.add(random.nextInt(12))) // if it generates an already present number I generate another one
-                i--;
-        }
-        //generating personalGoal
-        this.personalGoalFactory = new PersonalGoalFactory(enumPersonal);
-        //creating & adding new players
-        for(int i=0; i<this.nPlayers; i++)
-            this.players.add(addPlayer(players.remove(0), personalGoalFactory.getPersonalGoal()));
 
-        //creating CommonGoalFactory
-        HashSet<Integer> enumCommon = new HashSet<Integer>();
-        for(int i=0; i<2; i++)
-            if(!enumCommon.add(random.nextInt(12))) // if it generates an already present number I generate another one
-                i--;
-        this.commonGoalFactory = new CommonGoalFactory(enumCommon);
-        for(int i=0; i<2; i++)
-            this.commonGoals.add(commonGoalFactory.getCommonGoal());
-    }
-    public static Player addPlayer(String nickname, PersonalGoal personalGoal){
-        return new Player(nickname, personalGoal);
+        //creating new personalGoal
+        Random random = new Random();
+        List<Integer> set = new ArrayList<Integer>();
+        while(set.size()<nPlayers){
+            Integer num = random.nextInt(12);
+            if(!set.contains(num))
+                set.add(num);
+        }
+        //creating new Players
+        for (String tmp : players)
+            this.players.add(new Player(tmp, PersonalGoalFactory.getPersonalGoal(set.remove(0))));
+
+        //creating 2 commonGoal
+        set.clear();
+        while(set.size()<2){
+            Integer num = random.nextInt(12);
+            if(!set.contains(num))
+                set.add(num);
+        }
+        this.commonGoals.add(CommonGoalFactory.getCommonGoal(set.remove(0)));
+
+        /* updating instantly the state*/
+        updateStatus();
     }
 
     @Override
@@ -80,10 +78,37 @@ public class GameModel implements CMD{
     }
 
     @Override
-    public void writeChat(String player, String message, LocalDateTime time) { /*
+    public void writeChat(String player, String message, LocalDateTime time) {
+        /*
         maybe a json file instead of
         hypothetical deconstruction of json file
         */
         this.chatRoom.addMessage(player, message, time);
+    }
+
+    public HashMap<String, Integer> finalRank(){
+        for(Player temp : this.players)
+            temp.endGame();
+        HashMap<String, Integer> rank = new HashMap<String, Integer>();
+        while(rank.size() < this.nPlayers){
+            Player min = null;
+            for(Player temp : this.players) {
+                if (min == null)
+                    min = temp;
+                else if (min.getScore() > temp.getScore())
+                    min = temp;
+            }
+            rank.add(min.getID, min.getScore);
+        }
+        return rank;
+    }
+
+    public void updateStatus(){
+        Gson gson = new Gson();
+        this.json = gson.toJson(this);
+    }
+
+    public String showStatus(){
+        return this.json;
     }
 }
