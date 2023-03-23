@@ -5,5 +5,5 @@ import java.lang.*;
 public interface CMD {
     List<Tile> selectedTiles(List<Coordinates> coordinates);
     void insertTiles(String player, List<Integer> sort, List<Tile> tiles, int column);
-    void writeChat(String player, String message, LocalDateTime time);
+    void writeChat(String message);
 }
