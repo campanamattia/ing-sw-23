@@ -1,56 +1,71 @@
 package Model;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
 
-import java.time.LocalDateTime;
+import java.io.*;
 import java.util.*;
-import java.lang.*;
+
 public class GameModel implements CMD{
-    private final Integer nPlayers;
+    private final int nPlayers;
     private final String firstPlayer;
     private Bag bag;
     private Board board;
     private List<Player> players;
     private List<CommonGoal> commonGoals;
     private ChatRoom chatRoom;
-    String json;
 
-
-    public GameModel(int nPlayers, List<String> players) {
+    public GameModel(int nPlayers, List<String> players) throws FileNotFoundException {
         this.nPlayers = nPlayers;
         this.firstPlayer = players.get(0);
+
+        this.bag = new Bag();
+        this.chatRoom = new ChatRoom();
+
         this.players = new ArrayList<Player>();
         this.commonGoals = new ArrayList<CommonGoal>();
 
-        this.bag = new Bag();
-        this.board = new Board(nPlayers, this.bag);
-        this.chatRoom = new ChatRoom();
+        //creating board
+        JsonObject board_json = decoBoard("src/main/resources/board.json");
+        this.board = new Board(board_json, this.bag);
 
-
-        //creating new personalGoal
+        //creating Players
+        JsonArray array = decoPersonal("src/main/resources/personalgoal.json");
         Random random = new Random();
-        List<Integer> set = new ArrayList<Integer>();
-        while(set.size()<nPlayers){
-            Integer num = random.nextInt(12);
-            if(!set.contains(num))
-                set.add(num);
+        for (String tmp : players){
+            PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())));
+            this.players.add(new Player(tmp, pGoal);
         }
-        //creating new Players
-        for (String tmp : players)
-            this.players.add(new Player(tmp, PersonalGoalFactory.getPersonalGoal(set.remove(0))));
 
         //creating 2 commonGoal
-        set.clear();
+        List<Integer> set = new ArrayList<Integer>();
         while(set.size()<2){
             Integer num = random.nextInt(12);
             if(!set.contains(num))
                 set.add(num);
         }
-        this.commonGoals.add(CommonGoalFactory.getCommonGoal(set.remove(0)));
+        this.commonGoals.add(CommonGoalFactory.getCommonGoal(set.remove(0), this.nPlayers));
 
-        /* updating instantly the state*/
+        // updating instantly the state
         updateStatus();
     }
+
+    public JsonObject decoBoard(String filepath) throws FileNotFoundException {
+        Gson gson = new Gson();
+        JsonReader reader;
+        reader = new JsonReader(new FileReader(filepath));
+        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        return json.getAsJsonObject(Integer.toString(this.nPlayers));
+    }
+    public JsonArray decoPersonal(String filepath) throws FileNotFoundException {
+        Gson gson = new Gson();
+        JsonReader reader;
+        reader = new JsonReader(new FileReader(filepath));
+        return gson.fromJson(reader, JsonArray.class);
+    }
+
 
     @Override
     public List<Tile> selectedTiles(List<Coordinates> coordinates) {
@@ -78,12 +93,10 @@ public class GameModel implements CMD{
     }
 
     @Override
-    public void writeChat(String player, String message, LocalDateTime time) {
-        /*
-        maybe a json file instead of
-        hypothetical deconstruction of json file
-        */
-        this.chatRoom.addMessage(player, message, time);
+    public void writeChat(String message) {
+        Gson gson = new Gson();
+        ChatMessage text = gson.fromJson(message, ChatMessage.class);
+        this.chatRoom.addMessage(text);
     }
 
     public HashMap<String, Integer> finalRank(){
@@ -103,9 +116,12 @@ public class GameModel implements CMD{
         return rank;
     }
 
+    public void reloadGame(String filepath){
+
+    }
+
     public void updateStatus(){
-        Gson gson = new Gson();
-        this.json = gson.toJson(this);
+        //save the new json in the resource
     }
 
     public String showStatus(){
