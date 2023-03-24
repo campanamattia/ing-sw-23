@@ -2,7 +2,7 @@ package Model;
 
 public class Player {
     private final String nicknameid;
-    public int score;
+    private int score;
     private boolean status;
     private PersonalGoal personalGoal;
 
@@ -37,5 +37,7 @@ public class Player {
         return super.toString();
     }
 
-
+    public Shelf getMyShelf() {
+        return myShelf;
+    }
 }
