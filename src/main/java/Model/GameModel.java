@@ -36,34 +36,55 @@ public class GameModel implements CMD{
         Random random = new Random();
         for (String tmp : players){
             PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())));
-            this.players.add(new Player(tmp, pGoal);
+            this.players.add(new Player(tmp, pGoal));
         }
 
         //creating 2 commonGoal
-        List<Integer> set = new ArrayList<Integer>();
-        while(set.size()<2){
-            Integer num = random.nextInt(12);
-            if(!set.contains(num))
-                set.add(num);
-        }
-        this.commonGoals.add(CommonGoalFactory.getCommonGoal(set.remove(0), this.nPlayers));
+        generateCommonGoal("src/main/resources/commonGoal.json");
 
         // updating instantly the state
         updateStatus();
     }
 
-    public JsonObject decoBoard(String filepath) throws FileNotFoundException {
+    /*
+    public GameModel(String filepath) {
+
+    }
+
+     */
+
+    private JsonObject decoBoard(String filepath) throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
         reader = new JsonReader(new FileReader(filepath));
         JsonObject json = gson.fromJson(reader, JsonObject.class);
         return json.getAsJsonObject(Integer.toString(this.nPlayers));
     }
-    public JsonArray decoPersonal(String filepath) throws FileNotFoundException {
+
+    private JsonArray decoPersonal(String filepath) throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
         reader = new JsonReader(new FileReader(filepath));
         return gson.fromJson(reader, JsonArray.class);
+    }
+
+    private void generateCommonGoal(String filepath) throws FileNotFoundException{
+        Gson gson = new Gson();
+        JsonReader reader;
+        reader = new JsonReader(new FileReader(filepath));
+        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        JsonArray array = json.get("commonGoal").getAsJsonArray();
+        json = json.get("scoringToken").getAsJsonObject();
+        List<Integer> scoringToken = getAsList(json.get(Integer.toString(this.nPlayers)).getAsJsonArray());
+        Random random = new Random();
+        this.commonGoals.add(CommonGoalFactory.getCommonGoal(scoringToken, array.remove(random.nextInt(array.size())).getAsJsonObject()));
+    }
+
+    private static List<Integer> getAsList(JsonArray array){
+        List<Integer> list = new ArrayList<Integer>();
+        for (int i = 1; i <=array.size(); i++)
+            list.add(array.get(array.size()-i).getAsInt());
+        return list;
     }
 
 
@@ -116,15 +137,18 @@ public class GameModel implements CMD{
         return rank;
     }
 
-    public void reloadGame(String filepath){
-
+    public GameModel reloadGame(String hash){
+        /*
+        reload the game that crashed
+        return new GameModel(hash);
+        */
+    }
+    private static void updateStatus(){
+        /*
+        update json in the resource
+        the first time a generate the file json, where the name is composed by
+        a hashcode that I will use tu identify the match's .json file
+        */
     }
 
-    public void updateStatus(){
-        //save the new json in the resource
-    }
-
-    public String showStatus(){
-        return this.json;
-    }
 }
