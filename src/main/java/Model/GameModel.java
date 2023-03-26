@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
+import Exception.*;
 import java.io.*;
 import java.util.*;
 
@@ -46,7 +47,8 @@ public class GameModel implements CMD{
         updateStatus();
     }
 
-    /*
+    // TODO: 24/03/2023
+    /* 
     public GameModel(String filepath) {
 
     }
@@ -86,14 +88,15 @@ public class GameModel implements CMD{
             list.add(array.get(array.size()-i).getAsInt());
         return list;
     }
-
-
+    
     @Override
-    public List<Tile> selectedTiles(List<Coordinates> coordinates) {
-        if (!this.board.convalidateMove(coordinates))
-            return null;
-        else
-            return this.board.getter(coordinates);
+    public List<Tile> selectedTiles(List<Coordinates> coordinates) throws BoardException {
+        try {
+            this.board.convalidateMove(coordinates);
+            return this.board.getTiles(coordinates);
+        } catch (BoardException exception) {
+            throw exception;
+        }
     }
 
     @Override
@@ -120,6 +123,7 @@ public class GameModel implements CMD{
         this.chatRoom.addMessage(text);
     }
 
+    // TODO: 24/03/2023  
     public HashMap<String, Integer> finalRank(){
         for(Player temp : this.players)
             temp.endGame();
@@ -137,12 +141,14 @@ public class GameModel implements CMD{
         return rank;
     }
 
+    // TODO: 24/03/2023  
     public GameModel reloadGame(String hash){
         /*
         reload the game that crashed
         return new GameModel(hash);
         */
     }
+    // TODO: 24/03/2023  
     private static void updateStatus(){
         /*
         update json in the resource
