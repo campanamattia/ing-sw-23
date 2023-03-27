@@ -2,10 +2,10 @@ package Server.Model;
 
 public class Player {
     private final String nicknameid;
-    public int score;
-    private boolean status;
     private PersonalGoal personalGoal;
-
+    private int score;
+    private boolean status;
+    
     private Shelf myShelf;
 
     public Player(String nicknameid, PersonalGoal pGoal) {
@@ -30,11 +30,6 @@ public class Player {
 
     public String getID() {
         return nicknameid;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
     }
 
     public boolean equals(String s) {
