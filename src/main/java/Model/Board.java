@@ -3,117 +3,77 @@ package Model;
 /* bisogna implementare il metodo equals per le celle */
 /* attributo empty da uml, in realtà c'è già checkrefill */
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import java.nio.file.attribute.UserPrincipalLookupService;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.nextUp;
 
 public class Board {
 
     private Cell[][] board = new Cell[9][9];
+    private int tilesTaken;
+    private final int matrix_size;
 
     /* 3 costruttori a seconda che si giochi in 2,3,4 */
-    public Board(int nPlayer,Bag bag) {
-        if (nPlayer == 2) {
-            this.board = new Cell[9][9];
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 9; j++) {
-                    Cell cell = new Cell();
-                    this.board[i][j] = cell;
-                }
+    public Board(JsonObject board_json, Bag bag) {
+        this.matrix_size = board_json.get("matrix.size").getAsInt();
+        int board_size = board_json.get("board.size").getAsInt();
+        List<Integer> cell_value = getValueList(board_json.getAsJsonArray("cell.value"));
+        List<Tile> toDeploy = bag.draw(board_size);
+        int rowIndex=0;
+        int columnIndex=0;
+        for (Integer integer : cell_value) {
+            if(cell_value.get(integer) == 1) {
+                this.board[rowIndex][columnIndex].setStatus(true);
+                this.board[rowIndex][columnIndex].setTile(toDeploy.remove(0));
             }
-            ArrayList<Tile> tilesToInsert = bag.draw(29);
-            int index = tilesToInsert.size()-1;
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 9; j++) {
-                    if (
-                            board[i][j] == board[1][3] || board[i][j] == board[1][4] ||
-                                    board[i][j] == board[2][3] || board[i][j] == board[2][4] || board[i][j] == board[2][5] ||
-                                    board[i][j] == board[3][2] || board[i][j] == board[3][3] || board[i][j] == board[3][4] || board[i][j] == board[3][5] || board[i][j] == board[3][6] || board[i][j] == board[3][7] ||
-                                    board[i][j] == board[4][1] || board[i][j] == board[4][2] || board[i][j] == board[4][3] || board[i][j] == board[4][4] || board[i][j] == board[4][5] || board[i][j] == board[4][6] || board[i][j] == board[4][7] ||
-                                    board[i][j] == board[5][1] || board[i][j] == board[5][2] || board[i][j] == board[5][3] || board[i][j] == board[5][4] || board[i][j] == board[5][5] || board[i][j] == board[5][6] ||
-                                    board[i][j] == board[6][3] || board[i][j] == board[6][4] || board[i][j] == board[6][5] ||
-                                    board[i][j] == board[7][4] || board[i][j] == board[7][5]
-                    ) {
-                        this.board[i][j].setStatus(true);
-                        this.board[i][j].setTile(tilesToInsert.get(index));
-                        index--;
-                    } else{ this.board[i][j].setStatus(false);
-                            this.board[i][j].setTile(null);}
-                }
-            }
-        } else if (nPlayer == 3) {
-            ArrayList<Tile> tilesToInsert = bag.draw(29);
-            int index = tilesToInsert.size()-1;
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 9; j++) {
-                    if (
-                            board[i][j] == board[0][3] ||
-                                    board[i][j] == board[1][3] || board[i][j] == board[1][4] ||
-                                    board[i][j] == board[2][2] || board[i][j] == board[2][3] || board[i][j] == board[2][4] || board[i][j] == board[2][5] || board[i][j] == board[2][6] ||
-                                    board[i][j] == board[3][2] || board[i][j] == board[3][3] || board[i][j] == board[3][4] || board[i][j] == board[3][5] || board[i][j] == board[3][6] || board[i][j] == board[3][7] || board[i][j] == board[3][8] ||
-                                    board[i][j] == board[4][1] || board[i][j] == board[4][2] || board[i][j] == board[4][3] || board[i][j] == board[4][4] || board[i][j] == board[4][5] || board[i][j] == board[4][6] || board[i][j] == board[4][7] ||
-                                    board[i][j] == board[5][0] || board[i][j] == board[5][1] || board[i][j] == board[5][2] || board[i][j] == board[5][3] || board[i][j] == board[5][4] || board[i][j] == board[5][5] || board[i][j] == board[5][6] ||
-                                    board[i][j] == board[6][2] || board[i][j] == board[6][3] || board[i][j] == board[6][4] || board[i][j] == board[6][5] || board[i][j] == board[6][6] ||
-                                    board[i][j] == board[7][4] || board[i][j] == board[7][5] ||
-                                    board[i][j] == board[8][5]
-                    ) {
-                        this.board[i][j].setStatus(true);
-                        this.board[i][j].setTile(tilesToInsert.get(index));
-                        index--;
-                    } else{ this.board[i][j].setStatus(false);
-                            this.board[i][j].setTile(null);}
-                }
-            }
-        } else if (nPlayer == 4) {
-            ArrayList<Tile> tilesToInsert = bag.draw(29);
-            int index = tilesToInsert.size()-1;
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 9; j++) {
-                    if (
-                            board[i][j] == board[0][3] || board[i][j] == board[0][4] ||
-                                    board[i][j] == board[1][3] || board[i][j] == board[1][4] || board[i][j] == board[1][5] ||
-                                    board[i][j] == board[2][2] || board[i][j] == board[2][3] || board[i][j] == board[2][4] || board[i][j] == board[2][5] || board[i][j] == board[2][6] ||
-                                    board[i][j] == board[3][1] || board[i][j] == board[3][2] || board[i][j] == board[3][3] || board[i][j] == board[3][4] || board[i][j] == board[3][5] || board[i][j] == board[3][6] || board[i][j] == board[3][7] || board[i][j] == board[3][8] ||
-                                    board[i][j] == board[4][0] || board[i][j] == board[4][1] || board[i][j] == board[4][2] || board[i][j] == board[4][3] || board[i][j] == board[4][4] || board[i][j] == board[4][5] || board[i][j] == board[4][6] || board[i][j] == board[4][7] || board[i][j] == board[4][8] ||
-                                    board[i][j] == board[5][0] || board[i][j] == board[5][1] || board[i][j] == board[5][2] || board[i][j] == board[5][3] || board[i][j] == board[5][4] || board[i][j] == board[5][5] || board[i][j] == board[5][6] || board[i][j] == board[5][7] ||
-                                    board[i][j] == board[6][2] || board[i][j] == board[6][3] || board[i][j] == board[6][4] || board[i][j] == board[6][5] || board[i][j] == board[6][6] ||
-                                    board[i][j] == board[7][3] || board[i][j] == board[7][4] || board[i][j] == board[7][5] ||
-                                    board[i][j] == board[8][4] || board[i][j] == board[8][5]
-                    ) {
-                        this.board[i][j].setStatus(true);
-                        this.board[i][j].setTile(tilesToInsert.get(index));
-                        index--;
-                    } else {this.board[i][j].setStatus(false);
-                            this.board[i][j].setTile(null);}
-                }
+            columnIndex++;
+            if (columnIndex == matrix_size-1) {
+                columnIndex = 0;
+                rowIndex++;
             }
         }
     }
+    private static  List<Integer> getValueList (JsonArray json){
+        List<Integer> list = new ArrayList<Integer>();
+        for (int i = 1; i <=json.size(); i++)
+            list.add(json.get(json.size()-i).getAsInt());
+        return list;
+    }
 
-    public boolean convalidateMove(List<Coordinates> coordinates) {
+    public void convalidateMove(List<Coordinates> coordinates) throws NoValidMoveException {
+        boolean validMove = false;
         if(coordinates.size() == 1){
             // controllo solo che abbia un lato libero
-            return checkSpaceTile(coordinates.get(0));
+            validMove = checkSpaceTile(coordinates.get(0));
         } else if (coordinates.size() == 2) {
-            return checkAdjacent(coordinates.get(0),coordinates.get(1)) && checkSpaceTile(coordinates.get(0),coordinates.get(1));
+            validMove = checkAdjacent(coordinates.get(0),coordinates.get(1)) && checkSpaceTile(coordinates.get(0),coordinates.get(1));
         } else if (coordinates.size() == 3) {
-            return checkAdjacent(coordinates.get(0),coordinates.get(1),coordinates.get(2)) && checkSpaceTile(coordinates.get(0),coordinates.get(1),coordinates.get(2));
-        } else {
-            /* exception, troppe tiles selezionate */
-            return false;
+            validMove = checkAdjacent(coordinates.get(0),coordinates.get(1),coordinates.get(2)) && checkSpaceTile(coordinates.get(0),coordinates.get(1),coordinates.get(2));
+        }
+        // da sistemare con le eccezioni
+        if(!validMove){
+            throw NoValidMoveException("Selezione tessere non valida");
         }
     }
 
-    public ArrayList<Tile> getTiles(ArrayList<Coordinates> coordinates){
+    public ArrayList<Tile> getTiles(ArrayList<Coordinates> coordinates) throws NullTileException{
         ArrayList<Tile> result = new ArrayList<Tile>();
         for (Coordinates coordinate : coordinates) {
             Cell selected = getCell(coordinate);
-            try {
+            if( selected.getTile() != null) {
                 result.add(selected.getTile());
                 selected.setTile(null);
-            }catch (NullPointerException nullPointerException){return null;}
+                tilesTaken++;
+            }else{
+                throw NullTileException(coordinate);
+            }
+
         }
         return result;
     }
@@ -133,14 +93,9 @@ public class Board {
         }
     }
 
-    public Cell getCell(Coordinates coordinates) {
-        int x = coordinates.getX();
-        int y = coordinates.getY();
-        return board[x][y];
-    }
-
-    public boolean checkRefill(){
-        boolean lonelyTile = false;
+    public void checkRefill(Bag bag) throws CantRefillBoardException{
+        boolean lonelyTile = true;
+        outerloop:
         for(int i=0;i<9;i++){
             for(int j=0;j<9;j++){
                 if(this.board[i][j].getStatus()){
@@ -148,11 +103,21 @@ public class Board {
                         Coordinates c1 = new Coordinates(i,j);
                         lonelyTile = checkLonelyTile(c1);
                     }
-                    if(lonelyTile) return true;
+                    if(!lonelyTile) break outerloop;
                 }
             }
         }
-        return false;
+        if(lonelyTile){
+            if(tilesTaken > bag.getLastTiles()){
+                throw new CantRefillBoardException ();
+            }
+        }
+    }
+
+    private Cell getCell(Coordinates coordinates) {
+        int x = coordinates.getX();
+        int y = coordinates.getY();
+        return board[x][y];
     }
 
     private boolean checkAdjacent(Coordinates c1,Coordinates c2, Coordinates c3){
@@ -181,18 +146,18 @@ public class Board {
         // controllo solo che abbia un lato libero
         Coordinates check = new Coordinates(x1+1,y1);
         if(
-                !getCell(check).getStatus() || getCell(check).getStatus() && getCell(check).getTile()==(null)
+                tileOnBoard(c1) || !getCell(check).getStatus() || ( getCell(check).getStatus() && getCell(check).getTile()==(null) )
         ){return true;}
         Coordinates check1 = new Coordinates(x1-1,y1);
         if(
-                !getCell(check1).getStatus() || getCell(check1).getStatus() && getCell(check1).getTile()==(null)
+                tileOnBoard(c1) || !getCell(check1).getStatus() || ( getCell(check1).getStatus() && getCell(check1).getTile()==(null) )
         ){return true;}
         Coordinates check2 = new Coordinates(x1,y1+1);
         if(
-                !getCell(check2).getStatus() || getCell(check2).getStatus() && getCell(check2).getTile()==(null)
+                tileOnBoard(c1) || !getCell(check2).getStatus() || ( getCell(check2).getStatus() && getCell(check2).getTile()==(null) )
         ){return true;}
         Coordinates check3 = new Coordinates(x1,y1-1);
-        return !getCell(check3).getStatus() || getCell(check3).getStatus() && getCell(check3).getTile() == (null);
+        return tileOnBoard(c1) || !getCell(check3).getStatus() || ( getCell(check3).getStatus() && getCell(check3).getTile() == (null) );
     }
     private boolean checkSpaceTile(Coordinates c1, Coordinates c2){
         boolean tile1 = checkSpaceTile(c1);
@@ -226,5 +191,11 @@ public class Board {
         if( !getCell(check3).getStatus() || getCell(check3).getStatus() && getCell(check3).getTile() == (null)){refill++;}
         return refill == 4;
 
+    }
+
+    private boolean tileOnBoard(Coordinates c1){
+        int x1 = c1.getX();
+        int y1 = c1.getY();
+        return x1 == matrix_size - 1 || y1 == matrix_size - 1;
     }
 }

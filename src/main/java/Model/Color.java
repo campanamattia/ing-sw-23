@@ -11,6 +11,11 @@ public enum Color {
     WHITE, /* #FFFFFF */
     YELLOW, /* #FFFF00 */
     BLUE, /* #0000FF  */
-    AZURE, /* #0080FF */
-    PURPLE; /* #A020F0 */
+    CYAN, /* #0080FF */
+    PINK; /* #A020F0 */
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }
