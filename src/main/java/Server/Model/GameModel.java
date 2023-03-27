@@ -1,13 +1,11 @@
 package Server.Model;
 
-import Server.Exception.BoardException;
-import Server.Exception.PlayerException;
+import Server.Exception.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
-import Exception.*;
 import java.io.*;
 import java.util.*;
 
@@ -16,15 +14,19 @@ public class GameModel implements CMD{
     private UUID uuid = UUID.randomUUID();
     private final int nPlayers;
     private final String firstPlayer;
+    private String currPlayer;
+
     private List<Player> players;
+    private List<CommonGoal> commonGoals;
+
     private Bag bag;
     private Board board;
     private ChatRoom chatRoom;
-    private List<CommonGoal> commonGoals;
 
     public GameModel(int nPlayers, List<String> players) throws FileNotFoundException {
         this.nPlayers = nPlayers;
         this.firstPlayer = players.get(0);
+        this.currPlayer = firstPlayer;
 
         this.bag = new Bag();
         this.chatRoom = new ChatRoom();
@@ -131,14 +133,6 @@ public class GameModel implements CMD{
         this.chatRoom.addMessage(text);
     }
 
-        public String getID() {
-            return ID;
-        }
-
-        public int getScore() {
-            return score;
-        }
-    }
     // TODO: 24/03/2023  
     public List<Rank<String, Integer>> finalRank(){
         for(Player tmp : this.players)
@@ -165,6 +159,7 @@ public class GameModel implements CMD{
         reload the game that crashed
         return new GameModel(hash);
         */
+        return null;
     }
     // TODO: 24/03/2023  
     private static void updateStatus(){

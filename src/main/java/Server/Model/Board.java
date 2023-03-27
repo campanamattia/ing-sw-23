@@ -1,8 +1,11 @@
-package Model;
+package Server.Model;
 
 /* bisogna implementare il metodo equals per le celle */
 /* attributo empty da uml, in realtà c'è già checkrefill */
 
+import Server.Exception.Board.CantRefillBoardException;
+import Server.Exception.Board.NoValidMoveException;
+import Server.Exception.Board.NullTileException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -62,7 +65,7 @@ public class Board {
         }
     }
 
-    public ArrayList<Tile> getTiles(ArrayList<Coordinates> coordinates) throws NullTileException{
+    public ArrayList<Tile> getTiles(ArrayList<Coordinates> coordinates) throws NullTileException {
         ArrayList<Tile> result = new ArrayList<Tile>();
         for (Coordinates coordinate : coordinates) {
             Cell selected = getCell(coordinate);
@@ -93,7 +96,7 @@ public class Board {
         }
     }
 
-    public void checkRefill(Bag bag) throws CantRefillBoardException{
+    public void checkRefill(Bag bag) throws CantRefillBoardException {
         boolean lonelyTile = true;
         outerloop:
         for(int i=0;i<9;i++){
