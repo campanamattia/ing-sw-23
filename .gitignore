@@ -7,3 +7,4 @@ git # Default ignored files
 /dataSources/
 /dataSources.local.xml
 target/
+AM01.iml
