@@ -5,7 +5,7 @@ public class Player {
     private PersonalGoal personalGoal;
     private int score;
     private boolean status;
-
+    
     private Shelf myShelf;
 
     public Player(String nicknameid, PersonalGoal pGoal) {
