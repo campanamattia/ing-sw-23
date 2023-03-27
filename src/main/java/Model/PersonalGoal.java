@@ -13,10 +13,7 @@ public class PersonalGoal {
     public Coordinates takeCoordinates(JsonArray json) {
         return new Coordinates(json.get(0).getAsInt(), json.get(1).getAsInt());
     }
-    @Override
-    public String toString() {
-        return super.toString();
-    }
+
      //TODO: 21/03/23
     public int check(Tile[][] myshelf){
         int count = 0;

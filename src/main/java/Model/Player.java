@@ -2,9 +2,9 @@ package Model;
 
 public class Player {
     private final String nicknameid;
+    private PersonalGoal personalGoal;
     private int score;
     private boolean status;
-    private PersonalGoal personalGoal;
 
     private Shelf myShelf;
 
@@ -30,11 +30,6 @@ public class Player {
 
     public String getID() {
         return nicknameid;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
     }
 
     public Shelf getMyShelf() {

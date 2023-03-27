@@ -1,5 +1,6 @@
 package Model;
 
+import Server.Exception.Player.*;
 import java.util.List;
 
 public class Shelf {
@@ -9,33 +10,24 @@ public class Shelf {
         this.myShelf = new Tile[6][5];
     }
 
-    @Override
-    public String toString() {
-        return super.toString();
-    }
 
-    public boolean insert(int n, List<Tile> tiles){
+    public void insert(int n, List<Tile> tiles) throws ColumnNotValidException{
         int tmp = tiles.size();
 
         for(int i=0; i<tmp; i++){
-            if(this.myShelf[6-i][n] != null ) return false;
+            if(this.myShelf[6-i][n] != null ) throw new ColumnNotValidException();
         }
-
-        for(int j=0; j<6 ; j++ ){
-            if(this.myShelf[j][n] == null){
-                this.myShelf[j][n] = tiles.get(1);
+        for(int i=0; i<6 ; i++ ){
+            if(this.myShelf[i][n] == null){
+                this.myShelf[i][n] = tiles.get(1);
             }
         }
-
-        return true;
     }
 
     public boolean full(){
-        for(int i=0; i<6; i++){
-            for(int j=0;j<5;j++){
-                if(myShelf[i][j] == null) return false;
-            }
-        }
+        for(int i=0; i<5; i++)
+            if(this.myShelf[0][i] == null)
+                return false;
         return true;
     }
 
@@ -52,10 +44,11 @@ public class Shelf {
         return max;
     }
 
-    public Tile[][] getShelf(){
-        return myShelf;
+    public Shelf getShelf(){
+        return this;
     }
 
-
-
+    public Tile[][] getMyShelf() {
+        return myShelf;
+    }
 }
