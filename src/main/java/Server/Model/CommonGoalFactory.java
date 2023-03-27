@@ -24,7 +24,7 @@ public class CommonGoalFactory {
                 return new ThreeColumnGoal(nPlayer);
             }
             case 5 -> {
-                return new SameEightGoal(nPlayer);
+                return new SameNGoal(nPlayer);
             }
             case 6 -> {
                 return new DiagonalGoal(nPlayer);

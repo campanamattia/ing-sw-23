@@ -7,9 +7,9 @@ import Server.Model.Shelf;
 import java.util.ArrayList;
 import java.util.Stack;
 
-public class SameEightGoal extends CommonGoal {
+public class SameNGoal extends CommonGoal {
 
-    public SameEightGoal(int nPlayer) {
+    public SameNGoal(int nPlayer) {
         assert nPlayer<=4;
         assert nPlayer>=2;
 
