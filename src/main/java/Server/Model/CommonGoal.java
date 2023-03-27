@@ -16,5 +16,9 @@ public abstract class CommonGoal {
         return scoringToken;
     }
 
+    public int getEnumeration() {
+        return enumeration;
+    }
+
     public abstract void check(Player player);
 }

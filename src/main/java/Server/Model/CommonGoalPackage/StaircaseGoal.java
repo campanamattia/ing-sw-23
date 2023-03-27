@@ -3,38 +3,83 @@ package Server.Model.CommonGoalPackage;
 import Server.Model.CommonGoal;
 import Server.Model.Player;
 import Server.Model.Shelf;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class StaircaseGoal extends CommonGoal {
 
-    public StaircaseGoal(int nPlayer) {
-        assert nPlayer <= 4;
-        assert nPlayer >= 2;
+    private final String description;
+
+    public StaircaseGoal(List<Integer> tokenList, JsonObject jsonObject) {
+        this.enumeration = jsonObject.get("enum").getAsInt();
+        this.description = jsonObject.get("description").getAsString();
 
         this.accomplished = new ArrayList<>();
-        this.scoringToken = new Stack<>();
 
-        if (nPlayer == 2) {
-            scoringToken.push(4);
-            scoringToken.push(8);
-        } else if (nPlayer == 3) {
-            scoringToken.push(4);
-            scoringToken.push(6);
-            scoringToken.push(8);
-        } else if (nPlayer == 4) {
-            scoringToken.push(2);
-            scoringToken.push(4);
-            scoringToken.push(6);
-            scoringToken.push(8);
-        }
-        this.description = "Cinque colonne di altezza crescente o decrescente: a partire dalla prima colonna a sinistra o a destra, ogni colonna successiva deve essere formata da una tessera in più. Le tessere possono essere di qualsiasi tipo";
+        this.scoringToken = new Stack<>();
+        scoringToken.addAll(tokenList);
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     @Override
-    public void check(Player player) { //devo considerare il caso limite o anche una figura che la contenga?
-        Shelf shelf = player.getShelf();
+    public void check(Player player) {
+        Shelf shelf = player.getMyShelf();
+        int countSx1 = 0, countSx2 = 0, countDx1 = 0, countDx2 = 0;
+
+        //limit case for the method LastTile()
+        if (shelf.getTile(0, 0) != null) {
+            countSx1++;
+        }
+
+        if (shelf.getTile(0, 4) != null) {
+            countDx1++;
+        }
+
+        for (int i = 1; i <= 5; i++) {
+            for (int j = 0; j <= 4; j++) {
+
+                if (shelf.getTile(i, j) == null) {
+                    continue;
+                }
+
+                if (i == j && lastTile(shelf, i , j)) {
+                    countSx1++;
+                }
+                if (i == j + 1 && lastTile(shelf, i , j)) {
+                    countSx2++;
+                }
+                if (i + j == 4 && lastTile(shelf, i , j)) {
+                    countDx1++;
+                }
+                if (i + j == 5 && lastTile(shelf, i , j)) {
+                    countDx2++;
+                }
+            }
+        }
+
+        if (countSx1 == 5 || countSx2 == 5 || countDx1 == 5 || countDx2 ==5) {
+            accomplished.add(player.getID());
+            player.updateScore(scoringToken.pop());
+        }
+    }
+
+    public static boolean lastTile(Shelf shelf, int i, int j) {
+        if (shelf.getTile(i-1,j) == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+/*
+Shelf shelf = player.getMyShelf();
         int countSx = 0, countDx =0;
         for (int i = 5; i >= 1; i--) {
             for (int j = 0; j < 5 && j <= i; j++) {
@@ -65,5 +110,4 @@ public class StaircaseGoal extends CommonGoal {
             accomplished.add(player.getID());
             player.updateScore(scoringToken.pop());
         }
-    }
-}
+ */

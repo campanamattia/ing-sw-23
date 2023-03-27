@@ -3,82 +3,87 @@ package Server.Model.CommonGoalPackage;
 import Server.Model.CommonGoal;
 import Server.Model.Player;
 import Server.Model.Shelf;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class SameNGoal extends CommonGoal {
 
-    public SameNGoal(int nPlayer) {
-        assert nPlayer<=4;
-        assert nPlayer>=2;
+    private final String description;
+    private final int numEquals;
+
+    public SameNGoal(List<Integer> tokenList, JsonObject jsonObject) {
+        this.enumeration = jsonObject.get("enum").getAsInt();
+        this.description = jsonObject.get("description").getAsString();
+        this.numEquals = jsonObject.get("numEquals").getAsInt();
 
         this.accomplished = new ArrayList<>();
-        this.scoringToken = new Stack<>();
 
-        if(nPlayer==2) {
-            scoringToken.push(4);
-            scoringToken.push(8);
-        } else if(nPlayer==3){
-            scoringToken.push(4);
-            scoringToken.push(6);
-            scoringToken.push(8);
-        } else if(nPlayer==4){
-            scoringToken.push(2);
-            scoringToken.push(4);
-            scoringToken.push(6);
-            scoringToken.push(8);
-        }
-        this.description = "Otto tessere dello stesso tipo. Non ci sono restrizioni sulla posizione di queste tessere. Cinque colonne di altezza crescente o decrescente: a partire dalla prima colonna a sinistra o a destra, ogni colonna successiva ";
+        this.scoringToken = new Stack<>();
+        scoringToken.addAll(tokenList);
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getNumEquals() {
+        return numEquals;
     }
 
     @Override
     public void check(Player player) {
-        Shelf shelf = player.getShelf();
-        int countGreen=0, countBlue=0, countAzure=0, countYellow=0, countWhite=0, countPink=0;
-        for (int i=5; i>=0; i--) {
-            for(int j=4; j>=0; j--){
-                if (shelf.getTile(i,j) == null )
+        Shelf shelf = player.getMyShelf();
+        int countGreen = 0, countBlue = 0, countCyan = 0, countYellow = 0, countWhite = 0, countPink = 0;
+        for (int i = 5; i >= 0; i--) {
+            for(int j = 0; j <= 4; j--){
+
+                if (shelf.getTile(i,j) == null) {
                     continue;
+                }
+
                 switch (shelf.getTile(i,j).getTileColor()){
                     case PINK -> {
                         countPink++;
-                        if (countPink==8){
+                        if (countPink == 8) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
-                    case AZURE -> {
-                        countAzure++;
-                        if (countAzure==8){
+                    case CYAN -> {
+                        countCyan++;
+                        if (countCyan == 8) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case BLUE -> {
                         countBlue++;
-                        if (countBlue==8){
+                        if (countBlue == 8) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case GREEN -> {
                         countGreen++;
-                        if (countGreen==8){
+                        if (countGreen == 8) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case WHITE -> {
                         countWhite++;
-                        if (countWhite==8){
+                        if (countWhite == 8) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case YELLOW -> {
                         countYellow++;
-                        if (countYellow==8){
+                        if (countYellow == 8) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }
