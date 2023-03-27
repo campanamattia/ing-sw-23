@@ -12,51 +12,28 @@ public class Bag {
 
     public final int CAPACITY = 132;
     private ArrayBlockingQueue<Tile> bag;
-    private int size;
 
 
     public Bag() {
-        this.bag = new ArrayBlockingQueue<Tile>(CAPACITY);
-        this.size = CAPACITY;
-        for(int i=0;i<CAPACITY;i++){
-            if(i<22) {
-                Tile tile = new Tile(Color.GREEN);
-                bag.add(tile);
+        Tile[] array = new Tile[CAPACITY];
+        Tile tile;
+        int offset=0;
+        for(Color tmp : Color.values()){
+            for(int i=0;i<22;i++){
+                tile = new Tile(tmp);
+                array[i+offset] = tile;
+
             }
-            if(i>=22 && i<44){
-                Tile tile = new Tile(Color.WHITE);
-                bag.add(tile);
-            }
-            if(i>=44 && i<66){
-                Tile tile = new Tile(Color.YELLOW);
-                bag.add(tile);
-            }
-            if(i>=66 && i<88){
-                Tile tile = new Tile(Color.BLUE);
-                bag.add(tile);
-            }
-            if(i>=88 && i<110){
-                Tile tile = new Tile(Color.AZURE);
-                bag.add(tile);
-            }
-            if(i>=110){
-                Tile tile = new Tile(Color.PURPLE);
-                bag.add(tile);
-            }
+            offset+=22;
         }
         // shuffle
-        Tile[] array = new Tile[bag.size()];
-        bag.toArray(array);
         shuffleArray(array);
-        bag.clear();
+        this.bag = new ArrayBlockingQueue<Tile>(CAPACITY);
         Collections.addAll(bag, array);
     }
 
-    public boolean isEmpty() {
-        return size == 0;
-    }
-    public int getSize() {
-        return size;
+    public int getLastTiles() {
+        return bag.size();
     }
 
     public ArrayList<Tile> draw(int n){
@@ -65,7 +42,6 @@ public class Bag {
             if(!bag.isEmpty()) {
                 // metodo poll(): recupero ed elimino il primo elemento di bag e lo metto in extracion
                 extraction.add(bag.poll());
-                this.size --;
             }else{
                 /* empty exception */
                 return null; //da sostituire con eccezione
