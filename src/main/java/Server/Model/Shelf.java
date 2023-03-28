@@ -52,4 +52,8 @@ public class Shelf {
     public Tile[][] getMyShelf() {
         return myShelf;
     }
+
+    public int checkEndGame() {
+        return 0;
+    }
 }

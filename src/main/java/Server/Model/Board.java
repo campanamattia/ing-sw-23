@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import Server.Exception.Board.*;
 
-import java.nio.file.attribute.UserPrincipalLookupService;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,33 +113,33 @@ public class Board {
     }
 
     private Cell getCell(Coordinates coordinates) {
-        int x = coordinates.getX();
-        int y = coordinates.getY();
+        int x = coordinates.x();
+        int y = coordinates.y();
         return board[x][y];
     }
 
     private boolean checkAdjacent(Coordinates c1,Coordinates c2, Coordinates c3){
-        int x1 = c1.getX();
-        int y1 = c1.getY();
-        int x2 = c2.getX();
-        int y2 = c2.getY();
-        int x3 = c3.getX();
-        int y3 = c3.getY();
+        int x1 = c1.x();
+        int y1 = c1.y();
+        int x2 = c2.x();
+        int y2 = c2.y();
+        int x3 = c3.x();
+        int y3 = c3.y();
         return x1 == x2 && x2 == x3 && abs(y1 - y2) == 1 && abs(y2 - y3) == 1 ||
                 y1 == y2 && y2 == y3 && abs(x1 - x2) == 1 && abs(x2 - x3) == 1;
     }
     private boolean checkAdjacent(Coordinates c1, Coordinates c2){
-        int x1 = c1.getX();
-        int y1 = c1.getY();
-        int x2 = c2.getX();
-        int y2 = c2.getY();
+        int x1 = c1.x();
+        int y1 = c1.y();
+        int x2 = c2.x();
+        int y2 = c2.y();
         return x1 - x2 == 0 && abs(y1 - y2) == 1 ||
                 y1 - y2 == 0 && abs(x1 - x2) == 1;
     }
 
     private boolean checkSpaceTile(Coordinates c1){
-        int x1 = c1.getX();
-        int y1 = c1.getY();
+        int x1 = c1.x();
+        int y1 = c1.y();
         Coordinates check = new Coordinates(x1+1,y1);
         if(
                 tileOnBoard(c1) || !getCell(check).getStatus() || ( getCell(check).getStatus() && getCell(check).getTile()==(null) )
@@ -168,8 +167,8 @@ public class Board {
     }
 
     private boolean checkLonelyTile(Coordinates c1) {
-        int x1 = c1.getX();
-        int y1 = c1.getY();
+        int x1 = c1.x();
+        int y1 = c1.y();
         int refill = 0;
         Coordinates check = new Coordinates(x1+1,y1);
         if(
@@ -190,8 +189,8 @@ public class Board {
     }
 
     private boolean tileOnBoard(Coordinates c1){
-        int x1 = c1.getX();
-        int y1 = c1.getY();
+        int x1 = c1.x();
+        int y1 = c1.y();
         return x1 == matrix_size - 1 || y1 == matrix_size - 1;
     }
 }
