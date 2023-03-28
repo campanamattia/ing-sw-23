@@ -35,7 +35,7 @@ public class DiagonalGoal extends CommonGoal {
         Shelf shelf = player.getMyShelf();
         int countGroup = 0;
 
-        // creating list for count the four different way to do this commonGoal
+        // creating list for count the four different way to found diagonal
         List<Color> lSx1 = new ArrayList<>(), lSx2 = new ArrayList<>(), lDx1 = new ArrayList<>(), lDx2 = new ArrayList<>();
 
         for (int i = 5; i >= 0; i--) {

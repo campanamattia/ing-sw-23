@@ -30,9 +30,6 @@ public class SameNGoal extends CommonGoal {
         return description;
     }
 
-    public int getNumEquals() {
-        return numEquals;
-    }
 
     @Override
     public void check(Player player) {
@@ -48,42 +45,42 @@ public class SameNGoal extends CommonGoal {
                 switch (shelf.getTile(i,j).getTileColor()){
                     case PINK -> {
                         countPink++;
-                        if (countPink == 8) {
+                        if (countPink == numEquals) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case CYAN -> {
                         countCyan++;
-                        if (countCyan == 8) {
+                        if (countCyan == numEquals) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case BLUE -> {
                         countBlue++;
-                        if (countBlue == 8) {
+                        if (countBlue == numEquals) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case GREEN -> {
                         countGreen++;
-                        if (countGreen == 8) {
+                        if (countGreen == numEquals) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case WHITE -> {
                         countWhite++;
-                        if (countWhite == 8) {
+                        if (countWhite == numEquals) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case YELLOW -> {
                         countYellow++;
-                        if (countYellow == 8) {
+                        if (countYellow == numEquals) {
                             accomplished.add(player.getID());
                             player.updateScore(scoringToken.pop());
                         }

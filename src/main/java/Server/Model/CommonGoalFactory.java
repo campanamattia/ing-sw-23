@@ -5,11 +5,10 @@ import com.google.gson.JsonObject;
 import java.util.List;
 
 public class CommonGoalFactory {
-    public CommonGoal getCommonGoal(int r, List<Integer> tokenList, JsonObject jsonObject) {
-        assert r >=0;
-        assert r<=11;
+    public CommonGoal getCommonGoal(List<Integer> tokenList, JsonObject jsonObject) {
 
-        switch (r) {
+        switch (jsonObject.get("enum").getAsInt()) {
+
             case 0 -> {
                 return new GroupAdjacentGoal(tokenList, jsonObject);
             }
@@ -29,6 +28,9 @@ public class CommonGoalFactory {
                 return new CrossGoal(tokenList, jsonObject);
             }
             case 6 -> {
+                return new StaircaseGoal(tokenList, jsonObject);
+            }
+            case 7 -> {
                 return new RowColumnGoal(tokenList, jsonObject);
             }
         }

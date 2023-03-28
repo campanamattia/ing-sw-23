@@ -20,6 +20,10 @@ public class CrossGoal extends CommonGoal {
         scoringToken.addAll(tokenList);
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public void check(Player player) {
         Shelf shelf = player.getMyShelf();
         int countGroup = 0;

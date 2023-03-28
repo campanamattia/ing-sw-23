@@ -30,6 +30,41 @@ public class DoubleSquareGoal extends CommonGoal {
     @Override
     public void check(Player player) {
         Shelf shelf = player.getMyShelf();
+        for (int i = 5; i >= dimSquare - 1; i--) {
+            for (int j = 0; j <= 5 - dimSquare; j++) {
+                if (shelf.getTile(i,j) == null) {
+                    continue;
+                }
+                if( checkSquare(shelf, i, j, dimSquare,shelf.getTile(i,j).getTileColor()) ) {
+
+                }
+
+            }
+        }
+    }
+
+    public static boolean checkSquare (Shelf shelf, int row, int column, int dimSquare, Color color) {
+        int count = 0;
+        for (int i = row; i > row - dimSquare; i--) {
+            for (int j = column; j < column + dimSquare; j++) {
+                if (shelf.getTile(i,j).getTileColor() == color) {
+                    count++;
+                }
+            }
+        }
+        return count == dimSquare * dimSquare;
+    }
+
+    public static boolean checkAdjacentOfSquare () {
+        return false;
+    }
+
+
+}
+
+/*
+public void check(Player player) {
+        Shelf shelf = player.getMyShelf();
         HashMap<Coordinates, Color> squareTile = new HashMap<>();
         Coordinates c;
         for (int i=5; i>=1; i--){
@@ -58,5 +93,5 @@ public class DoubleSquareGoal extends CommonGoal {
             }
         }
     }
-}
+ */
 
