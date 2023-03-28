@@ -1,7 +1,5 @@
 package Server.Model;
 
-// status: se fa parte o no della board
-// occupied : c'è o no una Tile
 
 public class Cell {
     private Tile tile;

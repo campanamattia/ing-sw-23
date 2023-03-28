@@ -1,11 +1,5 @@
 package Server.Model;
 
-
-/*
- *  NON HO MESSO LIGHT_BLUE PERCHE' PAROLA COMPOSTA MA POSSO SOSTUTUIRE
- *  tra parentesi hex triplet
- */
-
 public enum Color {
     GREEN, /* #00FF00 */
     WHITE, /* #FFFFFF */
