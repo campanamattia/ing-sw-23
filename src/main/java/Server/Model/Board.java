@@ -1,13 +1,8 @@
 package Server.Model;
 
-/* bisogna implementare il metodo equals per le celle */
-/* attributo empty da uml, in realtà c'è già checkrefill */
-
-import Server.Exception.Board.CantRefillBoardException;
-import Server.Exception.Board.NoValidMoveException;
-import Server.Exception.Board.NullTileException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import Server.Exception.Board.*;
 
 import java.nio.file.attribute.UserPrincipalLookupService;
 import java.util.ArrayList;
@@ -18,13 +13,13 @@ import static java.lang.Math.nextUp;
 
 public class Board {
 
-    private Cell[][] board = new Cell[9][9];
+    private Cell[][] board;
     private int tilesTaken;
     private final int matrix_size;
 
-    /* 3 costruttori a seconda che si giochi in 2,3,4 */
     public Board(JsonObject board_json, Bag bag) {
         this.matrix_size = board_json.get("matrix.size").getAsInt();
+        this.board = new Cell[matrix_size][matrix_size];
         int board_size = board_json.get("board.size").getAsInt();
         List<Integer> cell_value = getValueList(board_json.getAsJsonArray("cell.value"));
         List<Tile> toDeploy = bag.draw(board_size);
@@ -34,6 +29,9 @@ public class Board {
             if(cell_value.get(integer) == 1) {
                 this.board[rowIndex][columnIndex].setStatus(true);
                 this.board[rowIndex][columnIndex].setTile(toDeploy.remove(0));
+            }else{
+                this.board[rowIndex][columnIndex].setStatus(false);
+                this.board[rowIndex][columnIndex].setTile(null);
             }
             columnIndex++;
             if (columnIndex == matrix_size-1) {
@@ -52,21 +50,19 @@ public class Board {
     public void convalidateMove(List<Coordinates> coordinates) throws NoValidMoveException {
         boolean validMove = false;
         if(coordinates.size() == 1){
-            // controllo solo che abbia un lato libero
             validMove = checkSpaceTile(coordinates.get(0));
         } else if (coordinates.size() == 2) {
             validMove = checkAdjacent(coordinates.get(0),coordinates.get(1)) && checkSpaceTile(coordinates.get(0),coordinates.get(1));
         } else if (coordinates.size() == 3) {
             validMove = checkAdjacent(coordinates.get(0),coordinates.get(1),coordinates.get(2)) && checkSpaceTile(coordinates.get(0),coordinates.get(1),coordinates.get(2));
         }
-        // da sistemare con le eccezioni
         if(!validMove){
-            throw NoValidMoveException("Selezione tessere non valida");
+            throw new NoValidMoveException();
         }
     }
 
-    public ArrayList<Tile> getTiles(ArrayList<Coordinates> coordinates) throws NullTileException {
-        ArrayList<Tile> result = new ArrayList<Tile>();
+    public List<Tile> getTiles(List<Coordinates> coordinates) throws NullTileException{
+        List<Tile> result = new ArrayList<Tile>();
         for (Coordinates coordinate : coordinates) {
             Cell selected = getCell(coordinate);
             if( selected.getTile() != null) {
@@ -74,7 +70,7 @@ public class Board {
                 selected.setTile(null);
                 tilesTaken++;
             }else{
-                throw NullTileException(coordinate);
+                throw new NullTileException(coordinate);
             }
 
         }
@@ -96,7 +92,7 @@ public class Board {
         }
     }
 
-    public void checkRefill(Bag bag) throws CantRefillBoardException {
+    public void checkRefill(Bag bag) throws CantRefillBoardException{
         boolean lonelyTile = true;
         outerloop:
         for(int i=0;i<9;i++){
@@ -141,12 +137,10 @@ public class Board {
         return x1 - x2 == 0 && abs(y1 - y2) == 1 ||
                 y1 - y2 == 0 && abs(x1 - x2) == 1;
     }
-    // checkSpaceTile : se c'è almeno un lato libero ritorna true
 
     private boolean checkSpaceTile(Coordinates c1){
         int x1 = c1.getX();
         int y1 = c1.getY();
-        // controllo solo che abbia un lato libero
         Coordinates check = new Coordinates(x1+1,y1);
         if(
                 tileOnBoard(c1) || !getCell(check).getStatus() || ( getCell(check).getStatus() && getCell(check).getTile()==(null) )
@@ -177,7 +171,6 @@ public class Board {
         int x1 = c1.getX();
         int y1 = c1.getY();
         int refill = 0;
-        // controllo solo che abbia un lato libero
         Coordinates check = new Coordinates(x1+1,y1);
         if(
                 !getCell(check).getStatus() || getCell(check).getStatus() && getCell(check).getTile()==(null)

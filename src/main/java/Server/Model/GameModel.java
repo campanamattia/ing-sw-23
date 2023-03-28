@@ -1,12 +1,13 @@
 package Server.Model;
 
-import Server.Model.CommonGoalFactory;
-import Server.Exception.*;
+import Server.Exception.BoardException;
+import Server.Exception.PlayerException;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
+import Server.Exception.*;
 import java.io.*;
 import java.util.*;
 
@@ -23,6 +24,7 @@ public class GameModel implements CMD{
     private Bag bag;
     private Board board;
     private ChatRoom chatRoom;
+    private List<CommonGoal> commonGoals;
 
     public GameModel(int nPlayers, List<String> players) throws FileNotFoundException {
         this.nPlayers = nPlayers;
