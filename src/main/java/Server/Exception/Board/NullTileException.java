@@ -6,6 +6,6 @@ import Server.Exception.BoardException;
 
 public class NullTileException extends BoardException {
     public NullTileException(Coordinates cd) {
-        super("The selected tile <"+ cd.getX() +","+ cd.getY() +"> is null");
+        super("The selected tile <"+ cd.x() +","+ cd.y() +"> is null");
     }
 }

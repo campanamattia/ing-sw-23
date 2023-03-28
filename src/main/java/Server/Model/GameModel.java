@@ -24,7 +24,6 @@ public class GameModel implements CMD{
     private Bag bag;
     private Board board;
     private ChatRoom chatRoom;
-    private List<CommonGoal> commonGoals;
 
     public GameModel(int nPlayers, List<String> players) throws FileNotFoundException {
         this.nPlayers = nPlayers;
