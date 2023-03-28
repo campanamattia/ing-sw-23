@@ -1,25 +1,43 @@
 package Server.Model;
 
-public class PersonalGoal {
-    private Tile[][] pGoal = new Tile[6][5];
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
-    public PersonalGoal(Tile[][] pGoal){
-        this.pGoal = pGoal;
+public class PersonalGoal {
+    private Tile[][] pGoal;
+
+    public PersonalGoal(JsonObject json) {
+        pGoal = new Tile[6][5];
+        Coordinates cd;
+        for(Color tmp : Color.values()){
+            cd = takeCoordinates(json.get(tmp.toString()).getAsJsonArray());
+            pGoal[cd.x()][cd.y()] = new Tile(tmp);
+        }
     }
-    @Override
-    public String toString() {
-        return super.toString();
+    public static Coordinates takeCoordinates(JsonArray json) {
+        return new Coordinates(json.get(0).getAsInt(), json.get(1).getAsInt());
     }
-     //TODO: 21/03/23
-    public int check(){
+    public int check(Tile[][] myshelf){
+        int count = 0;
+        int points = 0;
         for(int i=0; i<6; i++){
             for(int j=0;j<5;j++){
                 if(pGoal[i][j] != null){
-                   Shelf myshelfie = getShelf();
-                    if(pGoal[i][j] != myShelfie[i][j]) return 0;
+                    if (myshelf[i][j] != pGoal[i][j]) return 0;
+                    else count++;
                 }
             }
         }
-        return 1; //valutare il punteggio
+
+        switch(count){
+            case 1: points=1;
+            case 2: points=2;
+            case 3: points=4;
+            case 4: points=6;
+            case 5: points=9;
+            case 6: points=12;
+        }
+
+        return points;
     }
 }
