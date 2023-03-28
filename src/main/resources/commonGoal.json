@@ -1,0 +1,78 @@
+{
+  "scoringToken" : {
+    "2": [4, 8],
+    "3": [4, 6, 8],
+    "4": [2, 4, 6, 8]
+  },
+  "commonGoal" : [
+    {
+      "enum": 0,
+      "description": "Six groups each containing at least 2 tiles of the same type (not necessarily in the depicted shape).\nThe tiles of one group can be different from those of another group.",
+      "numAdjacent": 2,
+      "numGroup": 6
+    },
+    {
+      "enum": 0,
+      "description": "Four groups each containing at least 4 tiles of the same type (not necessarily in the depicted shape).\nThe tiles of one group can be different from those of another group.",
+      "numAdjacent": 2,
+      "numGroup": 4
+    },
+    {
+      "enum": 1,
+      "description": "Four tiles of the same type in the four corners of the bookshelf."
+    },
+    {
+      "enum": 2,
+      "description": "Two groups each containing exactly 4 tiles of the same type in a 2x2 square.\nThe tiles of one square can be different from those of the other square.",
+      "dimSquare": 2,
+      "numGroup": 2
+    },
+    {
+      "enum": 3,
+      "description": "Eight tiles of the same type.\nThere’s no restriction about the position of these tiles.",
+      "numEquals": 8
+    },
+    {
+      "enum": 4,
+      "description": "Five tiles of the same type forming a diagonal.",
+      "numDiagonal": 1
+    },
+    {
+      "enum": 5,
+      "description": "Five tiles of the same type forming an X.",
+      "numGroup": 1
+    },
+    {
+      "enum": 6,
+      "description": "Five columns of increasing or decreasing height. Starting from the first column on the left or on the right, each next column must be made of exactly one more tile.\nTiles can be of any type."
+    },
+    {
+      "enum": 7,
+      "description": "Three columns each formed by 6 tiles of maximum three different types.\nOne column can show the same or a different combination of another column.",
+      "numColumn": 3,
+      "numRow": -1,
+      "maxDifferent": 3
+    },
+    {
+      "enum": 7,
+      "description": "Four lines each formed by 5 tiles of maximum three different types.\nOne line can show the same or a different combination of another line.",
+      "numColumn":-1 ,
+      "numRow": 4,
+      "maxDifferent": 3
+    },
+    {
+      "enum": 7,
+      "description": "Two columns each formed by 6 different types of tiles.",
+      "numColumn": 2,
+      "numRow": -1,
+      "maxDifferent": -1
+    },
+    {
+      "enum": 7,
+      "description": "Two lines each formed by 5 different types of tiles.\nOne line can show the same or a different combination of the other line.",
+      "numColumn": -1,
+      "numRow": 2,
+      "maxDifferent": -1
+    }
+  ]
+}
