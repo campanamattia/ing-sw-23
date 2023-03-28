@@ -1,5 +1,7 @@
 package Server.Model;
 
+import Server.Exception.Player.*;
+
 import java.util.List;
 
 public class Shelf {
@@ -9,33 +11,22 @@ public class Shelf {
         this.myShelf = new Tile[6][5];
     }
 
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
-    public boolean insert(int n, List<Tile> tiles){
+    public void insert(int n, List<Tile> tiles) throws ColumnNotValidException{
         int tmp = tiles.size();
 
-        for(int i=0; i<tmp; i++){
-            if(this.myShelf[6-i][n] != null ) return false;
-        }
-
-        for(int j=0; j<6 ; j++ ){
-            if(this.myShelf[j][n] == null){
-                this.myShelf[j][n] = tiles.get(1);
+        if(this.myShelf[tiles.size()-1][n] != null) 
+            throws new ColumnNotValidException(n);
+        for(int i=0; i<6 ; i++ ){
+            if(this.myShelf[i][n] == null){
+                this.myShelf[i][n] = tiles.get(0);
             }
         }
-
-        return true;
     }
 
     public boolean full(){
-        for(int i=0; i<6; i++){
-            for(int j=0;j<5;j++){
-                if(myShelf[i][j] == null) return false;
-            }
-        }
+        for(int i=0; i<5; i++)
+            if(this.myShelf[0][i] == null)
+                return false;
         return true;
     }
 
@@ -45,21 +36,24 @@ public class Shelf {
 
         for(int j=0; j<5; j++){
             for(int i=0; i<6; i++){
-                if(this.myShelf[i][j] == null ) count++;
+                if(this.myShelf[i][j] == null ) 
+                  count++;
+                else break;
             }
             if(count > max) max = count;
         }
         return max;
     }
 
-    public Tile[][] getShelf(){
-        return myShelf;
+    public Shelf getShelf(){
+        return this;
     }
 
     public Tile getTile(int i, int j) {
         return myShelf[i][j];
     }
 
-
-
+    public Tile[][] getMyShelf() {
+        return myShelf;
+    }
 }
