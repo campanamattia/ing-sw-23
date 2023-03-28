@@ -1,48 +1,37 @@
 package Server.Model;
-import Model.CommonGoalPackage.*;
 import Server.Model.CommonGoalPackage.*;
+import com.google.gson.JsonObject;
+
+import java.util.List;
 
 public class CommonGoalFactory {
-    public CommonGoal getCommonGoal(int r,int nPlayer) {
-        assert r >=0;
-        assert r<=11;
+    public CommonGoal getCommonGoal(List<Integer> tokenList, JsonObject jsonObject) {
 
-        switch (r) {
+        switch (jsonObject.get("enum").getAsInt()) {
+
             case 0 -> {
-                return new GroupTwoGoal(nPlayer);
+                return new GroupAdjacentGoal(tokenList, jsonObject);
             }
             case 1 -> {
-                return new VerticesGoal(nPlayer);
+                return new VerticesGoal(tokenList, jsonObject);
             }
             case 2 -> {
-                return new GroupFourGoal(nPlayer);
+                return new DoubleSquareGoal(tokenList, jsonObject);
             }
             case 3 -> {
-                return new DoubleSquareGoal(nPlayer);
+                return new SameNGoal(tokenList, jsonObject);
             }
             case 4 -> {
-                return new ThreeColumnGoal(nPlayer);
+                return new DiagonalGoal(tokenList, jsonObject);
             }
             case 5 -> {
-                return new SameEightGoal(nPlayer);
+                return new CrossGoal(tokenList, jsonObject);
             }
             case 6 -> {
-                return new DiagonalGoal(nPlayer);
+                return new StaircaseGoal(tokenList, jsonObject);
             }
             case 7 -> {
-                return new FourRowGoal(nPlayer);
-            }
-            case 8 -> {
-                return new DifferentColumnGoal(nPlayer);
-            }
-            case 9 -> {
-                return new DifferentRowGoal(nPlayer);
-            }
-            case 10 -> {
-                return new CrossGoal(nPlayer);
-            }
-            case 11 -> {
-                return new StaircaseGoal(nPlayer);
+                return new RowColumnGoal(tokenList, jsonObject);
             }
         }
         return null;
