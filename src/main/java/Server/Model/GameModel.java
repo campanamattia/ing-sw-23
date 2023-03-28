@@ -1,5 +1,6 @@
 package Server.Model;
 
+import Server.Model.CommonGoalFactory;
 import Server.Exception.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -42,7 +43,7 @@ public class GameModel implements CMD{
         JsonArray array = decoPersonal("src/main/resources/personalgoal.json");
         Random random = new Random();
         for (String tmp : players){
-            PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())));
+            PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
             this.players.add(new Player(tmp, pGoal));
         }
 
@@ -111,14 +112,14 @@ public class GameModel implements CMD{
         for (Integer integer : sort) tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
         // look for the current player
-        Player executor;
+        Player executor = null;
         for(Player temp : this.players){
             if(temp.equals(player)){
                 executor = temp;
                 break;
             }
         }
-        Shelf temp_shelf = executor.getShelf(); //give a look at the exception
+        Shelf temp_shelf = executor.getMyShelf(); //give a look at the exception
        try{
            temp_shelf.insert(column-1, tiles);
        } catch (PlayerException exception){

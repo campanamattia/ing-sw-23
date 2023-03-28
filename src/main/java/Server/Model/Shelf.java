@@ -15,8 +15,8 @@ public class Shelf {
         int tmp = tiles.size();
 
         if(this.myShelf[tiles.size()-1][n] != null) 
-            throws new ColumnNotValidException(n);
-        for(int i=0; i<6 ; i++ ){
+            throw new ColumnNotValidException(n);
+        for(int i=5; i>=0 ; i-- ){
             if(this.myShelf[i][n] == null){
                 this.myShelf[i][n] = tiles.get(0);
             }
@@ -43,10 +43,6 @@ public class Shelf {
             if(count > max) max = count;
         }
         return max;
-    }
-
-    public Shelf getShelf(){
-        return this;
     }
 
     public Tile getTile(int i, int j) {

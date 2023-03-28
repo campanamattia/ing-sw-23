@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 
 public class CommonGoalFactory {
-    public CommonGoal getCommonGoal(List<Integer> tokenList, JsonObject jsonObject) {
+    public static CommonGoal getCommonGoal(List<Integer> tokenList, JsonObject jsonObject) {
 
         switch (jsonObject.get("enum").getAsInt()) {
 

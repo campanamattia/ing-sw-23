@@ -6,15 +6,18 @@ import Server.Model.Coordinates;
 import Server.Model.GameModel;
 import Server.Model.Tile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 public class GameController implements CMD {
     private GameModel game;
     private UUID uuid = UUID.randomUUID();
+    /*
     private List<String> playersID;
+     */
     private String currPlayer;
-    private GameListener gameListener;
+    private HashMap<String, PlayerListener> connections;
 
     @Override
     public List<Tile> selectedTiles(List<Coordinates> coordinates) throws BoardException {
