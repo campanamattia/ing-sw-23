@@ -11,7 +11,7 @@ public class PersonalGoal {
         Coordinates cd;
         for(Color tmp : Color.values()){
             cd = takeCoordinates(json.get(tmp.toString()).getAsJsonArray());
-            pGoal[cd.getX()][cd.getY()] = new Tile(tmp);
+            pGoal[cd.x()][cd.y()] = new Tile(tmp);
         }
     }
     public static Coordinates takeCoordinates(JsonArray json) {
