@@ -50,13 +50,13 @@
       "enum": 7,
       "description": "Three columns each formed by 6 tiles of maximum three different types.\nOne column can show the same or a different combination of another column.",
       "numColumn": 3,
-      "numRow": 0,
+      "numRow": -1,
       "maxDifferent": 3
     },
     {
       "enum": 7,
       "description": "Four lines each formed by 5 tiles of maximum three different types.\nOne line can show the same or a different combination of another line.",
-      "numColumn":0 ,
+      "numColumn":-1 ,
       "numRow": 4,
       "maxDifferent": 3
     },
@@ -64,13 +64,13 @@
       "enum": 7,
       "description": "Two columns each formed by 6 different types of tiles.",
       "numColumn": 2,
-      "numRow": 0,
+      "numRow": -1,
       "maxDifferent": -1
     },
     {
       "enum": 7,
       "description": "Two lines each formed by 5 different types of tiles.\nOne line can show the same or a different combination of the other line.",
-      "numColumn": 0,
+      "numColumn": -1,
       "numRow": 2,
       "maxDifferent": -1
     }

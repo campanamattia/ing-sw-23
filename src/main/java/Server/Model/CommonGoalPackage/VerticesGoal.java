@@ -3,39 +3,34 @@ package Server.Model.CommonGoalPackage;
 import Server.Model.CommonGoal;
 import Server.Model.Player;
 import Server.Model.Shelf;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class VerticesGoal extends CommonGoal {
 
-    public VerticesGoal(int nPlayer) {
-        assert nPlayer<=4;
-        assert nPlayer>=2;
+    private final String description;
+
+    public VerticesGoal(List<Integer> tokenList, JsonObject jsonObject) {
+        this.enumeration = jsonObject.get("enum").getAsInt();
+        this.description = jsonObject.get("description").getAsString();
 
         this.accomplished = new ArrayList<>();
-        this.scoringToken = new Stack<>();
 
-        if(nPlayer==2) {
-            scoringToken.push(4);
-            scoringToken.push(8);
-        } else if(nPlayer==3){
-            scoringToken.push(4);
-            scoringToken.push(6);
-            scoringToken.push(8);
-        } else if(nPlayer==4){
-            scoringToken.push(2);
-            scoringToken.push(4);
-            scoringToken.push(6);
-            scoringToken.push(8);
-        }
-        this.description = "Quattro tessere dello stesso tipo ai quattro angoli della Libreria.";
+        this.scoringToken = new Stack<>();
+        scoringToken.addAll(tokenList);
     }
 
+    public String getDescription() {
+        return description;
+    }
 
     @Override
     public void check(Player player) {
-        Shelf shelf = player.getShelf();
+        Shelf shelf = player.getMyShelf();
+
         if (shelf.getTile(5,0) != null && shelf.getTile(5,4) != null &&
                 shelf.getTile(0,0) != null && shelf.getTile(0,4) != null &&
                 shelf.getTile(0,0).getTileColor() == shelf.getTile(0,4).getTileColor() &&

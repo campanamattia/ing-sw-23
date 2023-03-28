@@ -35,4 +35,8 @@ public class Player {
     public boolean equals(String s) {
         return this.nicknameid.equals(s);
     }
+
+    public Shelf getMyShelf() {
+        return myShelf;
+    }
 }

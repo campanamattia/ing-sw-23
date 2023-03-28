@@ -49,6 +49,10 @@ public class Shelf {
         return this;
     }
 
+    public Tile getTile(int i, int j) {
+        return myShelf[i][j];
+    }
+
     public Tile[][] getMyShelf() {
         return myShelf;
     }
