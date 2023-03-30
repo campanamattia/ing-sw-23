@@ -1,4 +1,7 @@
-package Server.Controller;
+package Server.Network.Player;
+
+import Enumeration.OpType;
+import Server.Network.PlayerHandler;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -6,10 +9,9 @@ import java.net.Socket;
 import java.util.Scanner;
 
 
-public class PlayerListener implements Runnable{
+public class ClientHandlerSocket extends PlayerHandler {
     private Socket socket;
-    private String playerID;
-    public PlayerListener(String playerID, Socket socket) {
+    public ClientHandlerSocket(String playerID, Socket socket) {
         this.playerID = playerID;
         this.socket = socket;
     }

@@ -1,5 +1,6 @@
 package Server.Model;
 
+import Server.Exception.EndingPhase;
 import Server.Exception.Player.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class Shelf {
             throw new ColumnNotValidException(n);
         for(int i=5; i>=0 ; i-- ){
             if(this.myShelf[i][n] == null){
-                this.myShelf[i][n] = tiles.get(0);
+                this.myShelf[i][n] = tiles.remove(0);
             }
         }
     }
@@ -27,7 +28,7 @@ public class Shelf {
         for(int i=0; i<5; i++)
             if(this.myShelf[0][i] == null)
                 return false;
-        return true;
+        return false;
     }
 
     public int checkMaxTiles(){

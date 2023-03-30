@@ -1,6 +1,6 @@
 package Server.Model.CommonGoalPackage;
 
-import Server.Model.Color;
+import Enumeration.Color;
 import Server.Model.CommonGoal;
 import Server.Model.Player;
 import Server.Model.Shelf;
