@@ -1,18 +1,23 @@
 package Server.Model;
 
-import Server.Interface.CMD;
-import Server.Exception.BoardException;
-import Server.Exception.PlayerException;
+import Interface.CMD;
+import Server.Exception.*;
+import Enumeration.*;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class GameModel implements CMD {
     private UUID uuid;
+    private GamePhase phase;
     private final int nPlayers;
     private final String firstPlayer;
     private Player currPlayer;
@@ -24,8 +29,10 @@ public class GameModel implements CMD {
     private Board board;
     private ChatRoom chatRoom;
 
+
     public GameModel(UUID uuid, int nPlayers, List<String> players) throws FileNotFoundException {
         this.uuid = uuid;
+        this.phase = GamePhase.STARTING;
         this.nPlayers = nPlayers;
         this.firstPlayer = players.get(0);
 
@@ -53,15 +60,19 @@ public class GameModel implements CMD {
 
         // updating instantly the state
         updateStatus();
+        this.phase = GamePhase.ONGOING;
     }
 
-    // TODO: 24/03/2023
-    /* 
-    public GameModel(String filepath) {
-
+    public GameModel(UUID uuid) throws FileNotFoundException {
+        Gson gson = new Gson();
+        JsonReader reader ;
+        reader = new JsonReader(new FileReader("src/main/resources/"+uuid+".json"));
+        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        this.uuid = uuid;
+        this.phase = getAsPhase(json.get("phase").getAsString());
+        this.nPlayers = json.get("nPlayers").getAsInt();
+        this.firstPlayer = json.get("firstPlayer").toString();
     }
-
-     */
 
     private JsonObject decoBoard(String filepath) throws FileNotFoundException {
         Gson gson = new Gson();
@@ -90,11 +101,18 @@ public class GameModel implements CMD {
         this.commonGoals.add(CommonGoalFactory.getCommonGoal(scoringToken, array.remove(random.nextInt(array.size())).getAsJsonObject()));
     }
 
-    private static List<Integer> getAsList(JsonArray array){
+    private List<Integer> getAsList(JsonArray array){
         List<Integer> list = new ArrayList<Integer>();
         for (int i = 1; i <=array.size(); i++)
             list.add(array.get(array.size()-i).getAsInt());
         return list;
+    }
+
+    private GamePhase getAsPhase(String code) throws FileNotFoundException {
+        for(GamePhase phase : GamePhase.values())
+            if(code.equals(phase.toString()))
+                return phase;
+        throw new FileNotFoundException("GamePhase didn't found");
     }
     
     @Override
@@ -127,6 +145,37 @@ public class GameModel implements CMD {
     }
 
     // TODO: 24/03/2023  
+    private void updateStatus() {
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        try{
+            FileWriter writer = new FileWriter("src/main/resources/"+this.uuid+".json");
+            writer.write(json);
+            writer.close();
+            System.out.println("Successfully update the json");
+        } catch (IOException e) {
+            System.out.println("An error occurred updating the json file.");
+        }
+    }
+
+    public void endTurn(){
+        for(CommonGoal com : this.commonGoals)
+            if(!com.getAccomplished().contains(this.currPlayer.getID()))
+                com.check(currPlayer);
+        if(this.currPlayer.getMyShelf().full())
+            this.phase = GamePhase.ENDING;
+        nextPlayer();
+    }
+
+
+    private void nextPlayer(){
+        int nextIndex = (this.players.indexOf(this.currPlayer)+1) % players.size();
+        if(this.phase == GamePhase.ENDING && nextIndex == 0)
+                this.phase = GamePhase.ENDED;
+        else
+            this.currPlayer = this.players.get(nextIndex);
+    }
+
     public List<Rank> finalRank(){
         for(Player tmp : this.players)
             tmp.endGame();
@@ -146,56 +195,44 @@ public class GameModel implements CMD {
         return rank;
     }
 
-    // TODO: 24/03/2023  
-    public GameModel reloadGame(String hash){
-        /*
-        reload the game that crashed
-        return new GameModel(hash);
-        */
-        return null;
-    }
-    // TODO: 24/03/2023  
-    private static void updateStatus(){
-        /*
-        update json in the resource
-        the first time a generate the file json, where the name is composed by
-        a hashcode that I will use tu identify the match's .json file
-        */
-    }
 
     public UUID getUuid() {
         return uuid;
     }
 
+    public GamePhase getPhase(){
+        return this.phase;
+    }
+
     public int getNPlayers() {
-        return nPlayers;
+        return this.nPlayers;
     }
 
     public String getFirstPlayer() {
-        return firstPlayer;
+        return this.firstPlayer;
     }
 
     public Player getCurrPlayer() {
-        return currPlayer;
+        return this.currPlayer;
     }
 
     public List<Player> getPlayers() {
-        return players;
+        return this.players;
     }
 
     public List<CommonGoal> getCommonGoals() {
-        return commonGoals;
+        return this.commonGoals;
     }
 
     public Bag getBag() {
-        return bag;
+        return this.bag;
     }
 
     public Board getBoard() {
-        return board;
+        return this.board;
     }
 
     public ChatRoom getChatRoom() {
-        return chatRoom;
+        return this.chatRoom;
     }
 }
