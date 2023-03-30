@@ -1,11 +1,13 @@
-package Server.Model;
+package Server.Interface;
 
+import java.rmi.Remote;
 import java.util.*;
 import java.lang.*;
-import Server.Exception.BoardException;
-import Server.Exception.PlayerException;
+import Server.Exception.*;
+import Server.Model.Coordinates;
+import Server.Model.Tile;
 
-public interface CMD {
+public interface CMD extends Remote {
     List<Tile> selectedTiles(List<Coordinates> coordinates) throws BoardException;
     void insertTiles(String player, List<Integer> sort, List<Tile> tiles, int column) throws PlayerException;
     void writeChat(String message);
