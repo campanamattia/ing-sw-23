@@ -1,5 +1,6 @@
 package Server.Model;
 
+import Server.Interface.CMD;
 import Server.Exception.BoardException;
 import Server.Exception.PlayerException;
 import com.google.gson.Gson;
@@ -7,16 +8,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
-import Server.Exception.*;
 import java.io.*;
 import java.util.*;
 
-public class GameModel implements CMD{
-
-    private UUID uuid = UUID.randomUUID();
+public class GameModel implements CMD {
+    private UUID uuid;
     private final int nPlayers;
     private final String firstPlayer;
-    private String currPlayer;
+    private Player currPlayer;
 
     private List<Player> players;
     private List<CommonGoal> commonGoals;
@@ -25,10 +24,10 @@ public class GameModel implements CMD{
     private Board board;
     private ChatRoom chatRoom;
 
-    public GameModel(int nPlayers, List<String> players) throws FileNotFoundException {
+    public GameModel(UUID uuid, int nPlayers, List<String> players) throws FileNotFoundException {
+        this.uuid = uuid;
         this.nPlayers = nPlayers;
         this.firstPlayer = players.get(0);
-        this.currPlayer = firstPlayer;
 
         this.bag = new Bag();
         this.chatRoom = new ChatRoom();
@@ -47,6 +46,7 @@ public class GameModel implements CMD{
             PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
             this.players.add(new Player(tmp, pGoal));
         }
+        this.currPlayer = this.players.get(0);
 
         //creating 2 commonGoal
         generateCommonGoal("src/main/resources/commonGoal.json");
@@ -108,21 +108,12 @@ public class GameModel implements CMD{
     }
 
     @Override
-    public void insertTiles(String player, List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
+    public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
         //re-order the list of tile
         for (Integer integer : sort) tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
-        // look for the current player
-        Player executor = null;
-        for(Player temp : this.players){
-            if(temp.equals(player)){
-                executor = temp;
-                break;
-            }
-        }
-        Shelf temp_shelf = executor.getMyShelf(); //give a look at the exception
        try{
-           temp_shelf.insert(column-1, tiles);
+           this.currPlayer.getMyShelf().insert(column-1, tiles);
        } catch (PlayerException exception){
            throw exception;
        }
@@ -136,10 +127,10 @@ public class GameModel implements CMD{
     }
 
     // TODO: 24/03/2023  
-    public List<Rank<String, Integer>> finalRank(){
+    public List<Rank> finalRank(){
         for(Player tmp : this.players)
             tmp.endGame();
-        List<Rank<String, Integer>> rank = new ArrayList<>();
+        List<Rank> rank = new ArrayList<Rank>();
         Player min;
         while(rank.size() < this.nPlayers){
             min = null;
@@ -150,7 +141,7 @@ public class GameModel implements CMD{
                     min = tmp;
             }
             this.players.remove(min);
-            rank.add(new Rank<>(min.getID(), min.getScore()));
+            rank.add(new Rank(min.getID(), min.getScore()));
         }
         return rank;
     }
@@ -172,14 +163,39 @@ public class GameModel implements CMD{
         */
     }
 
-}
+    public UUID getUuid() {
+        return uuid;
+    }
 
-class Rank<String, Integer> {
-    private String ID;
-    private int score;
+    public int getNPlayers() {
+        return nPlayers;
+    }
 
-    public Rank(String ID, int score) {
-        this.ID = ID;
-        this.score = score;
+    public String getFirstPlayer() {
+        return firstPlayer;
+    }
+
+    public Player getCurrPlayer() {
+        return currPlayer;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public List<CommonGoal> getCommonGoals() {
+        return commonGoals;
+    }
+
+    public Bag getBag() {
+        return bag;
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public ChatRoom getChatRoom() {
+        return chatRoom;
     }
 }

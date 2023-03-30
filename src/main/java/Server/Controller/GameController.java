@@ -1,37 +1,24 @@
 package Server.Controller;
 
+import Server.Exception.Player.NotYourTurnException;
 import Server.Exception.*;
-import Server.Model.CMD;
-import Server.Model.Coordinates;
-import Server.Model.GameModel;
-import Server.Model.Tile;
+import Server.Model.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.io.FileNotFoundException;
+import java.util.*;
 
-public class GameController implements CMD {
-    private GameModel game;
+public class GameController{
     private UUID uuid = UUID.randomUUID();
-    /*
-    private List<String> playersID;
-     */
-    private String currPlayer;
-    private HashMap<String, PlayerListener> connections;
-
-    @Override
-    public List<Tile> selectedTiles(List<Coordinates> coordinates) throws BoardException {
-        return game.selectedTiles(coordinates);
+    private GameModel game;
+    private PlayerAction playerAction;
+    public GameController(List<String> IDs) throws FileNotFoundException {
+        this.game = new GameModel(this.uuid, IDs.size(), IDs);
+        this.playerAction = new PlayerAction(this.game);
     }
 
-    @Override
-    public void insertTiles(String player, List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
-        game.insertTiles(player, sort, tiles, column);
-    }
-
-
-    @Override
-    public void writeChat(String message) {
-        game.writeChat(message);
+    public PlayerAction ableTo(String playerID) throws PlayerException {
+        if(playerID.equals(this.game.getCurrPlayer()))
+            return this.playerAction;
+        else throw new NotYourTurnException(playerID);
     }
 }
