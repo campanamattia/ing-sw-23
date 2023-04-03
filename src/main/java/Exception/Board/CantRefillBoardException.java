@@ -1,6 +1,6 @@
-package Server.Exception.Board;
+package Exception.Board;
 
-import Server.Exception.BoardException;
+import Exception.BoardException;
 
 public class CantRefillBoardException extends BoardException {
     public CantRefillBoardException() {

@@ -44,4 +44,8 @@ public class Player {
         this.updateScore(myShelf.checkEndGame());
         this.updateScore(personalGoal.check(myShelf.getMyShelf()));
     }
+
+    public Boolean getStatus(){
+        return this.status;
+    }
 }

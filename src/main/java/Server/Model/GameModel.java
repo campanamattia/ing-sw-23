@@ -1,7 +1,7 @@
 package Server.Model;
 
 import Interface.CMD;
-import Server.Exception.*;
+import Exception.*;
 import Enumeration.*;
 
 import com.google.gson.Gson;
@@ -29,11 +29,13 @@ public class GameModel implements CMD {
     private Board board;
     private ChatRoom chatRoom;
 
+    String filepath;
 
-    public GameModel(UUID uuid, int nPlayers, List<String> players) throws FileNotFoundException {
+
+    public GameModel(UUID uuid,  List<String> players) throws FileNotFoundException {
         this.uuid = uuid;
         this.phase = GamePhase.STARTING;
-        this.nPlayers = nPlayers;
+        this.nPlayers = players.size();
         this.firstPlayer = players.get(0);
 
         this.bag = new Bag();
@@ -59,19 +61,40 @@ public class GameModel implements CMD {
         generateCommonGoal("src/main/resources/commonGoal.json");
 
         // updating instantly the state
+        this.filepath = buildPath();
         updateStatus();
         this.phase = GamePhase.ONGOING;
     }
 
-    public GameModel(UUID uuid) throws FileNotFoundException {
+    public GameModel(String filepath) throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader ;
-        reader = new JsonReader(new FileReader("src/main/resources/"+uuid+".json"));
+        reader = new JsonReader(new FileReader(filepath));
         JsonObject json = gson.fromJson(reader, JsonObject.class);
-        this.uuid = uuid;
         this.phase = getAsPhase(json.get("phase").getAsString());
         this.nPlayers = json.get("nPlayers").getAsInt();
         this.firstPlayer = json.get("firstPlayer").toString();
+    }
+
+    private String buildPath(){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Player tmp : this.players)
+            stringBuilder.append(tmp.getID()).append("_");
+        stringBuilder.append(uuid).append(".json");
+        return stringBuilder.toString();
+    }
+
+    private void updateStatus() {
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        try{
+            FileWriter writer = new FileWriter(this.filepath);
+            writer.write(json);
+            writer.close();
+            System.out.println("Successfully update the json");
+        } catch (IOException e) {
+            System.out.println("An error occurred updating the json file.");
+        }
     }
 
     private JsonObject decoBoard(String filepath) throws FileNotFoundException {
@@ -114,49 +137,6 @@ public class GameModel implements CMD {
                 return phase;
         throw new FileNotFoundException("GamePhase didn't found");
     }
-    
-    @Override
-    public List<Tile> selectedTiles(List<Coordinates> coordinates) throws BoardException {
-        try {
-            this.board.convalidateMove(coordinates);
-            return this.board.getTiles(coordinates);
-        } catch (BoardException exception) {
-            throw exception;
-        }
-    }
-
-    @Override
-    public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
-        //re-order the list of tile
-        for (Integer integer : sort) tiles.add(tiles.get(integer - 1));
-        tiles.subList(0, sort.size()).clear();
-       try{
-           this.currPlayer.getMyShelf().insert(column-1, tiles);
-       } catch (PlayerException exception){
-           throw exception;
-       }
-    }
-
-    @Override
-    public void writeChat(String message) {
-        Gson gson = new Gson();
-        ChatMessage text = gson.fromJson(message, ChatMessage.class);
-        this.chatRoom.addMessage(text);
-    }
-
-    // TODO: 24/03/2023  
-    private void updateStatus() {
-        Gson gson = new Gson();
-        String json = gson.toJson(this);
-        try{
-            FileWriter writer = new FileWriter("src/main/resources/"+this.uuid+".json");
-            writer.write(json);
-            writer.close();
-            System.out.println("Successfully update the json");
-        } catch (IOException e) {
-            System.out.println("An error occurred updating the json file.");
-        }
-    }
 
     public void endTurn(){
         for(CommonGoal com : this.commonGoals)
@@ -165,15 +145,19 @@ public class GameModel implements CMD {
         if(this.currPlayer.getMyShelf().full())
             this.phase = GamePhase.ENDING;
         nextPlayer();
+        updateStatus();
     }
 
-
     private void nextPlayer(){
-        int nextIndex = (this.players.indexOf(this.currPlayer)+1) % players.size();
-        if(this.phase == GamePhase.ENDING && nextIndex == 0)
+        do{
+            int nextIndex = (this.players.indexOf(this.currPlayer)+1) % players.size();
+            if(this.phase == GamePhase.ENDING && nextIndex == 0){
                 this.phase = GamePhase.ENDED;
-        else
-            this.currPlayer = this.players.get(nextIndex);
+                break;
+            }
+            else
+                this.currPlayer = this.players.get(nextIndex);
+        } while(!this.currPlayer.getStatus());
     }
 
     public List<Rank> finalRank(){
@@ -181,7 +165,7 @@ public class GameModel implements CMD {
             tmp.endGame();
         List<Rank> rank = new ArrayList<Rank>();
         Player min;
-        while(rank.size() < this.nPlayers){
+        while(0 < this.players.size()){
             min = null;
             for(Player tmp : this.players){
                 if(min ==  null)
@@ -195,6 +179,33 @@ public class GameModel implements CMD {
         return rank;
     }
 
+    @Override
+    public List<Tile> selectedTiles(List<Coordinates> coordinates) throws BoardException {
+        this.board.convalidateMove(coordinates);
+        return this.board.getTiles(coordinates);
+    }
+
+    @Override
+    public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
+        //re-order the list of tile
+        for (Integer integer : sort) tiles.add(tiles.get(integer - 1));
+        tiles.subList(0, sort.size()).clear();
+        this.currPlayer.getMyShelf().insert(column-1, tiles);
+    }
+
+    @Override
+    public void writeChat(String message) {
+        Gson gson = new Gson();
+        ChatMessage text = gson.fromJson(message, ChatMessage.class);
+        this.chatRoom.addMessage(text);
+    }
+
+
+    public Player getPlayer(String id) throws PlayerNotFoundException{
+        for(Player tmp : this.players)
+            if(tmp.equals(id)) return tmp;
+        throw new PlayerNotFoundException(id);
+    }
 
     public UUID getUuid() {
         return uuid;

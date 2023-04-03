@@ -1,7 +1,6 @@
 package Server.Model;
 
-import Server.Exception.EndingPhase;
-import Server.Exception.Player.*;
+import Exception.Player.ColumnNotValidException;
 
 import java.util.List;
 
@@ -12,10 +11,10 @@ public class Shelf {
         this.myShelf = new Tile[6][5];
     }
 
-    public void insert(int n, List<Tile> tiles) throws ColumnNotValidException{
+    public void insert(int n, List<Tile> tiles) throws ColumnNotValidException {
         int tmp = tiles.size();
 
-        if(this.myShelf[tiles.size()-1][n] != null) 
+        if(this.myShelf[tiles.size()-1][n] != null || !(0<=n && n<=4))
             throw new ColumnNotValidException(n);
         for(int i=5; i>=0 ; i-- ){
             if(this.myShelf[i][n] == null){

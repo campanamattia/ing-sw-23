@@ -3,7 +3,7 @@ package Interface;
 import java.rmi.Remote;
 import java.util.*;
 import java.lang.*;
-import Server.Exception.*;
+import Exception.*;
 import Server.Model.Coordinates;
 import Server.Model.Tile;
 

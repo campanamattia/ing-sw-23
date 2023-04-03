@@ -1,6 +1,8 @@
 package Server.Controller;
 
-import Server.Exception.*;
+import Exception.*;
+import Exception.Board.NullTileException;
+import Exception.Player.ColumnNotValidException;
 import Interface.CMD;
 import Server.Model.*;
 
@@ -15,12 +17,22 @@ public class PlayerAction implements CMD {
 
     @Override
     public List<Tile> selectedTiles(List<Coordinates> coordinates) throws BoardException {
-        return game.selectedTiles(coordinates);
+        try{
+            return game.selectedTiles(coordinates);
+        }catch (BoardException e) {
+            System.out.println(e.toString());
+            throw e;
+        }
     }
 
     @Override
-    public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException{
-        game.insertTiles(sort, tiles, column);
+    public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
+        try{
+            game.insertTiles(sort, tiles, column);
+        }catch (ColumnNotValidException e){
+            System.out.println(e.toString());
+            throw e;
+        }
     }
 
     @Override
