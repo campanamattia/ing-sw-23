@@ -2,7 +2,7 @@ package Server.Model;
 
 import java.util.*;
 import java.lang.*;
-import Exception.*;
+import Server.Exception.*;
 import Server.Exception.BoardException;
 import Server.Exception.PlayerException;
 

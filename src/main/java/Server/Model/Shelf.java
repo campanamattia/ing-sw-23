@@ -18,7 +18,7 @@ public class Shelf {
             throw new ColumnNotValidException(n);
         for(int i=5; i>=0 ; i-- ){
             if(this.myShelf[i][n] == null){
-                this.myShelf[i][n] = tiles.get(0);
+                this.myShelf[i][n] = tiles.get(0); // I think this is tile.get(i)
             }
         }
     }
@@ -55,5 +55,11 @@ public class Shelf {
 
     public int checkEndGame() {
         return 0;
+    }
+
+
+    //method create only for create shelf for testing commonGoal
+    public void placeTile(Tile tile, int i, int j) {
+        myShelf[i][j] = tile;
     }
 }

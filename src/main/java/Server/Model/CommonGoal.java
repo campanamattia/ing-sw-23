@@ -1,5 +1,7 @@
 package Server.Model;
 
+import Server.Exception.CommonGoal.NullPlayerException;
+
 import java.util.*;
 
 public abstract class CommonGoal {
@@ -20,5 +22,5 @@ public abstract class CommonGoal {
         return enumeration;
     }
 
-    public abstract void check(Player player);
+    public abstract void check(Player player) throws NullPlayerException;
 }

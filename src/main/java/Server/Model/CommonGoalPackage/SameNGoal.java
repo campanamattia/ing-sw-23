@@ -36,7 +36,7 @@ public class SameNGoal extends CommonGoal {
         Shelf shelf = player.getMyShelf();
         int countGreen = 0, countBlue = 0, countCyan = 0, countYellow = 0, countWhite = 0, countPink = 0;
         for (int i = 5; i >= 0; i--) {
-            for(int j = 0; j <= 4; j--){
+            for(int j = 0; j <= 4; j++){
 
                 if (shelf.getTile(i,j) == null) {
                     continue;

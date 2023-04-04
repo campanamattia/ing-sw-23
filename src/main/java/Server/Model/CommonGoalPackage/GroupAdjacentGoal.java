@@ -51,7 +51,7 @@ public class GroupAdjacentGoal extends CommonGoal {
         }
     }
 
-    private static int countSameAdjacent(Shelf shelf, boolean[][] visited, int row, int column, Color color) {
+    private int countSameAdjacent(Shelf shelf, boolean[][] visited, int row, int column, Color color) {
         if (row < 0 || row >= 6 || column >= 5 || visited[row][column] || shelf.getTile(row, column).getTileColor() != color) {
             return 0;
         }
