@@ -9,7 +9,7 @@ import Server.Model.*;
 import java.util.*;
 
 public class PlayerAction implements CMD {
-    private GameModel game;
+    private final GameModel game;
 
     public PlayerAction(GameModel game) {
         this.game = game;

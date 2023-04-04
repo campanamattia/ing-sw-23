@@ -24,6 +24,7 @@ public class GameModel implements CMD {
 
     private List<Player> players;
     private List<CommonGoal> commonGoals;
+    private List<Rank> ranking = null;
 
     private Bag bag;
     private Board board;
@@ -84,7 +85,7 @@ public class GameModel implements CMD {
         return stringBuilder.toString();
     }
 
-    private void updateStatus() {
+    public void updateStatus() {
         Gson gson = new Gson();
         String json = gson.toJson(this);
         try{
@@ -138,47 +139,6 @@ public class GameModel implements CMD {
         throw new FileNotFoundException("GamePhase didn't found");
     }
 
-    public void endTurn(){
-        for(CommonGoal com : this.commonGoals)
-            if(!com.getAccomplished().contains(this.currPlayer.getID()))
-                com.check(currPlayer);
-        if(this.currPlayer.getMyShelf().full())
-            this.phase = GamePhase.ENDING;
-        nextPlayer();
-        updateStatus();
-    }
-
-    private void nextPlayer(){
-        do{
-            int nextIndex = (this.players.indexOf(this.currPlayer)+1) % players.size();
-            if(this.phase == GamePhase.ENDING && nextIndex == 0){
-                this.phase = GamePhase.ENDED;
-                break;
-            }
-            else
-                this.currPlayer = this.players.get(nextIndex);
-        } while(!this.currPlayer.getStatus());
-    }
-
-    public List<Rank> finalRank(){
-        for(Player tmp : this.players)
-            tmp.endGame();
-        List<Rank> rank = new ArrayList<Rank>();
-        Player min;
-        while(0 < this.players.size()){
-            min = null;
-            for(Player tmp : this.players){
-                if(min ==  null)
-                    min = tmp;
-                else if (min.getScore() > tmp.getScore())
-                    min = tmp;
-            }
-            this.players.remove(min);
-            rank.add(new Rank(min.getID(), min.getScore()));
-        }
-        return rank;
-    }
-
     @Override
     public List<Tile> selectedTiles(List<Coordinates> coordinates) throws BoardException {
         this.board.convalidateMove(coordinates);
@@ -200,6 +160,14 @@ public class GameModel implements CMD {
         this.chatRoom.addMessage(text);
     }
 
+
+    public void setCurrPlayer(Player currPlayer) {
+        this.currPlayer = currPlayer;
+    }
+
+    public void setRanking(List<Rank> rank){
+        this.ranking = rank;
+    }
 
     public Player getPlayer(String id) throws PlayerNotFoundException{
         for(Player tmp : this.players)
