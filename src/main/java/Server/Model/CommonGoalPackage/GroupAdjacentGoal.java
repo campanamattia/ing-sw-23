@@ -1,4 +1,5 @@
 package Server.Model.CommonGoalPackage;
+import Enumeration.Color;
 import Server.Model.*;
 import com.google.gson.JsonObject;
 import java.util.*;

@@ -1,12 +1,9 @@
-package Model;
-
-/* bisogna implementare il metodo equals per le celle */
-/* attributo empty da uml, in realtà c'è già checkrefill */
+package Server.Model;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import Server.Exception.Board.*;
 
-import java.nio.file.attribute.UserPrincipalLookupService;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +12,13 @@ import static java.lang.Math.nextUp;
 
 public class Board {
 
-    private Cell[][] board = new Cell[9][9];
+    private Cell[][] board;
     private int tilesTaken;
     private final int matrix_size;
 
-    /* 3 costruttori a seconda che si giochi in 2,3,4 */
     public Board(JsonObject board_json, Bag bag) {
         this.matrix_size = board_json.get("matrix.size").getAsInt();
+        this.board = new Cell[matrix_size][matrix_size];
         int board_size = board_json.get("board.size").getAsInt();
         List<Integer> cell_value = getValueList(board_json.getAsJsonArray("cell.value"));
         List<Tile> toDeploy = bag.draw(board_size);
@@ -31,6 +28,9 @@ public class Board {
             if(cell_value.get(integer) == 1) {
                 this.board[rowIndex][columnIndex].setStatus(true);
                 this.board[rowIndex][columnIndex].setTile(toDeploy.remove(0));
+            }else{
+                this.board[rowIndex][columnIndex].setStatus(false);
+                this.board[rowIndex][columnIndex].setTile(null);
             }
             columnIndex++;
             if (columnIndex == matrix_size-1) {
@@ -49,21 +49,19 @@ public class Board {
     public void convalidateMove(List<Coordinates> coordinates) throws NoValidMoveException {
         boolean validMove = false;
         if(coordinates.size() == 1){
-            // controllo solo che abbia un lato libero
             validMove = checkSpaceTile(coordinates.get(0));
         } else if (coordinates.size() == 2) {
             validMove = checkAdjacent(coordinates.get(0),coordinates.get(1)) && checkSpaceTile(coordinates.get(0),coordinates.get(1));
         } else if (coordinates.size() == 3) {
             validMove = checkAdjacent(coordinates.get(0),coordinates.get(1),coordinates.get(2)) && checkSpaceTile(coordinates.get(0),coordinates.get(1),coordinates.get(2));
         }
-        // da sistemare con le eccezioni
         if(!validMove){
-            throw NoValidMoveException("Selezione tessere non valida");
+            throw new NoValidMoveException();
         }
     }
 
-    public ArrayList<Tile> getTiles(ArrayList<Coordinates> coordinates) throws NullTileException{
-        ArrayList<Tile> result = new ArrayList<Tile>();
+    public List<Tile> getTiles(List<Coordinates> coordinates) throws NullTileException{
+        List<Tile> result = new ArrayList<Tile>();
         for (Coordinates coordinate : coordinates) {
             Cell selected = getCell(coordinate);
             if( selected.getTile() != null) {
@@ -71,7 +69,7 @@ public class Board {
                 selected.setTile(null);
                 tilesTaken++;
             }else{
-                throw NullTileException(coordinate);
+                throw new NullTileException(coordinate);
             }
 
         }
@@ -115,35 +113,33 @@ public class Board {
     }
 
     private Cell getCell(Coordinates coordinates) {
-        int x = coordinates.getX();
-        int y = coordinates.getY();
+        int x = coordinates.x();
+        int y = coordinates.y();
         return board[x][y];
     }
 
     private boolean checkAdjacent(Coordinates c1,Coordinates c2, Coordinates c3){
-        int x1 = c1.getX();
-        int y1 = c1.getY();
-        int x2 = c2.getX();
-        int y2 = c2.getY();
-        int x3 = c3.getX();
-        int y3 = c3.getY();
+        int x1 = c1.x();
+        int y1 = c1.y();
+        int x2 = c2.x();
+        int y2 = c2.y();
+        int x3 = c3.x();
+        int y3 = c3.y();
         return x1 == x2 && x2 == x3 && abs(y1 - y2) == 1 && abs(y2 - y3) == 1 ||
                 y1 == y2 && y2 == y3 && abs(x1 - x2) == 1 && abs(x2 - x3) == 1;
     }
     private boolean checkAdjacent(Coordinates c1, Coordinates c2){
-        int x1 = c1.getX();
-        int y1 = c1.getY();
-        int x2 = c2.getX();
-        int y2 = c2.getY();
+        int x1 = c1.x();
+        int y1 = c1.y();
+        int x2 = c2.x();
+        int y2 = c2.y();
         return x1 - x2 == 0 && abs(y1 - y2) == 1 ||
                 y1 - y2 == 0 && abs(x1 - x2) == 1;
     }
-    // checkSpaceTile : se c'è almeno un lato libero ritorna true
 
     private boolean checkSpaceTile(Coordinates c1){
-        int x1 = c1.getX();
-        int y1 = c1.getY();
-        // controllo solo che abbia un lato libero
+        int x1 = c1.x();
+        int y1 = c1.y();
         Coordinates check = new Coordinates(x1+1,y1);
         if(
                 tileOnBoard(c1) || !getCell(check).getStatus() || ( getCell(check).getStatus() && getCell(check).getTile()==(null) )
@@ -171,10 +167,9 @@ public class Board {
     }
 
     private boolean checkLonelyTile(Coordinates c1) {
-        int x1 = c1.getX();
-        int y1 = c1.getY();
+        int x1 = c1.x();
+        int y1 = c1.y();
         int refill = 0;
-        // controllo solo che abbia un lato libero
         Coordinates check = new Coordinates(x1+1,y1);
         if(
                 !getCell(check).getStatus() || getCell(check).getStatus() && getCell(check).getTile()==(null)
@@ -194,8 +189,8 @@ public class Board {
     }
 
     private boolean tileOnBoard(Coordinates c1){
-        int x1 = c1.getX();
-        int y1 = c1.getY();
+        int x1 = c1.x();
+        int y1 = c1.y();
         return x1 == matrix_size - 1 || y1 == matrix_size - 1;
     }
 }

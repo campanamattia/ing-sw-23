@@ -1,5 +1,7 @@
 package Server.Model;
 
+import Enumeration.Color;
+
 public class Tile {
 
     private Color color;

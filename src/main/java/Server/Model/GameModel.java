@@ -1,28 +1,38 @@
 package Server.Model;
 
-import Server.Exception.BoardException;
-import Server.Exception.PlayerException;
+import Interface.CMD;
+import Server.Exception.*;
+import Enumeration.*;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
-import Exception.*;
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
-public class GameModel implements CMD{
-
-    private UUID uuid = UUID.randomUUID();
+public class GameModel implements CMD {
+    private UUID uuid;
+    private GamePhase phase;
     private final int nPlayers;
     private final String firstPlayer;
+    private Player currPlayer;
+
     private List<Player> players;
+    private List<CommonGoal> commonGoals;
+
     private Bag bag;
     private Board board;
     private ChatRoom chatRoom;
-    private List<CommonGoal> commonGoals;
 
-    public GameModel(int nPlayers, List<String> players) throws FileNotFoundException {
+
+    public GameModel(UUID uuid, int nPlayers, List<String> players) throws FileNotFoundException {
+        this.uuid = uuid;
+        this.phase = GamePhase.STARTING;
         this.nPlayers = nPlayers;
         this.firstPlayer = players.get(0);
 
@@ -40,24 +50,29 @@ public class GameModel implements CMD{
         JsonArray array = decoPersonal("src/main/resources/personalgoal.json");
         Random random = new Random();
         for (String tmp : players){
-            PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())));
+            PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
             this.players.add(new Player(tmp, pGoal));
         }
+        this.currPlayer = this.players.get(0);
 
         //creating 2 commonGoal
         generateCommonGoal("src/main/resources/commonGoal.json");
 
         // updating instantly the state
         updateStatus();
+        this.phase = GamePhase.ONGOING;
     }
 
-    // TODO: 24/03/2023
-    /* 
-    public GameModel(String filepath) {
-
+    public GameModel(UUID uuid) throws FileNotFoundException {
+        Gson gson = new Gson();
+        JsonReader reader ;
+        reader = new JsonReader(new FileReader("src/main/resources/"+uuid+".json"));
+        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        this.uuid = uuid;
+        this.phase = getAsPhase(json.get("phase").getAsString());
+        this.nPlayers = json.get("nPlayers").getAsInt();
+        this.firstPlayer = json.get("firstPlayer").toString();
     }
-
-     */
 
     private JsonObject decoBoard(String filepath) throws FileNotFoundException {
         Gson gson = new Gson();
@@ -86,11 +101,18 @@ public class GameModel implements CMD{
         this.commonGoals.add(CommonGoalFactory.getCommonGoal(scoringToken, array.remove(random.nextInt(array.size())).getAsJsonObject()));
     }
 
-    private static List<Integer> getAsList(JsonArray array){
+    private List<Integer> getAsList(JsonArray array){
         List<Integer> list = new ArrayList<Integer>();
         for (int i = 1; i <=array.size(); i++)
             list.add(array.get(array.size()-i).getAsInt());
         return list;
+    }
+
+    private GamePhase getAsPhase(String code) throws FileNotFoundException {
+        for(GamePhase phase : GamePhase.values())
+            if(code.equals(phase.toString()))
+                return phase;
+        throw new FileNotFoundException("GamePhase didn't found");
     }
     
     @Override
@@ -104,21 +126,12 @@ public class GameModel implements CMD{
     }
 
     @Override
-    public void insertTiles(String player, List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
+    public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
         //re-order the list of tile
         for (Integer integer : sort) tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
-        // look for the current player
-        Player executor;
-        for(Player temp : this.players){
-            if(temp.equals(player)){
-                executor = temp;
-                break;
-            }
-        }
-        Shelf temp_shelf = executor.getShelf(); //give a look at the exception
        try{
-           temp_shelf.insert(column-1, tiles);
+           this.currPlayer.getMyShelf().insert(column-1, tiles);
        } catch (PlayerException exception){
            throw exception;
        }
@@ -131,19 +144,42 @@ public class GameModel implements CMD{
         this.chatRoom.addMessage(text);
     }
 
-        public String getID() {
-            return ID;
-        }
-
-        public int getScore() {
-            return score;
+    // TODO: 24/03/2023  
+    private void updateStatus() {
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        try{
+            FileWriter writer = new FileWriter("src/main/resources/"+this.uuid+".json");
+            writer.write(json);
+            writer.close();
+            System.out.println("Successfully update the json");
+        } catch (IOException e) {
+            System.out.println("An error occurred updating the json file.");
         }
     }
-    // TODO: 24/03/2023  
-    public List<Rank<String, Integer>> finalRank(){
+
+    public void endTurn(){
+        for(CommonGoal com : this.commonGoals)
+            if(!com.getAccomplished().contains(this.currPlayer.getID()))
+                com.check(currPlayer);
+        if(this.currPlayer.getMyShelf().full())
+            this.phase = GamePhase.ENDING;
+        nextPlayer();
+    }
+
+
+    private void nextPlayer(){
+        int nextIndex = (this.players.indexOf(this.currPlayer)+1) % players.size();
+        if(this.phase == GamePhase.ENDING && nextIndex == 0)
+                this.phase = GamePhase.ENDED;
+        else
+            this.currPlayer = this.players.get(nextIndex);
+    }
+
+    public List<Rank> finalRank(){
         for(Player tmp : this.players)
             tmp.endGame();
-        List<Rank<String, Integer>> rank = new ArrayList<>();
+        List<Rank> rank = new ArrayList<Rank>();
         Player min;
         while(rank.size() < this.nPlayers){
             min = null;
@@ -154,35 +190,49 @@ public class GameModel implements CMD{
                     min = tmp;
             }
             this.players.remove(min);
-            rank.add(new Rank<>(min.getID(), min.getScore()));
+            rank.add(new Rank(min.getID(), min.getScore()));
         }
         return rank;
     }
 
-    // TODO: 24/03/2023  
-    public GameModel reloadGame(String hash){
-        /*
-        reload the game that crashed
-        return new GameModel(hash);
-        */
-    }
-    // TODO: 24/03/2023  
-    private static void updateStatus(){
-        /*
-        update json in the resource
-        the first time a generate the file json, where the name is composed by
-        a hashcode that I will use tu identify the match's .json file
-        */
+
+    public UUID getUuid() {
+        return uuid;
     }
 
-}
+    public GamePhase getPhase(){
+        return this.phase;
+    }
 
-class Rank<String, Integer> {
-    private String ID;
-    private int score;
+    public int getNPlayers() {
+        return this.nPlayers;
+    }
 
-    public Rank(String ID, int score) {
-        this.ID = ID;
-        this.score = score;
+    public String getFirstPlayer() {
+        return this.firstPlayer;
+    }
+
+    public Player getCurrPlayer() {
+        return this.currPlayer;
+    }
+
+    public List<Player> getPlayers() {
+        return this.players;
+    }
+
+    public List<CommonGoal> getCommonGoals() {
+        return this.commonGoals;
+    }
+
+    public Bag getBag() {
+        return this.bag;
+    }
+
+    public Board getBoard() {
+        return this.board;
+    }
+
+    public ChatRoom getChatRoom() {
+        return this.chatRoom;
     }
 }

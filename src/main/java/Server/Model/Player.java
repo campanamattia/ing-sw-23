@@ -39,4 +39,9 @@ public class Player {
     public Shelf getMyShelf() {
         return myShelf;
     }
+
+    public void endGame() {
+        this.updateScore(myShelf.checkEndGame());
+        this.updateScore(personalGoal.check(myShelf.getMyShelf()));
+    }
 }
