@@ -14,7 +14,7 @@ public class Shelf {
     public void insert(int n, List<Tile> tiles) throws ColumnNotValidException {
         int tmp = tiles.size();
 
-        if(this.myShelf[tiles.size()-1][n] != null || !(0<=n && n<=4))
+        if(!(0<=n && n<=4) || this.myShelf[tiles.size()-1][n] != null )
             throw new ColumnNotValidException(n);
         for(int i=5; i>=0 ; i-- ){
             if(this.myShelf[i][n] == null){
