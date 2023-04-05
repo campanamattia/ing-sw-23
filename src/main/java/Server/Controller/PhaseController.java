@@ -30,7 +30,7 @@ public abstract class PhaseController {
 
     public abstract void nextPlayer() throws GamePhaseException;
 
-    public void endTurn(List<CommonGoal> commonGoals){
+    public void checkCommonGoals(List<CommonGoal> commonGoals){
         for(CommonGoal common : commonGoals)
             if(!common.getAccomplished().contains(this.currentPlayer.getID()))
                 common.check(this.currentPlayer);

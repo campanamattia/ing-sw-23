@@ -24,24 +24,30 @@ public class GameController implements ManageConnection {
     private PhaseController phaseController;
     private final PlayerAction playerAction;
 
-    public GameController(List<String> IDs) throws FileNotFoundException {
+    public GameController(List<String> IDs) throws IOException {
         this.uuid = UUID.randomUUID();
-        this.game = new GameModel(this.uuid, IDs);
+        try{
+            this.game = new GameModel(this.uuid, IDs);
+        }catch(IOException e){
+            System.out.println(e.toString());
+            throw e;
+        }
         this.playerAction = new PlayerAction(this.game);
         this.phaseController = new NormalState(this.game.getCurrPlayer(), this.game.getPlayers());
     }
 
     public GameController(String filepath) throws FileNotFoundException {
+        JsonReader reader;
         try{
-            JsonReader reader = new JsonReader(new FileReader(filepath));
-            this.game = new Gson().fromJson(reader, GameModel.class);
-            this.uuid = this.game.getUuid();
-            this.playerAction = new PlayerAction(this.game);
-            this.phaseController = null;
+            reader = new JsonReader(new FileReader(filepath));
         } catch(FileNotFoundException e){
             System.out.println("The path isn't valid");
             throw e;
         }
+        this.game = new Gson().fromJson(reader, GameModel.class);
+        this.uuid = this.game.getUuid();
+        this.playerAction = new PlayerAction(this.game);
+        this.phaseController = null;
     }
 
     public PlayerAction ableTo(OpType code, String playerID) throws PlayerException {
@@ -52,19 +58,29 @@ public class GameController implements ManageConnection {
         else throw new NotYourTurnException(playerID);
     }
 
-    public void endShift(){
-        phaseController.endTurn(this.game.getCommonGoals());
+    public void endTurn(){
+        phaseController.checkCommonGoals(this.game.getCommonGoals());
         do{
             try{
                 phaseController.nextPlayer();
+                this.game.setCurrPlayer(this.phaseController.getCurrentPlayer());
                 break;
-            }catch (GamePhaseException e){ //must implement new equals in gamephaseexception
+            }catch (GamePhaseException e){
                 if (e.equals(new EndGameException())) {
-                    this.game.setRanking(new EndedMatch().doRank(this.phaseController.getPlayers()));
+                    this.game.setPhase(GamePhase.ENDED);
+                    this.game.setLeaderboard(new EndedMatch().doRank(this.phaseController.getPlayers()));
+                }
+                else {
+                    this.game.setPhase(GamePhase.ENDING);
+                    this.phaseController = new LastRoundState(this.phaseController.getCurrentPlayer(), this.phaseController.getPlayers());
+                }
+            }finally {
+                try{
+                    this.game.updateStatus();
+                } catch (IOException e){
+                    System.out.println("An error occurred updating the json file.");
 
                 }
-                else
-                    this.phaseController = new LastRoundState(this.phaseController.getCurrentPlayer(), this.phaseController.getPlayers());
             }
         }while(true);
     }
