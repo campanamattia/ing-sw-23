@@ -158,6 +158,58 @@ class DiagonalGoalTest {
         assertEquals(2 ,diagonalGoal.getScoringToken().peek());
     }
 
+    @Test
+    void testCheckDifferentPlayer() throws NullPlayerException {
+        // Set up the test
+        List<Integer> tokenList = new Stack<>();
+        tokenList.add(2);
+        tokenList.add(4);
+
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("enum", 2);
+        jsonObject.addProperty("description", "Test goal description");
+        jsonObject.addProperty("numDiagonal", 1);
+
+        DiagonalGoal diagonalGoal = new DiagonalGoal(tokenList, jsonObject);
+
+        Player player1 = new Player("alessio",pGoal);
+        Player player2 = new Player("fostidic", pGoal);
+
+
+        player1.getMyShelf().placeTile(new Tile(Color.GREEN), 0,4);
+        player1.getMyShelf().placeTile(new Tile(Color.GREEN), 1, 4);
+        player1.getMyShelf().placeTile(new Tile(Color.GREEN), 1, 3);
+        player1.getMyShelf().placeTile(new Tile(Color.GREEN), 2, 3);
+        player1.getMyShelf().placeTile(new Tile(Color.GREEN), 2, 2);
+        player1.getMyShelf().placeTile(new Tile(Color.GREEN), 3, 2);
+        player1.getMyShelf().placeTile(new Tile(Color.GREEN), 3, 1);
+        player1.getMyShelf().placeTile(new Tile(Color.GREEN), 4, 1);
+        player1.getMyShelf().placeTile(new Tile(Color.GREEN), 4, 2);
+        player1.getMyShelf().placeTile(new Tile(Color.GREEN), 5, 0);
+        player1.getMyShelf().placeTile(new Tile(Color.GREEN), 4, 0);
+        player1.getMyShelf().placeTile(new Tile(Color.BLUE), 4, 3);
+        player1.getMyShelf().placeTile(new Tile(Color.BLUE), 5, 4);
+
+        player2.getMyShelf().placeTile(new Tile(Color.WHITE), 0,0);
+        player2.getMyShelf().placeTile(new Tile(Color.WHITE), 1,1);
+        player2.getMyShelf().placeTile(new Tile(Color.WHITE), 2,2);
+        player2.getMyShelf().placeTile(new Tile(Color.WHITE), 3,3);
+        player2.getMyShelf().placeTile(new Tile(Color.WHITE), 4,4);
+
+
+        // Perform the test
+        diagonalGoal.check(player1);
+        diagonalGoal.check(player2);
+
+        assertEquals(2,diagonalGoal.getAccomplished().size());
+        assertEquals(0, diagonalGoal.getScoringToken().size());
+        assertEquals(4, player1.getScore());
+        assertEquals(2,player2.getScore());
+    }
+
+
+
 
 
     private JsonArray decoPersonal(String filepath) throws FileNotFoundException {

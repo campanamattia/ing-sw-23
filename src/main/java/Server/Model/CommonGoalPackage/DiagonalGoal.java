@@ -3,15 +3,31 @@ package Server.Model.CommonGoalPackage;
 import Server.Exception.CommonGoal.NullPlayerException;
 import Server.Model.*;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+
+/**
+ * The DiagonalGoal class represents a goal where players must create groups of tiles in a cross shape on their shelf.
+ * It extends the CommonGoal class and contains a description, a number of required groups, and a list of scoring tokens.
+ */
 public class DiagonalGoal extends CommonGoal {
 
-    private final String description;
+    /**
+     * The number of required diagonal for this DiagonalGoal.
+     */
     private final int numDiagonal;
 
-    public DiagonalGoal(List<Integer> tokenList, JsonObject jsonObject) {
+
+    /**
+     Create a new DiagonalGoal instance with the provided token list and JSON object.
+     @param tokenList The list of scoring tokens earnable by players, based on how many players are in the game.
+     @param jsonObject The JSON object containing the properties for this objective.
+     It must have "enum", "description", and "numDiagonal" properties.
+     @throws NullPointerException if the jsonObject parameter is null.
+     */
+    public DiagonalGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
         this.numDiagonal = jsonObject.get("numDiagonal").getAsInt();
@@ -22,15 +38,18 @@ public class DiagonalGoal extends CommonGoal {
         scoringToken.addAll(tokenList);
     }
 
-    public String getDescription() {
-        return description;
-    }
-
+    /**
+     This method checks if a player has achieved the DiagonalGoal and updates his score accordingly.
+     If the player has achieved the goal, their ID is saved in the "accomplished" attribute.
+     @param player The player to check for CrossGoal achievement.
+     @throws NullPlayerException if the player parameter is null.
+     */
     @Override
     public void check(Player player) throws NullPlayerException {
         if (player == null){
             throw new NullPlayerException();
         }
+
         Shelf shelf = player.getMyShelf();
         int countGroup = 0;
 
@@ -72,7 +91,7 @@ public class DiagonalGoal extends CommonGoal {
             countGroup++;
         }
 
-        if (countGroup == numDiagonal) {
+        if (countGroup >= numDiagonal) {
             accomplished.add(player.getID());
             player.updateScore(scoringToken.pop());
         }

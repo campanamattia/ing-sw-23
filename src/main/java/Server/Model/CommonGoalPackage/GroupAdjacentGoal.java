@@ -1,6 +1,9 @@
 package Server.Model.CommonGoalPackage;
+import Server.Exception.CommonGoal.NullPlayerException;
 import Server.Model.*;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
 
 public class GroupAdjacentGoal extends CommonGoal {
@@ -8,7 +11,7 @@ public class GroupAdjacentGoal extends CommonGoal {
     private final int numAdjacent;
     private final String description;
 
-    public GroupAdjacentGoal(List<Integer> tokenList, JsonObject jsonObject) {
+    public GroupAdjacentGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
 
         this.description = jsonObject.get("description").getAsString();
         this.enumeration = jsonObject.get("enum").getAsInt();
@@ -26,7 +29,11 @@ public class GroupAdjacentGoal extends CommonGoal {
     }
 
     @Override
-    public void check(Player player) {
+    public void check(Player player) throws NullPlayerException {
+        if (player == null) {
+            throw new NullPlayerException();
+        }
+
         Shelf shelf = player.getMyShelf();
         boolean[][] visited = new boolean[6][5];
         int groups = 0;
@@ -41,10 +48,11 @@ public class GroupAdjacentGoal extends CommonGoal {
                     int count = countSameAdjacent(shelf, visited, i, j, color);
                     if (count >= numAdjacent) {
                         groups ++;
-                        if (groups >= numGroup) {
-                            accomplished.add(player.getID());
-                            player.updateScore(scoringToken.pop());
-                        }
+                    }
+                    if (groups >= numGroup) {
+                        accomplished.add(player.getID());
+                        player.updateScore(scoringToken.pop());
+                        return;
                     }
                 }
             }
@@ -52,7 +60,8 @@ public class GroupAdjacentGoal extends CommonGoal {
     }
 
     private int countSameAdjacent(Shelf shelf, boolean[][] visited, int row, int column, Color color) {
-        if (row < 0 || row >= 6 || column >= 5 || visited[row][column] || shelf.getTile(row, column).getTileColor() != color) {
+        if (row < 0 || row >= 6 || column >= 5 || column < 0 || visited[row][column] ||
+                shelf.getTile(row, column) == null || shelf.getTile(row, column).getTileColor() != color ) {
             return 0;
         }
         visited[row][column] = true;

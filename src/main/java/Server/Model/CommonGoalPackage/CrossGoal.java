@@ -7,11 +7,25 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+
+/**
+ * The CrossGoal class represents a goal where players must create groups of tiles in a cross shape on their shelf.
+ * It extends the CommonGoal class and contains a description, a number of required groups, and a list of scoring tokens.
+ */
 public class CrossGoal extends CommonGoal {
 
-    private final String description;
+    /**
+     * The number of required groups for this CrossGoal.
+     */
     private final int numGroup;
 
+    /**
+     Create a new DiagonalGoal instance with the provided token list and JSON object.
+     @param tokenList The list of scoring tokens earnable by players, based on how many players are in the game.
+     @param jsonObject The JSON object containing the properties for this goal.
+     It must have "enum", "description", and "numDiagonal" properties.
+     @throws NullPointerException if the jsonObject parameter is null.
+     */
     public CrossGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
@@ -23,10 +37,14 @@ public class CrossGoal extends CommonGoal {
         scoringToken.addAll(tokenList);
     }
 
-    public String getDescription() {
-        return description;
-    }
 
+    /**
+     This method checks if a player has achieved the CrossGoal and updates his score accordingly.
+     If the player has achieved the objective, their ID is saved in the "accomplished" attribute.
+     @param player The player to check for CrossGoal achievement.
+     @throws NullPlayerException if the player parameter is null.
+     */
+    @Override
     public void check(Player player) throws NullPlayerException {
         if (player == null) {
             throw new NullPlayerException();
@@ -46,7 +64,7 @@ public class CrossGoal extends CommonGoal {
                 }
             }
         }
-        if (countGroup == numGroup) {
+        if (countGroup >= numGroup) {
             accomplished.add(player.getID());
             player.updateScore(scoringToken.pop());
         }
