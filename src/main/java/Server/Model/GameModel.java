@@ -128,6 +128,7 @@ public class GameModel implements CMD {
      */
     private String buildPath(){
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("src/main/resources/game/");
         for(Player tmp : this.players)
             stringBuilder.append(tmp.getID()).append("_");
         stringBuilder.append(uuid).append(".json");
