@@ -1,11 +1,13 @@
 package Server.Model;
 
+import com.google.gson.annotations.Expose;
+
 import java.time.LocalDateTime;
 
-public record ChatMessage(String sender, String content, LocalDateTime time) {
+public record ChatMessage(@Expose String sender, @Expose String content) {
 
     @Override
     public String toString() {
-        return "From "+this.sender+":\n"+this.content+"\n"+this.time.toString();
+        return "From "+this.sender+":\n"+this.content;
     }
 }

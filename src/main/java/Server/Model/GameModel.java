@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 public class GameModel implements CMD {
@@ -131,7 +132,7 @@ public class GameModel implements CMD {
         stringBuilder.append("src/main/resources/game/");
         for(Player tmp : this.players)
             stringBuilder.append(tmp.getID()).append("_");
-        stringBuilder.append(uuid).append(".json");
+        stringBuilder.append(LocalDate.now()).append(".json");
         return stringBuilder.toString();
     }
 

@@ -1,9 +1,11 @@
 package Server.Model;
 
 import Enumeration.Color;
+import com.google.gson.annotations.Expose;
 
 public class Tile {
 
+    @Expose
     private Color color;
 
     public Tile(Color color) {
@@ -14,4 +16,7 @@ public class Tile {
         return color;
     }
 
+    public Color getColor(){
+        return color;
+    }
 }

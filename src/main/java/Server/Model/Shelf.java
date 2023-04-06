@@ -1,10 +1,12 @@
 package Server.Model;
 
 import Exception.Player.ColumnNotValidException;
+import com.google.gson.annotations.Expose;
 
 import java.util.List;
 
 public class Shelf {
+    @Expose
     private Tile[][] myShelf;
 
     public Shelf() {

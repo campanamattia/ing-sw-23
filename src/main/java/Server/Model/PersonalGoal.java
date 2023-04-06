@@ -3,8 +3,10 @@ package Server.Model;
 import Enumeration.Color;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.Expose;
 
 public class PersonalGoal {
+    @Expose
     private Tile[][] pGoal;
 
     public PersonalGoal(JsonObject json) {
@@ -40,5 +42,9 @@ public class PersonalGoal {
         }
 
         return points;
+    }
+
+    public Tile[][] getpGoal() {
+        return pGoal;
     }
 }

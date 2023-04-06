@@ -1,9 +1,12 @@
 package Server.Model;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.*;
 import java.lang.*;
 
 public class ChatRoom {
+    @Expose
     private final Stack<ChatMessage> flow;
 
     public ChatRoom() {
@@ -18,5 +21,9 @@ public class ChatRoom {
         List<String> history = new ArrayList<String>();
         for(ChatMessage message : flow) history.add(message.toString());
         return history;
+    }
+
+    public Stack<ChatMessage> getFlow() {
+        return flow;
     }
 }

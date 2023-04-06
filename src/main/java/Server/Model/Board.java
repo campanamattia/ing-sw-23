@@ -5,6 +5,7 @@ import Exception.Board.NoValidMoveException;
 import Exception.Board.NullTileException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.Expose;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -15,7 +16,9 @@ import static java.lang.Math.nextUp;
 
 public class Board {
 
+    @Expose
     private Cell[][] board;
+    @Expose
     private int tilesTaken;
     private final int matrix_size;
 
@@ -217,5 +220,13 @@ public class Board {
     // method useful only for test
     public void setTilesTaken(int tilesTaken) {
         this.tilesTaken = tilesTaken;
+    }
+
+    public Cell[][] getBoard() {
+        return board;
+    }
+
+    public int getTilesTaken() {
+        return tilesTaken;
     }
 }
