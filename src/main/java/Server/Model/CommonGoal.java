@@ -6,7 +6,7 @@ import java.util.*;
 
 /**
  * The CommonGoal class represents a common goal that can be accomplished by players.
- * It contains a list of Id_players, a stack of scoring tokens, and an enumeration.
+ * It contains a list of Id_players, a stack of scoring tokens, an enumeration, and s description.
  */
 public abstract class CommonGoal {
 

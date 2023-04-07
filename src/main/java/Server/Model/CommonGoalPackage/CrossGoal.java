@@ -10,20 +10,20 @@ import java.util.*;
 
 /**
  * The CrossGoal class represents a goal where players must create groups of tiles in a cross shape on their shelf.
- * It extends the CommonGoal class and contains a description, a number of required groups, and a list of scoring tokens.
+ * It extends the CommonGoal class and contains a number of required groups.
  */
 public class CrossGoal extends CommonGoal {
 
     /**
-     * The number of required groups for this CrossGoal.
+     * The number of required Cross.
      */
     private final int numGroup;
 
     /**
-     Create a new DiagonalGoal instance with the provided token list and JSON object.
+     Create a new CrossGoal with the provided token list and JSON object.
      @param tokenList The list of scoring tokens earnable by players, based on how many players are in the game.
      @param jsonObject The JSON object containing the properties for this goal.
-     It must have "enum", "description", and "numDiagonal" properties.
+     It must have "enum", "description", and "numGroup" properties.
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public CrossGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {

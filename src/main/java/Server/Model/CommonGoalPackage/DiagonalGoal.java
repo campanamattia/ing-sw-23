@@ -10,12 +10,12 @@ import java.util.*;
 
 /**
  * The DiagonalGoal class represents a goal where players must create groups of tiles in a cross shape on their shelf.
- * It extends the CommonGoal class and contains a description, a number of required groups, and a list of scoring tokens.
+ * It extends the CommonGoal class and contains a number of required groups.
  */
 public class DiagonalGoal extends CommonGoal {
 
     /**
-     * The number of required diagonal for this DiagonalGoal.
+     * The number of required diagonal.
      */
     private final int numDiagonal;
 
@@ -39,9 +39,9 @@ public class DiagonalGoal extends CommonGoal {
     }
 
     /**
-     This method checks if a player has achieved the DiagonalGoal and updates his score accordingly.
+     Checks if a player has achieved the DiagonalGoal and updates his score accordingly.
      If the player has achieved the goal, their ID is saved in the "accomplished" attribute.
-     @param player The player to check for CrossGoal achievement.
+     @param player The player to check for DiagonalGoal achievement.
      @throws NullPlayerException if the player parameter is null.
      */
     @Override

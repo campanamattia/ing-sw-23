@@ -9,12 +9,12 @@ import java.util.*;
 
 /**
  * The DoubleSquare class represents a goal where players must create groups of tiles in a cross shape on their shelf.
- * It extends the CommonGoal class and contains a description, a number of required groups, and a list of scoring tokens.
+ * It extends the CommonGoal class and contains a number of required groups, and the dimension of the square.
  */
 public class SquareGoal extends CommonGoal {
 
     /**
-     * The side dimension of square for this SquareGoal.
+     * The side 's dimension of square for this SquareGoal.
      */
     private final int dimSquare;
 
@@ -24,7 +24,7 @@ public class SquareGoal extends CommonGoal {
     private final int numGroup;
 
     /**
-     Create a new DoubleSquareGoal instance with the provided token list and JSON object.
+     Create a new SquareGoal instance with the provided token list and JSON object.
      @param tokenList The list of scoring tokens earnable by players, based on how many players are in the game.
      @param jsonObject The JSON object containing the properties for this objective.
      It must have "enum", "description", "dimSquare", and "numGroup" properties.
@@ -44,9 +44,9 @@ public class SquareGoal extends CommonGoal {
 
 
     /**
-     This method checks if a player has achieved the DoubleSquareGoal and updates his score accordingly.
+     This method checks if a player has achieved the SquareGoal and updates his score accordingly.
      If the player has achieved the goal, their ID is saved in the "accomplished" attribute.
-     @param player The player to check for CrossGoal achievement.
+     @param player The player to check for SquareGoal achievement.
      @throws NullPlayerException if the player parameter is null.
      */
     @Override
