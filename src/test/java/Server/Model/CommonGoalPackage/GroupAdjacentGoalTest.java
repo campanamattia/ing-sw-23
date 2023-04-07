@@ -49,7 +49,6 @@ class GroupAdjacentGoalTest {
         jsonObject.addProperty("description", "Test goal");
         jsonObject.addProperty("enum", 1);
 
-
     }
 
 
@@ -187,11 +186,12 @@ class GroupAdjacentGoalTest {
         shelf.placeTile(new Tile(Color.CYAN), 5, 0);
         shelf.placeTile(new Tile(Color.CYAN), 5, 1);
         shelf.placeTile(new Tile(Color.CYAN), 4, 1);
+
+        groupAdjacentGoal.check(player);
+
+        assertEquals(0,player.getScore());
+        assertEquals(2,groupAdjacentGoal.getScoringToken().size());
     }
-
-
-
-
 
 
     private JsonArray decoPersonal() throws FileNotFoundException {

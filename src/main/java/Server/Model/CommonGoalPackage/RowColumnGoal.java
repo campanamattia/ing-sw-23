@@ -62,6 +62,7 @@ public class RowColumnGoal extends CommonGoal {
 
         Shelf shelf = player.getMyShelf();
         int countColumn = 0, countRow = 0;
+
         // check column goal
         if (numColumn != -1) {
             for (int j = 0; j <= 4; j++) {
@@ -73,7 +74,6 @@ public class RowColumnGoal extends CommonGoal {
                         break;
                     }
                 }
-
 
                 if (colorColumn.size() == 6) {
                     if (maxDifferent == -1 && colorColumn.stream().distinct().count() == 1) {
@@ -87,6 +87,7 @@ public class RowColumnGoal extends CommonGoal {
             if (countColumn >= numColumn) {
                 accomplished.add(player.getID());
                 player.updateScore(scoringToken.pop());
+                return;
             }
         }
 
