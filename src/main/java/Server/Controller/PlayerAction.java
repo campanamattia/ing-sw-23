@@ -36,7 +36,12 @@ public class PlayerAction implements CMD {
     }
 
     @Override
-    public void writeChat(String message) {
-        game.writeChat(message);
+    public void writeChat(String message) throws ChatException {
+        try{
+            game.writeChat(message);
+        }catch(ChatException e){
+            System.out.println(e.toString());
+            throw e;
+        }
     }
 }

@@ -1,5 +1,6 @@
 package Server.Controller;
 import Enumeration.GamePhase;
+import Exception.CommonGoal.NullPlayerException;
 import Exception.GamePhaseException;
 import Server.Model.CommonGoal;
 import Server.Model.Player;
@@ -33,6 +34,10 @@ public abstract class PhaseController {
     public void checkCommonGoals(List<CommonGoal> commonGoals){
         for(CommonGoal common : commonGoals)
             if(!common.getAccomplished().contains(this.currentPlayer.getID()))
-                common.check(this.currentPlayer);
+                try{
+                    common.check(this.currentPlayer);
+                }catch(NullPlayerException e){
+                    System.out.println(e.toString());
+                }
     }
 }

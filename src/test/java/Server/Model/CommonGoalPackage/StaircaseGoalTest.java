@@ -1,7 +1,8 @@
 package Server.Model.CommonGoalPackage;
 
-import Server.Exception.CommonGoal.NullPlayerException;
+import Exception.CommonGoal.NullPlayerException;
 import Server.Model.*;
+import Enumeration.Color;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
