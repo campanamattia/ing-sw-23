@@ -80,9 +80,11 @@ class GameModelTest {
         }
     }
 
-    public void insertTiles(){
+    @Test
+    public void WrongInputInInsertTiles(){
         try{
-            gameModel.insertTiles(Arrays.asList(2, 1, 3), Arrays.asList(new Tile(Color.BLUE), new Tile(Color.GREEN), new Tile(Color.CYAN)), 7);
+            gameModel.insertTiles(Arrays.asList(2, 3), Arrays.asList(new Tile(Color.BLUE), new Tile(Color.GREEN), new Tile(Color.CYAN)), 7);
+            fail();
         }catch (PlayerException e){
             System.out.println(e.toString());
             assertTrue(true);
