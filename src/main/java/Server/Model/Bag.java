@@ -3,16 +3,10 @@ package Server.Model;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
-/*
- *  capacity: è unico, il numero massimo di tessere che contiene la bag ( 132 a inizio partita )
- *  size: dimensione istantanea
- */
-
 public class Bag {
 
     public final int CAPACITY = 132;
     private ArrayBlockingQueue<Tile> bag;
-
 
     public Bag() {
         Tile[] array = new Tile[CAPACITY];
@@ -39,13 +33,8 @@ public class Bag {
     public ArrayList<Tile> draw(int n){
         ArrayList<Tile> extraction = new ArrayList<Tile>();
         for(int i=0;i<n;i++){
-            if(!bag.isEmpty()) {
-                // metodo poll(): recupero ed elimino il primo elemento di bag e lo metto in extracion
-                extraction.add(bag.poll());
-            }else{
-                /* empty exception */
-                return null; //da sostituire con eccezione
-            }
+            extraction.add(bag.poll());
+
         }
         return extraction;
     }

@@ -1,13 +1,17 @@
 package Server.Model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 public class PersonalGoal {
-    private Tile[][] pGoal = new Tile[6][5];
+    private Tile[][] pGoal;
 
     public PersonalGoal(JsonObject json) {
+        pGoal = new Tile[6][5];
         Coordinates cd;
         for(Color tmp : Color.values()){
             cd = takeCoordinates(json.get(tmp.toString()).getAsJsonArray());
-            pGoal[cd.getX()][cd.getY()] = new Tile(tmp);
+            pGoal[cd.x()][cd.y()] = new Tile(tmp);
         }
     }
     public Coordinates takeCoordinates(JsonArray json) {
@@ -26,7 +30,6 @@ public class PersonalGoal {
         }
 
         switch(count){
-            case 0: points=0;
             case 1: points=1;
             case 2: points=2;
             case 3: points=4;
