@@ -38,7 +38,7 @@ public class GameController implements ManageConnection {
             throw e;
         }
         this.playerAction = new PlayerAction(this.game);
-        this.phaseController = new NormalState(this.game.getCurrPlayer(), this.game.getPlayers());
+        this.phaseController = new NormalState(this.game.getCurrentPlayer(), this.game.getPlayers());
     }
 
     /**
@@ -73,7 +73,7 @@ public class GameController implements ManageConnection {
     public PlayerAction ableTo(OpType code, String playerID) throws PlayerException {
         if (code.equals(OpType.MESSAGES))
             return this.playerAction;
-        if(playerID.equals(this.game.getCurrPlayer().getID()))
+        if(playerID.equals(this.game.getCurrentPlayer().getID()))
             return this.playerAction;
         else throw new NotYourTurnException(playerID);
     }
@@ -90,7 +90,7 @@ public class GameController implements ManageConnection {
         do{
             try{
                 phaseController.nextPlayer();
-                this.game.setCurrPlayer(this.phaseController.getCurrentPlayer());
+                this.game.setCurrentPlayer(this.phaseController.getCurrentPlayer());
                 break;
             }catch (GamePhaseException e){
                 if (e.equals(new EndGameException())) {

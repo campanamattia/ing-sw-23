@@ -18,32 +18,72 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
+/**
+ Represents the game model, contain information about the game state, players, board, and chat.
+ */
 public class GameModel implements CMD {
+    /**
+     * the unique identifier of the game session
+     */
     @Expose
     private UUID uuid;
+    /**
+     * the current phase of the game
+     */
     @Expose
     private GamePhase phase;
+    /**
+     * the total number of players in the game
+     */
     @Expose
     private final int nPlayers;
+    /**
+     * the ID of the first player who starts the game
+     */
     @Expose
     private final String firstPlayer;
+    /**
+     * the current player of the game
+     */
     @Expose
-    private Player currPlayer;
+    private Player currentPlayer;
 
+    /**
+     * list of all players in the game
+     */
     @Expose
     private List<Player> players;
+    /**
+     * the list of the two common goals for the game
+     */
     @Expose
     private List<CommonGoal> commonGoals;
+    /**
+     * the final leaderboard for the game
+     * (null if the game is still ongoing)
+     */
     @Expose
     private List<Rank> leaderboard = null;
 
+    /**
+     * the bag that contains the tiles used in the game
+     */
     @Expose
     private Bag bag;
+    /**
+     * the board of the game
+     */
     @Expose
     private Board board;
+    /**
+     * the chat room for the players to communicate with each other
+     */
     @Expose
     private ChatRoom chatRoom;
 
+    /**
+     * the file path where the game is saved
+     */
     @Expose
     private final String filepath;
 
@@ -79,7 +119,7 @@ public class GameModel implements CMD {
             PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
             this.players.add(new Player(tmp, pGoal));
         }
-        this.currPlayer = this.players.get(0);
+        this.currentPlayer = this.players.get(0);
 
         //creating 2 commonGoal
         generateCommonGoal("src/main/resources/commonGoal.json");
@@ -99,7 +139,7 @@ public class GameModel implements CMD {
      @param phase the current phase of the game
      @param nPlayers the number of players in the game
      @param firstPlayer the first player in the game
-     @param currPlayer the current player in the game
+     @param currentPlayer the current player in the game
      @param players the list of players in the game
      @param commonGoals the list of common goals in the game
      @param leaderboard the leaderboard of the game
@@ -108,12 +148,12 @@ public class GameModel implements CMD {
      @param chatRoom the chat room of the game
      @param filepath the file path of the game
      */
-    public GameModel(UUID uuid, GamePhase phase, int nPlayers, String firstPlayer, Player currPlayer, List<Player> players, List<CommonGoal> commonGoals, List<Rank> leaderboard, Bag bag, Board board, ChatRoom chatRoom, String filepath) {
+    public GameModel(UUID uuid, GamePhase phase, int nPlayers, String firstPlayer, Player currentPlayer, List<Player> players, List<CommonGoal> commonGoals, List<Rank> leaderboard, Bag bag, Board board, ChatRoom chatRoom, String filepath) {
         this.uuid = uuid;
         this.phase = phase;
         this.nPlayers = nPlayers;
         this.firstPlayer = firstPlayer;
-        this.currPlayer = currPlayer;
+        this.currentPlayer = currentPlayer;
         this.players = players;
         this.commonGoals = commonGoals;
         this.leaderboard = leaderboard;
@@ -238,7 +278,7 @@ public class GameModel implements CMD {
         //re-order the list of tile
         for (Integer integer : sort) tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
-        this.currPlayer.getMyShelf().insert(column-1, tiles);
+        this.currentPlayer.getMyShelf().insert(column-1, tiles);
     }
 
     /**
@@ -271,10 +311,10 @@ public class GameModel implements CMD {
 
     /**
      Sets the current player.
-     @param currPlayer the current player
+     @param currentPlayer the current player
      */
-    public void setCurrPlayer(Player currPlayer) {
-        this.currPlayer = currPlayer;
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
     }
 
     /**
@@ -330,8 +370,8 @@ public class GameModel implements CMD {
      Returns the current player.
      @return the current player
      */
-    public Player getCurrPlayer() {
-        return this.currPlayer;
+    public Player getCurrentPlayer() {
+        return this.currentPlayer;
     }
 
     /**
