@@ -1,5 +1,6 @@
 package Server.Model;
 
+import Exception.Player.NonConformingInputParametersException;
 import Interface.CMD;
 import Exception.*;
 import Enumeration.*;
@@ -272,10 +273,11 @@ public class GameModel implements CMD {
      @param tiles a list of tiles that the player wants to insert
      @param column an integer representing the column of the personal shelf where the tiles should be inserted
      @throws PlayerException if the player doesn't have enough space in their personal shelf
+     @throws NonConformingInputParametersException if the player didn't insert the correct parameters
      */
     @Override
     public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
-        //re-order the list of tile
+        if(sort.size()!=tiles.size()) throw new NonConformingInputParametersException();
         for (Integer integer : sort) tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
         this.currentPlayer.getMyShelf().insert(column-1, tiles);

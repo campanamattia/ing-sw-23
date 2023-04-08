@@ -1,5 +1,7 @@
 package Server.Model;
 
+import Enumeration.Color;
+import Exception.Player.ColumnNotValidException;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,4 +80,12 @@ class GameModelTest {
         }
     }
 
+    public void insertTiles(){
+        try{
+            gameModel.insertTiles(Arrays.asList(2, 1, 3), Arrays.asList(new Tile(Color.BLUE), new Tile(Color.GREEN), new Tile(Color.CYAN)), 7);
+        }catch (PlayerException e){
+            System.out.println(e.toString());
+            assertTrue(true);
+        }
+    }
 }
