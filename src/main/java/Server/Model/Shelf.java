@@ -29,7 +29,7 @@ public class Shelf {
         for(int i=0; i<5; i++)
             if(this.myShelf[0][i] == null)
                 return false;
-        return false;
+        return true;
     }
 
     public int checkMaxTiles(){
@@ -57,5 +57,11 @@ public class Shelf {
 
     public int checkEndGame() {
         return 0;
+    }
+
+
+    //method create only for create shelf for testing commonGoal
+    public void placeTile(Tile tile, int i, int j) {
+        myShelf[i][j] = tile;
     }
 }

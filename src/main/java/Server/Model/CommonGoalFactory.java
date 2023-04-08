@@ -16,7 +16,7 @@ public class CommonGoalFactory {
                 return new VerticesGoal(tokenList, jsonObject);
             }
             case 2 -> {
-                return new DoubleSquareGoal(tokenList, jsonObject);
+                return new SquareGoal(tokenList, jsonObject);
             }
             case 3 -> {
                 return new SameNGoal(tokenList, jsonObject);
@@ -33,7 +33,7 @@ public class CommonGoalFactory {
             case 7 -> {
                 return new RowColumnGoal(tokenList, jsonObject);
             }
+            default -> throw new IllegalStateException("Unexpected value: " + jsonObject.get("enum").getAsInt());
         }
-        return null;
     }
 }
