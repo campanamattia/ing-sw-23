@@ -248,11 +248,26 @@ public class GameModel implements CMD {
      @param message the message to be written.
      */
     @Override
-    public void writeChat(String message) {
+    public void writeChat(String message) throws ChatException {
         Gson gson = new Gson();
         ChatMessage text = gson.fromJson(message, ChatMessage.class);
+        if(text.content().equals(""))
+            throw new ChatException();
         this.chatRoom.addMessage(text);
     }
+
+    /**
+     Returns the player with the specified ID.
+     @param id the ID of the player
+     @return the player with the specified ID
+     @throws PlayerNotFoundException if the player with the specified ID is not found
+     */
+    public Player getPlayer(String id) throws PlayerNotFoundException{
+        for(Player tmp : this.players)
+            if(tmp.equals(id)) return tmp;
+        throw new PlayerNotFoundException(id);
+    }
+
 
     /**
      Sets the current player.
@@ -278,17 +293,6 @@ public class GameModel implements CMD {
         this.phase = phase;
     }
 
-    /**
-     Returns the player with the specified ID.
-     @param id the ID of the player
-     @return the player with the specified ID
-     @throws PlayerNotFoundException if the player with the specified ID is not found
-     */
-    public Player getPlayer(String id) throws PlayerNotFoundException{
-        for(Player tmp : this.players)
-            if(tmp.equals(id)) return tmp;
-        throw new PlayerNotFoundException(id);
-    }
 
     /**
      Returns the UUID of the game.

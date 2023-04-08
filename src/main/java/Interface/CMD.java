@@ -12,5 +12,5 @@ public interface CMD extends Remote {
 
     void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException;
 
-    void writeChat(String message);
+    void writeChat(String message) throws ChatException;
 }
