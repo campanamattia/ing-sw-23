@@ -56,7 +56,7 @@ public class DiagonalGoal extends CommonGoal {
         // creating list for count the four different way to found diagonal
         List<Color> lSx1 = new ArrayList<>(), lSx2 = new ArrayList<>(), lDx1 = new ArrayList<>(), lDx2 = new ArrayList<>();
 
-        for (int i = 5; i >= 0; i--) {
+        for (int i = 0; i <= 5; i++) {
             for (int j = 0; j <= 4; j++ ) {
 
                 if (shelf.getTile(i,j) == null) {

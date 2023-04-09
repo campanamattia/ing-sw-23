@@ -4,6 +4,7 @@ import Server.Exception.CommonGoal.NullPlayerException;
 import Server.Model.CommonGoal;
 import Server.Model.Player;
 import Server.Model.Shelf;
+import Server.Model.Tile;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,13 +47,19 @@ public class VerticesGoal extends CommonGoal {
             throw new NullPlayerException();
         }
         Shelf shelf = player.getMyShelf();
-        if (shelf.getTile(5,0) != null && shelf.getTile(5,4) != null &&
-                shelf.getTile(0,0) != null && shelf.getTile(0,4) != null &&
-                shelf.getTile(0,0).getTileColor() == shelf.getTile(0,4).getTileColor() &&
-                shelf.getTile(0,0).getTileColor() == shelf.getTile(5,0).getTileColor() &&
-                shelf.getTile(0,0).getTileColor() == shelf.getTile(5,4).getTileColor()) {
-            accomplished.add(player.getID());
-            player.updateScore(scoringToken.pop());
+        Tile topLeftTile = shelf.getTile(0,0);
+        Tile topRightTile = shelf.getTile(0,4);
+        Tile lowLeftTile = shelf.getTile(5,0);
+        Tile lowRightTile = shelf.getTile(5,4);
+        try {
+            if (topLeftTile.getTileColor() == topRightTile.getTileColor() &&
+                    topLeftTile.getTileColor() == lowLeftTile.getTileColor() &&
+                    topLeftTile.getTileColor() == lowRightTile.getTileColor()) {
+                accomplished.add(player.getID());
+                player.updateScore(scoringToken.pop());
+            }
+        }
+        catch (NullPointerException ignored) {
         }
     }
 }

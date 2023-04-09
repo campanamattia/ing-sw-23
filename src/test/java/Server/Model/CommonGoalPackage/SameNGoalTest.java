@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class SameNGoalTest {
 
     private Player player;
-    private PersonalGoal pGoal;
     private SameNGoal sameNGoal;
     private Shelf shelf;
     private JsonObject jsonObject;
@@ -37,7 +36,7 @@ class SameNGoalTest {
             }
         }
         Random random = new Random();
-        pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
+        PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
         player = new Player("ale", pGoal);
         shelf = player.getMyShelf();
 
