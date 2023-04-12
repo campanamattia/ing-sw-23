@@ -13,13 +13,18 @@ public class Shelf {
     }
 
     public void insert(int n, List<Tile> tiles) throws ColumnNotValidException{
+
         int tmp = tiles.size();
+        int full = 0;
 
         if(this.myShelf[tiles.size()-1][n] != null) 
             throw new ColumnNotValidException(n);
-        for(int i=5; i>=0 ; i-- ){
+        for(int i=5; i>0 ; i-- ){
             if(this.myShelf[i][n] == null){
-                this.myShelf[i][n] = tiles.remove(0);
+                if(full<tmp) {
+                    this.myShelf[i][n] = tiles.get(full);
+                    full++;
+                }
             }
         }
     }
@@ -28,14 +33,14 @@ public class Shelf {
         for(int i=0; i<5; i++)
             if(this.myShelf[0][i] == null)
                 return false;
-        return false;
+        return true;
     }
 
     public int checkMaxTiles(){
-        int count = 0;
         int max = 0;
 
         for(int j=0; j<5; j++){
+            int count = 0;
             for(int i=0; i<6; i++){
                 if(this.myShelf[i][j] == null ) 
                   count++;

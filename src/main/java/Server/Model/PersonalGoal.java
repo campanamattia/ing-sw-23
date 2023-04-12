@@ -4,6 +4,9 @@ import Enumeration.Color;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 public class PersonalGoal {
     private Tile[][] pGoal;
 
@@ -23,9 +26,8 @@ public class PersonalGoal {
         int points = 0;
         for(int i=0; i<6; i++){
             for(int j=0;j<5;j++){
-                if(pGoal[i][j] != null){
-                    if (myshelf[i][j] != pGoal[i][j]) return 0;
-                    else count++;
+                if(pGoal[i][j] != null && myshelf[i][j] != null){
+                    if (myshelf[i][j].getTileColor() == pGoal[i][j].getTileColor()) count++;
                 }
             }
         }
@@ -40,5 +42,9 @@ public class PersonalGoal {
         }
 
         return points;
+    }
+
+    public Tile getPgoalTile(int i, int j){
+        return pGoal[i][j];
     }
 }
