@@ -11,12 +11,20 @@ import java.util.List;
 import static java.lang.Math.abs;
 import static java.lang.Math.nextUp;
 
+/**
+ * Class Board, it contains all the method to for player's move in the game.
+ */
 public class Board {
 
-    private Cell[][] board;
+    private final Cell[][] board;
     private int tilesTaken;
     private final int matrix_size;
 
+    /**
+     * Class constructor.
+     * @param board_json it contains the scheme of the board.
+     * @param bag bag of tiles created at the start of the game.
+     */
     public Board(JsonObject board_json, Bag bag) {
         this.matrix_size = board_json.get("matrix.size").getAsInt();
         this.board = new Cell[matrix_size][matrix_size];
@@ -42,6 +50,12 @@ public class Board {
             }
         }
     }
+
+    /**
+     * Check if the move selected by the player is playable.
+     * @param coordinates coordinates of the tiles that the player want to take.
+     * @throws NoValidMoveException exception thrown if the move isn't valid.
+     */
     public void convalidateMove(@NotNull List<Coordinates> coordinates) throws NoValidMoveException {
         boolean validMove = false;
         if(coordinates.size() == 1){
@@ -56,6 +70,12 @@ public class Board {
         }
     }
 
+    /**
+     * Remove the tiles taken off the board.
+     * @param coordinates coordinate of the tiles that
+     * @return list of the taken tiles.
+     * @throws NullTileException exception if someone has tried to take a tile but on the board there isn't that tile.
+     */
     public List<Tile> getTiles(List<Coordinates> coordinates) throws NullTileException{
         List<Tile> result = new ArrayList<Tile>();
         for (Coordinates coordinate : coordinates) {
@@ -71,11 +91,16 @@ public class Board {
         return result;
     }
 
+    /**
+     * Deploy n tiles on the board in the empty spaces.
+     * @param bag it contains all the tiles left for the game.
+     * @param n number of tiles that are going to be deployed on the board.
+     */
     public void setTiles(Bag bag,int n){
         ArrayList<Tile> toDeploy = bag.draw(n);
         int index = n-1;
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
+        for(int i=0;i<matrix_size;i++){
+            for(int j=0;j<matrix_size;j++){
                 if(this.board[i][j].getStatus()){
                     if(this.board[i][j].getTile()==null){
                         this.board[i][j].setTile(toDeploy.get(index));
@@ -86,11 +111,16 @@ public class Board {
         }
     }
 
+    /**
+     * Check if there aren't playable move left on the board.
+     * @param bag it contains all the tiles left for the game.
+     * @throws CantRefillBoardException exception thrown if there aren't enough tiles in the bag to refill the board.
+     */
     public void checkRefill(Bag bag) throws CantRefillBoardException{
         boolean lonelyTile = true;
         outerloop:
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
+        for(int i=0;i<matrix_size;i++){
+            for(int j=0;j<matrix_size;j++){
                 if(this.board[i][j].getStatus()){
                     if( !((this.board[i][j].getTile())==null) ){
                         Coordinates c1 = new Coordinates(i,j);
@@ -108,6 +138,11 @@ public class Board {
     }
 
 
+    /**
+     * List of useful values of the board.
+     * @param json it contains all board's information.
+     * @return list of useful values of the board.
+     */
     private static  List<Integer> getValueList (JsonArray json){
         List<Integer> list = new ArrayList<Integer>();
         for (int i = 1; i <=json.size(); i++)
@@ -115,12 +150,24 @@ public class Board {
         return list;
     }
 
+    /**
+     *Standard get method for Cell class
+     * @param coordinates coordinates that indicate the cell that want to be taken.
+     * @return cell selected.
+     */
     private Cell getCell(Coordinates coordinates) {
         int x = coordinates.x();
         int y = coordinates.y();
         return board[x][y];
     }
 
+    /**
+     * Overload of checkAdjacent.
+     * @param c1 first tile.
+     * @param c2 second tile.
+     * @param c3 third tile.
+     * @return true if yes, false if no.
+     */
     private boolean checkAdjacent(Coordinates c1,Coordinates c2, Coordinates c3){
         int x1 = c1.x();
         int y1 = c1.y();
@@ -131,6 +178,13 @@ public class Board {
         return x1 == x2 && x2 == x3 && abs(y1 - y2) == 1 && abs(y2 - y3) == 1 ||
                 y1 == y2 && y2 == y3 && abs(x1 - x2) == 1 && abs(x2 - x3) == 1;
     }
+
+    /**
+     * Check if the selected tiles are adjacent.
+     * @param c1 first tile.
+     * @param c2 second tile.
+     * @return true if yes, false if no.
+     */
     private boolean checkAdjacent(Coordinates c1, Coordinates c2){
         int x1 = c1.x();
         int y1 = c1.y();
@@ -140,6 +194,11 @@ public class Board {
                 y1 - y2 == 0 && abs(x1 - x2) == 1;
     }
 
+    /**
+     * Check if there is at least a free space around the tile.
+     * @param c1 coordinates of the tile.
+     * @return true if yes, false if no.
+     */
     private boolean checkSpaceTile(Coordinates c1){
         int x1 = c1.x();
         int y1 = c1.y();
@@ -160,17 +219,37 @@ public class Board {
         Coordinates check3 = new Coordinates(x1,y1-1);
         return !getCell(check3).getStatus() || ( getCell(check3).getStatus() && getCell(check3).getTile() == (null) );
     }
+
+    /**
+     * Overload of checkSpaceTile.
+     * @param c1 first tile.
+     * @param c2 second tile.
+     * @return true if yes, false if no.
+     */
     private boolean checkSpaceTile(Coordinates c1, Coordinates c2){
         boolean tile1 = checkSpaceTile(c1);
         boolean tile2 = checkSpaceTile(c2);
         return tile1 && tile2;
     }
+
+    /**
+     * Overload of checkSpaceTile.
+     * @param c1 first tile.
+     * @param c2 second tile.
+     * @param c3 third tile.
+     * @return true if yes, false if no.
+     */
     private boolean checkSpaceTile(Coordinates c1, Coordinates c2, Coordinates c3){
         boolean tile12 = checkSpaceTile(c1,c2);
         boolean tile3 = checkSpaceTile(c3);
         return tile12  && tile3;
     }
 
+    /**
+     * Check if the tile hasn't any other tile around agreeing with rules of the game.
+     * @param c1 coordinate of tile selected.
+     * @return true if yes, false if no.
+     */
     private boolean checkLonelyTile(Coordinates c1) {
         int x1 = c1.x();
         int y1 = c1.y();
@@ -206,13 +285,21 @@ public class Board {
         return refill == 4;
     }
 
+    /**
+     * Check if the tile selected is on the side of the board.
+     * @param c1 coordinate of tile selected.
+     * @return true if yes, false if no.
+     */
     private boolean tileOnEdge(Coordinates c1){
         int x1 = c1.x();
         int y1 = c1.y();
         return x1==0 || y1==0 || x1==matrix_size-1 || y1==matrix_size-1;
     }
 
-    // method useful only for test
+    /**
+     * Method useful just for tests.
+     * @param tilesTaken tile removed from the board during the entire game.
+     */
     public void setTilesTaken(int tilesTaken) {
         this.tilesTaken = tilesTaken;
     }
