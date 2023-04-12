@@ -57,8 +57,8 @@ public class SquareGoal extends CommonGoal {
 
         int countGroup = 0;
         Shelf shelf = player.getMyShelf();
-        for (int i = 5; i >= dimSquare - 1; i--) {
-            for (int j = 0; j <= 5 - dimSquare; j++) {
+        for (int i = dimSquare - 1; i < shelf.numberRows(); i++) {
+            for (int j = 0; j <= shelf.numberColumns() - dimSquare; j++) {
                 if (shelf.getTile(i,j) == null) {
                     continue;
                 }

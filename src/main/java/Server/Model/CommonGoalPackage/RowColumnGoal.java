@@ -65,9 +65,9 @@ public class RowColumnGoal extends CommonGoal {
 
         // check column goal
         if (numColumn != -1) {
-            for (int j = 0; j <= 4; j++) {
+            for (int j = 0; j < shelf.numberColumns(); j++) {
                 List<Color> colorColumn = new ArrayList<>();
-                for (int i = 5; i >= 0; i--) {
+                for (int i = 0; i < shelf.numberRows(); i++) {
                     if (shelf.getTile(i, j) != null) {
                         colorColumn.add(shelf.getTile(i, j).getTileColor());
                     } else {
@@ -75,7 +75,7 @@ public class RowColumnGoal extends CommonGoal {
                     }
                 }
 
-                if (colorColumn.size() == 6) {
+                if (colorColumn.size() == shelf.numberRows()) {
                     if (maxDifferent == -1 && colorColumn.stream().distinct().count() == 1) {
                         countColumn++;
                     } else if (maxDifferent != -1 && colorColumn.stream().distinct().count() <= maxDifferent) {
@@ -93,9 +93,9 @@ public class RowColumnGoal extends CommonGoal {
 
         // check rowGoal
         if (numRow != -1) {
-            for (int i = 5; i >= 0; i--) {
+            for (int i = 0; i < shelf.numberRows(); i++) {
                 List<Color> colorRow = new ArrayList<>();
-                for (int j = 0; j <= 4; j++) {
+                for (int j = 0; j < shelf.numberColumns(); j++) {
                     if (shelf.getTile(i, j) != null) {
                         colorRow.add(shelf.getTile(i, j).getTileColor());
                     } else {
@@ -103,7 +103,7 @@ public class RowColumnGoal extends CommonGoal {
                     }
                 }
 
-                if (colorRow.size() == 5) {
+                if (colorRow.size() == shelf.numberColumns()) {
                     if (maxDifferent == -1 && colorRow.stream().distinct().count() == 1) {
                         countRow++;
                     } else if (maxDifferent != -1 && colorRow.stream().distinct().count() <= maxDifferent) {

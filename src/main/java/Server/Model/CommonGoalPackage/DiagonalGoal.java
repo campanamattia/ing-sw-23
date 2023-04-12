@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+import static java.lang.Math.min;
+
 
 /**
  * The DiagonalGoal class represents a goal where players must create groups of tiles in a cross shape on their shelf.
@@ -52,12 +54,13 @@ public class DiagonalGoal extends CommonGoal {
 
         Shelf shelf = player.getMyShelf();
         int countGroup = 0;
+        int min = min(shelf.numberRows(),shelf.numberColumns());
 
         // creating list for count the four different way to found diagonal
         List<Color> lSx1 = new ArrayList<>(), lSx2 = new ArrayList<>(), lDx1 = new ArrayList<>(), lDx2 = new ArrayList<>();
 
-        for (int i = 0; i <= 5; i++) {
-            for (int j = 0; j <= 4; j++ ) {
+        for (int i = 0; i < shelf.numberRows(); i++) {
+            for (int j = 0; j < shelf.numberColumns(); j++ ) {
 
                 if (shelf.getTile(i,j) == null) {
                     continue;
@@ -69,25 +72,25 @@ public class DiagonalGoal extends CommonGoal {
                 if (i == j + 1) {
                     lSx2.add(shelf.getTile(i,j).getTileColor());
                 }
-                if (i + j == 4) {
+                if (i + j == min - 1) {
                     lDx1.add(shelf.getTile(i,j).getTileColor());
                 }
-                if (i + j == 5) {
+                if (i + j == min) {
                     lDx2.add(shelf.getTile(i,j).getTileColor());
                 }
             }
         }
 
-        if (lSx1.stream().distinct().count() == 1 && lSx1.size() == 5) {
+        if (lSx1.stream().distinct().count() == 1 && lSx1.size() == min) {
             countGroup++;
         }
-        if (lSx2.stream().distinct().count() == 1 && lSx2.size() == 5) {
+        if (lSx2.stream().distinct().count() == 1 && lSx2.size() == min) {
             countGroup++;
         }
-        if (lDx1.stream().distinct().count() == 1 && lDx1.size() == 5) {
+        if (lDx1.stream().distinct().count() == 1 && lDx1.size() == min) {
             countGroup++;
         }
-        if (lDx2.stream().distinct().count() == 1 && lDx2.size() == 5) {
+        if (lDx2.stream().distinct().count() == 1 && lDx2.size() == min) {
             countGroup++;
         }
 

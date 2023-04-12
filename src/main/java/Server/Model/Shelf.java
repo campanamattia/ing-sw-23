@@ -62,4 +62,12 @@ public class Shelf {
     public void placeTile(Tile tile, int i, int j) {
         myShelf[i][j] = tile;
     }
+
+    public int numberRows () {
+        return myShelf.length;
+    }
+
+    public int numberColumns() {
+        return myShelf[0].length;
+    }
 }
