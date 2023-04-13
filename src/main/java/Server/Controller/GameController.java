@@ -94,7 +94,7 @@ public class GameController implements ManageConnection {
                 this.game.setCurrentPlayer(this.phaseController.getCurrentPlayer());
                 break;
             }catch (GamePhaseException e){
-                if (e.equals(new EndGameException())) {
+                if (e instanceof EndGameException) {
                     this.game.setPhase(GamePhase.ENDED);
                     this.game.setLeaderboard(new EndedMatch().doRank(this.phaseController.getPlayers()));
                 }
