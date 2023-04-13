@@ -51,16 +51,17 @@ public class CrossGoal extends CommonGoal {
         }
         Shelf shelf = player.getMyShelf();
         int countGroup = 0;
-        for (int i = 4; i >= 1; i--) {
-            for (int j = 1; j <= 3; j++) {
-                if ((shelf.getTile(i, j) != null) &&
-                        (shelf.getTile(i-1, j-1) != null) && (shelf.getTile(i-1, j+1) != null) &&
-                        (shelf.getTile(i+1, j-1) != null) && (shelf.getTile(i+1, j+1) != null) &&
-                        (shelf.getTile(i, j).getTileColor() == shelf.getTile(i - 1, j - 1).getTileColor()) &&
-                        (shelf.getTile(i, j).getTileColor() == shelf.getTile(i - 1, j + 1).getTileColor()) &&
-                        (shelf.getTile(i, j).getTileColor() == shelf.getTile(i + 1, j - 1).getTileColor()) &&
-                        (shelf.getTile(i, j).getTileColor() == shelf.getTile(i + 1, j + 1).getTileColor())) {
-                    countGroup++;
+        for (int i = 1; i < shelf.numberRows() - 1; i++) {
+            for (int j = 1; j < shelf.numberColumns() - 1 ; j++) {
+                try {
+                    if ((shelf.getTile(i, j).getTileColor() == shelf.getTile(i - 1, j - 1).getTileColor()) &&
+                            (shelf.getTile(i, j).getTileColor() == shelf.getTile(i - 1, j + 1).getTileColor()) &&
+                            (shelf.getTile(i, j).getTileColor() == shelf.getTile(i + 1, j - 1).getTileColor()) &&
+                            (shelf.getTile(i, j).getTileColor() == shelf.getTile(i + 1, j + 1).getTileColor())) {
+                        countGroup++;
+                    }
+                } catch (NullPointerException ignored) {
+
                 }
             }
         }

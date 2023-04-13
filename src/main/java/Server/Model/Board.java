@@ -50,20 +50,18 @@ public class Board {
     public void convalidateMove(@NotNull List<Coordinates> coordinates) throws NoValidMoveException {
         boolean validMove = false;
         if(coordinates.size() == 1){
-            // controllo solo che abbia un lato libero
             validMove = checkSpaceTile(coordinates.get(0));
         } else if (coordinates.size() == 2) {
             validMove = checkAdjacent(coordinates.get(0),coordinates.get(1)) && checkSpaceTile(coordinates.get(0),coordinates.get(1));
         } else if (coordinates.size() == 3) {
             validMove = checkAdjacent(coordinates.get(0),coordinates.get(1),coordinates.get(2)) && checkSpaceTile(coordinates.get(0),coordinates.get(1),coordinates.get(2));
         }
-        // da sistemare con le eccezioni
         if(!validMove){
             throw new NoValidMoveException();
         }
     }
 
-    public List<Tile> getTiles(List<Coordinates> coordinates) throws NullTileException{
+    public List<Tile> getTiles(List<Coordinates> coordinates) throws NullTileException {
         List<Tile> result = new ArrayList<Tile>();
         for (Coordinates coordinate : coordinates) {
             Cell selected = getCell(coordinate);
@@ -93,7 +91,7 @@ public class Board {
         }
     }
 
-    public void checkRefill(Bag bag) throws CantRefillBoardException{
+    public void checkRefill(Bag bag) throws CantRefillBoardException {
         boolean lonelyTile = true;
         outerloop:
         for(int i=0;i<9;i++){

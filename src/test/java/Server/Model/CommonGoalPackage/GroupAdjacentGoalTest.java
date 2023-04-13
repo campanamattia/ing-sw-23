@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
+import static Server.Model.CommonGoalPackage.GroupAdjacentGoal.countSameAdjacent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -41,6 +42,7 @@ class GroupAdjacentGoalTest {
         Random random = new Random();
         pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
         player = new Player("ale", pGoal);
+        shelf = player.getMyShelf();
 
         tokenList = new Stack<>();
         tokenList.add(2);
@@ -60,7 +62,6 @@ class GroupAdjacentGoalTest {
         jsonObject.addProperty("numAdjacent", 4);
         groupAdjacentGoal = new GroupAdjacentGoal(tokenList, jsonObject);
 
-        shelf = player.getMyShelf();
 
         shelf.placeTile(new Tile(Color.PINK),2,1);
         shelf.placeTile(new Tile(Color.PINK),3,0);
@@ -95,7 +96,6 @@ class GroupAdjacentGoalTest {
         jsonObject.addProperty("numAdjacent", 2);
         groupAdjacentGoal = new GroupAdjacentGoal(tokenList, jsonObject);
 
-        shelf = player.getMyShelf();
 
         shelf.placeTile(new Tile(Color.YELLOW),2,3);
         shelf.placeTile(new Tile(Color.YELLOW),2,4);
@@ -130,8 +130,6 @@ class GroupAdjacentGoalTest {
         jsonObject.addProperty("numAdjacent", 4);
         groupAdjacentGoal = new GroupAdjacentGoal(tokenList, jsonObject);
 
-        shelf = player.getMyShelf();
-
         shelf.placeTile(new Tile(Color.YELLOW), 2, 3);
         shelf.placeTile(new Tile(Color.YELLOW), 2, 4);
         shelf.placeTile(new Tile(Color.YELLOW), 5, 3);
@@ -165,7 +163,6 @@ class GroupAdjacentGoalTest {
         jsonObject.addProperty("numAdjacent", 2);
         groupAdjacentGoal = new GroupAdjacentGoal(tokenList, jsonObject);
 
-        shelf = player.getMyShelf();
 
         shelf.placeTile(new Tile(Color.YELLOW), 2, 3);
         shelf.placeTile(new Tile(Color.YELLOW), 2, 4);
@@ -194,6 +191,62 @@ class GroupAdjacentGoalTest {
         assertEquals(2,groupAdjacentGoal.getScoringToken().size());
     }
 
+    @Test
+    public void testCountAdjacent () {
+        jsonObject.addProperty("numGroup", 6);
+        jsonObject.addProperty("numAdjacent", 2);
+        groupAdjacentGoal = new GroupAdjacentGoal(tokenList, jsonObject);
+
+        boolean [][] visited = new boolean[shelf.numberRows()][shelf.numberColumns()];
+
+        shelf.placeTile(new Tile(Color.BLUE), 0, 0);
+        shelf.placeTile(new Tile(Color.BLUE), 1, 0);
+        shelf.placeTile(new Tile(Color.BLUE), 2, 0);
+        shelf.placeTile(new Tile(Color.BLUE), 2, 1);
+        shelf.placeTile(new Tile(Color.BLUE), 1, 1);
+
+        int count = countSameAdjacent(shelf, visited, 0,0,Color.BLUE);
+
+        assertEquals(5,count);
+    }
+
+    @Test
+    public void testCountAdjacent2 () {
+        jsonObject.addProperty("numGroup", 6);
+        jsonObject.addProperty("numAdjacent", 2);
+        groupAdjacentGoal = new GroupAdjacentGoal(tokenList, jsonObject);
+
+        boolean [][] visited = new boolean[shelf.numberRows()][shelf.numberColumns()];
+
+        shelf.placeTile(new Tile(Color.BLUE), 0, 0);
+        shelf.placeTile(new Tile(Color.BLUE), 1, 0);
+        shelf.placeTile(new Tile(Color.BLUE), 2, 0);
+        shelf.placeTile(new Tile(Color.BLUE), 2, 1);
+        shelf.placeTile(new Tile(Color.BLUE), 1, 1);
+
+        int count = countSameAdjacent(shelf, visited, 1,1,Color.BLUE);
+
+        assertEquals(5,count);
+    }
+
+    @Test
+    public void testCountAdjacent3 () {
+        jsonObject.addProperty("numGroup", 6);
+        jsonObject.addProperty("numAdjacent", 2);
+        groupAdjacentGoal = new GroupAdjacentGoal(tokenList, jsonObject);
+
+        boolean [][] visited = new boolean[shelf.numberRows()][shelf.numberColumns()];
+
+        shelf.placeTile(new Tile(Color.BLUE), 0, 0);
+        shelf.placeTile(new Tile(Color.YELLOW), 1, 0);
+        shelf.placeTile(new Tile(Color.YELLOW), 2, 0);
+        shelf.placeTile(new Tile(Color.BLUE), 2, 1);
+        shelf.placeTile(new Tile(Color.BLUE), 1, 1);
+
+        int count = countSameAdjacent(shelf, visited, 1,1,Color.BLUE);
+
+        assertEquals(2,count);
+    }
 
     private JsonArray decoPersonal() throws FileNotFoundException {
         Gson gson = new Gson();

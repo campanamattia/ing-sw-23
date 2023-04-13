@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import static java.lang.Math.min;
+
 /**
  * The Staircase class represents a goal where players must create a staircase on their shelf.
  * It extends the CommonGoal class.
@@ -48,18 +50,19 @@ public class StaircaseGoal extends CommonGoal {
 
         Shelf shelf = player.getMyShelf();
         int countSx1 = 0, countSx2 = 0, countDx1 = 0, countDx2 = 0;
+        int min = min(shelf.numberRows(),shelf.numberColumns());
 
         //limit case for the method LastTile()
         if (shelf.getTile(0, 0) != null) {
             countSx1++;
         }
 
-        if (shelf.getTile(0, 4) != null) {
+        if (shelf.getTile(0, shelf.numberColumns() - 1) != null) {
             countDx1++;
         }
 
-        for (int i = 1; i <= 5; i++) {
-            for (int j = 0; j <= 4; j++) {
+        for (int i = 1; i < shelf.numberRows(); i++) {
+            for (int j = 0; j < shelf.numberColumns(); j++) {
 
                 if (shelf.getTile(i, j) == null) {
                     continue;
@@ -71,16 +74,16 @@ public class StaircaseGoal extends CommonGoal {
                 if (i == j + 1 && lastTile(shelf, i , j)) {
                     countSx2++;
                 }
-                if (i + j == 4 && lastTile(shelf, i , j)) {
+                if (i + j == min - 1 && lastTile(shelf, i , j)) {
                     countDx1++;
                 }
-                if (i + j == 5 && lastTile(shelf, i , j)) {
+                if (i + j == min && lastTile(shelf, i , j)) {
                     countDx2++;
                 }
             }
         }
 
-        if (countSx1 == 5 || countSx2 == 5 || countDx1 == 5 || countDx2 ==5) {
+        if (countSx1 == min || countSx2 == min || countDx1 == min || countDx2 == min) {
             accomplished.add(player.getID());
             player.updateScore(scoringToken.pop());
         }

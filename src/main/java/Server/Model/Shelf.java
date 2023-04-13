@@ -1,12 +1,10 @@
 package Server.Model;
 
 import Exception.Player.ColumnNotValidException;
-import com.google.gson.annotations.Expose;
 
 import java.util.List;
 
 public class Shelf {
-    @Expose
     private Tile[][] myShelf;
 
     public Shelf() {
@@ -14,13 +12,18 @@ public class Shelf {
     }
 
     public void insert(int n, List<Tile> tiles) throws ColumnNotValidException {
-        int tmp = tiles.size();
 
-        if(!(0<=n && n<=4) || this.myShelf[tiles.size()-1][n] != null )
+        int tmp = tiles.size();
+        int full = 0;
+
+        if(this.myShelf[tiles.size()-1][n] != null) 
             throw new ColumnNotValidException(n);
-        for(int i=5; i>=0 ; i-- ){
+        for(int i=5; i>0 ; i-- ){
             if(this.myShelf[i][n] == null){
-                this.myShelf[i][n] = tiles.remove(0);
+                if(full<tmp) {
+                    this.myShelf[i][n] = tiles.get(full);
+                    full++;
+                }
             }
         }
     }
@@ -33,10 +36,10 @@ public class Shelf {
     }
 
     public int checkMaxTiles(){
-        int count = 0;
         int max = 0;
 
         for(int j=0; j<5; j++){
+            int count = 0;
             for(int i=0; i<6; i++){
                 if(this.myShelf[i][j] == null ) 
                   count++;
@@ -63,5 +66,13 @@ public class Shelf {
     //method create only for create shelf for testing commonGoal
     public void placeTile(Tile tile, int i, int j) {
         myShelf[i][j] = tile;
+    }
+
+    public int numberRows () {
+        return myShelf.length;
+    }
+
+    public int numberColumns() {
+        return myShelf[0].length;
     }
 }
