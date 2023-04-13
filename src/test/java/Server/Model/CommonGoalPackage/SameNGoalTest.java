@@ -1,6 +1,6 @@
 package Server.Model.CommonGoalPackage;
 
-import Server.Exception.CommonGoal.NullPlayerException;
+import Exception.CommonGoal.NullPlayerException;
 import Server.Model.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

@@ -1,14 +1,11 @@
 package Server.Model;
 
 import Enumeration.Color;
-import Server.Exception.Player.ColumnNotValidException;
+import Exception.Player.ColumnNotValidException;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ShelfTest {
 

@@ -1,4 +1,4 @@
-package Server.Exception;
+package Exception;
 
 public abstract class PlayerException extends Exception{
     public PlayerException(String message) {

@@ -1,6 +1,6 @@
 package Server.Model.CommonGoalPackage;
 
-import Server.Exception.CommonGoal.NullPlayerException;
+import Exception.CommonGoal.NullPlayerException;
 import Server.Model.Color;
 import Server.Model.PersonalGoal;
 import Server.Model.Player;

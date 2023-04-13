@@ -19,7 +19,7 @@ public class PlayerAction implements CMD {
     }
 
     @Override
-    public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException{
+    public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
         game.insertTiles(sort, tiles, column);
     }
 

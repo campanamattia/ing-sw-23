@@ -1,7 +1,7 @@
 package Server.Model;
 
-import Server.Exception.BoardException;
-import Server.Exception.PlayerException;
+import Exception.BoardException;
+import Exception.PlayerException;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

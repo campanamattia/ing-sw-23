@@ -1,4 +1,4 @@
-package Server.Exception;
+package Exception;
 
 public class EndingPhase extends Exception{
     public EndingPhase(){

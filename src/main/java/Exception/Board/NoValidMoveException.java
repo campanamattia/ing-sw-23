@@ -1,7 +1,5 @@
-package Server.Exception.Board;
-import Server.Exception.BoardException;
-
-import Server.Model.Coordinates;
+package Exception.Board;
+import Exception.BoardException;
 
 public class NoValidMoveException extends BoardException {
     public NoValidMoveException(){

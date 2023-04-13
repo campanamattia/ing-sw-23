@@ -1,7 +1,7 @@
 package Server.Controller;
 
-import Server.Exception.*;
-import Server.Model.CMD;
+import Exception.*;
+import Interface.CMD;
 import Server.Model.Coordinates;
 import Server.Model.GameModel;
 import Server.Model.Tile;
