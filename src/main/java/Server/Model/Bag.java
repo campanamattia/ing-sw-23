@@ -1,18 +1,16 @@
 package Server.Model;
 
+import Enumeration.Color;
+import com.google.gson.annotations.Expose;
+
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
-/*
- *  capacity: è unico, il numero massimo di tessere che contiene la bag ( 132 a inizio partita )
- *  size: dimensione istantanea
- */
-
 public class Bag {
-
+    @Expose
     public final int CAPACITY = 132;
+    @Expose
     private ArrayBlockingQueue<Tile> bag;
-
 
     public Bag() {
         Tile[] array = new Tile[CAPACITY];
@@ -32,6 +30,10 @@ public class Bag {
         Collections.addAll(bag, array);
     }
 
+    public Bag(ArrayBlockingQueue<Tile> bag){
+        this.bag=bag;
+    }
+
     public int getLastTiles() {
         return bag.size();
     }
@@ -39,13 +41,8 @@ public class Bag {
     public ArrayList<Tile> draw(int n){
         ArrayList<Tile> extraction = new ArrayList<Tile>();
         for(int i=0;i<n;i++){
-            if(!bag.isEmpty()) {
-                // metodo poll(): recupero ed elimino il primo elemento di bag e lo metto in extracion
-                extraction.add(bag.poll());
-            }else{
-                /* empty exception */
-                return null; //da sostituire con eccezione
-            }
+            extraction.add(bag.poll());
+
         }
         return extraction;
     }
@@ -64,5 +61,9 @@ public class Bag {
     @Override
     public String toString() {
         return super.toString();
+    }
+
+    public ArrayBlockingQueue<Tile> getBag() {
+        return bag;
     }
 }

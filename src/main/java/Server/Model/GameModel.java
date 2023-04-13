@@ -1,29 +1,111 @@
 package Server.Model;
 
-import Server.Exception.BoardException;
-import Server.Exception.PlayerException;
+import Enumeration.GamePhase;
+import Exception.BoardException;
+import Exception.ChatException;
+import Exception.Player.NonConformingInputParametersException;
+import Exception.PlayerException;
+import Exception.PlayerNotFoundException;
+import Interface.CMD;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.Expose;
 import com.google.gson.stream.JsonReader;
 
-import Exception.*;
-import java.io.*;
-import java.util.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
-public class GameModel implements CMD{
-
-    private UUID uuid = UUID.randomUUID();
+/**
+ Represents the game model, contain information about the game state, players, board, and chat.
+ */
+public class GameModel {
+    /**
+     * the unique identifier of the game session
+     */
+    @Expose
+    private UUID uuid;
+    /**
+     * the current phase of the game
+     */
+    @Expose
+    private GamePhase phase;
+    /**
+     * the total number of players in the game
+     */
+    @Expose
     private final int nPlayers;
+    /**
+     * the ID of the first player who starts the game
+     */
+    @Expose
     private final String firstPlayer;
-    private List<Player> players;
-    private Bag bag;
-    private Board board;
-    private ChatRoom chatRoom;
-    private List<CommonGoal> commonGoals;
+    /**
+     * the current player of the game
+     */
+    @Expose
+    private Player currentPlayer;
 
-    public GameModel(int nPlayers, List<String> players) throws FileNotFoundException {
-        this.nPlayers = nPlayers;
+    /**
+     * list of all players in the game
+     */
+    @Expose
+    private List<Player> players;
+    /**
+     * the list of the two common goals for the game
+     */
+    @Expose
+    private List<CommonGoal> commonGoals;
+    /**
+     * the final leaderboard for the game
+     * (null if the game is still ongoing)
+     */
+    @Expose
+    private List<Rank> leaderboard = null;
+
+    /**
+     * the bag that contains the tiles used in the game
+     */
+    @Expose
+    private Bag bag;
+    /**
+     * the board of the game
+     */
+    @Expose
+    private Board board;
+    /**
+     * the chat room for the players to communicate with each other
+     */
+    @Expose
+    private ChatRoom chatRoom;
+
+    /**
+     * the file path where the game is saved
+     */
+    @Expose
+    private final String filepath;
+
+    /**
+     Creates a new instance of GameModel class using the specified unique identifier and the list of players.
+     The method initializes all the class fields and generates the game objects (board, players, common goals)
+     based on the JSON configuration files. It also sets the initial state of the game to STARTING and
+     the current player to the first player in the list.
+     @param uuid the unique identifier of the game
+     @param players the list of names of players to be added to the game
+     @throws FileNotFoundException if the configuration files are not found or updateStatus() fail
+     */
+    public GameModel(UUID uuid,  List<String> players) throws IOException {
+        this.uuid = uuid;
+        this.phase = GamePhase.STARTING;
+        this.nPlayers = players.size();
         this.firstPlayer = players.get(0);
 
         this.bag = new Bag();
@@ -40,25 +122,87 @@ public class GameModel implements CMD{
         JsonArray array = decoPersonal("src/main/resources/personalgoal.json");
         Random random = new Random();
         for (String tmp : players){
-            PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())));
+            PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
             this.players.add(new Player(tmp, pGoal));
         }
+        this.currentPlayer = this.players.get(0);
 
         //creating 2 commonGoal
         generateCommonGoal("src/main/resources/commonGoal.json");
 
         // updating instantly the state
+        this.filepath = buildPath();
         updateStatus();
+        this.phase = GamePhase.ONGOING;
     }
 
-    // TODO: 24/03/2023
-    /* 
-    public GameModel(String filepath) {
-
-    }
-
+    /**
+     This class represents a game model, which contains information about a game, including the game's UUID,
+     current phase, number of players, first player, current player, list of players, common goals, leaderboard,
+     bag, board, chat room, and file path.
+     It's needed when GameController needs to reload a game that has already started and never ended
+     @param uuid the unique identifier of the game
+     @param phase the current phase of the game
+     @param nPlayers the number of players in the game
+     @param firstPlayer the first player in the game
+     @param currentPlayer the current player in the game
+     @param players the list of players in the game
+     @param commonGoals the list of common goals in the game
+     @param leaderboard the leaderboard of the game
+     @param bag the bag of tiles in the game
+     @param board the board of the game
+     @param chatRoom the chat room of the game
+     @param filepath the file path of the game
      */
+    public GameModel(UUID uuid, GamePhase phase, int nPlayers, String firstPlayer, Player currentPlayer, List<Player> players, List<CommonGoal> commonGoals, List<Rank> leaderboard, Bag bag, Board board, ChatRoom chatRoom, String filepath) {
+        this.uuid = uuid;
+        this.phase = phase;
+        this.nPlayers = nPlayers;
+        this.firstPlayer = firstPlayer;
+        this.currentPlayer = currentPlayer;
+        this.players = players;
+        this.commonGoals = commonGoals;
+        this.leaderboard = leaderboard;
+        this.bag = bag;
+        this.board = board;
+        this.chatRoom = chatRoom;
+        this.filepath = filepath;
+    }
 
+    /**
+     Builds a unique pathname for the game file by concatenating the IDs of all the players and the game UUID.
+     @return a string representing the unique pathname for the game file
+     */
+    private String buildPath(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("src/main/resources/game/");
+        for(Player tmp : this.players)
+            stringBuilder.append(tmp.getID()).append("_");
+        stringBuilder.append(LocalDate.now()).append(".json");
+        return stringBuilder.toString();
+    }
+
+    /**
+     Updates the status of the current GameModel object by converting it to JSON format
+     and writing it to a file specified by the filepath attribute.
+     @throws IOException if there is an error writing to the file.
+     */
+    public void updateStatus() throws IOException {
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        String json = gson.toJson(this);
+        FileWriter writer = new FileWriter(this.filepath);
+        writer.write(json);
+        writer.close();
+        System.out.println("Successfully update the json");
+    }
+
+    /**
+     This method reads a JSON file containing the information for a board and returns the JSON object
+     corresponding to the board for the specified number of players.
+     @param filepath the path to the JSON file containing the board information
+     @return the JSON object representing the board for the specified number of players
+     @throws FileNotFoundException if the specified file is not found
+     */
     private JsonObject decoBoard(String filepath) throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
@@ -67,6 +211,13 @@ public class GameModel implements CMD{
         return json.getAsJsonObject(Integer.toString(this.nPlayers));
     }
 
+    /**
+     Reads a JSON file containing an array of PersonalGoal objects and returns a JsonArray
+     representing the array.
+     @param filepath the path of the JSON file to read
+     @return a JsonArray containing the PersonalGoal objects read from the file
+     @throws FileNotFoundException if the file at the given filepath cannot be found
+     */
     private JsonArray decoPersonal(String filepath) throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
@@ -74,6 +225,13 @@ public class GameModel implements CMD{
         return gson.fromJson(reader, JsonArray.class);
     }
 
+    /**
+     This method generates two common goals for the game by reading a json file from the specified filepath.
+     The method gets the common goals and the corresponding scoring tokens from the json file, and selects a random common goal to assign to each of the two goals.
+     The selected common goals are then added to the game's list of common goals.
+     @param filepath the filepath of the json file containing the common goals and scoring tokens
+     @throws FileNotFoundException if the specified filepath is not found
+     */
     private void generateCommonGoal(String filepath) throws FileNotFoundException{
         Gson gson = new Gson();
         JsonReader reader;
@@ -86,103 +244,184 @@ public class GameModel implements CMD{
         this.commonGoals.add(CommonGoalFactory.getCommonGoal(scoringToken, array.remove(random.nextInt(array.size())).getAsJsonObject()));
     }
 
-    private static List<Integer> getAsList(JsonArray array){
+    /**
+     Returns a list of integers (scoringTokens) given a JsonArray.
+     The integers are added to the list in reverse order because they are saved in ascending
+     order but are assigned in descending order .
+     @param array the JsonArray to be converted to a list of integers.
+     @return a list of integers in reverse order from the JsonArray.
+     */
+    private List<Integer> getAsList(JsonArray array){
         List<Integer> list = new ArrayList<Integer>();
         for (int i = 1; i <=array.size(); i++)
             list.add(array.get(array.size()-i).getAsInt());
         return list;
     }
-    
-    @Override
+
+    /**
+     This method allows to retrieve the tiles at the given coordinates on the board.
+     It first validates that the move is legal by calling the convalidateMove method of the board object.
+     If the move is valid, it returns the tiles at the given coordinates using the getTiles method of the board object.
+     @param coordinates a list of Coordinates objects representing the tiles to retrieve
+     @return a list of Tile objects representing the tiles at the given coordinates
+     @throws BoardException if the move is not valid according to the rules of the game
+     */
     public List<Tile> selectedTiles(List<Coordinates> coordinates) throws BoardException {
-        try {
-            this.board.convalidateMove(coordinates);
-            return this.board.getTiles(coordinates);
-        } catch (BoardException exception) {
-            throw exception;
-        }
+        this.board.convalidateMove(coordinates);
+        return this.board.getTiles(coordinates);
     }
 
-    @Override
-    public void insertTiles(String player, List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
-        //re-order the list of tile
+    /**
+     This method is used to insert tiles on the player's personal shelf.
+     @param sort a list of integers representing the order in which the tiles should be inserted
+     @param tiles a list of tiles that the player wants to insert
+     @param column an integer representing the column of the personal shelf where the tiles should be inserted
+     @throws PlayerException if the player doesn't have enough space in their personal shelf
+     @throws NonConformingInputParametersException if the player didn't insert the correct parameters
+     */
+    public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
+        if(sort.size()!=tiles.size()) throw new NonConformingInputParametersException();
         for (Integer integer : sort) tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
-        // look for the current player
-        Player executor;
-        for(Player temp : this.players){
-            if(temp.equals(player)){
-                executor = temp;
-                break;
-            }
-        }
-        Shelf temp_shelf = executor.getShelf(); //give a look at the exception
-       try{
-           temp_shelf.insert(column-1, tiles);
-       } catch (PlayerException exception){
-           throw exception;
-       }
+        this.currentPlayer.getMyShelf().insert(column-1, tiles);
     }
 
-    @Override
-    public void writeChat(String message) {
+    /**
+     Writes a message in the chat room.
+     The message is a serialized JSON representation of a ChatMessage object.
+     @param message the message to be written.
+     */
+    public void writeChat(String message) throws ChatException {
         Gson gson = new Gson();
         ChatMessage text = gson.fromJson(message, ChatMessage.class);
+        if(text.content().equals(""))
+            throw new ChatException();
         this.chatRoom.addMessage(text);
     }
 
-        public String getID() {
-            return ID;
-        }
-
-        public int getScore() {
-            return score;
-        }
-    }
-    // TODO: 24/03/2023  
-    public List<Rank<String, Integer>> finalRank(){
+    /**
+     Returns the player with the specified ID.
+     @param id the ID of the player
+     @return the player with the specified ID
+     @throws PlayerNotFoundException if the player with the specified ID is not found
+     */
+    public Player getPlayer(String id) throws PlayerNotFoundException{
         for(Player tmp : this.players)
-            tmp.endGame();
-        List<Rank<String, Integer>> rank = new ArrayList<>();
-        Player min;
-        while(rank.size() < this.nPlayers){
-            min = null;
-            for(Player tmp : this.players){
-                if(min ==  null)
-                    min = tmp;
-                else if (min.getScore() > tmp.getScore())
-                    min = tmp;
-            }
-            this.players.remove(min);
-            rank.add(new Rank<>(min.getID(), min.getScore()));
-        }
-        return rank;
+            if(tmp.equals(id)) return tmp;
+        throw new PlayerNotFoundException(id);
     }
 
-    // TODO: 24/03/2023  
-    public GameModel reloadGame(String hash){
-        /*
-        reload the game that crashed
-        return new GameModel(hash);
-        */
-    }
-    // TODO: 24/03/2023  
-    private static void updateStatus(){
-        /*
-        update json in the resource
-        the first time a generate the file json, where the name is composed by
-        a hashcode that I will use tu identify the match's .json file
-        */
+
+    /**
+     Sets the current player.
+     @param currentPlayer the current player
+     */
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
     }
 
-}
+    /**
+     Sets the leaderboard.
+     @param rank the leaderboard
+     */
+    public void setLeaderboard(List<Rank> rank){
+        this.leaderboard = rank;
+    }
 
-class Rank<String, Integer> {
-    private String ID;
-    private int score;
+    /**
+     Sets the game phase.
+     @param phase the game phase
+     */
+    public void setPhase(GamePhase phase){
+        this.phase = phase;
+    }
 
-    public Rank(String ID, int score) {
-        this.ID = ID;
-        this.score = score;
+
+    /**
+     Returns the UUID of the game.
+     @return the UUID of the game
+     */
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    /**
+     Returns the game phase.
+     @return the game phase
+     */
+    public GamePhase getPhase(){
+        return this.phase;
+    }
+
+    /**
+     Returns the number of players.
+     @return the number of players
+     */
+    public int getNPlayers() {
+        return this.nPlayers;
+    }
+
+    /**
+     Returns the first player.
+     @return the first player
+     */
+    public String getFirstPlayer() {
+        return this.firstPlayer;
+    }
+
+    /**
+     Returns the current player.
+     @return the current player
+     */
+    public Player getCurrentPlayer() {
+        return this.currentPlayer;
+    }
+
+    /**
+     Returns the list of players.
+     @return the list of players
+     */
+    public List<Player> getPlayers() {
+        return this.players;
+    }
+
+    /**
+     Returns the list of common goals.
+     @return the list of common goals
+     */
+    public List<CommonGoal> getCommonGoals() {
+        return this.commonGoals;
+    }
+
+    /**
+     Returns the bag of tile.
+     @return the bag of tile
+     */
+    public Bag getBag() {
+        return this.bag;
+    }
+
+    /**
+     Returns the board.
+     @return the board
+     */
+    public Board getBoard() {
+        return this.board;
+    }
+
+    /**
+     Returns the chat room.
+     @return the chat room
+     */
+    public ChatRoom getChatRoom() {
+        return this.chatRoom;
+    }
+
+    /**
+     Returns the leaderboard.
+     @return the leaderboard
+     */
+    public List<Rank> getLeaderboard() {
+        return leaderboard;
     }
 }

@@ -1,10 +1,12 @@
 package Server.Model;
 
-// status: se fa parte o no della board
-// occupied : c'è o no una Tile
+
+import com.google.gson.annotations.Expose;
 
 public class Cell {
+    @Expose
     private Tile tile;
+    @Expose
     private boolean status;
 
     public Cell() {
