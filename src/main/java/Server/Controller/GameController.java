@@ -9,6 +9,7 @@ import Exception.PlayerException;
 import Exception.PlayerNotFoundException;
 import Exception.Player.NotYourTurnException;
 import Interface.ManageConnection;
+import Messages.ClientMessage;
 import Server.Controller.Phase.EndedMatch;
 import Server.Controller.Phase.LastRoundState;
 import Server.Controller.Phase.NormalState;
@@ -38,7 +39,7 @@ public class GameController implements ManageConnection {
             System.out.println(e.toString());
             throw e;
         }
-        this.playerAction = new PlayerAction(this.game);
+        this.playerAction = new PlayerAction(game);
         this.phaseController = new NormalState(this.game.getCurrentPlayer(), this.game.getPlayers());
     }
 
@@ -57,27 +58,9 @@ public class GameController implements ManageConnection {
         }
         this.game = new Gson().fromJson(reader, GameModel.class);
         this.uuid = this.game.getUuid();
-        this.playerAction = new PlayerAction(this.game);
-        this.phaseController = null;
+        this.playerAction = new PlayerAction(game);
     }
 
-    /**
-     This method checks whether a player is able to perform an operation of a given type.
-     If the operation is to send messages, any player can perform it and the method returns the current player's action.
-     If the operation is not a message and the player ID matches the ID of the current player, the method returns the current player's action.
-     If the player ID does not match the ID of the current player, a NotYourTurnException is thrown.
-     @param code the type of operation to check
-     @param playerID the ID of the player attempting the operation
-     @return the player's action if they are able to perform the operation
-     @throws NotYourTurnException if the player is not allowed to perform the operation because it is not their turn
-     */
-    public PlayerAction ableTo(OpType code, String playerID) throws PlayerException {
-        if (code.equals(OpType.MESSAGES))
-            return this.playerAction;
-        if(playerID.equals(this.game.getCurrentPlayer().getID()))
-            return this.playerAction;
-        else throw new NotYourTurnException(this.game.getCurrentPlayer().getID());
-    }
 
     /**
      This method ends the current turn, checks for common goals, advances to the next player, and updates the game status.
@@ -95,12 +78,12 @@ public class GameController implements ManageConnection {
                 break;
             }catch (GamePhaseException e){
                 if (e instanceof EndGameException) {
-                    this.game.setPhase(GamePhase.ENDED);
                     this.game.setLeaderboard(new EndedMatch().doRank(this.phaseController.getPlayers()));
+                    this.game.setPhase(GamePhase.ENDED);
                 }
                 else {
-                    this.game.setPhase(GamePhase.ENDING);
                     this.phaseController = new LastRoundState(this.phaseController.getCurrentPlayer(), this.phaseController.getPlayers());
+                    this.game.setPhase(phaseController.getPhase());
                 }
             }finally {
                 try{

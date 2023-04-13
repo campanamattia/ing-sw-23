@@ -27,7 +27,7 @@ import java.util.UUID;
 /**
  Represents the game model, contain information about the game state, players, board, and chat.
  */
-public class GameModel implements CMD{
+public class GameModel {
     /**
      * the unique identifier of the game session
      */
@@ -266,7 +266,6 @@ public class GameModel implements CMD{
      @return a list of Tile objects representing the tiles at the given coordinates
      @throws BoardException if the move is not valid according to the rules of the game
      */
-    @Override
     public List<Tile> selectedTiles(List<Coordinates> coordinates) throws BoardException {
         this.board.convalidateMove(coordinates);
         return this.board.getTiles(coordinates);
@@ -280,7 +279,6 @@ public class GameModel implements CMD{
      @throws PlayerException if the player doesn't have enough space in their personal shelf
      @throws NonConformingInputParametersException if the player didn't insert the correct parameters
      */
-    @Override
     public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
         if(sort.size()!=tiles.size()) throw new NonConformingInputParametersException();
         for (Integer integer : sort) tiles.add(tiles.get(integer - 1));
@@ -293,7 +291,6 @@ public class GameModel implements CMD{
      The message is a serialized JSON representation of a ChatMessage object.
      @param message the message to be written.
      */
-    @Override
     public void writeChat(String message) throws ChatException {
         Gson gson = new Gson();
         ChatMessage text = gson.fromJson(message, ChatMessage.class);
