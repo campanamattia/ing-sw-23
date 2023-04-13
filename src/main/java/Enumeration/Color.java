@@ -1,4 +1,4 @@
-package Server.Model;
+package Enumeration;
 
 public enum Color {
     GREEN, /* #00FF00 */
