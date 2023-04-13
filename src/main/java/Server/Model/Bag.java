@@ -1,5 +1,7 @@
 package Server.Model;
 
+import Enumeration.Color;
+
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
