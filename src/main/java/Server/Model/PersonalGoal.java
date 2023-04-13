@@ -18,7 +18,7 @@ public class PersonalGoal {
             pGoal[cd.x()][cd.y()] = new Tile(tmp);
         }
     }
-    public static Coordinates takeCoordinates(JsonArray json) {
+    public Coordinates takeCoordinates(JsonArray json) {
         return new Coordinates(json.get(0).getAsInt(), json.get(1).getAsInt());
     }
     public int check(Tile[][] myshelf){

@@ -62,4 +62,18 @@ public class Shelf {
     public int checkEndGame() {
         return 0;
     }
+
+
+    //method create only for create shelf for testing commonGoal
+    public void placeTile(Tile tile, int i, int j) {
+        myShelf[i][j] = tile;
+    }
+
+    public int numberRows () {
+        return myShelf.length;
+    }
+
+    public int numberColumns() {
+        return myShelf[0].length;
+    }
 }

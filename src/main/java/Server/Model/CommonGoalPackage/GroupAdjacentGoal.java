@@ -55,10 +55,11 @@ public class GroupAdjacentGoal extends CommonGoal {
         }
 
         Shelf shelf = player.getMyShelf();
-        boolean[][] visited = new boolean[6][5];
+        boolean[][] visited = new boolean[shelf.numberRows()][shelf.numberColumns()];
         int groups = 0;
-        for (int i = 5; i >= 0; i--) {
-            for (int j = 0; j < 5; j++) {
+
+        for (int i = shelf.numberRows() - 1; i >= 0; i--) {
+            for (int j = 0; j < shelf.numberColumns(); j++) {
                 if (!visited[i][j]) {
                     if (shelf.getTile(i, j) == null) {
                         visited[i][j] = true;
@@ -89,8 +90,8 @@ public class GroupAdjacentGoal extends CommonGoal {
      @param color the color of the tile being compared against
      @return the count of adjacent tiles with the same color as the tile at the given position
      */
-    private int countSameAdjacent(Shelf shelf, boolean[][] visited, int row, int column, Color color) {
-        if (row < 0 || row >= 6 || column >= 5 || column < 0 || visited[row][column] ||
+    public static int countSameAdjacent(Shelf shelf, boolean[][] visited, int row, int column, Color color) {
+        if (row < 0 || row >= shelf.numberRows() || column >= shelf.numberColumns() || column < 0 || visited[row][column] ||
                 shelf.getTile(row, column) == null || shelf.getTile(row, column).getTileColor() != color ) {
             return 0;
         }
