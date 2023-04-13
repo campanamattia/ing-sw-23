@@ -50,12 +50,14 @@ public class Board {
     public void convalidateMove(@NotNull List<Coordinates> coordinates) throws NoValidMoveException {
         boolean validMove = false;
         if(coordinates.size() == 1){
+            // controllo solo che abbia un lato libero
             validMove = checkSpaceTile(coordinates.get(0));
         } else if (coordinates.size() == 2) {
             validMove = checkAdjacent(coordinates.get(0),coordinates.get(1)) && checkSpaceTile(coordinates.get(0),coordinates.get(1));
         } else if (coordinates.size() == 3) {
             validMove = checkAdjacent(coordinates.get(0),coordinates.get(1),coordinates.get(2)) && checkSpaceTile(coordinates.get(0),coordinates.get(1),coordinates.get(2));
         }
+        // da sistemare con le eccezioni
         if(!validMove){
             throw new NoValidMoveException();
         }

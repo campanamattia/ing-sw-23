@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import Enumeration.Color;
 import java.util.*;
 
+import java.util.*;
+
 
 /**
  * The DiagonalGoal class represents a goal where players must create groups of tiles in a cross shape on their shelf.
