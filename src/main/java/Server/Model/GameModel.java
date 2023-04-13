@@ -1,10 +1,12 @@
 package Server.Model;
 
+import Enumeration.GamePhase;
+import Exception.BoardException;
+import Exception.ChatException;
 import Exception.Player.NonConformingInputParametersException;
+import Exception.PlayerException;
+import Exception.PlayerNotFoundException;
 import Interface.CMD;
-import Exception.*;
-import Enumeration.*;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -17,12 +19,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  Represents the game model, contain information about the game state, players, board, and chat.
  */
-public class GameModel implements CMD {
+public class GameModel implements CMD{
     /**
      * the unique identifier of the game session
      */
@@ -284,7 +289,6 @@ public class GameModel implements CMD {
     }
 
     /**
-
      Writes a message in the chat room.
      The message is a serialized JSON representation of a ChatMessage object.
      @param message the message to be written.
