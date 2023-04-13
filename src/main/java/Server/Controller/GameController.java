@@ -1,6 +1,8 @@
 package Server.Controller;
 
 
+import Enumeration.GamePhase;
+import Enumeration.OpType;
 import Exception.GamePhase.EndGameException;
 import Exception.GamePhaseException;
 import Exception.PlayerException;
@@ -11,7 +13,6 @@ import Server.Controller.Phase.EndedMatch;
 import Server.Controller.Phase.LastRoundState;
 import Server.Controller.Phase.NormalState;
 import Server.Model.*;
-import Enumeration.*;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -75,7 +76,7 @@ public class GameController implements ManageConnection {
             return this.playerAction;
         if(playerID.equals(this.game.getCurrentPlayer().getID()))
             return this.playerAction;
-        else throw new NotYourTurnException(playerID);
+        else throw new NotYourTurnException(this.game.getCurrentPlayer().getID());
     }
 
     /**
