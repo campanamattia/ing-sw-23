@@ -1,6 +1,6 @@
-package Server.Exception.Player;
+package Exception.Player;
 
-import Server.Exception.PlayerException;
+import Exception.PlayerException;
 
 public class NotYourTurnException extends PlayerException {
     public NotYourTurnException(String playerID) {

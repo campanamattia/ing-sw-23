@@ -1,13 +1,15 @@
 package Server.Model;
 
 import Enumeration.Color;
+import com.google.gson.annotations.Expose;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class Bag {
-
+    @Expose
     public final int CAPACITY = 132;
+    @Expose
     private ArrayBlockingQueue<Tile> bag;
 
     public Bag() {
@@ -26,6 +28,10 @@ public class Bag {
         shuffleArray(array);
         this.bag = new ArrayBlockingQueue<Tile>(CAPACITY);
         Collections.addAll(bag, array);
+    }
+
+    public Bag(ArrayBlockingQueue<Tile> bag){
+        this.bag=bag;
     }
 
     public int getLastTiles() {
@@ -55,5 +61,9 @@ public class Bag {
     @Override
     public String toString() {
         return super.toString();
+    }
+
+    public ArrayBlockingQueue<Tile> getBag() {
+        return bag;
     }
 }

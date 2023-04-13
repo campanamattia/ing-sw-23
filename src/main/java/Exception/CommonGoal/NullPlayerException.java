@@ -1,4 +1,4 @@
-package Server.Exception.CommonGoal;
+package Exception.CommonGoal;
 
 public class NullPlayerException extends Exception {
     public NullPlayerException () {

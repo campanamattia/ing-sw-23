@@ -1,12 +1,17 @@
 package Server.Model;
 
+import com.google.gson.annotations.Expose;
+
 public class Player {
+    @Expose
     private final String nicknameid;
+    @Expose
     private PersonalGoal personalGoal;
+    @Expose
     private int score;
-    private boolean status;
-    
+    @Expose
     private Shelf myShelf;
+    private boolean status;
 
     public Player(String nicknameid, PersonalGoal pGoal) {
         this.nicknameid = nicknameid;
@@ -14,10 +19,6 @@ public class Player {
         this.score = 0;
         this.personalGoal = pGoal;
         this.myShelf = new Shelf();
-    }
-
-    public int getScore() {
-        return score;
     }
 
     public void updateScore(int score){
@@ -36,12 +37,30 @@ public class Player {
         return this.nicknameid.equals(s);
     }
 
-    public Shelf getMyShelf() {
-        return myShelf;
-    }
 
     public void endGame() {
         this.updateScore(myShelf.checkEndGame());
         this.updateScore(personalGoal.check(myShelf.getMyShelf()));
+    }
+
+
+    public int getScore() {
+        return score;
+    }
+
+    public String getNicknameid() {
+        return nicknameid;
+    }
+
+    public PersonalGoal getPersonalGoal() {
+        return personalGoal;
+    }
+
+    public Shelf getMyShelf() {
+        return myShelf;
+    }
+
+    public Boolean getStatus(){
+        return this.status;
     }
 }
