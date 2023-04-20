@@ -1,7 +1,7 @@
-package Server.Exception.Board;
+package Exception.Board;
 
 import Server.Model.Coordinates;
-import Server.Exception.BoardException;
+import Exception.BoardException;
 
 
 public class NullTileException extends BoardException {

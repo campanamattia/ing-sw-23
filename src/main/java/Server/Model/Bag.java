@@ -1,5 +1,8 @@
 package Server.Model;
 
+import Enumeration.Color;
+import com.google.gson.annotations.Expose;
+
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -7,8 +10,9 @@ import java.util.concurrent.ArrayBlockingQueue;
  * Class bag, it's the container of all tiles playable during a game.
  */
 public class Bag {
-
+    @Expose
     public final int CAPACITY = 132;
+    @Expose
     private final ArrayBlockingQueue<Tile> bag;
     private static final int  nTilesForColor = 22;
 
@@ -73,5 +77,9 @@ public class Bag {
             }
             offset+=22;
         }
+    }
+
+    public ArrayBlockingQueue<Tile> getBag() {
+        return bag;
     }
 }

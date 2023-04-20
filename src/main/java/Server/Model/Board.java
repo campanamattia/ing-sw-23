@@ -1,9 +1,13 @@
 package Server.Model;
 
+import Exception.Board.CantRefillBoardException;
+import Exception.Board.NoValidMoveException;
+import Exception.Board.NullTileException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import Server.Exception.Board.*;
 import org.jetbrains.annotations.NotNull;
+import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +20,9 @@ import static java.lang.Math.nextUp;
  */
 public class Board {
 
+    @Expose
     private final Cell[][] board;
+    @Expose
     private int tilesTaken;
     private final int matrix_size;
 

@@ -1,8 +1,8 @@
 package Server.Model;
 
-import Server.Exception.Board.CantRefillBoardException;
-import Server.Exception.Board.NoValidMoveException;
-import Server.Exception.Board.NullTileException;
+import Exception.Board.CantRefillBoardException;
+import Exception.Board.NoValidMoveException;
+import Exception.Board.NullTileException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
