@@ -1,8 +1,12 @@
 package Server.Model;
 
 
+import com.google.gson.annotations.Expose;
+
 public class Cell {
+    @Expose
     private Tile tile;
+    @Expose
     private boolean status;
 
     public Cell() {

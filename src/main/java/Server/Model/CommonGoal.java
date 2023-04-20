@@ -1,6 +1,6 @@
 package Server.Model;
 
-import Server.Exception.CommonGoal.NullPlayerException;
+import Exception.CommonGoal.NullPlayerException;
 
 import java.util.*;
 

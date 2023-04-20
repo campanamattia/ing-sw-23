@@ -1,5 +1,6 @@
 package Server.Model.CommonGoalPackage;
-import Server.Exception.CommonGoal.NullPlayerException;
+import Enumeration.Color;
+import Exception.CommonGoal.NullPlayerException;
 import Server.Model.*;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;

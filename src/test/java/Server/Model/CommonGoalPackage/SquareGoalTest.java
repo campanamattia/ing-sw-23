@@ -1,7 +1,7 @@
 package Server.Model.CommonGoalPackage;
 
-import Server.Exception.CommonGoal.NullPlayerException;
-import Server.Model.Color;
+import Exception.CommonGoal.NullPlayerException;
+import Enumeration.Color;
 import Server.Model.PersonalGoal;
 import Server.Model.Player;
 import Server.Model.Tile;

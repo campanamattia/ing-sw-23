@@ -1,7 +1,6 @@
 package Server.Model;
 
-import Server.Exception.EndingPhase;
-import Server.Exception.Player.*;
+import Exception.Player.ColumnNotValidException;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public class Shelf {
         this.myShelf = new Tile[6][5];
     }
 
-    public void insert(int n, List<Tile> tiles) throws ColumnNotValidException{
+    public void insert(int n, List<Tile> tiles) throws ColumnNotValidException {
 
         int tmp = tiles.size();
         int full = 0;
