@@ -2,12 +2,9 @@ package Server.Controller;
 
 
 import Enumeration.GamePhase;
-import Enumeration.OpType;
 import Exception.GamePhase.EndGameException;
 import Exception.GamePhaseException;
-import Exception.PlayerException;
 import Exception.PlayerNotFoundException;
-import Exception.Player.NotYourTurnException;
 import Interface.ManageConnection;
 import Messages.ClientMessage;
 import Server.Controller.Phase.EndedMatch;
@@ -61,7 +58,13 @@ public class GameController implements ManageConnection {
         this.playerAction = new PlayerAction(game);
     }
 
-
+    public void doAction(ClientMessage message){
+        switch(message.getOperationType()){
+            case MESSAGES -> playerAction.writeChat(ClientMessage message);
+            case INSERTTILES -> playerAction.insertTiles(ClientMessage message);
+            case SELECTEDTILES -> playerAction.selectedTiles(ClientMessage message);
+        }
+    }
     /**
      This method ends the current turn, checks for common goals, advances to the next player, and updates the game status.
      If the game has entered its last round, it changes the game phase accordingly.

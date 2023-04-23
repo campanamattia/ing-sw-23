@@ -1,14 +1,14 @@
 package Messages;
 
-import Enumeration.OpType;
+import Enumeration.OperationType;
 
 public abstract class ClientMessage {
-    protected OpType code;
+    protected OperationType operationType;
     protected String playerID;
 
 
-    public OpType getCode() {
-        return code;
+    public OperationType getOperationType() {
+        return operationType;
     }
 
     public String getPlayerID() {

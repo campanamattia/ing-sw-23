@@ -6,7 +6,6 @@ import Exception.ChatException;
 import Exception.Player.NonConformingInputParametersException;
 import Exception.PlayerException;
 import Exception.PlayerNotFoundException;
-import Interface.CMD;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
