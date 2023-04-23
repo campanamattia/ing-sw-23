@@ -1,8 +1,7 @@
 package Enumeration;
 
-public enum OpType {
+public enum OperationType {
     ADDPLAYER,
-    STARTGAME,
     INSERTTILES,
     SELECTEDTILES,
     MESSAGES;
