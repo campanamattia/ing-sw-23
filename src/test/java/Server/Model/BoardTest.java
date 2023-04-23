@@ -6,12 +6,15 @@ import Exception.Board.NullTileException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -83,11 +86,27 @@ class BoardTest {
     }
     @Test
     public void checkRefillTest() throws CantRefillBoardException {
+        // don't need a refill
         assertDoesNotThrow(() -> {
             board.checkRefill(bag);
         });
+
+        // need a refill but haven't enough tiles in the bag
+        assertThrows(CantRefillBoardException.class, () -> {
+            this.board_json = decoBoard("src/test/resources/board.json");
+            this.board = new Board(board_json,this.bag);
+            this.board.setTilesTaken(110);
+            board.checkRefill(bag);
+        });
+
+        // refill with success
+        assertDoesNotThrow( () -> {
+            this.board_json = decoBoard("src/test/resources/board.json");
+            this.board = new Board(board_json,this.bag);
+            this.board.setTilesTaken(20);
+            this.board.checkRefill(bag);
+        });
     }
-    @Test
 
     private JsonObject decoBoard(String filepath) throws FileNotFoundException {
         Gson gson = new Gson();
