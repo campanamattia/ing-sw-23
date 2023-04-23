@@ -6,14 +6,15 @@ import Exception.ChatException;
 import Exception.Player.NonConformingInputParametersException;
 import Exception.Player.NotYourTurnException;
 import Exception.PlayerException;
-import Interface.CMD;
+import Interface.GameCommand;
+import Messages.Client.InsertTiles;
 import Server.Model.Coordinates;
 import Server.Model.GameModel;
 import Server.Model.Tile;
 
 import java.util.List;
 
-public class PlayerAction implements CMD {
+public class PlayerAction implements GameCommand {
     private final GameModel game;
     private GamePhase state = GamePhase.PICKING;
 
@@ -39,10 +40,10 @@ public class PlayerAction implements CMD {
 
 
     @Override
-    public void insertTiles(String playerID, List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
+    public void insertTiles(InsertTiles message) throws PlayerException {
         try{
-            if(GamePhase.INSERTING==ableTo(playerID)) {
-                game.insertTiles(sort, tiles, column);
+            if(GamePhase.INSERTING==ableTo(message.getPlayerID())) {
+                game.insertTiles(message.getSorted(), currentPlayer.getListTiles(), message.getColumn());
                 this.state = GamePhase.PICKING;
             }
             else throw new NonConformingInputParametersException();

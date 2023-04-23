@@ -1,6 +1,6 @@
 package Server.Network.Player;
 
-import Enumeration.OpType;
+import Enumeration.OperationType;
 import Server.Network.PlayerHandler;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class ClientHandlerSocket extends PlayerHandler {
             System.err.println(e.getMessage());
         }
     }
-    public OpType deserializer(Socket connection){
+    public OperationType deserializer(Socket connection){
         return null;
     }
 
