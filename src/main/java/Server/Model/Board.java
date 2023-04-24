@@ -3,9 +3,11 @@ package Server.Model;
 import Exception.Board.CantRefillBoardException;
 import Exception.Board.NoValidMoveException;
 import Exception.Board.NullTileException;
+import Utils.Cell;
+import Utils.Coordinates;
+import Utils.Tile;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import Server.Exception.Board.*;
 import org.jetbrains.annotations.NotNull;
 import com.google.gson.annotations.Expose;
 
@@ -308,5 +310,9 @@ public class Board {
      */
     public void setTilesTaken(int tilesTaken) {
         this.tilesTaken = tilesTaken;
+    }
+
+    public Cell[][] getBoard() {
+        return board;
     }
 }

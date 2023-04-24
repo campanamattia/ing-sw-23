@@ -1,6 +1,7 @@
-package Server.Model;
+package Utils;
 
 
+import Utils.Tile;
 import com.google.gson.annotations.Expose;
 
 public class Cell {
