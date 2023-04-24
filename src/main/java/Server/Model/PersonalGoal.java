@@ -1,9 +1,8 @@
 package Server.Model;
 
 import Enumeration.Color;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
+import Utils.Coordinates;
+import Utils.Tile;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 

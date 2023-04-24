@@ -1,16 +1,10 @@
 package Server.Model;
 
 import Enumeration.Color;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
+import Utils.Tile;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class PersonalGoalTest {
 

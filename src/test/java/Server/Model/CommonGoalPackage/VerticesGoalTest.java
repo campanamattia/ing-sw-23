@@ -3,6 +3,7 @@ package Server.Model.CommonGoalPackage;
 import Exception.CommonGoal.NullPlayerException;
 import Server.Model.*;
 import Enumeration.Color;
+import Utils.Tile;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

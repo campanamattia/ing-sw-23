@@ -1,16 +1,13 @@
 package Server.Model;
 
 import Enumeration.Color;
-import Exception.Player.ColumnNotValidException;
-import com.google.gson.Gson;
+import Utils.Coordinates;
+import Utils.Tile;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import Exception.*;
-import java.awt.*;
+
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 import java.util.UUID;
@@ -38,7 +35,7 @@ class GameModelTest {
                     "Alice",
                     "Hello world!"
             );
-            gameModel.writeChat(new Gson().toJson(text));
+            gameModel.writeChat(text.sender(), text.content());
             gameModel.updateStatus();
         }catch(IOException | ChatException e){
             fail();
@@ -72,7 +69,7 @@ class GameModelTest {
                     "Alice",
                     ""
             );
-            gameModel.writeChat(new Gson().toJson(text));
+            gameModel.writeChat(text.sender(), text.content());
             fail();
         }catch(ChatException e){
             System.out.println(e.toString());

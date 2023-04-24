@@ -1,7 +1,7 @@
 package Server.Controller.Phase;
 
 import Server.Model.Player;
-import Server.Model.Rank;
+import Utils.Rank;
 
 import java.util.List;
 
