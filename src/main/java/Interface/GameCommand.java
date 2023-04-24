@@ -1,23 +1,26 @@
 package Interface;
 
 import java.rmi.Remote;
-import java.util.*;
-import java.lang.*;
-import Exception.*;
-import Messages.Client.InsertTiles;
-import Messages.ClientMessage;
-import Server.Model.Coordinates;
-import Server.Model.Tile;
+
+import Messages.Client.WriteChatMessage;
+import Messages.Client.InsertTilesMessage;
+import Messages.Client.PingMessage;
+import Messages.Client.SelectedTilesMessage;
+import Messages.Server.PongMessage;
+import Messages.Server.StatusMessage;
+import Messages.ServerMessage;
 
 public interface GameCommand extends Remote {
 
-    List<Tile> selectedTiles(String playerID, List<Coordinates> coordinates) throws BoardException, PlayerException;
+    ServerMessage selectedTiles(SelectedTilesMessage message);
 
-    void insertTiles(String playerID, List<Integer> sort, List<Tile> tiles, int column) throws PlayerException;
+    ServerMessage insertTiles(InsertTilesMessage message);
 
-    void insertTiles(ClientMessage message) throws PlayerException;
+    ServerMessage writeChat(WriteChatMessage message);
 
-    void insertTiles(InsertTiles message) throws PlayerException;
+    StatusMessage doScreenShot();
 
-    void writeChat(String message) throws ChatException;
+    default ServerMessage ping(PingMessage message){
+        return new PongMessage();
+    };
 }
