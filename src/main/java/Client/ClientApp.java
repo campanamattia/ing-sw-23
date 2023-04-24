@@ -1,7 +1,7 @@
 package Client;
 
 import Client.View.*;
-import Client.Netwrok.*;
+import Client.Network.*;
 import Client.Controller.Controller;
 
 public class ClientApp {
@@ -19,6 +19,4 @@ public class ClientApp {
         //we now need to ask for the connection type and initialize the right network object
 
     }
-
-
 }

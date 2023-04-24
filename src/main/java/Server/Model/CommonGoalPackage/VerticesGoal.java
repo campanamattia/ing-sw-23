@@ -4,7 +4,7 @@ import Exception.CommonGoal.NullPlayerException;
 import Server.Model.CommonGoal;
 import Server.Model.Player;
 import Server.Model.Shelf;
-import Server.Model.Tile;
+import Utils.Tile;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 

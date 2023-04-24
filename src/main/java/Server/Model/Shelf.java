@@ -1,6 +1,7 @@
 package Server.Model;
 
 import Exception.Player.ColumnNotValidException;
+import Utils.Tile;
 
 import java.util.List;
 

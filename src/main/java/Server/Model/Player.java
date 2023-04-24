@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose;
 
 public class Player {
     @Expose
-    private final String nicknameid;
+    private final String playerID;
     @Expose
     private PersonalGoal personalGoal;
     @Expose
@@ -13,8 +13,8 @@ public class Player {
     private Shelf myShelf;
     private boolean status;
 
-    public Player(String nicknameid, PersonalGoal pGoal) {
-        this.nicknameid = nicknameid;
+    public Player(String playerID, PersonalGoal pGoal) {
+        this.playerID = playerID;
         this.status = true;
         this.score = 0;
         this.personalGoal = pGoal;
@@ -30,11 +30,11 @@ public class Player {
     }
 
     public String getID() {
-        return nicknameid;
+        return playerID;
     }
 
     public boolean equals(String s) {
-        return this.nicknameid.equals(s);
+        return this.playerID.equals(s);
     }
 
 
@@ -48,8 +48,8 @@ public class Player {
         return score;
     }
 
-    public String getNicknameid() {
-        return nicknameid;
+    public String getPlayerID() {
+        return playerID;
     }
 
     public PersonalGoal getPersonalGoal() {

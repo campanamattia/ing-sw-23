@@ -1,4 +1,4 @@
-package Client.Netwrok;
+package Client.Network;
 
 public class ClientRMI extends Network{
 }

@@ -1,6 +1,7 @@
 package Server.Model;
 
 import Enumeration.Color;
+import Utils.Tile;
 import com.google.gson.annotations.Expose;
 
 import java.util.*;
