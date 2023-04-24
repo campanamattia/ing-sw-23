@@ -1,7 +1,4 @@
-package Server.Network.Player;
-
-import Enumeration.OperationType;
-import Server.Network.PlayerHandler;
+package Server.Controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,9 +6,10 @@ import java.net.Socket;
 import java.util.Scanner;
 
 
-public class ClientHandlerSocket extends PlayerHandler {
+public class PlayerListener implements Runnable{
     private Socket socket;
-    public ClientHandlerSocket(String playerID, Socket socket) {
+    private String playerID;
+    public PlayerListener(String playerID, Socket socket) {
         this.playerID = playerID;
         this.socket = socket;
     }
@@ -37,7 +35,7 @@ public class ClientHandlerSocket extends PlayerHandler {
             System.err.println(e.getMessage());
         }
     }
-    public OperationType deserializer(Socket connection){
+    public OpType deserializer(Socket connection){
         return null;
     }
 

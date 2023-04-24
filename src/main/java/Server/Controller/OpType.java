@@ -1,4 +1,4 @@
-package Enumeration;
+package Server.Controller;
 
 public enum OpType {
     ADDPLAYER,
