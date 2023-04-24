@@ -4,7 +4,6 @@ import Enumeration.OperationType;
 import Messages.ClientMessage;
 
 import java.util.List;
-
 public class InsertTiles extends ClientMessage {
     List<Integer> sorted;
     int column;

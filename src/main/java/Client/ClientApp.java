@@ -15,9 +15,9 @@ public class ClientApp {
                 System.out.println("Wrong input, select view again");
             //wait a scan to save in args[1]
         }while(view==null);
-        controller = new Controller(view);
+        controller = new Controller();
+        controller.inputReader();
         //we now need to ask for the connection type and initialize the right network object
-
     }
 
 

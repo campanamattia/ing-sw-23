@@ -3,22 +3,50 @@ package Client.Controller;
 import Client.View.View;
 import Client.View.ViewFactory;
 import Enumeration.OperationType;
+import Messages.Client.ChangeView;
+import Messages.Client.InsertTiles;
+import Messages.Client.SelectedTiles;
+import Messages.Client.WriteChat;
 import Messages.ClientMessage;
 import Exception.InvalidInputException;
+import Server.Model.Coordinates;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Controller {
     private View view;
 
-    public Controller(View view) {
-        this.view = view;
+    // ...........................
+    // to review if I need a list of playerID
+    // ...........................
+    private String playerID;
+
+    public Controller() {
+        // this.View = System.out.println("");
+        // choose playerID
+        System.out.println("Chose a nickname for the game: ");
+        this.playerID = System.console().readLine();
     }
 
     public void changeView(String view){
         setView(ViewFactory.getView(view));
     }
 
-    private void setView(View view) {
+    public void setView(View view) {
         this.view = view;
+    }
+
+    public void inputReader() {
+        // chose view
+        while(true){
+            try {
+                buildMessage(System.console().readLine());
+            }catch (InvalidInputException e){
+                System.out.println("Input non valido!");
+            }
+        }
     }
 
     /**
@@ -26,12 +54,41 @@ public class Controller {
      * @param input String received from input.
      * @return Message that contains all the information that a player have inserted from input.
      */
-    private ClientMessage buildMessage(String input) throws InvalidInputException {
-        ClientMessage clientMessage = null;
+    public ClientMessage buildMessage(String input) throws InvalidInputException {
+        ClientMessage clientMessage;
+        // command -body
         OperationType opType = assignOpType(input.split(" ")[0]);
-        clientMessage.setOperationType(opType);
-        String content = input.split("-")[1];
-        return null;
+        if(opType.equals(OperationType.CHANGEVIEW)){
+            // cv -CLI/GUI
+
+            // yet to finish, need to transform String view to View ..........
+
+            String view = input.split("-")[1];
+            clientMessage = new ChangeView(opType,playerID,view);
+            return clientMessage;
+
+            //......................
+        }
+        if(opType.equals(OperationType.WRITEMESSAGE)){
+            // wm -message text
+            String messageText = input.split("-")[1];
+            clientMessage = new WriteChat(opType,playerID,messageText);
+            return clientMessage;
+        }
+        if(opType.equals(OperationType.SELECTEDTILES)){
+            // st -x,y/x,y/x,y
+            String coordinates = input.split("-")[1];
+            List<Coordinates> selectedCoordinates = extractCoordinates(coordinates);
+            clientMessage = new SelectedTiles(opType,playerID,selectedCoordinates);
+            return clientMessage;
+        }
+        // it cannot be anything bit a insertTile because it's checked in assignOpType.
+        // it -x,y,z/c
+        String orderOfTiles = input.split("-")[1].split("/")[0];
+        List<Integer> sorted = extractInteger(orderOfTiles);
+        int column = Integer.parseInt(input.split("-")[1].split("/")[1]);
+        clientMessage = new InsertTiles(opType,playerID,sorted,column);
+        return clientMessage;
     }
 
     /**
@@ -54,5 +111,35 @@ public class Controller {
             return OperationType.INSERTTILES;
         }
         throw new InvalidInputException(input);
+    }
+
+    /**
+     * Receive coordinate in shape of String and turn them into list of coordinates.
+     * @param input Receive coordinate in shape of String.
+     * @return list of coordinates.
+     */
+    private List<Coordinates> extractCoordinates(String input){
+        String[] tmp = input.split("/");
+        List<Coordinates> coordinates = new ArrayList<>();
+        Coordinates tmpCoordinates;
+        for(int i=0;i<tmp.length;i++){
+            tmpCoordinates = new Coordinates(Integer.parseInt(input.split("/")[i].split(";")[0]),Integer.parseInt(input.split("/")[i].split(";")[1]));
+            coordinates.add(tmpCoordinates);
+        }
+        return coordinates;
+    }
+
+    /**
+     * Turn input from String into a list of int.
+     * @param input input of number in shape of string.
+     * @return list of int.
+     */
+    private List<Integer> extractInteger(String input){
+        String[] tmp = input.split(",");
+        List<Integer> orderOfTiles = new ArrayList<>();
+        for (String s : tmp) {
+            orderOfTiles.add(Integer.parseInt(s));
+        }
+        return orderOfTiles;
     }
 }
