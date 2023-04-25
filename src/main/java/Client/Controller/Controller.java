@@ -3,15 +3,13 @@ package Client.Controller;
 import Client.View.View;
 import Client.View.ViewFactory;
 import Enumeration.OperationType;
-import Messages.Client.ChangeView;
-import Messages.Client.InsertTiles;
-import Messages.Client.SelectedTiles;
-import Messages.Client.WriteChat;
+import Messages.Client.InsertTilesMessage;
+import Messages.Client.SelectedTilesMessage;
+import Messages.Client.WriteChatMessage;
 import Messages.ClientMessage;
 import Exception.InvalidInputException;
-import Server.Model.Coordinates;
+import Utils.Coordinates;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,27 +57,32 @@ public class Controller {
         // command -body
         OperationType opType = assignOpType(input.split(" ")[0]);
         if(opType.equals(OperationType.CHANGEVIEW)){
+            if( !(input.equals("CLI")) && !(input.equals("GUI")) )
+                throw new InvalidInputException(input);
             // cv -CLI/GUI
 
             // yet to finish, need to transform String view to View ..........
 
             String view = input.split("-")[1];
-            clientMessage = new ChangeView(opType,playerID,view);
-            return clientMessage;
+            // clientMessage = new ChangeView(opType,playerID,view);
+            // return clientMessage;
 
             //......................
         }
         if(opType.equals(OperationType.WRITEMESSAGE)){
             // wm -message text
+            //................
+            // corner case " this is a-text
+            // ..................
             String messageText = input.split("-")[1];
-            clientMessage = new WriteChat(opType,playerID,messageText);
+            clientMessage = new WriteChatMessage(playerID,messageText);
             return clientMessage;
         }
         if(opType.equals(OperationType.SELECTEDTILES)){
             // st -x,y/x,y/x,y
             String coordinates = input.split("-")[1];
             List<Coordinates> selectedCoordinates = extractCoordinates(coordinates);
-            clientMessage = new SelectedTiles(opType,playerID,selectedCoordinates);
+            clientMessage = new SelectedTilesMessage(playerID,selectedCoordinates);
             return clientMessage;
         }
         // it cannot be anything bit a insertTile because it's checked in assignOpType.
@@ -87,7 +90,7 @@ public class Controller {
         String orderOfTiles = input.split("-")[1].split("/")[0];
         List<Integer> sorted = extractInteger(orderOfTiles);
         int column = Integer.parseInt(input.split("-")[1].split("/")[1]);
-        clientMessage = new InsertTiles(opType,playerID,sorted,column);
+        clientMessage = new InsertTilesMessage(opType,playerID,sorted,column);
         return clientMessage;
     }
 
