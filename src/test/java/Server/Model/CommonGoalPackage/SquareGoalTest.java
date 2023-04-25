@@ -4,7 +4,7 @@ import Exception.CommonGoal.NullPlayerException;
 import Enumeration.Color;
 import Server.Model.PersonalGoal;
 import Server.Model.Player;
-import Server.Model.Tile;
+import Utils.Tile;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

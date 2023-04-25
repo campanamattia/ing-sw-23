@@ -6,11 +6,16 @@ import Exception.GamePhase.EndGameException;
 import Exception.GamePhaseException;
 import Exception.PlayerNotFoundException;
 import Interface.ManageConnection;
+import Messages.Client.WriteChatMessage;
+import Messages.Client.InsertTilesMessage;
+import Messages.Client.PingMessage;
+import Messages.Client.SelectedTilesMessage;
 import Messages.ClientMessage;
 import Server.Controller.Phase.EndedMatch;
 import Server.Controller.Phase.LastRoundState;
 import Server.Controller.Phase.NormalState;
 import Server.Model.*;
+import Server.Network.Player.ClientHandlerSocket;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -19,7 +24,7 @@ import java.util.*;
 
 public class GameController implements ManageConnection {
     private final UUID uuid;
-    private final GameModel game;
+    private final GameModel gameModel;
     private PhaseController phaseController;
     private final PlayerAction playerAction;
 
@@ -31,13 +36,13 @@ public class GameController implements ManageConnection {
     public GameController(List<String> IDs) throws IOException {
         this.uuid = UUID.randomUUID();
         try{
-            this.game = new GameModel(this.uuid, IDs);
+            this.gameModel = new GameModel(this.uuid, IDs);
         }catch(IOException e){
             System.out.println(e.toString());
             throw e;
         }
-        this.playerAction = new PlayerAction(game);
-        this.phaseController = new NormalState(this.game.getCurrentPlayer(), this.game.getPlayers());
+        this.playerAction = new PlayerAction(gameModel);
+        this.phaseController = new NormalState(this.gameModel.getCurrentPlayer(), this.gameModel.getPlayers());
     }
 
     /**
@@ -53,47 +58,54 @@ public class GameController implements ManageConnection {
             System.out.println("The path isn't valid");
             throw e;
         }
-        this.game = new Gson().fromJson(reader, GameModel.class);
-        this.uuid = this.game.getUuid();
-        this.playerAction = new PlayerAction(game);
+        this.gameModel = new Gson().fromJson(reader, GameModel.class);
+        this.uuid = this.gameModel.getUuid();
+        this.playerAction = new PlayerAction(gameModel);
     }
 
-    public void doAction(ClientMessage message){
-        switch(message.getOperationType()){
-            case MESSAGES -> playerAction.writeChat(ClientMessage message);
-            case INSERTTILES -> playerAction.insertTiles(ClientMessage message);
-            case SELECTEDTILES -> playerAction.selectedTiles(ClientMessage message);
-        }
+
+    public void doAction(ClientHandlerSocket client, ClientMessage message){
+        if(message instanceof WriteChatMessage)
+            client.send(playerAction.writeChat((WriteChatMessage) message));
+        if(message instanceof SelectedTilesMessage)
+            client.send(playerAction.selectedTiles((SelectedTilesMessage) message));
+        if (message instanceof InsertTilesMessage)
+            client.send(playerAction.insertTiles((InsertTilesMessage) message));
+        if (message instanceof PingMessage)
+            client.send(playerAction.ping((PingMessage) message));
     }
     /**
-     This method ends the current turn, checks for common goals, advances to the next player, and updates the game status.
-     If the game has entered its last round, it changes the game phase accordingly.
-     If the game has ended, it sets the leaderboard and game phase to ended.
-     @throws GamePhaseException if there is an error transitioning between game phases
+     This method ends the current turn, checks for common goals, advances to the next player, and updates the gameModel status.
+     If the gameModel has entered its last round, it changes the gameModel phase accordingly.
+     If the gameModel has ended, it sets the leaderboard and gameModel phase to ended.
+     @throws GamePhaseException if there is an error transitioning between gameModel phases
      @throws IOException if there is an error updating the JSON file
      */
     public void endTurn(){
-        phaseController.checkCommonGoals(this.game.getCommonGoals());
+        phaseController.checkCommonGoals(this.gameModel.getCommonGoals());
         do{
             try{
                 phaseController.nextPlayer();
-                this.game.setCurrentPlayer(this.phaseController.getCurrentPlayer());
+                this.gameModel.setCurrentPlayer(this.phaseController.getCurrentPlayer());
+                this.playerAction.setCurrentPlayer(this.phaseController.getCurrentPlayer());
+
                 break;
             }catch (GamePhaseException e){
                 if (e instanceof EndGameException) {
-                    this.game.setLeaderboard(new EndedMatch().doRank(this.phaseController.getPlayers()));
-                    this.game.setPhase(GamePhase.ENDED);
+                    this.gameModel.setLeaderboard(new EndedMatch().doRank(this.phaseController.getPlayers()));
+                    this.gameModel.setPhase(GamePhase.ENDED);
                 }
                 else {
                     this.phaseController = new LastRoundState(this.phaseController.getCurrentPlayer(), this.phaseController.getPlayers());
-                    this.game.setPhase(phaseController.getPhase());
+                    this.gameModel.setPhase(phaseController.getPhase());
+                    this.playerAction.setCurrentPlayer(this.phaseController.getCurrentPlayer());
                 }
+                break;
             }finally {
                 try{
-                    this.game.updateStatus();
+                    this.gameModel.updateStatus();
                 } catch (IOException e){
                     System.out.println("An error occurred updating the json file.");
-
                 }
             }
         }while(true);
@@ -103,12 +115,12 @@ public class GameController implements ManageConnection {
      Sets the status of the player with the given ID to the given status.
      @param id the ID of the player whose status is being set
      @param status the status to set for the player (true if they are ready, false if they are not)
-     @throws PlayerNotFoundException if the player with the given ID is not found in the game
+     @throws PlayerNotFoundException if the player with the given ID is not found in the gameModel
      */
     @Override
     public void setPlayerStatus(String id, Boolean status) throws PlayerNotFoundException {
         try{
-            this.game.getPlayer(id).setStatus(status);
+            this.gameModel.getPlayer(id).setStatus(status);
         }catch (PlayerNotFoundException e){
             System.out.println(e.toString());
         }
@@ -125,14 +137,8 @@ public class GameController implements ManageConnection {
      Returns the GameModel associated with this GameController.
      @return the GameModel associated with this GameController
      */
-    public GameModel getGame() {
-        return game;
+    public GameModel getGameModel() {
+        return gameModel;
     }
-    /**
-     Returns the PlayerAction associated with this GameController.
-     @return the PlayerAction associated with this GameController
-     */
-    public PlayerAction getPlayerAction() {
-        return playerAction;
-    }
+
 }

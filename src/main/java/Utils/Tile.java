@@ -1,4 +1,4 @@
-package Server.Model;
+package Utils;
 
 import Enumeration.Color;
 import com.google.gson.annotations.Expose;

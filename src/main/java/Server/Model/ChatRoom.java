@@ -11,19 +11,19 @@ import java.lang.*;
 public class ChatRoom {
 
     /**
-     The Stack of ChatMessage objects that represents the flow of messages in the chat room.
+     The Stack of WriteChatMessage objects that represents the flow of messages in the chat room.
      */
     @Expose
     private final Stack<ChatMessage> flow;
     /**
-     Constructs a new ChatRoom object with an empty flow of messages.
+     Constructs a new ChatRoomMessage object with an empty flow of messages.
      */
     public ChatRoom() {
         this.flow = new Stack<ChatMessage>();
     }
     /**
-     Adds a new ChatMessage object to the flow of messages in the chat room.
-     @param message the ChatMessage object to add to the flow
+     Adds a new WriteChatMessage object to the flow of messages in the chat room.
+     @param message the WriteChatMessage object to add to the flow
      */
     public synchronized void addMessage(ChatMessage message){
         this.flow.add(message);
@@ -42,8 +42,8 @@ public class ChatRoom {
         return history;
     }
     /**
-     Returns the flow of ChatMessage objects in the chat room.
-     @return the flow of ChatMessage objects in the chat room
+     Returns the flow of WriteChatMessage objects in the chat room.
+     @return the flow of WriteChatMessage objects in the chat room
      */
     public Stack<ChatMessage> getFlow() {
         return flow;
