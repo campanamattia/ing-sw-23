@@ -1,4 +1,4 @@
-package Server.Model;
+package Utils;
 /**
  Represents the coordinates of a point on a two-dimensional grid.
  */

@@ -2,6 +2,7 @@ package Server.Model;
 
 import Enumeration.Color;
 import Exception.Player.ColumnNotValidException;
+import Utils.Tile;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

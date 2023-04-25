@@ -8,8 +8,8 @@ import com.google.gson.annotations.Expose;
 public record ChatMessage(@Expose String sender, @Expose String content) {
 
     /**
-     Returns a string representation of the ChatMessage object in the format "From {sender}:\n{content}".
-     @return a string representation of the ChatMessage object
+     Returns a string representation of the WriteChatMessage object in the format "From {sender}:\n{content}".
+     @return a string representation of the WriteChatMessage object
      */
     @Override
     public String toString() {

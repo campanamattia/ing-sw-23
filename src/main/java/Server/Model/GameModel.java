@@ -6,6 +6,9 @@ import Exception.ChatException;
 import Exception.Player.NonConformingInputParametersException;
 import Exception.PlayerException;
 import Exception.PlayerNotFoundException;
+import Utils.Coordinates;
+import Utils.Rank;
+import Utils.Tile;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -287,15 +290,13 @@ public class GameModel {
 
     /**
      Writes a message in the chat room.
-     The message is a serialized JSON representation of a ChatMessage object.
+     The message is a serialized JSON representation of a WriteChatMessage object.
      @param message the message to be written.
      */
-    public void writeChat(String message) throws ChatException {
-        Gson gson = new Gson();
-        ChatMessage text = gson.fromJson(message, ChatMessage.class);
-        if(text.content().equals(""))
+    public void writeChat(String user, String text) throws ChatException {
+        if(text.equals(""))
             throw new ChatException();
-        this.chatRoom.addMessage(text);
+        this.chatRoom.addMessage(new ChatMessage(user, text));
     }
 
     /**

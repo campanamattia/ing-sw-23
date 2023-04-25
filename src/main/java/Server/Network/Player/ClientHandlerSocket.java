@@ -1,6 +1,7 @@
 package Server.Network.Player;
 
 import Enumeration.OperationType;
+import Messages.ServerMessage;
 import Server.Network.PlayerHandler;
 
 import java.io.IOException;
@@ -43,5 +44,8 @@ public class ClientHandlerSocket extends PlayerHandler {
 
     public String getPlayerID() {
         return playerID;
+    }
+
+    public void send(ServerMessage serverMessage) {
     }
 }

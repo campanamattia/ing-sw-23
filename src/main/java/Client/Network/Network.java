@@ -1,4 +1,4 @@
-package Client.Netwrok;
+package Client.Network;
 
 public abstract class Network {
 

@@ -1,6 +1,6 @@
 package Exception.Board;
 
-import Server.Model.Coordinates;
+import Utils.Coordinates;
 import Exception.BoardException;
 
 
