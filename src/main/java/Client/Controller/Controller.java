@@ -58,8 +58,7 @@ public class Controller {
     public ClientMessage buildMessage(String input) throws InvalidInputException {
         ClientMessage clientMessage;
         // command -body
-        OperationType opType = assignOpType(input.split(" ")[0]);
-        checkInput(input.split("-")[1], opType);
+        OperationType opType = checkInput(input);
         if (opType.equals(OperationType.CHANGEVIEW)) {
             // cv -CLI/GUI
 
@@ -122,7 +121,6 @@ public class Controller {
 
     /**
      * Receive coordinate in shape of String and turn them into list of coordinates.
-     *
      * @param input Receive coordinate in shape of String.
      * @return list of coordinates.
      */
@@ -155,12 +153,23 @@ public class Controller {
     /**
      * Checks if the input inserted by a user is valid.
      * @param input String received.
-     * @param opType Type of operation.
      * @throws InvalidInputException if the input is not valid.
+     * @return OperationType of the command in input.
      */
-    private void checkInput(String input, OperationType opType) throws InvalidInputException {
+    private OperationType checkInput(String input) throws InvalidInputException {
 
-        // yet to check that input String must be "command -rest" and not for example "command--rest" ecc.
+        // check syntax of the command.
+        // st -x,y/x,y/x,y
+        // it -x,y,z/c
+        // wm -text of the message
+        // cv -CLI/GUI
+        String prefix = input.split("-")[0];
+        if(!(prefix.equals("st ")) && !(prefix.equals("it ")) && !(prefix.equals("cv ")) && !(prefix.equals("wm ")))
+            throw new InvalidInputException(input);
+
+        OperationType opType = assignOpType(input.split(" ")[0]);
+
+        // now I check the syntax after the command.
 
         if (opType.equals(OperationType.CHANGEVIEW)) {
             // cv -CLI/GUI
@@ -211,5 +220,6 @@ public class Controller {
                 }
             }
         }
+        return opType;
     }
 }
