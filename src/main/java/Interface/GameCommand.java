@@ -2,10 +2,7 @@ package Interface;
 
 import java.rmi.Remote;
 
-import Messages.Client.WriteChatMessage;
-import Messages.Client.InsertTilesMessage;
-import Messages.Client.PingMessage;
-import Messages.Client.SelectedTilesMessage;
+import Messages.Client.*;
 import Messages.Server.PongMessage;
 import Messages.Server.StatusMessage;
 import Messages.ServerMessage;
@@ -17,6 +14,8 @@ public interface GameCommand extends Remote {
     ServerMessage insertTiles(InsertTilesMessage message);
 
     ServerMessage writeChat(WriteChatMessage message);
+
+    ServerMessage LogIn(AddPlayerMessage message);
 
     StatusMessage doScreenShot();
 

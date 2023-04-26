@@ -1,6 +1,6 @@
 package Server.Network;
 
-public abstract class PlayerHandler implements Runnable {
+public abstract class ClientHandler implements Runnable {
     protected String playerID;
 
     @Override

@@ -1,0 +1,4 @@
+{
+  "socketPort": 50000,
+  "rmiPort" : 50001
+}

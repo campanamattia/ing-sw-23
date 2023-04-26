@@ -1,8 +1,10 @@
-package Server.Network.Player;
+package Server.Network.Client;
 
 import Enumeration.OperationType;
+import Messages.ClientMessage;
 import Messages.ServerMessage;
-import Server.Network.PlayerHandler;
+import Server.Controller.GameController;
+import Server.Network.ClientHandler;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,8 +12,9 @@ import java.net.Socket;
 import java.util.Scanner;
 
 
-public class ClientHandlerSocket extends PlayerHandler {
-    private Socket socket;
+public class ClientHandlerSocket extends ClientHandler {
+    private final Socket socket;
+
     public ClientHandlerSocket(String playerID, Socket socket) {
         this.playerID = playerID;
         this.socket = socket;
@@ -27,8 +30,9 @@ public class ClientHandlerSocket extends PlayerHandler {
                 if (line.equals("quit")) {
                     break;
                 } else {
-                    out.println("Received: " + line);
-                    out.flush();
+                    ClientMessage input = deserialize(line);
+                    ServerMessage output = GameController.doAction(input);
+
                 }
             }
             in.close();
@@ -37,15 +41,5 @@ public class ClientHandlerSocket extends PlayerHandler {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
-    }
-    public OperationType deserializer(Socket connection){
-        return null;
-    }
-
-    public String getPlayerID() {
-        return playerID;
-    }
-
-    public void send(ServerMessage serverMessage) {
     }
 }

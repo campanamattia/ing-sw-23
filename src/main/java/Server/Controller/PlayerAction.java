@@ -8,29 +8,35 @@ import Exception.Player.NonConformingInputParametersException;
 import Exception.Player.NotYourTurnException;
 import Exception.PlayerException;
 import Interface.GameCommand;
-import Messages.Client.WriteChatMessage;
-import Messages.Client.InsertTilesMessage;
+import Messages.Client.*;
 import Messages.Client.SelectedTilesMessage;
-import Messages.Server.ChatRoomMessage;
-import Messages.Server.ErrorMessage;
-import Messages.Server.InsertedTilesMessage;
-import Messages.Server.StatusMessage;
+import Messages.Server.*;
 import Messages.ServerMessage;
 import Server.Model.GameModel;
 import Server.Model.Player;
+import Server.Network.Lobby;
 import Utils.Tile;
 
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
-public class PlayerAction implements GameCommand {
-    private final GameModel gameModel;
-    private GamePhase state = GamePhase.PICKING;
-    private final CurrentPlayer currentPlayer;
+public class PlayerAction extends UnicastRemoteObject implements GameCommand {
+    private GameModel gameModel;
+    private GamePhase state;
+    private CurrentPlayer currentPlayer;
 
+    public PlayerAction() throws RemoteException {
+        super();
+        this.gameModel = null;
+        this.state = null;
+        this.currentPlayer = null;
+    }
 
-    public PlayerAction(GameModel gameModel) {
-        this.gameModel = gameModel;
+    public void init(GameModel gameModel){
+        this.gameModel  = gameModel;
         this.currentPlayer = new CurrentPlayer(this.gameModel.getCurrentPlayer());
+        this.state= GamePhase.PICKING;
     }
 
     public void setCurrentPlayer(Player player){
@@ -54,7 +60,6 @@ public class PlayerAction implements GameCommand {
         }
     }
 
-
     @Override
     public ServerMessage insertTiles(InsertTilesMessage message){
         try{
@@ -71,7 +76,6 @@ public class PlayerAction implements GameCommand {
         }
     }
 
-
     @Override
     public ServerMessage writeChat(WriteChatMessage message){
         try{
@@ -81,6 +85,13 @@ public class PlayerAction implements GameCommand {
             System.out.println(e.toString());
             return new ErrorMessage(e.toString());
         }
+    }
+
+    @Override
+    public ServerMessage LogIn(AddPlayerMessage message) {
+        if(Lobby.canLog(message.getPlayerID()))
+            return new AddedPlayerMessage();
+        return new ErrorMessage("Player ID already token, choose another one");
     }
 
     @Override
@@ -96,6 +107,10 @@ public class PlayerAction implements GameCommand {
         return statusMessage;
     }
 
+    @Override
+    public ServerMessage ping(PingMessage message) {
+        return GameCommand.super.ping(message);
+    }
 
     private GamePhase ableTo(String playerID) throws PlayerException {
        if(!playerID.equals(this.gameModel.getCurrentPlayer().getID()))

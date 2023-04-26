@@ -281,17 +281,19 @@ public class GameModel {
      @throws PlayerException if the player doesn't have enough space in their personal shelf
      @throws NonConformingInputParametersException if the player didn't insert the correct parameters
      */
+    // TODO: 26/04/2023
     public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
         if(sort.size()!=tiles.size()) throw new NonConformingInputParametersException();
-        for (Integer integer : sort) tiles.add(tiles.get(integer - 1));
+        for (Integer integer : sort) 
+            tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
         this.currentPlayer.getMyShelf().insert(column-1, tiles);
     }
 
     /**
      Writes a message in the chat room.
-     The message is a serialized JSON representation of a WriteChatMessage object.
-     @param message the message to be written.
+     @param user the player who sent the message
+     @param text the body of the message
      */
     public void writeChat(String user, String text) throws ChatException {
         if(text.equals(""))

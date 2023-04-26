@@ -1,10 +1,10 @@
-package Server.Network.Player;
+package Server.Network.Client;
 
-import Server.Network.PlayerHandler;
+import Server.Network.ClientHandler;
 
 import javax.management.remote.rmi.RMIConnector;
 
-public class ClientHandlerRMI extends PlayerHandler {
+public class ClientHandlerRMI extends ClientHandler {
     // TODO: 29/03/2023
     private RMIConnector connection;
 
