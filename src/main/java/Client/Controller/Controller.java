@@ -17,41 +17,60 @@ import java.util.List;
 // 3) implement pingMessage, addPlayerMessage, changeView.
 // 4) check if is missing something and do tests.
 
+// cli or gui, type of connection, ip, port, number of players
+// number of player, ask until reach number insert
 
 public class Controller extends Thread{
     private View view;
     private final Network network;
     private final String ipAddress;
     private String playerID;
+    private Integer port;
 
-    public Controller(View view, Network network, String ipAddress) {
+    public Controller(View view, Network network, String ipAddress, Integer port) {
         this.view = view;
         this.network = network;
         this.ipAddress = ipAddress;
+        this.port = port;
     }
 
     public void start(){
+        // while(Servers says okay){
 
+
+        // forward setup to Network
+        ClientMessage addPlayerMessage = new AddPlayerMessage(this.network, this.playerID, this.port);
+
+
+        // wait confirm from server
+        // receive copyFromServer(ServerMessage)
+
+        Thread thread = new Thread(inputReader);
+
+        //}
     }
 
-    public void inputReader() {
-        try {
-            // generic input: opType-content
-            String input = System.console().readLine();
-            OperationType opType = checkInput(input);
-            String content = upLoadContent(input,opType);
-            if(opType.equals(OperationType.CHANGEVIEW))
-                changeView(content);
-            else {
-                ClientMessage clientMessage;
-                clientMessage = buildMessage(opType, content);
-                // TODO: 29/04/2023
-                // forward client message to Network
+
+    Runnable inputReader = () -> {
+        while(true) {
+            try {
+                // generic input: opType-content
+                String input = System.console().readLine();
+                OperationType opType = checkInput(input);
+                String content = upLoadContent(input, opType);
+                if (opType.equals(OperationType.CHANGEVIEW))
+                    changeView(content);
+                else {
+                    ClientMessage clientMessage;
+                    clientMessage = buildMessage(opType, content);
+                    // TODO: 29/04/2023
+                    // forward client message to Network
+                }
+            } catch (InvalidInputException e) {
+                System.out.println("Input not valid!");
             }
-        } catch (InvalidInputException e) {
-            System.out.println("Input not valid!");
         }
-    }
+    };
 
     /**
      * Create a message with the information inserted by a player from input.
