@@ -4,19 +4,37 @@ import Client.View.*;
 import Client.Network.*;
 import Client.Controller.Controller;
 
+// args[0] = program name, args[1] = type of view
+
 public class ClientApp {
-    public static void main(String[] args) {
+    public void main(String[] args) {
         View view;
         Network network;
+        String ipAddress;
         Controller controller;
-        do{
+
+        // view
+        if(ViewFactory.getView(args[1]) != null) {
             view = ViewFactory.getView(args[1]);
-            if(view == null)
-                System.out.println("Wrong input, select view again");
-            //wait a scan to save in args[1]
-        }while(view==null);
-        controller = new Controller();
-        controller.inputReader();
-        //we now need to ask for the connection type and initialize the right network object
+        }else
+            view = ViewFactory.getView("CLI");
+
+        // network
+        System.out.println("Insert type of connection: ");
+        if(System.console().readLine() != null)
+            network = NetworkFactory.getNetwork(System.console().readLine());
+        else
+            network = NetworkFactory.getNetwork("SOCKET");
+
+        // ipAddress
+        System.out.println("Insert ipAddress ");
+        if(System.console().readLine() != null)
+            ipAddress = System.console().readLine();
+        else
+            ipAddress = "127.0.0.1";
+
+        // controller
+        controller = new Controller(view,network,ipAddress);
+
     }
 }
