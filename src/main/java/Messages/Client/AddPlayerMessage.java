@@ -5,14 +5,9 @@ import Enumeration.OperationType;
 import Messages.ClientMessage;
 
 public class AddPlayerMessage extends ClientMessage {
-    Network network;
-    Integer port;
 
-
-    public AddPlayerMessage(Network network, String playerID,Integer port) {
+    public AddPlayerMessage(String playerID) {
         this.operationType = OperationType.ADDPLAYER;
         this.playerID = playerID;
-        this.network = network;
-        this.port = port;
     }
 }

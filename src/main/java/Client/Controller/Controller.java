@@ -1,73 +1,102 @@
 package Client.Controller;
 
+import Client.ClientApp;
 import Client.View.*;
 import Client.Network.*;
 import Enumeration.OperationType;
 import Messages.Client.*;
 import Exception.InvalidInputException;
 import Messages.ClientMessage;
+import Messages.ServerMessage;
 import Utils.Coordinates;
 
+import javax.swing.text.PlainView;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 // TODO: 27/04/2023
-// done 1) check the syntax of the input and in case throw Exception.
-// 2) adjust thread e adjust setup().
-// 3) implement pingMessage, addPlayerMessage, changeView.
-// 4) check if is missing something and do tests.
-
-// cli or gui, type of connection, ip, port, number of players
-// number of player, ask until reach number insert
+// 1) control that all input follows: Controller -> Network -> Server -> Network -> View. !!!!!!!!!!!!!
+// 2) implement pingMessage, addPlayerMessage as settled with colleagues.
+// 3) check if is missing something and do tests.
+// 4) decide if error messages are sent to screen by controller or view.
 
 public class Controller extends Thread{
     private View view;
     private final Network network;
-    private final String ipAddress;
     private String playerID;
-    private Integer port;
+    Scanner scanner = new Scanner(System.in);
 
-    public Controller(View view, Network network, String ipAddress, Integer port) {
+    public Controller(View view, Network network,String playerID) {
         this.view = view;
         this.network = network;
-        this.ipAddress = ipAddress;
-        this.port = port;
+        this.playerID = playerID;
     }
 
     public void start(){
         // while(Servers says okay){
-
+        ClientMessage firstPlayer = new FirstPlayerMessage(playerID);
+        try {
+            Controller.this.network.sendMessage(firstPlayer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // now I receive the response from the server and chose if ask how many players.
+        // ... serverMessage ...
+        // scanner "how many player?"
 
         // forward setup to Network
-        ClientMessage addPlayerMessage = new AddPlayerMessage(this.network, this.playerID, this.port);
-
+        ClientMessage addPlayerMessage = new AddPlayerMessage(this.playerID);
+        try {
+            Controller.this.network.sendMessage(addPlayerMessage);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         // wait confirm from server
         // receive copyFromServer(ServerMessage)
+        // wait for new turn
 
         Thread thread = new Thread(inputReader);
+        thread.start();
+
+        Thread thread1 = new Thread(pingThread);
+        thread1.start();
 
         //}
     }
+
+    Runnable pingThread = () -> {
+        ClientMessage pingMessage = new PingMessage(playerID);
+        try {
+            Controller.this.network.sendMessage(pingMessage);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // forward to Network
+    };
 
 
     Runnable inputReader = () -> {
         while(true) {
             try {
                 // generic input: opType-content
-                String input = System.console().readLine();
+                String input = scanner.nextLine();
                 OperationType opType = checkInput(input);
                 String content = upLoadContent(input, opType);
                 if (opType.equals(OperationType.CHANGEVIEW))
+                    // ............ to view .................
                     changeView(content);
                 else {
                     ClientMessage clientMessage;
                     clientMessage = buildMessage(opType, content);
-                    // TODO: 29/04/2023
-                    // forward client message to Network
+                    Controller.this.network.sendMessage(clientMessage);
                 }
             } catch (InvalidInputException e) {
                 System.out.println("Input not valid!");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     };
