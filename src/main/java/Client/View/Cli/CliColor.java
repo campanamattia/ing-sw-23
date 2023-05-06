@@ -1,4 +1,4 @@
-package View.CLI;
+package Client.View.Cli;
 
 public enum CliColor {
 
@@ -31,7 +31,7 @@ public enum CliColor {
     BOLDWHITE("\033[1;37m"),
 
     //Background Colors
-    BBLACK("\033[1;37m\033[40m"),
+    BBLACK("\u001b[40m"),
     BRED("\033[1;37m\033[41m"),
     BGREEN("\033[1;37m\033[42m"),
     BYELLOW("\033[0;30m\033[103m"),
