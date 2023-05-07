@@ -15,6 +15,11 @@ public class Cell {
         this.status = false;
     }
 
+    public Cell(Tile tile) {
+        this.tile = tile;
+        this.status = true;
+    }
+
     public Tile getTile() {
         return tile;
     }

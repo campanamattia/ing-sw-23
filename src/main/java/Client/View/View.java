@@ -1,7 +1,9 @@
 package Client.View;
 
-import Interface.VirtualView;
+import Interface.ClientInterface;
 
-public abstract class View implements VirtualView {
+public abstract class View implements ClientInterface {
+
+
 
 }
