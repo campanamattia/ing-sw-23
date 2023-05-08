@@ -1,5 +1,7 @@
 package Client.View;
 
+import Client.View.Cli.Cli;
+
 public class ViewFactory {
     public static View getView(String view){
         switch (view) {

@@ -28,6 +28,7 @@ public class Board {
     @Expose
     private int tilesTaken;
     private final int matrix_size;
+    private boolean lastRound;          //CHECK THIS LINE
 
     /**
      * Class constructor.
