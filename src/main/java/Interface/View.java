@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 import Messages.ServerMessage;
 import Server.Controller.PlayerAction;
 
-public interface VirtualView extends Remote {
+public interface View extends Remote {
 
     void askServerInfo();
 

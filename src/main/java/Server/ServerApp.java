@@ -18,18 +18,19 @@ import java.util.logging.Logger;
 
 
 public class ServerApp {
-    private static Logger logger;
-    private static final String serverSetting = "src/main/resources/serverSetting.json";
+    public static Logger logger;
+    private static final String serverSetting = "serverSetting.json";
     private static Lobby lobby;
     private static int socketPort = 0;
     private static int rmiPort = 0;
+
+
     public static void main(String[] args) {
         initLogger();
         setPort(args);
         initLobby();
         serverRMI();
         serverSocket();
-
     }
 
 
@@ -103,7 +104,7 @@ public class ServerApp {
 
     private static void serverRMI(){
         try{
-            new ServerRMI().start(logger, lobby.getPlayerAction(), rmiPort);
+            new ServerRMI().start(lobby, rmiPort);
         }catch (RemoteException | AlreadyBoundException e){
             logger.log(Level.SEVERE, e.toString());
             System.exit(-1);
@@ -111,12 +112,7 @@ public class ServerApp {
     }
 
     private static void serverSocket() {
-        try{
 
-        }catch (RemoteException e){
-            logger.log(Level.SEVERE, e.toString());
-            System.exit(-1);
-        }
     }
 
 }

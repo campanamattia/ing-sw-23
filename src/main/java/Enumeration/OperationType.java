@@ -3,7 +3,7 @@ package Enumeration;
 public enum OperationType {
     PING,
     ADDPLAYER,
-    MESSAGE,
+    WRITEMESSAGE,
     INSERTTILES,
     SELECTEDTILES,
 }
