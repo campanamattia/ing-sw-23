@@ -21,7 +21,7 @@ public class NormalState extends PhaseController {
         do{
             int nextIndex = (this.players.indexOf(this.currentPlayer)+1) % players.size();
             this.currentPlayer = this.players.get(nextIndex);
-        }while(this.currentPlayer.getStatus());
+        }while(! this.currentPlayer.getStatus());
     }
 
 }
