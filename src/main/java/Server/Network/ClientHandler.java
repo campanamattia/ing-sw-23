@@ -1,8 +1,8 @@
 package Server.Network;
 
-import Interface.View;
+import Interface.RemoteView;
 
-public abstract class ClientHandler implements View {
+public abstract class ClientHandler implements RemoteView {
     protected String playerID;
 
     public String getPlayerID() {

@@ -1,16 +1,14 @@
 package Server.Network.Client;
 
-import Interface.View;
+import Interface.RemoteView;
 import Server.Network.ClientHandler;
 
-import javax.management.remote.rmi.RMIConnector;
-
 public class RMIHandler extends ClientHandler {
-    private View virtualView;
+    private RemoteView virtualRemoteView;
 
-    public RMIHandler(String playerID, View view) {
+    public RMIHandler(String playerID, RemoteView remoteView) {
         this.playerID = playerID;
-        this.virtualView = view;
+        this.virtualRemoteView = remoteView;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package Server.Network;
 
 import Interface.LobbyInterface;
-import Interface.View;
+import Interface.RemoteView;
 import Server.Controller.GameController;
 import Server.Network.Client.RMIHandler;
 import Server.Network.Client.SocketHandler;
@@ -36,12 +36,12 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     }
 
     @Override
-    public void logIn(String playerID, View view) throws RemoteException {
+    public void logIn(String playerID, RemoteView remoteView) throws RemoteException {
         if(this.lobby.containsKey(playerID)){
-            view.outcomeException(new RuntimeException("PlayerID already taken"));
-            view.askPlayerID();
+            remoteView.outcomeException(new RuntimeException("PlayerID already taken"));
+            remoteView.askPlayerID();
         }else{
-            this.lobby.put(playerID, new RMIHandler(playerID, view));
+            this.lobby.put(playerID, new RMIHandler(playerID, remoteView));
 
             if(this.lobby.size() == this.lobbySize){
                 this.initGame();
