@@ -35,9 +35,7 @@ public class PlayerListener implements Runnable{
             System.err.println(e.getMessage());
         }
     }
-    public OpType deserializer(Socket connection){
-        return null;
-    }
+
 
     public String getPlayerID() {
         return playerID;
