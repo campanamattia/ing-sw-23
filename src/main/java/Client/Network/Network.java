@@ -1,8 +1,10 @@
 package Client.Network;
 
 import Messages.ClientMessage;
+import Messages.ServerMessage;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 
 public abstract class Network {
     protected String ipAddress;
@@ -24,5 +26,5 @@ public abstract class Network {
         this.port = port;
     }
 
-    public synchronized void sendMessage(ClientMessage clientMessage) throws IOException {}
+    public abstract ServerMessage sendMessage(ClientMessage clientMessage) throws IOException;
 }
