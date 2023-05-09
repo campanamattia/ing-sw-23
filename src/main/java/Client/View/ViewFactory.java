@@ -1,6 +1,7 @@
 package Client.View;
 
 import Client.View.Cli.Cli;
+import Client.View.Gui.Gui;
 
 public class ViewFactory {
     public static View getView(String view){

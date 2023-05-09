@@ -1,5 +1,6 @@
-package Client.View;
+package Client.View.Gui;
 
+import Client.View.View;
 import Messages.ServerMessage;
 import Server.Model.ChatMessage;
 import Utils.Cell;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-public class Gui extends View{
+public class Gui extends View {
     @Override
     public void showWinner(List<Rank> rank) {
 
