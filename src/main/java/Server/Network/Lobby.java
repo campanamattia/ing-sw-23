@@ -1,7 +1,9 @@
 package Server.Network;
 
+import Interface.LobbyInterface;
 import Interface.View;
 import Server.Controller.GameController;
+import Server.Network.Client.RMIHandler;
 import Server.Network.Client.SocketHandler;
 
 import java.rmi.RemoteException;
@@ -10,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class Lobby extends UnicastRemoteObject implements Interface.Lobby {
+public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     private HashMap<String, ClientHandler> lobby;
     private List<GameController> games;
     private int lobbySize;
@@ -23,21 +25,61 @@ public class Lobby extends UnicastRemoteObject implements Interface.Lobby {
     }
 
 
-    public void setLobbySize(int lobbySize){
-        this.lobbySize = lobbySize;
+    @Override
+    public void setLobbySize(String playerID, int lobbySize) throws RemoteException {
+        if(lobbySize>=2 && lobbySize<=4)
+            this.lobbySize = lobbySize;
+        else {
+            this.lobby.get(playerID).outcomeException(new RuntimeException("Lobby size must be between 2 and 4"));
+            this.lobby.get(playerID).askLobbySize();
+        }
     }
 
     @Override
-    public boolean LogIn(String playerID, View view) throws RemoteException {
-        return true;
+    public void logIn(String playerID, View view) throws RemoteException {
+        if(this.lobby.containsKey(playerID)){
+            view.outcomeException(new RuntimeException("PlayerID already taken"));
+            view.askPlayerID();
+        }else{
+            this.lobby.put(playerID, new RMIHandler(playerID, view));
+
+            if(this.lobby.size() == this.lobbySize){
+                this.initGame();
+            }
+        }
     }
 
     @Override
-    public boolean LogOut(String playerID) throws RemoteException {
-        return false;
+    public void logOut(String playerID) throws RemoteException {
+        ClientHandler clientHandler = this.lobby.remove(playerID);
+        if(clientHandler != null){
+            clientHandler.logOut();
+        }
     }
 
-    public boolean LogIn(String playerUD, SocketHandler socketHandler) {
-        return true;
+    public void logIn(String playerID, SocketHandler socketHandler) {
+        if(this.lobby.containsKey(playerID)){
+            socketHandler.outcomeException(new RuntimeException("PlayerID already taken"));
+            socketHandler.askPlayerID();
+        }else{
+            this.lobby.put(playerID, socketHandler);
+            socketHandler.setPlayerID(playerID);
+            firstPlayer(playerID);
+            initGame();
+        }
+    }
+
+    private void firstPlayer(String playerID){
+        if(this.lobby.size() == 1){
+            this.lobby.get(playerID).askLobbySize();
+        }
+    }
+
+    private void initGame(){
+        if(lobbySize == lobby.size()){
+            games.add(new GameController(this.lobby));
+            this.lobby = new HashMap<>();
+            this.lobbySize = -1;
+        }
     }
 }

@@ -4,9 +4,6 @@ package Server.Controller;
 import Enumeration.GamePhase;
 import Exception.GamePhase.EndGameException;
 import Exception.GamePhaseException;
-import Exception.PlayerNotFoundException;
-import Messages.ClientMessage;
-import Messages.ServerMessage;
 import Server.Controller.Phase.EndedMatch;
 import Server.Controller.Phase.LastRoundState;
 import Server.Controller.Phase.NormalState;
@@ -23,13 +20,15 @@ public class GameController {
     private GameModel gameModel;
     private HashMap<String, ClientHandler> players;
     private PhaseController phaseController;
-    private final PlayerAction playerAction;
+    private final PlayersHandler playersHandler;
 
-    public GameController(List<String> playersID){
+    public GameController(HashMap<String, ClientHandler> players){
         this.uuid = UUID.randomUUID();
+        this.players = players;
+        List<String> playersID = new ArrayList<>(players.keySet());
         try {
             this.gameModel = new GameModel(this.uuid, playersID);
-            this.playerAction = new PlayerAction(this.gameModel);
+            this.playersHandler = new PlayersHandler(this.gameModel);
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.toString());
             throw new RuntimeException(e);
@@ -53,8 +52,8 @@ public class GameController {
         }
         this.gameModel = new Gson().fromJson(reader, GameModel.class);
         this.uuid = this.gameModel.getUuid();
-        GameController.playerAction = new PlayerAction();
-        GameController.playerAction.init(this.gameModel);
+        GameController.playersHandler = new PlayersHandler();
+        GameController.playersHandler.init(this.gameModel);
     }
     */
     /**
@@ -68,7 +67,7 @@ public class GameController {
             try {
                 phaseController.nextPlayer();
                 this.gameModel.setCurrentPlayer(this.phaseController.getCurrentPlayer());
-                GameController.playerAction.setCurrentPlayer(this.phaseController.getCurrentPlayer());
+                GameController.playersHandler.setCurrentPlayer(this.phaseController.getCurrentPlayer());
                 break;
             } catch (GamePhaseException e) {
                 if (e instanceof EndGameException) {
@@ -87,19 +86,7 @@ public class GameController {
         // TODO: 08/05/2023 work on how send a message to all players
     }
 
-    /**
-     Sets the status of the player with the given ID to the given status.
-     @param id the ID of the player whose status is being set
-     @param status the status to set for the player (true if they are ready, false if they are not)
-     @throws PlayerNotFoundException if the player with the given ID is not found in the gameModel
-     */
-    public void setPlayerStatus(String id, Boolean status) throws PlayerNotFoundException {
-        try{
-            this.gameModel.getPlayer(id).setStatus(status);
-        }catch (PlayerNotFoundException e){
-            System.out.println(e.toString());
-        }
-    }
+    public boolean reloadPlayer()
 
     /**
      Returns the UUID associated with this GameController.

@@ -1,6 +1,8 @@
 package Server.Network;
 
-public abstract class ClientHandler {
+import Interface.View;
+
+public abstract class ClientHandler implements View {
     protected String playerID;
 
     public String getPlayerID() {

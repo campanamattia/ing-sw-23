@@ -3,7 +3,7 @@ package Server.Network.Client;
 import Messages.ClientMessage;
 import Messages.ServerMessage;
 import Server.Controller.GameController;
-import Server.Controller.PlayerAction;
+import Server.Controller.PlayersHandler;
 import Server.Network.ClientHandler;
 import Server.Network.Lobby;
 import Utils.ClientMessageFactory;
@@ -21,11 +21,11 @@ import java.util.Scanner;
 public class SocketHandler extends ClientHandler implements Runnable{
     private final Socket socket;
     private final Lobby lobby;
-    private PlayerAction playerAction;
+    private PlayersHandler playersHandler;
 
-    public SocketHandler(Socket socket, Lobby lobby, PlayerAction playerAction) {
+    public SocketHandler(Socket socket, Lobby lobby, PlayersHandler playersHandler) {
         this.playerID = null;
-        this.playerAction = null;
+        this.playersHandler = null;
         this.socket = socket;
         this.lobby = lobby;
     }
@@ -68,10 +68,10 @@ public class SocketHandler extends ClientHandler implements Runnable{
         return lobby;
     }
 
-    public PlayerAction getPlayerAction() {
-        return playerAction;
+    public PlayersHandler getPlayerAction() {
+        return playersHandler;
     }
-    public void setPlayerAction(PlayerAction playerAction) {
-        this.playerAction = playerAction;
+    public void setPlayerAction(PlayersHandler playersHandler) {
+        this.playersHandler = playersHandler;
     }
 }

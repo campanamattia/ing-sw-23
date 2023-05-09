@@ -1,5 +1,6 @@
 package Utils;
 
+import Server.Model.GameModel;
 import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockPlayer;
@@ -10,12 +11,14 @@ import java.util.UUID;
 
 public class MockModel {
     private UUID uuid;
+    private String playerID;
     private MockBoard mockBoard;
     private List<MockPlayer> mockPlayers;
     private MockCommonGoal mockCommonGoal;
 
     public MockModel() {
         this.uuid = null;
+        this.playerID = null;
         this.mockBoard = null;
         this.mockPlayers = new ArrayList<>();
         this.mockCommonGoal = null;
@@ -50,5 +53,16 @@ public class MockModel {
     }
     public List<MockPlayer> getMockPlayers() {
         return mockPlayers;
+    }
+
+    public String getPlayerID() {
+        return playerID;
+    }
+    public void setPlayerID(String playerID) {
+        this.playerID = playerID;
+    }
+
+    public void setMockModel(GameModel model){
+
     }
 }

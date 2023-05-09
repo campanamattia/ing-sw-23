@@ -1,10 +1,9 @@
 package Interface;
 
 import java.rmi.Remote;
-import java.rmi.RemoteException;
 
 import Messages.ServerMessage;
-import Server.Controller.PlayerAction;
+import Server.Controller.PlayersHandler;
 
 public interface View extends Remote {
 
@@ -14,7 +13,7 @@ public interface View extends Remote {
 
     void askNumberPlayer();
 
-    void askAction(PlayerAction playerActions);
+    void askAction(PlayersHandler playerActions);
 
     void printCommonGoal();
 
@@ -32,6 +31,6 @@ public interface View extends Remote {
 
     void newTurn(ServerMessage message);
 
-    void EndTurn(ServerMessage message);
+    void endTurn(ServerMessage message);
 
 }

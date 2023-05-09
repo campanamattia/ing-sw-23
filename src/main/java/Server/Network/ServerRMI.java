@@ -1,6 +1,6 @@
 package Server.Network;
 
-import Server.Controller.PlayerAction;
+import Server.Controller.PlayersHandler;
 import Server.ServerApp;
 
 import java.rmi.AlreadyBoundException;
@@ -9,7 +9,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ServerRMI {
 
@@ -27,9 +26,9 @@ public class ServerRMI {
         ServerApp.logger.info("Server RMI ready");
     }
 
-    public static void addBind(UUID uuid, PlayerAction playerAction){
+    public static void addBind(UUID uuid, PlayersHandler playersHandler){
         try {
-            ServerRMI.registry.bind("GameCommand_"+uuid.toString(), playerAction);
+            ServerRMI.registry.bind(uuid.toString(), playersHandler);
         } catch (RemoteException | AlreadyBoundException e) {
             ServerApp.logger.log(Level.SEVERE, e.toString());
             throw new RuntimeException(e);
