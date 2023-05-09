@@ -8,6 +8,7 @@ import Utils.Coordinates;
 import Utils.Tile;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import Exception.Board.*;
 import org.jetbrains.annotations.NotNull;
 import com.google.gson.annotations.Expose;
 

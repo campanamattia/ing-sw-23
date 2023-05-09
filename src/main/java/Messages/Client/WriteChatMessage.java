@@ -12,7 +12,7 @@ public class WriteChatMessage extends ClientMessage {
     }
 
     public WriteChatMessage(String playerID, String text){
-        this.operationType = OperationType.MESSAGE;
+        this.operationType = OperationType.WRITEMESSAGE;
         this.playerID = playerID;
         this.text = text;
     }
