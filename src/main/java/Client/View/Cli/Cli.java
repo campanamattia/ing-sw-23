@@ -4,15 +4,29 @@ import Client.View.View;
 import Server.Model.ChatMessage;
 import Server.Model.CommonGoal;
 import Utils.Cell;
+import Utils.MockObjects.MockBoard;
+import Utils.MockObjects.MockCommonGoal;
+import Utils.MockObjects.MockModel;
+import Utils.MockObjects.MockPlayer;
 import Utils.Rank;
 import Utils.Tile;
 import org.jetbrains.annotations.NotNull;
 
+import java.rmi.RemoteException;
 import java.util.*;
 
 public class Cli extends View {
+    ClientController clientController;
+    MockModel mockModel = new MockModel();
+
+
+    public Cli (ClientController clientController) {
+        this.clientController = clientController;
+
+    }
     @Override
-    public void showBoard(Cell[][] board) {
+    public void showBoard() {
+        Cell[][] board = mockModel.getMockBoard().getBoard();
         System.out.println(" \t   0   " + "   1   " + "   2   " + "   3   " + "   4   " + "   5   " + "   6   " + "   7   " + "   8   ");
         for (int i = 0; i < board.length; i++) {
             System.out.print(i + "\t");
@@ -30,8 +44,11 @@ public class Cli extends View {
     }
 
     @Override
-    public void showChat(Stack<ChatMessage> flow) {
-
+    public void showChat() {
+        Stack<ChatMessage> chat = mockModel.getChat();
+        for (int i=0; i<chat.size(); i++) {
+            System.out.println(chat.pop().sender() + ": " + chat.pop().content());
+        }
     }
 
     @Override
@@ -69,7 +86,7 @@ public class Cli extends View {
     }
 
     @Override
-    public void showStatus(Cell[][] board, HashMap<String, Tile[][]> shelves) {
+    public void showStatus() {
 
     }
 
@@ -118,6 +135,76 @@ public class Cli extends View {
     }
 
     public void showCommonGoal (CommonGoal commonGoal) {
+
+    }
+
+    @Override
+    public void updateBoard(MockBoard mockBoard) throws RemoteException {
+
+    }
+
+    @Override
+    public void updateCommonGoal(List<MockCommonGoal> mockCommonGoals) throws RemoteException {
+
+    }
+
+    @Override
+    public void updatePlayer(MockPlayer mockPlayer) throws RemoteException {
+
+    }
+
+    @Override
+    public void updateChat(Stack<ChatMessage> chatFlow) throws RemoteException {
+
+    }
+
+    @Override
+    public void updateLobby(String playerLogged) throws RemoteException {
+
+    }
+
+    @Override
+    public void newTurn(String playerID) throws RemoteException {
+
+    }
+
+    @Override
+    public void askLobbySize() throws RemoteException {
+
+    }
+
+    @Override
+    public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
+
+    }
+
+    @Override
+    public void outcomeInsertTiles(boolean success) throws RemoteException {
+
+    }
+
+    @Override
+    public void outcomeWriteChat(boolean success) throws RemoteException {
+
+    }
+
+    @Override
+    public void outcomeException(Exception e) throws RemoteException {
+
+    }
+
+    @Override
+    public void outcomeLogin(boolean success) throws RemoteException {
+
+    }
+
+    @Override
+    public void outcomeLogout(boolean success) throws RemoteException {
+
+    }
+
+    @Override
+    public void askPlayerID() throws RemoteException {
 
     }
 }
