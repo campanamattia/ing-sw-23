@@ -2,9 +2,8 @@ package View.CLI;
 
 import Interface.VirtualView;
 import Messages.ServerMessage;
-import Server.Controller.PlayerAction;
+import Server.Controller.PlayersHandler;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Cli implements VirtualView {
@@ -47,7 +46,7 @@ public class Cli implements VirtualView {
 
     public void askNumberPlayer(){}
 
-    public void askAction(PlayerAction playerActions){}
+    public void askAction(PlayersHandler playerActions){}
 
     public void printCommonGoal(){}
 

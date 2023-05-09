@@ -4,22 +4,22 @@ import Enumeration.MessageType;
 import Messages.ServerMessage;
 
 public class ErrorMessage extends ServerMessage {
-    private String error;
+    private Exception error;
 
     public ErrorMessage(){
         super();
         this.error = null;
     }
 
-    public ErrorMessage(String error){
+    public ErrorMessage(Exception error){
         this.messageType = MessageType.ERROR;
         this.error = error;
     }
 
-    public String getError() {
+    public Exception getError() {
         return error;
     }
-    public void setError(String error){
+    public void setError(Exception error){
         this.error = error;
     }
 }
