@@ -1,7 +1,8 @@
-package Server.Model.CommonGoalPackage;
+package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
-import Server.Model.*;
+import Server.Model.Player.Player;
+import Server.Model.Player.Shelf;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -66,7 +67,7 @@ public class CrossGoal extends CommonGoal {
             }
         }
         if (countGroup >= numGroup) {
-            accomplished.add(player.getID());
+            accomplished.add(player.getPlayerID());
             player.updateScore(scoringToken.pop());
         }
     }

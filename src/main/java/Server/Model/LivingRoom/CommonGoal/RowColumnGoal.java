@@ -1,7 +1,8 @@
-package Server.Model.CommonGoalPackage;
+package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
-import Server.Model.*;
+import Server.Model.Player.Player;
+import Server.Model.Player.Shelf;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import Enumeration.Color;
@@ -85,7 +86,7 @@ public class RowColumnGoal extends CommonGoal {
             }
 
             if (countColumn >= numColumn) {
-                accomplished.add(player.getID());
+                accomplished.add(player.getPlayerID());
                 player.updateScore(scoringToken.pop());
                 return;
             }
@@ -113,7 +114,7 @@ public class RowColumnGoal extends CommonGoal {
             }
 
             if (countRow >= numRow) {
-                accomplished.add(player.getID());
+                accomplished.add(player.getPlayerID());
                 player.updateScore(scoringToken.pop());
             }
         }

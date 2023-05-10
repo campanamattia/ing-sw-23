@@ -3,6 +3,8 @@ package Server.Model;
 import Exception.Board.CantRefillBoardException;
 import Exception.Board.NoValidMoveException;
 import Exception.Board.NullTileException;
+import Server.Model.LivingRoom.Bag;
+import Server.Model.LivingRoom.Board;
 import Utils.Coordinates;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

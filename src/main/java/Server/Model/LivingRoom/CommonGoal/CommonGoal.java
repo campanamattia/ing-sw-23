@@ -1,6 +1,7 @@
-package Server.Model;
+package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
+import Server.Model.Player.Player;
 
 import java.util.*;
 

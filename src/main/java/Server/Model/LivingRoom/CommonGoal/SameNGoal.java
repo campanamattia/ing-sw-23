@@ -1,9 +1,8 @@
-package Server.Model.CommonGoalPackage;
+package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
-import Server.Model.CommonGoal;
-import Server.Model.Player;
-import Server.Model.Shelf;
+import Server.Model.Player.Player;
+import Server.Model.Player.Shelf;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,42 +66,42 @@ public class SameNGoal extends CommonGoal {
                     case PINK -> {
                         countPink++;
                         if (countPink == numEquals) {
-                            accomplished.add(player.getID());
+                            accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case CYAN -> {
                         countCyan++;
                         if (countCyan == numEquals) {
-                            accomplished.add(player.getID());
+                            accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case BLUE -> {
                         countBlue++;
                         if (countBlue == numEquals) {
-                            accomplished.add(player.getID());
+                            accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case GREEN -> {
                         countGreen++;
                         if (countGreen == numEquals) {
-                            accomplished.add(player.getID());
+                            accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case WHITE -> {
                         countWhite++;
                         if (countWhite == numEquals) {
-                            accomplished.add(player.getID());
+                            accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
                         }
                     }
                     case YELLOW -> {
                         countYellow++;
                         if (countYellow == numEquals) {
-                            accomplished.add(player.getID());
+                            accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
                         }
                     }

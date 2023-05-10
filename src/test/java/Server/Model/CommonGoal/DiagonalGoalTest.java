@@ -1,8 +1,10 @@
-package Server.Model.CommonGoalPackage;
+package Server.Model.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
-import Server.Model.*;
 import Enumeration.Color;
+import Server.Model.LivingRoom.CommonGoal.DiagonalGoal;
+import Server.Model.Player.PersonalGoal;
+import Server.Model.Player.Player;
 import Utils.Tile;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -114,7 +116,7 @@ class DiagonalGoalTest {
         // Perform the test
         diagonalGoal.check(player);
 
-        assertTrue(diagonalGoal.getAccomplished().contains(player.getID()));
+        assertTrue(diagonalGoal.getAccomplished().contains(player.getPlayerID()));
         assertEquals(1,diagonalGoal.getScoringToken().size());
         assertEquals(4, player.getScore());
         assertEquals(2 ,diagonalGoal.getScoringToken().peek());
@@ -154,7 +156,7 @@ class DiagonalGoalTest {
         // Perform the test
         diagonalGoal.check(player);
 
-        assertTrue(diagonalGoal.getAccomplished().contains(player.getID()));
+        assertTrue(diagonalGoal.getAccomplished().contains(player.getPlayerID()));
         assertEquals(1,diagonalGoal.getScoringToken().size());
         assertEquals(4, player.getScore());
         assertEquals(2 ,diagonalGoal.getScoringToken().peek());

@@ -1,5 +1,4 @@
-package Server.Model;
-import Server.Model.CommonGoalPackage.*;
+package Server.Model.LivingRoom.CommonGoal;
 import com.google.gson.JsonObject;
 
 import java.util.List;

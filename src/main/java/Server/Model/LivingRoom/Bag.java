@@ -1,4 +1,4 @@
-package Server.Model;
+package Server.Model.LivingRoom;
 
 import Enumeration.Color;
 import Utils.Tile;

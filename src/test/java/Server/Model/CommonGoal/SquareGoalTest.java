@@ -1,9 +1,10 @@
-package Server.Model.CommonGoalPackage;
+package Server.Model.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
 import Enumeration.Color;
-import Server.Model.PersonalGoal;
-import Server.Model.Player;
+import Server.Model.LivingRoom.CommonGoal.SquareGoal;
+import Server.Model.Player.PersonalGoal;
+import Server.Model.Player.Player;
 import Utils.Tile;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

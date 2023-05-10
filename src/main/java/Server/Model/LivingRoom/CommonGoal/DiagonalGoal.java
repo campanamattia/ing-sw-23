@@ -1,12 +1,11 @@
-package Server.Model.CommonGoalPackage;
+package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
-import Server.Model.*;
+import Server.Model.Player.Player;
+import Server.Model.Player.Shelf;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import Enumeration.Color;
-import java.util.*;
-
 import java.util.*;
 
 import static java.lang.Math.min;
@@ -97,7 +96,7 @@ public class DiagonalGoal extends CommonGoal {
         }
 
         if (countGroup >= numDiagonal) {
-            accomplished.add(player.getID());
+            accomplished.add(player.getPlayerID());
             player.updateScore(scoringToken.pop());
         }
     }

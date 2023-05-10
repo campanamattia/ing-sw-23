@@ -1,9 +1,8 @@
-package Server.Model.CommonGoalPackage;
+package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
-import Server.Model.CommonGoal;
-import Server.Model.Player;
-import Server.Model.Shelf;
+import Server.Model.Player.Player;
+import Server.Model.Player.Shelf;
 import Utils.Tile;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +54,7 @@ public class VerticesGoal extends CommonGoal {
             if (topLeftTile.getTileColor() == topRightTile.getTileColor() &&
                     topLeftTile.getTileColor() == lowLeftTile.getTileColor() &&
                     topLeftTile.getTileColor() == lowRightTile.getTileColor()) {
-                accomplished.add(player.getID());
+                accomplished.add(player.getPlayerID());
                 player.updateScore(scoringToken.pop());
             }
         }
