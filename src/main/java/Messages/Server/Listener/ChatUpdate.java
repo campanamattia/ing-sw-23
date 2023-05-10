@@ -1,20 +1,20 @@
-package Messages.Server;
+package Messages.Server.Listener;
 
 import Enumeration.MessageType;
 import Messages.ServerMessage;
-import Server.Model.ChatMessage;
+import Utils.ChatMessage;
 
 import java.util.Stack;
 
-public class ChatRoomMessage extends ServerMessage {
+public class ChatUpdate extends ServerMessage {
     private  Stack<ChatMessage> flow;
 
-    public ChatRoomMessage(){
+    public ChatUpdate(){
         super();
         this.flow = null;
     }
 
-    public ChatRoomMessage(Stack<ChatMessage> flow) {
+    public ChatUpdate(Stack<ChatMessage> flow) {
         this.messageType = MessageType.RETURN;
         this.flow = flow;
     }

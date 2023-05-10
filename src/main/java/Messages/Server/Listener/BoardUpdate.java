@@ -2,6 +2,5 @@ package Messages.Server.Listener;
 
 import Messages.ServerMessage;
 
-public class CommonGoalMessage extends ServerMessage {
-
+public class BoardUpdate extends ServerMessage {
 }
