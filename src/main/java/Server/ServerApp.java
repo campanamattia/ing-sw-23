@@ -2,7 +2,8 @@ package Server;
 
 
 import Server.Network.Lobby;
-import Server.Network.Servers.ServerRMI;
+import Server.Network.Servers.SocketServer;
+import Server.Network.Servers.RMIServer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
@@ -29,8 +30,8 @@ public class ServerApp {
         initLogger();
         setPort(args);
         initLobby();
-        serverRMI();
-        serverSocket();
+        rmiServer();
+        socketServer();
     }
 
 
@@ -51,12 +52,10 @@ public class ServerApp {
                 case 2 -> {
                     socketPort = Integer.parseInt(args[0]);
                     rmiPort = Integer.parseInt(args[1]);
-                    return;
                 }
                 case 1 -> {
                     socketPort = Integer.parseInt(args[0]);
                     rmiPort = rmiFromJSON();
-                    return;
                 }
                 default -> {
                     socketPort = socketFromJSON();
@@ -102,17 +101,17 @@ public class ServerApp {
         }
     }
 
-    private static void serverRMI(){
+    private static void rmiServer(){
         try{
-            new ServerRMI().start(lobby, rmiPort);
+            new RMIServer().start(lobby, rmiPort);
         }catch (RemoteException | AlreadyBoundException e){
             logger.log(Level.SEVERE, e.toString());
             System.exit(-1);
         }
     }
 
-    private static void serverSocket() {
-
+    private static void socketServer() {
+        new SocketServer().start(lobby, socketPort);
     }
 
 }

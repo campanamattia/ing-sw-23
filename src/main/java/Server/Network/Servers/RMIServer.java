@@ -11,13 +11,13 @@ import java.rmi.registry.Registry;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class ServerRMI {
+public class RMIServer {
 
     private static Registry registry;
 
     public void start(Lobby lobby, int rmiPort) throws RemoteException, AlreadyBoundException {
         ServerApp.logger.info("Starting RMI server");
-        ServerRMI.registry = LocateRegistry.createRegistry(rmiPort);
+        RMIServer.registry = LocateRegistry.createRegistry(rmiPort);
         try {
             registry.bind("Lobby", lobby);
         }
@@ -30,7 +30,7 @@ public class ServerRMI {
 
     public static void addBind(UUID uuid, PlayersHandler playersHandler){
         try {
-            ServerRMI.registry.bind(uuid.toString(), playersHandler);
+            RMIServer.registry.bind(uuid.toString(), playersHandler);
         } catch (RemoteException | AlreadyBoundException e) {
             ServerApp.logger.log(Level.SEVERE, e.toString());
             throw new RuntimeException(e);

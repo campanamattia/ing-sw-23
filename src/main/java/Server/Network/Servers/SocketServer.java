@@ -11,9 +11,10 @@ import java.util.concurrent.Executors;
 import java.net.*;
 import java.util.logging.Level;
 
-public class MultiEcho {
+public class SocketServer {
 
     public void start(Lobby lobby, int socketPort){
+        ServerApp.logger.info("Starting Server Socket");
         ExecutorService executor = Executors.newCachedThreadPool();
         try (ServerSocket serverSocket = new ServerSocket(socketPort)) {
             ServerApp.logger.info("Server Socket ready");
