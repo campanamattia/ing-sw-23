@@ -1,6 +1,7 @@
-package Server.Network;
+package Server.Network.Servers;
 
-import Server.Controller.PlayersHandler;
+import Server.Controller.Players.PlayersHandler;
+import Server.Network.Lobby;
 import Server.ServerApp;
 
 import java.rmi.AlreadyBoundException;
