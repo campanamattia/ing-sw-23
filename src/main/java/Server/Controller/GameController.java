@@ -7,8 +7,10 @@ import Exception.GamePhaseException;
 import Server.Controller.Phase.EndedMatch;
 import Server.Controller.Phase.LastRoundState;
 import Server.Controller.Phase.NormalState;
+import Server.Controller.Phase.PhaseController;
+import Server.Controller.Players.PlayersHandler;
 import Server.Model.*;
-import Server.Network.ClientHandler;
+import Server.Network.Client.ClientHandler;
 import Server.ServerApp;
 
 import java.io.*;

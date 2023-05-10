@@ -2,7 +2,7 @@ package Server;
 
 
 import Server.Network.Lobby;
-import Server.Network.ServerRMI;
+import Server.Network.Servers.ServerRMI;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;

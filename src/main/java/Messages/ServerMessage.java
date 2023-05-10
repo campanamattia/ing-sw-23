@@ -1,5 +1,6 @@
 package Messages;
 
+import Client.View.View;
 import Enumeration.MessageType;
 
 ;
@@ -16,4 +17,5 @@ public abstract class ServerMessage {
     public void setMessageType(MessageType messageType) {
         this.messageType = messageType;
     }
+    public abstract void execute(View view);
 }

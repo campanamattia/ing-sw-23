@@ -24,4 +24,6 @@ public abstract class ClientMessage {
     public void setPlayerID(String playerID) {
         this.playerID = playerID;
     }
+
+    public abstract void execute(Object serverObject);
 }

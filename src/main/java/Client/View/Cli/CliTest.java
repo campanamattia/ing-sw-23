@@ -1,17 +1,12 @@
 package Client.View.Cli;
 
 import Enumeration.Color;
-import Server.Model.Shelf;
 import Utils.Cell;
 import Utils.Tile;
-
-import javax.swing.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static Client.View.Cli.Cli.clearCLI;
 
 public class CliTest {
 
