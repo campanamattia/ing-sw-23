@@ -94,7 +94,19 @@ public class SocketHandler extends ClientHandler implements Runnable, PlayerScou
         return lobby;
     }
 
-    public PlayersHandler getPlayerAction() {
+    public void setPlayersHandler(PlayersHandler playersHandler) {
+        this.playersHandler = playersHandler;
+    }
+    public PlayersHandler getPlayersHandler() {
         return playersHandler;
+    }
+
+    @Override
+    public void setPlayerID(String playerID) {
+        super.setPlayerID(playerID);
+    }
+    @Override
+    public String getPlayerID() {
+        return super.getPlayerID();
     }
 }
