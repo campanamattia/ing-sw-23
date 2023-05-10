@@ -6,8 +6,18 @@ import Exception.ChatException;
 import Exception.Player.NonConformingInputParametersException;
 import Exception.PlayerException;
 import Exception.PlayerNotFoundException;
+import Interface.Scout.BoardScout;
+import Interface.Scout.CommonGoalScout;
+import Interface.Scout.PlayerScout;
+import Server.Model.LivingRoom.CommonGoal.CommonGoal;
+import Server.Model.LivingRoom.CommonGoal.CommonGoalFactory;
+import Server.Model.LivingRoom.Bag;
+import Server.Model.LivingRoom.Board;
+import Server.Model.LivingRoom.ChatMessage;
+import Server.Model.LivingRoom.ChatRoom;
+import Server.Model.Player.PersonalGoal;
+import Server.Model.Player.Player;
 import Utils.Coordinates;
-import Utils.Rank;
 import Utils.Tile;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,10 +31,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 /**
  Represents the game model, contain information about the game state, players, board, and chat.
@@ -55,7 +62,6 @@ public class GameModel {
      */
     @Expose
     private Player currentPlayer;
-
     /**
      * list of all players in the game
      */
@@ -66,13 +72,6 @@ public class GameModel {
      */
     @Expose
     private List<CommonGoal> commonGoals;
-    /**
-     * the final leaderboard for the game
-     * (null if the game is still ongoing)
-     */
-    @Expose
-    private List<Rank> leaderboard = null;
-
     /**
      * the bag that contains the tiles used in the game
      */
@@ -150,13 +149,12 @@ public class GameModel {
      @param currentPlayer the current player in the game
      @param players the list of players in the game
      @param commonGoals the list of common goals in the game
-     @param leaderboard the leaderboard of the game
      @param bag the bag of tiles in the game
      @param board the board of the game
      @param chatRoom the chat room of the game
      @param filepath the file path of the game
      */
-    public GameModel(UUID uuid, GamePhase phase, int nPlayers, String firstPlayer, Player currentPlayer, List<Player> players, List<CommonGoal> commonGoals, List<Rank> leaderboard, Bag bag, Board board, ChatRoom chatRoom, String filepath) {
+    public GameModel(UUID uuid, GamePhase phase, int nPlayers, String firstPlayer, Player currentPlayer, List<Player> players, List<CommonGoal> commonGoals, Bag bag, Board board, ChatRoom chatRoom, String filepath) {
         this.uuid = uuid;
         this.phase = phase;
         this.nPlayers = nPlayers;
@@ -164,7 +162,6 @@ public class GameModel {
         this.currentPlayer = currentPlayer;
         this.players = players;
         this.commonGoals = commonGoals;
-        this.leaderboard = leaderboard;
         this.bag = bag;
         this.board = board;
         this.chatRoom = chatRoom;
@@ -179,7 +176,7 @@ public class GameModel {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("src/main/resources/game/");
         for(Player tmp : this.players)
-            stringBuilder.append(tmp.getID()).append("_");
+            stringBuilder.append(tmp.getPlayerID()).append("_");
         stringBuilder.append(LocalDate.now()).append(".json");
         return stringBuilder.toString();
     }
@@ -323,14 +320,6 @@ public class GameModel {
     }
 
     /**
-     Sets the leaderboard.
-     @param rank the leaderboard
-     */
-    public void setLeaderboard(List<Rank> rank){
-        this.leaderboard = rank;
-    }
-
-    /**
      Sets the game phase.
      @param phase the game phase
      */
@@ -419,11 +408,16 @@ public class GameModel {
         return this.chatRoom;
     }
 
-    /**
-     Returns the leaderboard.
-     @return the leaderboard
-     */
-    public List<Rank> getLeaderboard() {
-        return leaderboard;
+
+    public void addBoardSubscriber(BoardScout interfaceBoard) {
+
+    }
+
+    public void addPlayerSubscriber(PlayerScout interfacePlayer) {
+
+    }
+
+    public void addCommonGoalSubscriber(CommonGoalScout interfaceCommonGoal) {
+
     }
 }

@@ -1,8 +1,11 @@
-package Server.Model.CommonGoalPackage;
+package Server.Model.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
-import Server.Model.*;
 import Enumeration.Color;
+import Server.Model.LivingRoom.CommonGoal.GroupAdjacentGoal;
+import Server.Model.Player.PersonalGoal;
+import Server.Model.Player.Player;
+import Server.Model.Player.Shelf;
 import Utils.Tile;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -17,7 +20,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
-import static Server.Model.CommonGoalPackage.GroupAdjacentGoal.countSameAdjacent;
+import static Server.Model.LivingRoom.CommonGoal.GroupAdjacentGoal.countSameAdjacent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 

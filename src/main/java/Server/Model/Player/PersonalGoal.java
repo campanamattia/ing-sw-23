@@ -1,4 +1,4 @@
-package Server.Model;
+package Server.Model.Player;
 
 import Enumeration.Color;
 import Utils.Coordinates;

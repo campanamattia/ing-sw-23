@@ -1,4 +1,4 @@
-package Server.Model;
+package Server.Model.Player;
 
 import Exception.Player.ColumnNotValidException;
 import Utils.Tile;

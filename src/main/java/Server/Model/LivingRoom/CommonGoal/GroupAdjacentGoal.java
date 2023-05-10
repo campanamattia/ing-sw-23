@@ -1,7 +1,8 @@
-package Server.Model.CommonGoalPackage;
+package Server.Model.LivingRoom.CommonGoal;
 import Enumeration.Color;
 import Exception.CommonGoal.NullPlayerException;
-import Server.Model.*;
+import Server.Model.Player.Player;
+import Server.Model.Player.Shelf;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,7 +73,7 @@ public class GroupAdjacentGoal extends CommonGoal {
                         groups ++;
                     }
                     if (groups >= numGroup) {
-                        accomplished.add(player.getID());
+                        accomplished.add(player.getPlayerID());
                         player.updateScore(scoringToken.pop());
                         return;
                     }

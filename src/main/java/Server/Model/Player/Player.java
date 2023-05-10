@@ -1,4 +1,4 @@
-package Server.Model;
+package Server.Model.Player;
 
 import com.google.gson.annotations.Expose;
 
@@ -29,20 +29,14 @@ public class Player {
         this.status = status;
     }
 
-    public String getID() {
-        return playerID;
-    }
-
     public boolean equals(String s) {
         return this.playerID.equals(s);
     }
-
 
     public void endGame() {
         this.updateScore(myShelf.checkEndGame());
         this.updateScore(personalGoal.check(myShelf.getMyShelf()));
     }
-
 
     public int getScore() {
         return score;
