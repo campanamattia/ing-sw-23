@@ -1,6 +1,10 @@
 package Server.Model.Player;
 
+import Server.Model.Talent.PlayerTalent;
+import Utils.MockObjects.MockFactory;
 import com.google.gson.annotations.Expose;
+
+import java.util.List;
 
 public class Player {
     @Expose
@@ -11,6 +15,7 @@ public class Player {
     private int score;
     @Expose
     private Shelf myShelf;
+    private final PlayerTalent talent;
     private boolean status;
 
     public Player(String playerID, PersonalGoal pGoal) {
@@ -19,10 +24,12 @@ public class Player {
         this.score = 0;
         this.personalGoal = pGoal;
         this.myShelf = new Shelf();
+        this.talent = new PlayerTalent();
     }
 
     public void updateScore(int score){
         this.score += score;
+        this.talent.notifyScouts(MockFactory.getMock(this));
     }
 
     public void setStatus(boolean status) {
@@ -56,5 +63,9 @@ public class Player {
 
     public Boolean getStatus(){
         return this.status;
+    }
+
+    public PlayerTalent getTalent() {
+        return talent;
     }
 }

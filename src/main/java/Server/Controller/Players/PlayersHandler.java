@@ -2,6 +2,7 @@ package Server.Controller.Players;
 
 import Enumeration.TurnPhase;
 import Exception.Player.NotYourTurnException;
+import Interface.Scout.ChatScout;
 import Interface.Server.GameCommand;
 import Interface.Scout.BoardScout;
 import Interface.Scout.CommonGoalScout;
@@ -51,7 +52,7 @@ public class PlayersHandler extends UnicastRemoteObject implements GameCommand {
     }
 
     @Override
-    public void writeChat(String playerID, String message) throws RemoteException {
+    public  synchronized void writeChat(String playerID, String message) throws RemoteException {
 
 
     }
@@ -73,10 +74,11 @@ public class PlayersHandler extends UnicastRemoteObject implements GameCommand {
     }
 
     @Override
-    public void addSubscriber(Object object) throws RemoteException {
-            this.gameModel.addBoardSubscriber((BoardScout) object);
-            this.gameModel.addPlayerSubscriber((PlayerScout) object);
-            this.gameModel.addCommonGoalSubscriber((CommonGoalScout) object);
+    public synchronized void addSubscriber(Object object) throws RemoteException {
+            this.gameModel.addBoardScout((BoardScout) object);
+            this.gameModel.addChatScout((ChatScout) object);
+            this.gameModel.addPlayerScout((PlayerScout) object);
+            this.gameModel.addCommonGoalScout((CommonGoalScout) object);
     }
 
     private TurnPhase ableTo(String playerID) throws NotYourTurnException {

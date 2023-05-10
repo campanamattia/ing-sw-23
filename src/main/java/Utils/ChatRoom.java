@@ -1,5 +1,7 @@
 package Utils;
 
+import Interface.Scout.Scout;
+import Server.Model.Talent.ChatTalent;
 import com.google.gson.annotations.Expose;
 
 import java.util.*;
@@ -15,11 +17,14 @@ public class ChatRoom {
      */
     @Expose
     private final Stack<ChatMessage> flow;
+    private final ChatTalent talent;
+
     /**
      Constructs a new ChatUpdate object with an empty flow of messages.
      */
     public ChatRoom() {
         this.flow = new Stack<ChatMessage>();
+        this.talent = new ChatTalent();
     }
     /**
      Adds a new WriteChatMessage object to the flow of messages in the chat room.
@@ -27,19 +32,7 @@ public class ChatRoom {
      */
     public synchronized void addMessage(ChatMessage message){
         this.flow.add(message);
-    }
-    /**
-     Returns a list of the last messages in the chat room's flow, represented as strings.
-     @param last the number of messages to retrieve from the chat room's flow
-     @return a list of the last messages in the chat room's flow, represented as strings
-     */
-    public synchronized List<String> getHistory(int last){
-        List<String> history = new ArrayList<String>();
-        for(ChatMessage message : flow) {
-            history.add(message.toString());
-            if(history.size() == last) break;
-        }
-        return history;
+        this.talent.notifyScouts(this);
     }
     /**
      Returns the flow of WriteChatMessage objects in the chat room.
@@ -48,7 +41,8 @@ public class ChatRoom {
     public Stack<ChatMessage> getFlow() {
         return flow;
     }
+
+    public ChatTalent getTalent() {
+        return this.talent;
+    }
 }
-
-
-
