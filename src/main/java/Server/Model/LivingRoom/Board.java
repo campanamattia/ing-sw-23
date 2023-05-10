@@ -3,8 +3,10 @@ package Server.Model.LivingRoom;
 import Exception.Board.CantRefillBoardException;
 import Exception.Board.NoValidMoveException;
 import Exception.Board.NullTileException;
+import Server.Model.Talent.BoardTalent;
 import Utils.Cell;
 import Utils.Coordinates;
+import Utils.MockObjects.MockFactory;
 import Utils.Tile;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -27,6 +29,7 @@ public class Board {
     @Expose
     private int tilesTaken;
     private final int matrix_size;
+    private final BoardTalent talent;
     private boolean lastRound;          //CHECK THIS LINE
 
     /**
@@ -58,6 +61,7 @@ public class Board {
                 k++;
             }
         }
+        this.talent = new BoardTalent();
     }
 
     /**
@@ -97,6 +101,7 @@ public class Board {
                 throw new NullTileException(coordinate);
             }
         }
+        this.talent.notifyScouts(MockFactory.getMock(this));
         return result;
     }
 
@@ -118,6 +123,7 @@ public class Board {
                 }
             }
         }
+        this.talent.notifyScouts(MockFactory.getMock(this));
     }
 
     /**
@@ -315,5 +321,9 @@ public class Board {
 
     public Cell[][] getBoard() {
         return board;
+    }
+
+    public BoardTalent getTalent() {
+        return talent;
     }
 }

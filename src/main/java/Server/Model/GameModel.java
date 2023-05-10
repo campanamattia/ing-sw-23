@@ -7,14 +7,15 @@ import Exception.Player.NonConformingInputParametersException;
 import Exception.PlayerException;
 import Exception.PlayerNotFoundException;
 import Interface.Scout.BoardScout;
+import Interface.Scout.ChatScout;
 import Interface.Scout.CommonGoalScout;
 import Interface.Scout.PlayerScout;
 import Server.Model.LivingRoom.CommonGoal.CommonGoal;
 import Server.Model.LivingRoom.CommonGoal.CommonGoalFactory;
 import Server.Model.LivingRoom.Bag;
 import Server.Model.LivingRoom.Board;
-import Server.Model.LivingRoom.ChatMessage;
-import Server.Model.LivingRoom.ChatRoom;
+import Utils.ChatMessage;
+import Utils.ChatRoom;
 import Server.Model.Player.PersonalGoal;
 import Server.Model.Player.Player;
 import Utils.Coordinates;
@@ -409,15 +410,21 @@ public class GameModel {
     }
 
 
-    public void addBoardSubscriber(BoardScout interfaceBoard) {
-
+    public void addBoardScout(BoardScout interfaceBoard) {
+        this.board.getTalent().addScout(interfaceBoard);
     }
 
-    public void addPlayerSubscriber(PlayerScout interfacePlayer) {
-
+    public void addPlayerScout(PlayerScout interfacePlayer) {
+        for(Player player : this.players)
+            player.getTalent().addScout(interfacePlayer);
     }
 
-    public void addCommonGoalSubscriber(CommonGoalScout interfaceCommonGoal) {
+    public void addCommonGoalScout(CommonGoalScout interfaceCommonGoal) {
+        for(CommonGoal commonGoal : this.commonGoals)
+            commonGoal.getTalent().addScout(interfaceCommonGoal);
+    }
 
+    public void addChatScout(ChatScout interfaceChat) {
+        this.chatRoom.getTalent().addScout(interfaceChat);
     }
 }

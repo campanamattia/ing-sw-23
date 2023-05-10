@@ -1,6 +1,6 @@
 package Interface.Client;
 
-import Server.Model.LivingRoom.ChatMessage;
+import Utils.ChatMessage;
 import Utils.Cell;
 import Utils.Rank;
 import Utils.Tile;

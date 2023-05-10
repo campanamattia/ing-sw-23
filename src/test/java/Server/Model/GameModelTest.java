@@ -1,7 +1,7 @@
 package Server.Model;
 
 import Enumeration.Color;
-import Server.Model.LivingRoom.ChatMessage;
+import Utils.ChatMessage;
 import Utils.Coordinates;
 import Utils.Tile;
 import org.junit.jupiter.api.BeforeAll;

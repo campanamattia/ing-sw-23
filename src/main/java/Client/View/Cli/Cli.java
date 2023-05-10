@@ -1,7 +1,7 @@
 package Client.View.Cli;
 
 import Client.View.View;
-import Server.Model.LivingRoom.ChatMessage;
+import Utils.ChatMessage;
 import Server.Model.LivingRoom.CommonGoal.CommonGoal;
 import Utils.Cell;
 import Utils.Rank;

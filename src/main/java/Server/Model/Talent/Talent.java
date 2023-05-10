@@ -4,25 +4,28 @@ import Interface.Scout.Scout;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public abstract class Talent <T extends Scout> {
-    protected List<T> scout;
+public abstract class Talent <T extends Scout, O>{
+    protected List<T> scouts;
 
     public Talent(){
-        this.scout = new ArrayList<>();
+        this.scouts = new ArrayList<>();
     }
 
     public void addScout(T scout){
-        this.scout.add(scout);
+        this.scouts.add(scout);
     }
 
     public void removeScout(T scout){
-        this.scout.remove(scout);
+        this.scouts.remove(scout);
     }
 
-    public void notifyScout(Objects objects){
-        for(T scout : this.scout)
+    public void notifyScouts(O objects){
+        for(T scout : this.scouts)
             scout.update(objects);
+    }
+
+    public List<T> getScouts() {
+        return scouts;
     }
 }
