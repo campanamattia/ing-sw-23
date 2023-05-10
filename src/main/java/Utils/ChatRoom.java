@@ -1,4 +1,4 @@
-package Server.Model.LivingRoom;
+package Utils;
 
 import com.google.gson.annotations.Expose;
 
@@ -16,7 +16,7 @@ public class ChatRoom {
     @Expose
     private final Stack<ChatMessage> flow;
     /**
-     Constructs a new ChatRoomMessage object with an empty flow of messages.
+     Constructs a new ChatUpdate object with an empty flow of messages.
      */
     public ChatRoom() {
         this.flow = new Stack<ChatMessage>();

@@ -1,4 +1,4 @@
-package Server.Model.LivingRoom;
+package Utils;
 
 import com.google.gson.annotations.Expose;
 
