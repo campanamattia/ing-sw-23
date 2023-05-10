@@ -16,6 +16,7 @@ public class ServerRMI {
     private static Registry registry;
 
     public void start(Lobby lobby, int rmiPort) throws RemoteException, AlreadyBoundException {
+        ServerApp.logger.info("Starting RMI server");
         ServerRMI.registry = LocateRegistry.createRegistry(rmiPort);
         try {
             registry.bind("Lobby", lobby);

@@ -30,13 +30,12 @@ public class SocketHandler extends ClientHandler implements Runnable, PlayerScou
     private final Lobby lobby;
     private PlayersHandler playersHandler;
 
-    public SocketHandler(Socket socket, Lobby lobby, PlayersHandler playersHandler) {
+    public SocketHandler(Socket socket, Lobby lobby) {
         this.playerID = null;
+        this.playersHandler = null;
         this.executorService = Executors.newCachedThreadPool();
         this.socket = socket;
         this.lobby = lobby;
-        this.playersHandler = null;
-
     }
 
     @Override
