@@ -1,6 +1,6 @@
-package Server.Controller;
+package Server.Controller.Players;
 
-import Server.Model.Player;
+import Server.Model.Player.Player;
 import Utils.Tile;
 
 import java.util.List;

@@ -1,9 +1,9 @@
-package Server.Controller;
+package Server.Controller.Phase;
 import Enumeration.GamePhase;
 import Exception.CommonGoal.NullPlayerException;
 import Exception.GamePhaseException;
-import Server.Model.CommonGoal;
-import Server.Model.Player;
+import Server.Model.LivingRoom.CommonGoal.CommonGoal;
+import Server.Model.Player.Player;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public abstract class PhaseController {
 
     public void checkCommonGoals(List<CommonGoal> commonGoals){
         for(CommonGoal common : commonGoals)
-            if(!common.getAccomplished().contains(this.currentPlayer.getID()))
+            if(!common.getAccomplished().contains(this.currentPlayer.getPlayerID()))
                 try{
                     common.check(this.currentPlayer);
                 }catch(NullPlayerException e){

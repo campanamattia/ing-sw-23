@@ -1,20 +1,21 @@
-package Server.Controller;
+package Server.Controller.Players;
 
 import Enumeration.TurnPhase;
 import Exception.Player.NotYourTurnException;
-import Interface.GameCommand;
+import Interface.Server.GameCommand;
+import Interface.Scout.BoardScout;
+import Interface.Scout.CommonGoalScout;
+import Interface.Scout.PlayerScout;
 import Server.Model.GameModel;
-import Server.Model.Player;
-import Server.Network.ClientHandler;
+import Server.Model.Player.Player;
+import Server.Network.Client.ClientHandler;
 import Server.ServerApp;
 import Utils.Coordinates;
-import Utils.Tile;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 import java.util.logging.Level;
 
 public class PlayersHandler extends UnicastRemoteObject implements GameCommand {
@@ -62,16 +63,25 @@ public class PlayersHandler extends UnicastRemoteObject implements GameCommand {
     }
 
     @Override
-    public void logOut(String playerID) throws RemoteException {
+    public void logOut(String playerID) throws RemoteException{
+        try{
+            this.gameModel.getPlayer(playerID).setStatus(false);
+        }catch (Exception e){
+            ServerApp.logger.log(Level.SEVERE, e.getMessage(), e);
+            this.players.get(playerID).outcomeException(e);
+        }
+    }
 
-
+    @Override
+    public void addSubscriber(Object object) throws RemoteException {
+            this.gameModel.addBoardSubscriber((BoardScout) object);
+            this.gameModel.addPlayerSubscriber((PlayerScout) object);
+            this.gameModel.addCommonGoalSubscriber((CommonGoalScout) object);
     }
 
     private TurnPhase ableTo(String playerID) throws NotYourTurnException {
-        if(!playerID.equals(this.gameModel.getCurrentPlayer().getID()))
-            throw new NotYourTurnException(this.gameModel.getCurrentPlayer().getID());
+        if(!playerID.equals(this.currentPlayer.getCurrentPlayer().getPlayerID()))
+            throw new NotYourTurnException(this.gameModel.getCurrentPlayer().getPlayerID());
         else return this.state;
     }
-
-
 }

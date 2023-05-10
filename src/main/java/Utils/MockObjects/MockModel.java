@@ -1,4 +1,4 @@
-package Utils;
+package Utils.MockObjects;
 
 import Server.Model.GameModel;
 import Utils.MockObjects.MockBoard;

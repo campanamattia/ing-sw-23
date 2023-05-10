@@ -2,7 +2,7 @@ package View.CLI;
 
 import Interface.VirtualView;
 import Messages.ServerMessage;
-import Server.Controller.PlayersHandler;
+import Server.Controller.Players.PlayersHandler;
 
 import java.util.Scanner;
 

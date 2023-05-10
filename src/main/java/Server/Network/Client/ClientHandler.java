@@ -1,6 +1,6 @@
-package Server.Network;
+package Server.Network.Client;
 
-import Interface.RemoteView;
+import Interface.Client.RemoteView;
 
 public abstract class ClientHandler implements RemoteView {
     protected String playerID;

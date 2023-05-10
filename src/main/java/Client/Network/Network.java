@@ -6,7 +6,7 @@ import Messages.ServerMessage;
 import java.io.IOException;
 import java.security.SecureRandom;
 
-public abstract class Network {
+public abstract class Network implements {
     protected String ipAddress;
     protected int port;
 

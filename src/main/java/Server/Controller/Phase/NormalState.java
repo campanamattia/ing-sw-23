@@ -3,8 +3,7 @@ package Server.Controller.Phase;
 import Enumeration.*;
 import Exception.GamePhase.EndingStateException;
 import Exception.GamePhaseException;
-import Server.Controller.PhaseController;
-import Server.Model.Player;
+import Server.Model.Player.Player;
 
 import java.util.List;
 
