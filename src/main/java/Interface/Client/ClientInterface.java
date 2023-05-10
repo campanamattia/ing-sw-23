@@ -1,7 +1,6 @@
-package Interface;
+package Interface.Client;
 
-import Enumeration.MessageType;
-import Server.Model.ChatMessage;
+import Server.Model.LivingRoom.ChatMessage;
 import Utils.Cell;
 import Utils.Rank;
 import Utils.Tile;

@@ -1,4 +1,6 @@
-package Interface;
+package Interface.Server;
+
+import Interface.Client.RemoteView;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

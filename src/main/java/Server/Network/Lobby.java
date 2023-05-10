@@ -1,8 +1,9 @@
 package Server.Network;
 
-import Interface.LobbyInterface;
-import Interface.RemoteView;
+import Interface.Server.LobbyInterface;
+import Interface.Client.RemoteView;
 import Server.Controller.GameController;
+import Server.Network.Client.ClientHandler;
 import Server.Network.Client.RMIHandler;
 import Server.Network.Client.SocketHandler;
 
@@ -41,7 +42,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             remoteView.outcomeException(new RuntimeException("PlayerID already taken"));
             remoteView.askPlayerID();
         }else{
-            this.lobby.put(playerID, new RMIHandler(playerID, remoteView));
+            this.lobby.put(playerID, new RMIHandler(playerID, (RemoteView) remoteView));
 
             if(this.lobby.size() == this.lobbySize){
                 this.initGame();

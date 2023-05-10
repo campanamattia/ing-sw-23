@@ -1,6 +1,6 @@
-package Interface;
+package Interface.Client;
 
-import Server.Model.ChatMessage;
+import Server.Model.LivingRoom.ChatMessage;
 import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockPlayer;
