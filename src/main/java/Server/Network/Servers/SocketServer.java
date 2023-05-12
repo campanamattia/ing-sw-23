@@ -1,7 +1,7 @@
 package Server.Network.Servers;
 
 import Server.Network.Client.SocketHandler;
-import Server.Network.Lobby;
+import Server.Network.Lobby.Lobby;
 import Server.ServerApp;
 
 import java.io.IOException;

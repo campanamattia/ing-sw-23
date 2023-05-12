@@ -1,7 +1,7 @@
 package Server.Network.Servers;
 
 import Server.Controller.Players.PlayersHandler;
-import Server.Network.Lobby;
+import Server.Network.Lobby.Lobby;
 import Server.ServerApp;
 
 import java.rmi.AlreadyBoundException;

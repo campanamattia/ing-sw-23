@@ -40,13 +40,13 @@ public class PlayersHandler extends UnicastRemoteObject implements GameCommand {
     }
 
     @Override
-    public void selectedTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
+    public synchronized void selectedTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
 
 
     }
 
     @Override
-    public void insertTiles(String playerID, List<Integer> sort, int column) throws RemoteException {
+    public synchronized void insertTiles(String playerID, List<Integer> sort, int column) throws RemoteException {
 
 
     }
@@ -58,13 +58,13 @@ public class PlayersHandler extends UnicastRemoteObject implements GameCommand {
     }
 
     @Override
-    public void liveStatus(String playerID) throws RemoteException {
+    public synchronized void liveStatus(String playerID) throws RemoteException {
 
 
     }
 
     @Override
-    public void logOut(String playerID) throws RemoteException{
+    public synchronized void logOut(String playerID) throws RemoteException{
         try{
             this.gameModel.getPlayer(playerID).setStatus(false);
         }catch (Exception e){

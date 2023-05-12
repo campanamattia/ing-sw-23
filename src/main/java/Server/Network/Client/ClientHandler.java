@@ -12,4 +12,5 @@ public abstract class ClientHandler implements RemoteView {
     public void setPlayerID(String playerID) {
         this.playerID = playerID;
     }
+
 }

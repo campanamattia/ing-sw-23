@@ -1,7 +1,7 @@
 package Server;
 
 
-import Server.Network.Lobby;
+import Server.Network.Lobby.Lobby;
 import Server.Network.Servers.SocketServer;
 import Server.Network.Servers.RMIServer;
 import com.google.gson.Gson;

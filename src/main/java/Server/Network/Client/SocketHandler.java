@@ -7,7 +7,7 @@ import Messages.ClientMessage;
 import Messages.Server.ErrorMessage;
 import Messages.ServerMessage;
 import Server.Controller.Players.PlayersHandler;
-import Server.Network.Lobby;
+import Server.Network.Lobby.Lobby;
 import Server.Network.LogOutTimer;
 import Server.ServerApp;
 import Utils.ChatMessage;
@@ -25,10 +25,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Stack;
-import java.util.Timer;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -36,17 +33,19 @@ import java.util.logging.Level;
 
 public class SocketHandler extends ClientHandler implements Runnable, PlayerScout, BoardScout, CommonGoalScout {
     private final Socket socket;
+    private final Map<String, Lobby> lobby;
+    private PlayersHandler playersHandler;
     private Scanner input;
     private final ExecutorService executorService;
-    private final Lobby lobby;
-    private PlayersHandler playersHandler;
+
 
     public SocketHandler(Socket socket, Lobby lobby) {
         this.playerID = null;
         this.playersHandler = null;
         this.executorService = Executors.newCachedThreadPool();
         this.socket = socket;
-        this.lobby = lobby;
+        this.lobby = new HashMap<>();
+        this.lobby.put("Lobby", lobby);
         try {
             this.input = new Scanner(socket.getInputStream());
         } catch (IOException e) {
@@ -210,7 +209,7 @@ public class SocketHandler extends ClientHandler implements Runnable, PlayerScou
 
     }
 
-    private void logOut() {
+    public void logOut() {
         if(playersHandler != null) {
             try {
                 this.playersHandler.logOut(this.playerID);
