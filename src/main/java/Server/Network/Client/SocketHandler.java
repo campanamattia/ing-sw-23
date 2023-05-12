@@ -1,14 +1,15 @@
 package Server.Network.Client;
 
+import Interface.Client.RemoteClient;
+import Interface.Client.RemoteView;
 import Interface.Scout.BoardScout;
 import Interface.Scout.CommonGoalScout;
 import Interface.Scout.PlayerScout;
 import Messages.ClientMessage;
 import Messages.Server.ErrorMessage;
+import Messages.Server.PongMessage;
 import Messages.ServerMessage;
-import Server.Controller.Players.PlayersHandler;
-import Server.Network.Lobby.Lobby;
-import Server.Network.LogOutTimer;
+import Server.Controller.GameController;
 import Server.ServerApp;
 import Utils.ChatMessage;
 import Utils.ClientMessageFactory;
@@ -31,21 +32,17 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 
-public class SocketHandler extends ClientHandler implements Runnable, PlayerScout, BoardScout, CommonGoalScout {
+public class SocketHandler implements Runnable, RemoteView, RemoteClient, PlayerScout, BoardScout, CommonGoalScout {
     private final Socket socket;
-    private final Map<String, Lobby> lobby;
-    private PlayersHandler playersHandler;
     private Scanner input;
     private final ExecutorService executorService;
+    private GameController controller;
 
 
-    public SocketHandler(Socket socket, Lobby lobby) {
-        this.playerID = null;
-        this.playersHandler = null;
+    public SocketHandler(Socket socket) {
+        this.controller = null;
         this.executorService = Executors.newCachedThreadPool();
         this.socket = socket;
-        this.lobby = new HashMap<>();
-        this.lobby.put("Lobby", lobby);
         try {
             this.input = new Scanner(socket.getInputStream());
         } catch (IOException e) {
@@ -61,20 +58,14 @@ public class SocketHandler extends ClientHandler implements Runnable, PlayerScou
     public void run() {
         try {
             input = new Scanner(socket.getInputStream());
-            Timer timer = new Timer();
 
             while (!this.socket.isClosed()) {
                 String line = input.nextLine();
-                timer.cancel();
-                timer = new Timer();
-                timer.schedule(new LogOutTimer(this.playersHandler, this.playerID),10000);
                 this.executorService.submit(() -> {
                     ClientMessage input = deserialize(line);
                     try {
-                        if(this.playersHandler != null || this.lobby != null)
-                            input.execute(this);
-                        else
-                            send(new ErrorMessage(new RuntimeException("Server is not ready yet")));
+                        if (this.controller != null || ServerApp.lobby != null) input.execute(this);
+                        else send(new ErrorMessage(new RuntimeException("Server is not ready yet")));
                     } catch (IOException e) {
                         ServerApp.logger.log(Level.SEVERE, e.getMessage());
                     }
@@ -85,38 +76,11 @@ public class SocketHandler extends ClientHandler implements Runnable, PlayerScou
         }
     }
 
-    private void send(ServerMessage output) throws IOException {
-        PrintWriter out = new PrintWriter(socket.getOutputStream());
-        out.println(output);
-        out.flush();
-    }
-
     private ClientMessage deserialize(String line) {
         Gson gson = new Gson();
         JsonReader reader = new JsonReader(new StringReader(line));
         JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
         return ClientMessageFactory.getClientMessage(jsonObject.get("OperationType").getAsString(), line);
-    }
-
-    public Lobby getLobby() {
-        return lobby;
-    }
-
-    public void setPlayersHandler(PlayersHandler playersHandler) {
-        this.playersHandler = playersHandler;
-    }
-
-    public PlayersHandler getPlayersHandler() {
-        return playersHandler;
-    }
-
-    @Override
-    public void setPlayerID(String playerID) {
-        super.setPlayerID(playerID);
-    }
-    @Override
-    public String getPlayerID() {
-        return super.getPlayerID();
     }
 
     @Override
@@ -209,20 +173,27 @@ public class SocketHandler extends ClientHandler implements Runnable, PlayerScou
 
     }
 
-    public void logOut() {
-        if(playersHandler != null) {
-            try {
-                this.playersHandler.logOut(this.playerID);
-            } catch (RemoteException e) {
-                ServerApp.logger.log(Level.SEVERE, e.getMessage());
-            }
-        } else {
-            try {
-                this.lobby.logOut(this.playerID);
-            } catch (RemoteException e) {
-                ServerApp.logger.log(Level.SEVERE, e.getMessage());
-            }
+    @Override
+    public void pong() throws RemoteException {
+        try {
+            send(new PongMessage());
+        } catch (IOException e) {
+            ServerApp.logger.log(Level.SEVERE, e.getMessage());
         }
+    }
+
+    @Override
+    public void setGameController(GameController gameController) throws Exception {
+
+    }
+
+    private void send(ServerMessage output) throws IOException {
+        PrintWriter out = new PrintWriter(socket.getOutputStream());
+        out.println(output);
+        out.flush();
+    }
+
+    public void logOut() {
         this.input.close();
         try {
             socket.close();
