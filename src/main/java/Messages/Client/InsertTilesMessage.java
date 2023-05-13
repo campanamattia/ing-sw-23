@@ -3,6 +3,7 @@ package Messages.Client;
 import Enumeration.OperationType;
 import Messages.ClientMessage;
 import Server.Controller.GameController;
+import Server.Network.Client.SocketHandler;
 
 import java.util.List;
 
@@ -31,7 +32,8 @@ public class InsertTilesMessage extends ClientMessage {
         return column;
     }
 
-    public void execute(GameController gameController) {
+    public void execute(SocketHandler socketHandler) {
+        GameController gameController=  socketHandler.getGameController();
         gameController.insertTiles(this.operationType, this.playerID, this.sorted, this.column);
     }
 }
