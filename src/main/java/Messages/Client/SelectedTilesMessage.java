@@ -2,6 +2,7 @@ package Messages.Client;
 
 import Enumeration.OperationType;
 import Messages.ClientMessage;
+import Server.Controller.GameController;
 import Utils.Coordinates;
 
 import java.util.List;
@@ -26,5 +27,9 @@ public class SelectedTilesMessage extends ClientMessage {
     }
     public void setCoordinates(List<Coordinates> coordinates) {
         this.coordinates = coordinates;
+    }
+
+    public void execute(GameController gameController){
+        gameController.selectTiles(this.operationType,this.playerID,this.coordinates);
     }
 }

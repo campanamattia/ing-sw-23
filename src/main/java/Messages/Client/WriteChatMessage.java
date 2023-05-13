@@ -2,6 +2,7 @@ package Messages.Client;
 
 import Enumeration.OperationType;
 import Messages.ClientMessage;
+import Server.Controller.GameController;
 
 public class WriteChatMessage extends ClientMessage {
     private String text;
@@ -23,5 +24,9 @@ public class WriteChatMessage extends ClientMessage {
     }
     public void setText(String text) {
         this.text = text;
+    }
+
+    public void execute(GameController gameController){
+        gameController.writeMessage(this.operationType,this.playerID,this.text);
     }
 }

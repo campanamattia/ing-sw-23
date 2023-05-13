@@ -2,6 +2,7 @@ package Messages.Client;
 
 import Enumeration.OperationType;
 import Messages.ClientMessage;
+import Server.Controller.GameController;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ public class InsertTilesMessage extends ClientMessage {
     List<Integer> sorted;
     int column;
 
-    public InsertTilesMessage(){
+    public InsertTilesMessage() {
         super();
         this.sorted = null;
         this.column = 0;
@@ -28,5 +29,9 @@ public class InsertTilesMessage extends ClientMessage {
 
     public int getColumn() {
         return column;
+    }
+
+    public void execute(GameController gameController) {
+        gameController.insertTiles(this.operationType, this.playerID, this.sorted, this.column);
     }
 }
