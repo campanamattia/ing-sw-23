@@ -2,8 +2,8 @@ package Client.View.Cli;
 
 import Client.Controller.Controller;
 import Client.View.View;
-import Server.Model.ChatMessage;
-import Server.Model.CommonGoal;
+import Utils.ChatMessage;
+import Server.Model.LivingRoom.CommonGoal.CommonGoal;
 import Utils.Cell;
 import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
