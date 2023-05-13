@@ -1,7 +1,6 @@
 package Client.View;
 
-import Messages.ServerMessage;
-import Server.Model.ChatMessage;
+import Utils.ChatMessage;
 import Utils.Cell;
 import Utils.Rank;
 import Utils.Tile;

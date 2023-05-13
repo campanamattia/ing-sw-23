@@ -1,8 +1,9 @@
 package Client.View;
 
-import Interface.ClientInterface;
+import Interface.Client.ClientInterface;
+import Interface.Client.RemoteView;
 
-public abstract class View implements ClientInterface {
+public abstract class View implements RemoteView, ClientInterface {
 
 
 
