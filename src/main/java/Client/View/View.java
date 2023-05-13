@@ -44,6 +44,18 @@ public abstract class View implements RemoteView {
 
     }
 
+    public void showHelp() {
+
+    }
+
+    public void showMessage(String message) {
+
+    }
+
+    public void showRank(List<Rank> classification) {
+
+    }
+
 
 
 

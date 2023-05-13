@@ -133,7 +133,7 @@ public class CliTest {
 
         cli.showBoard();
 
-        cli.showShelves(shelves);
+        cli.showShelves();
 
         cli.showTile(tileList);
 

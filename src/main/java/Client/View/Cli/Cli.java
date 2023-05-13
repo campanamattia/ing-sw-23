@@ -1,5 +1,6 @@
 package Client.View.Cli;
 
+import Client.Controller.Controller;
 import Client.View.View;
 import Server.Model.ChatMessage;
 import Server.Model.CommonGoal;
@@ -10,20 +11,20 @@ import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
 import Utils.Rank;
 import Utils.Tile;
-import org.jetbrains.annotations.NotNull;
 
 import java.rmi.RemoteException;
 import java.util.*;
 
 public class Cli extends View {
-    ClientController clientController;
-    MockModel mockModel = new MockModel();
+    Controller clientController;
+    MockModel mockModel;
 
-
-    public Cli (ClientController clientController) {
-        this.clientController = clientController;
-
+    public Cli () {
+        clientController = new Controller(this);
+        clientController.start();
+        mockModel = new MockModel();
     }
+
     @Override
     public void showBoard() {
         Cell[][] board = mockModel.getMockBoard().getBoard();
@@ -57,8 +58,8 @@ public class Cli extends View {
     }
 
     @Override
-    public void showMessage() {
-
+    public void showMessage(String message) {
+        System.out.println(message);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class Cli extends View {
     }
 
     @Override
-    public void showWinner(List<Rank> rank) {
+    public void showRank(List<Rank> classification) {
 
     }
 
@@ -100,18 +101,16 @@ public class Cli extends View {
         System.out.flush();
     }
 
-    public void showShelves(@NotNull HashMap<String, Tile[][]> shelves){
+    public void showShelves(){
         int numColumn = 5;
         int numRow = 6;
-        int numPlayer = shelves.size();
-        List <Tile[][]> shelfList = shelves.values().stream().toList();
-        List <String> names = shelves.keySet().stream().toList();
+        int numPlayer = mockModel.getLobby().size();
 
         for (int i = 0; i < numRow ; i++) {
             System.out.print(" \t");
             for (int k = 0; k < numPlayer; k++) {
                 for (int j = 0; j < numColumn; j++) {
-                    Tile[][] shelf = shelfList.get(k);
+                    Tile[][] shelf = mockModel.getMockPlayers().get(k).getShelf();
                     if (shelf[i][j] != null) {
                         String colorString = shelf[i][j].getColor().toString();
                         System.out.print(CliColor.BBLACK + "|" + colorString + i + "," + j + CliColor.BBLACK + "|" + CliColor.RESET);
@@ -126,8 +125,8 @@ public class Cli extends View {
         System.out.print("    ");
 
         for (int k =0; k < numPlayer; k++){
-            System.out.print(names.get(k) + ": points");
-            for (int i = 0; i < 32 - names.get(k).length() - 8; i++) {
+            System.out.print(mockModel.getMockPlayers().get(k).getPlayerID() + ": points");
+            for (int i = 0; i < 32 - mockModel.getMockPlayers().get(k).getPlayerID().length() - 8; i++) {
                 System.out.print(" ");
             }
         }
@@ -140,27 +139,32 @@ public class Cli extends View {
 
     @Override
     public void updateBoard(MockBoard mockBoard) throws RemoteException {
-
+        mockModel.setMockBoard(mockBoard);
     }
 
     @Override
     public void updateCommonGoal(List<MockCommonGoal> mockCommonGoals) throws RemoteException {
-
+        mockModel.setMockCommonGoal(mockCommonGoals);
     }
 
     @Override
     public void updatePlayer(MockPlayer mockPlayer) throws RemoteException {
-
+        for (int i=0; i<mockModel.getMockPlayers().size(); i++) {
+            if (mockModel.getMockPlayers().get(i).getPlayerID().equals(mockPlayer.getPlayerID())) {
+                mockModel.getMockPlayers().remove(i);
+                mockModel.getMockPlayers().add(mockPlayer);
+            }
+        }
     }
 
     @Override
-    public void updateChat(Stack<ChatMessage> chatFlow) throws RemoteException {
-
+    public void updateChat(Stack<ChatMessage> chat) throws RemoteException {
+        mockModel.setChat(chat);
     }
 
     @Override
     public void updateLobby(String playerLogged) throws RemoteException {
-
+        mockModel.getLobby().add(playerLogged);
     }
 
     @Override
@@ -170,7 +174,11 @@ public class Cli extends View {
 
     @Override
     public void askLobbySize() throws RemoteException {
-
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Insert the numbers of players (insert a number between 2 and 4)");
+        String input = scanner.nextLine();
+        scanner.close();
+        clientController.sendLobbySize(input);
     }
 
     @Override
@@ -190,7 +198,7 @@ public class Cli extends View {
 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
-
+        System.out.println(e);
     }
 
     @Override

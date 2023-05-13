@@ -10,15 +10,16 @@ import java.util.UUID;
 
 public class MockModel {
     private UUID uuid;
-    private String playerID;
+    private String localPlayerID;
     private MockBoard mockBoard;
     private List<MockPlayer> mockPlayers;
-    private MockCommonGoal mockCommonGoal;
-    private final Stack<ChatMessage> chat;
+    private List<MockCommonGoal> mockCommonGoal;
+    private Stack<ChatMessage> chat;
+    private List<String> lobby;
 
     public MockModel() {
         this.uuid = null;
-        this.playerID = null;
+        this.localPlayerID = null;
         this.mockBoard = null;
         this.mockPlayers = new ArrayList<>();
         this.mockCommonGoal = null;
@@ -36,10 +37,10 @@ public class MockModel {
     public MockBoard getMockBoard() {
         return mockBoard;
     }
-    public void setMockCommonGoal(MockCommonGoal mockCommonGoal) {
+    public void setMockCommonGoal(List<MockCommonGoal> mockCommonGoal) {
         this.mockCommonGoal = mockCommonGoal;
     }
-    public MockCommonGoal getMockCommonGoal() {
+    public List<MockCommonGoal> getMockCommonGoal() {
         return mockCommonGoal;
     }
     public void setMockPlayers(List<MockPlayer> mockPlayers) {
@@ -51,17 +52,29 @@ public class MockModel {
     public List<MockPlayer> getMockPlayers() {
         return mockPlayers;
     }
-    public String getPlayerID() {
-        return playerID;
+    public String getLocalPlayerID() {
+        return localPlayerID;
     }
-    public void setPlayerID(String playerID) {
-        this.playerID = playerID;
+    public void setLocalPlayerID(String playerID) {
+        this.localPlayerID = playerID;
     }
+
+    public List<String> getLobby() {
+        return lobby;
+    }
+
+    public void setLobby(List<String> lobby) {
+        this.lobby = lobby;
+    }
+
     public void setMockModel(GameModel model){
 
     }
     public Stack<ChatMessage> getChat(){
         return chat;
+    }
+    public void setChat(Stack<ChatMessage> chat) {
+        this.chat = chat;
     }
     public void addMessage(ChatMessage message) {
         chat.add(message);
