@@ -20,8 +20,8 @@ import java.util.logging.Logger;
 
 public class ServerApp {
     public static Logger logger;
-    public static Lobby lobby;
     private static final String serverSetting = "serverSetting.json";
+    private static Lobby lobby;
     private static int socketPort = 0;
     private static int rmiPort = 0;
 
@@ -35,10 +35,10 @@ public class ServerApp {
     }
 
 
-    private static void initLogger() {
+    private static void initLogger(){
         logger = Logger.getLogger(ServerApp.class.getName());
         try {
-            logger.addHandler(new FileHandler("logger.json"));
+            logger.addHandler(new FileHandler("src/main/resources/logger.json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -46,8 +46,8 @@ public class ServerApp {
         logger.info("Starting ServerApp");
     }
 
-    private static void setPort(String[] args) {
-        try {
+    private static void setPort(String[] args){
+        try{
             switch (args.length) {
                 case 2 -> {
                     socketPort = Integer.parseInt(args[0]);
@@ -62,7 +62,7 @@ public class ServerApp {
                     rmiPort = rmiFromJSON();
                 }
             }
-        } catch (RuntimeException e) {
+        }catch (RuntimeException e){
             logger.log(Level.SEVERE, e.toString());
             System.exit(-1);
         }
@@ -77,7 +77,7 @@ public class ServerApp {
         }
     }
 
-    private static int socketFromJSON() throws RuntimeException {
+    private static int socketFromJSON() throws RuntimeException{
         Gson gson = new Gson();
         JsonReader reader;
         try {
@@ -89,7 +89,7 @@ public class ServerApp {
         }
     }
 
-    private static int rmiFromJSON() throws RuntimeException {
+    private static int rmiFromJSON() throws RuntimeException{
         Gson gson = new Gson();
         JsonReader reader;
         try {
@@ -101,17 +101,17 @@ public class ServerApp {
         }
     }
 
-    private static void rmiServer() {
-        try {
+    private static void rmiServer(){
+        try{
             new RMIServer().start(lobby, rmiPort);
-        } catch (RemoteException | AlreadyBoundException e) {
+        }catch (RemoteException | AlreadyBoundException e){
             logger.log(Level.SEVERE, e.toString());
             System.exit(-1);
         }
     }
 
     private static void socketServer() {
-        new SocketServer().start(socketPort);
+        new SocketServer().start(lobby, socketPort);
     }
 
 }
