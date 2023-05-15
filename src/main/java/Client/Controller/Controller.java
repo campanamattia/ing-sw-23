@@ -189,4 +189,19 @@ public class Controller{
         return orderOfTiles;
     }
 
+
+    /**
+     * States whether the given address is valid or not.
+     *
+     * @param address the inserted IP address.
+     * @return a boolean whose value is:
+     *  -{@code true} if the address is valid;
+     *  -{@code false} otherwise.
+     */
+    public boolean validateIP(String address) {
+        String zeroTo255 = "([01]?\\d{1,2}|2[0-4]\\d|25[0-5])";
+        String IP_REGEX = "^(" + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + ")$";
+        return address.matches(IP_REGEX);
+    }
+
 }

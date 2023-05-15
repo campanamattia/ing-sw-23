@@ -1,9 +1,11 @@
 package Client.View.Cli;
 
 import Client.Controller.Controller;
+import Client.Network.ClientRMI;
+import Client.Network.ClientSocket;
+import Client.Network.Network;
 import Client.View.View;
 import Utils.ChatMessage;
-import Server.Model.LivingRoom.CommonGoal.CommonGoal;
 import Utils.Cell;
 import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
@@ -12,17 +14,28 @@ import Utils.MockObjects.MockPlayer;
 import Utils.Rank;
 import Utils.Tile;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 
 public class Cli extends View {
     Controller clientController;
     MockModel mockModel;
+    Network network;
 
     public Cli () {
         clientController = new Controller(this);
-        clientController.start();
         mockModel = new MockModel();
+    }
+
+    public void start() throws IOException {
+        int port;
+        String address;
+        showTitle();
+        //network = askConnection();
+        address = askServerAddress();
+        port = askServerPort();
+        //network.init(address,port);
     }
 
     @Override
@@ -78,17 +91,11 @@ public class Cli extends View {
 
     @Override
     public void showTile(List<Tile> tiles) {
-
         System.out.print("\t");
         for (int i=0; i < tiles.size(); i++) {
             System.out.print(tiles.get(i).getColor().toString() + "|" + (i+1) + "|");
             System.out.print(CliColor.RESET + "   ");
         }
-    }
-
-    @Override
-    public void showStatus() {
-
     }
 
     @Override
@@ -133,9 +140,6 @@ public class Cli extends View {
         System.out.println("\n");
     }
 
-    public void showCommonGoal (CommonGoal commonGoal) {
-
-    }
 
     @Override
     public void updateBoard(MockBoard mockBoard) throws RemoteException {
@@ -169,17 +173,8 @@ public class Cli extends View {
 
     @Override
     public void newTurn(String playerID) throws RemoteException {
-
     }
 
-    @Override
-    public void askLobbySize() throws RemoteException {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Insert the numbers of players (insert a number between 2 and 4)");
-        String input = scanner.nextLine();
-        scanner.close();
-        clientController.sendLobbySize(input);
-    }
 
     @Override
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
@@ -192,13 +187,8 @@ public class Cli extends View {
     }
 
     @Override
-    public void outcomeWriteChat(boolean success) throws RemoteException {
-
-    }
-
-    @Override
     public void outcomeException(Exception e) throws RemoteException {
-        System.out.println(e);
+        System.out.println(CliColor.RED + e.toString());
     }
 
     @Override
@@ -211,8 +201,133 @@ public class Cli extends View {
 
     }
 
+    public Network askConnection() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Select connection Mode (insert SOCKET or RMI): ");
+        String input = scanner.nextLine();
+
+        while (!input.equalsIgnoreCase("SOCKET") && !input.equalsIgnoreCase("RMI")) {
+            System.out.println(CliColor.RED + "ERROR: you type something wrong, please enter SOCKET or RMI" + CliColor.RESET);
+            input = scanner.nextLine();
+        }
+
+        System.out.println("Well done you create a" + input.toLowerCase() + "connection");
+
+        if (input.equalsIgnoreCase("SOCKET")){
+            return new ClientSocket();
+        }
+        if (input.equalsIgnoreCase("RMI")){
+            return new ClientRMI();
+        }
+        return null;
+    }
+
     @Override
-    public void askPlayerID() throws RemoteException {
+    public void askPlayerInfo(List<Collection<String>> lobbyInfo ) throws RemoteException {
 
     }
+
+    @Override
+    public void askLobbySize() throws RemoteException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please insert the numbers of players (insert a number between 2 and 4)" );
+        String input = scanner.nextLine();
+
+        int playerNumber = Integer.parseInt(input);
+        while (playerNumber != 2 && playerNumber != 3 && playerNumber != 4) {
+            System.out.println(CliColor.RED + "ERROR: you type something wrong, match can only start with 2, 3 or 4 players" + CliColor.RESET);
+            input = scanner.nextLine();
+            playerNumber = Integer.parseInt(input);
+        }
+
+        System.out.println("You are going to create a new Game, wait for the others players");
+
+        scanner.close();
+
+        //metodo da chiamare in network
+
+    }
+
+    public String askServerAddress() {
+        final String DEFAULT_ADDRESS = "127.0.0.1";
+        String ip = DEFAULT_ADDRESS;
+        boolean validInput = false;
+        boolean firstTry = true;
+
+        Scanner scanner = new Scanner(System.in);
+
+        String address;
+        do {
+            if (!firstTry)
+                System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
+            else
+                System.out.println("Please enter the server address");
+
+            System.out.println("Insert 'd' for the default value (" + DEFAULT_ADDRESS + "): ");
+            address = scanner.nextLine();
+
+            if (address.equalsIgnoreCase("d") || address.equalsIgnoreCase("localhost") || address.equals(DEFAULT_ADDRESS)) {
+                validInput = true;
+            } else if (clientController.validateIP(address)) {
+                ip = address;
+                validInput = true;
+            } else {
+                firstTry = false;
+            }
+        } while (!validInput);
+
+        scanner.close();
+
+        return address;
+
+    }
+
+    public int askServerPort() {
+        final int DEFAULT_PORT = 2807;
+        final int MIN_PORT = 1024;
+        final int MAX_PORT = 65535;
+        int port = DEFAULT_PORT;
+        boolean validInput = false;
+        boolean firstTry = true;
+        boolean notAnInt = false;
+        boolean wrongPort = false;
+
+        Scanner scanner = new Scanner(System.in);
+
+        String input = null;
+        while (!validInput) {
+            if (notAnInt) {
+                notAnInt = false;
+                System.out.println(CliColor.RED + "ERROR: Please insert only numbers or \"d\"." + CliColor.RESET + " Try again.");
+            }
+            if (wrongPort) {
+                wrongPort = false;
+                System.out.println(CliColor.RED + "ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + "." + CliColor.RESET + " Try again.");
+            }
+
+            System.out.println("Select a valid port between [" + MIN_PORT + ", " + MAX_PORT + "]");
+            System.out.println("Insert 'd' for the default value (" + DEFAULT_PORT + "): ");
+
+            input = scanner.nextLine();
+
+            if (input.equalsIgnoreCase("d")) {
+                validInput = true;
+            } else {
+                try {
+                    port = Integer.parseInt(input);
+                    if (MIN_PORT <= port && port <= MAX_PORT) {
+                        validInput = true;
+                    } else {
+                        wrongPort = true;
+                    }
+                } catch (NumberFormatException e) {
+                    notAnInt = true;
+                }
+            }
+        }
+
+        scanner.close();
+        return port;
+    }
+
 }

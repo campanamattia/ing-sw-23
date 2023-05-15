@@ -6,6 +6,7 @@ import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockPlayer;
 import Utils.Tile;
 
+import java.util.Collection;
 import java.util.List;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -31,13 +32,11 @@ public interface RemoteView extends Remote {
 
     void outcomeInsertTiles(boolean success) throws RemoteException;
 
-    void outcomeWriteChat(boolean success) throws RemoteException;
-
     void outcomeException(Exception e) throws RemoteException;
 
     void outcomeLogin(boolean success) throws RemoteException;
 
     void outcomeLogout(boolean success) throws RemoteException;
 
-    void askPlayerID() throws RemoteException;
+    void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException;
 }

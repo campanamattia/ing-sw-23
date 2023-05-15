@@ -1,6 +1,6 @@
 package Client.View;
 
-import Interface.RemoteView;
+import Interface.Client.RemoteView;
 import Utils.MockObjects.MockModel;
 import Utils.Rank;
 import Utils.Tile;
@@ -29,9 +29,6 @@ public abstract class View implements RemoteView {
 
     }
     public void showChat() {
-
-    }
-    public void showStatus() {
 
     }
     public void showWinner() {

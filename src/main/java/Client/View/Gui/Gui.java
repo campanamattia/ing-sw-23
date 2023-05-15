@@ -1,17 +1,14 @@
 package Client.View.Gui;
 
 import Client.View.View;
-import Messages.ServerMessage;
-import Server.Model.ChatMessage;
-import Utils.Cell;
+import Utils.ChatMessage;
 import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockPlayer;
-import Utils.Rank;
 import Utils.Tile;
 
 import java.rmi.RemoteException;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
@@ -83,7 +80,7 @@ public class Gui extends View {
     }
 
     @Override
-    public void askPlayerID() throws RemoteException {
+    public void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException {
 
     }
 }
