@@ -4,9 +4,11 @@ import Client.Network.*;
 import Client.View.View;
 import Enumeration.OperationType;
 import Exception.InvalidInputException;
+import Server.ServerApp;
 import Utils.Coordinates;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,11 @@ public class Controller{
         port = view.askPort();
         ipAddress = view.askIpAddress();
         network.init(port,ipAddress);
-        view.askPlayerID();
+        try {
+            view.askPlayerID();
+        } catch (RemoteException e) {
+            ServerApp.logger.log(Leve);
+        }
         // make askPlayerID void
         // add a method to set playerID
     }
