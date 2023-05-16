@@ -2,14 +2,19 @@ package Client.Network;
 
 import Client.View.View;
 import Enumeration.OperationType;
-import Messages.Client.InsertTilesMessage;
-import Messages.Client.SelectedTilesMessage;
-import Messages.Client.WriteChatMessage;
+import Interface.Client.RemoteClient;
+import Interface.Client.RemoteView;
+import Messages.Client.GameController.InsertTilesMessage;
+import Messages.Client.GameController.SelectedTilesMessage;
+import Messages.Client.GameController.WriteChatMessage;
 import Messages.ClientMessage;
 import Messages.ServerMessage;
 
-import Utils.ClientMessageFactory;
+import Server.Controller.GameController;
 import Utils.Coordinates;
+import Utils.MockObjects.MockBoard;
+import Utils.MockObjects.MockCommonGoal;
+import Utils.MockObjects.MockPlayer;
 import Utils.ServerMessageFactory;
 import com.google.gson.Gson;
 
@@ -22,7 +27,6 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ClientSocket extends Network{
@@ -88,9 +92,15 @@ public class ClientSocket extends Network{
         }
     }
 
+    @Override
+    public void addSubscriber(Object object) throws RemoteException {
+
+    }
+
+    @Override
     public void insertTiles(String playerID, List<Integer> sorted, int column) throws RemoteException{
         OperationType operationType = OperationType.INSERTTILES;
-        ClientMessage clientMessage = new InsertTilesMessage(operationType, playerID, sorted, column);
+        ClientMessage clientMessage = new InsertTilesMessage(playerID, sorted, column);
         try {
             sendMessage(clientMessage);
         } catch (IOException e) {
@@ -98,9 +108,7 @@ public class ClientSocket extends Network{
         }
     }
 
-
-    @Override
-    public void sendMessage(ClientMessage clientMessage) throws IOException {
+    private void sendMessage(ClientMessage clientMessage) throws IOException {
         if(clientConnected.get()) {
             try{
                 outputStream.writeObject(clientMessage);
@@ -117,5 +125,66 @@ public class ClientSocket extends Network{
         JsonReader reader = new JsonReader(new StringReader(line));
         JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
         return ServerMessageFactory.getServerMessage(jsonObject.get("MessageType").getAsString(), line);
+    }
+
+    @Override
+    public void init(String ipAddress, int ip) throws IOException {
+
+    }
+
+    @Override
+    public void pong() throws RemoteException {
+
+    }
+
+    @Override
+    public void setGameController(GameController gameController) throws RemoteException {
+
+    }
+
+    @Override
+    public void update(MockBoard mockBoard) throws RemoteException {
+
+    }
+
+    @Override
+    public void update(MockCommonGoal mockCommonGoal) throws RemoteException {
+
+    }
+
+    @Override
+    public void update(MockPlayer mockPlayer) throws RemoteException {
+
+    }
+
+
+    @Override
+    public void getLobbyInfo(RemoteView remote) throws RemoteException {
+
+    }
+
+    @Override
+    public void setLobbySize(String playerID, String lobbyID, int lobbySize) throws RemoteException {
+
+    }
+
+    @Override
+    public void login(String playerID, String lobbyID, RemoteView remoteView, RemoteClient network) throws RemoteException {
+
+    }
+
+    @Override
+    public void ping(String playerID, String lobbyID) throws RemoteException {
+
+    }
+
+    @Override
+    public void getGameController(String lobbyID, RemoteClient remote) throws Exception {
+
+    }
+
+    @Override
+    public void logOut(String playerID, String lobbyID) throws RemoteException {
+
     }
 }

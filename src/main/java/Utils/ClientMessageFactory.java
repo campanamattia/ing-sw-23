@@ -1,10 +1,10 @@
 package Utils;
 
 import Enumeration.OperationType;
-import Messages.Client.InsertTilesMessage;
-import Messages.Client.PingMessage;
-import Messages.Client.SelectedTilesMessage;
-import Messages.Client.WriteChatMessage;
+import Messages.Client.GameController.InsertTilesMessage;
+import Messages.Client.Lobby.PingMessage;
+import Messages.Client.GameController.SelectedTilesMessage;
+import Messages.Client.GameController.WriteChatMessage;
 import Messages.ClientMessage;
 import com.google.gson.Gson;
 

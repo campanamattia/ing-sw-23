@@ -1,4 +1,4 @@
-package Messages.Client;
+package Messages.Client.Lobby;
 
 import Messages.ClientMessage;
 import Server.Network.Client.SocketHandler;
@@ -6,17 +6,17 @@ import Server.ServerApp;
 
 import java.rmi.RemoteException;
 
-public class AddPlayerMessage extends ClientMessage {
-    private final String lobbyID;
+public class PingMessage extends ClientMessage {
 
-    public AddPlayerMessage(String playerID, String lobbyID) {
+    private final String lobbyID;
+    public PingMessage(String playerID,String lobbyID){
         this.playerID = playerID;
         this.lobbyID = lobbyID;
     }
 
     public void execute(SocketHandler socketHandler){
         try {
-            ServerApp.lobby.logIn(this.playerID,this.lobbyID, socketHandler, socketHandler);
+            ServerApp.lobby.ping(this.playerID,this.lobbyID);
         } catch (RemoteException e) {
             ServerApp.logger.severe(e.toString());
         }

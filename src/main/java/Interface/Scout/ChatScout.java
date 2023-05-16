@@ -4,6 +4,5 @@ import Utils.ChatMessage;
 
 import java.util.Stack;
 
-public interface ChatScout extends Scout{
-    void update(Stack<ChatMessage> flow);
+public interface ChatScout extends Scout<Stack<ChatMessage>>{
 }

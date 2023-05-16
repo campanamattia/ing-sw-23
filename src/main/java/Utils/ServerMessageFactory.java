@@ -1,9 +1,8 @@
 package Utils;
 
 import Enumeration.MessageType;
-import Enumeration.OperationType;
-import Messages.Client.AddPlayerMessage;
-import Messages.Server.*;
+import Messages.Server.Network.PongMessage;
+import Messages.Server.View.*;
 import Messages.ServerMessage;
 import com.google.gson.Gson;
 

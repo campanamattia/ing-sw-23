@@ -1,4 +1,4 @@
-package Messages.Server;
+package Messages.Server.View;
 
 import Enumeration.MessageType;
 import Messages.ServerMessage;

@@ -2,7 +2,9 @@ package Messages;
 
 import Server.Network.Client.SocketHandler;
 
-public abstract class ClientMessage {
+import java.io.Serializable;
+
+public abstract class ClientMessage implements Serializable {
     protected String playerID;
 
     public ClientMessage(){
