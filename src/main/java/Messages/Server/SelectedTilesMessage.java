@@ -1,7 +1,9 @@
 package Messages.Server;
 
+import Client.View.View;
 import Enumeration.MessageType;
 import Messages.ServerMessage;
+import Utils.Coordinates;
 import Utils.Tile;
 
 import java.util.List;
@@ -24,5 +26,9 @@ public class SelectedTilesMessage extends ServerMessage {
     }
     public void setTiles(List<Tile> tiles) {
         this.tiles = tiles;
+    }
+
+    public void execute(View view, String playerID, List<Coordinates> coordinates){
+        view.outcomeSelectTiles(playerID,coordinates);
     }
 }
