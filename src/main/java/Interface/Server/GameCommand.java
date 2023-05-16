@@ -18,8 +18,8 @@ public interface GameCommand extends Remote {
 
     void liveStatus(String playerID) throws RemoteException;
 
-    void logOut(String playerID) throws RemoteException, PlayerNotFoundException;
-
     void addSubscriber(Object object) throws RemoteException;
+
+
 
 }

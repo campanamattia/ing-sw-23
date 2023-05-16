@@ -15,6 +15,11 @@ public class ChatUpdate extends ServerMessage {
         this.flow = null;
     }
 
+    @Override
+    public void execute(View view) {
+
+    }
+
     public ChatUpdate(Stack<ChatMessage> flow) {
         this.messageType = MessageType.RETURN;
         this.flow = flow;
