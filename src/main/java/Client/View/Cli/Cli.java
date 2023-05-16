@@ -23,6 +23,7 @@ public class Cli extends View {
     MockModel mockModel;
     Network network;
 
+
     public Cli () {
         clientController = new Controller(this);
         mockModel = new MockModel();
@@ -32,11 +33,12 @@ public class Cli extends View {
         int port;
         String address;
         showTitle();
-        //network = askConnection();
+        network = askConnection();
         address = askServerAddress();
         port = askServerPort();
-        //network.init(address,port);
+        network.init(address,port);
     }
+
 
     @Override
     public void showBoard() {
@@ -66,14 +68,16 @@ public class Cli extends View {
     }
 
     @Override
-    public void showHelp() {
-
+    public void showStatus() {
+        if (mockModel.getCurrentPlayer().equals(mockModel.getLocalPlayerID())) {
+            System.out.print("It's your turn. ");
+            System.out.println(mockModel.getTurnPhase());
+        }
+        else {
+            System.out.println("It's NOT your turn. Wait for other players");
+        }
     }
 
-    @Override
-    public void showMessage(String message) {
-        System.out.println(message);
-    }
 
     @Override
     public void showTitle() {
@@ -99,7 +103,7 @@ public class Cli extends View {
     }
 
     @Override
-    public void showRank(List<Rank> classification) {
+    public void endGame(List<Rank> classification) {
 
     }
 
@@ -155,8 +159,7 @@ public class Cli extends View {
     public void updatePlayer(MockPlayer mockPlayer) throws RemoteException {
         for (int i=0; i<mockModel.getMockPlayers().size(); i++) {
             if (mockModel.getMockPlayers().get(i).getPlayerID().equals(mockPlayer.getPlayerID())) {
-                mockModel.getMockPlayers().remove(i);
-                mockModel.getMockPlayers().add(mockPlayer);
+                mockModel.getMockPlayers().set(i,mockPlayer);
             }
         }
     }
@@ -173,12 +176,21 @@ public class Cli extends View {
 
     @Override
     public void newTurn(String playerID) throws RemoteException {
+        clearCLI();
+        mockModel.setCurrentPlayer(playerID);
+        showBoard();
+        showShelves();
+        showHelp();
     }
 
 
     @Override
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
-
+        System.out.print("\t");
+        for (int i=0; i < tiles.size(); i++) {
+            System.out.print(tiles.get(i).getColor().toString() + "|" + (i+1) + "|");
+            System.out.print(CliColor.RESET + "   ");
+        }
     }
 
     @Override
@@ -192,14 +204,11 @@ public class Cli extends View {
     }
 
     @Override
-    public void outcomeLogin(boolean success) throws RemoteException {
-
+    public void outcomeLogin(String playerId) throws RemoteException {
+        System.out.println("You login into the server");
+        mockModel.setLocalPlayerID(playerId);
     }
 
-    @Override
-    public void outcomeLogout(boolean success) throws RemoteException {
-
-    }
 
     public Network askConnection() throws IOException {
         Scanner scanner = new Scanner(System.in);
@@ -214,17 +223,21 @@ public class Cli extends View {
         System.out.println("Well done you create a" + input.toLowerCase() + "connection");
 
         if (input.equalsIgnoreCase("SOCKET")){
-            return new ClientSocket();
+            return new ClientSocket(this);
         }
         if (input.equalsIgnoreCase("RMI")){
-            return new ClientRMI();
+            return new ClientRMI(this);
         }
         return null;
     }
 
     @Override
     public void askPlayerInfo(List<Collection<String>> lobbyInfo ) throws RemoteException {
-
+        for (Collection<String> lobbyId : lobbyInfo ) {
+            for (String gameId : lobbyId) {
+                System.out.println(gameId);
+            }
+        }
     }
 
     @Override

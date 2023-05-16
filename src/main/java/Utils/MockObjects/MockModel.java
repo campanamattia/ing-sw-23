@@ -1,6 +1,7 @@
 package Utils.MockObjects;
 
-import Server.Model.ChatMessage;
+import Enumeration.TurnPhase;
+import Utils.ChatMessage;
 import Server.Model.GameModel;
 
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ public class MockModel {
     private List<MockCommonGoal> mockCommonGoal;
     private Stack<ChatMessage> chat;
     private List<String> lobby;
+    private String currentPlayer;
+    private TurnPhase turnPhase;
 
     public MockModel() {
         this.uuid = null;
@@ -80,4 +83,19 @@ public class MockModel {
         chat.add(message);
     }
 
+    public String getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(String turnPlayer) {
+        this.currentPlayer = turnPlayer;
+    }
+
+    public TurnPhase getTurnPhase() {
+        return turnPhase;
+    }
+
+    public void setTurnPhase(TurnPhase turnPhase) {
+        this.turnPhase = turnPhase;
+    }
 }
