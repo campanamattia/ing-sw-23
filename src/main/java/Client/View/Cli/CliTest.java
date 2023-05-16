@@ -126,9 +126,9 @@ public class CliTest {
 
         cli.showTitle();
 
-        cli.showBoard(board);
+        cli.showBoard();
 
-        cli.showShelves(shelves);
+        cli.showShelves();
 
         cli.showTile(tileList);
 

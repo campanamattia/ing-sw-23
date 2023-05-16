@@ -1,50 +1,42 @@
 package Utils.MockObjects;
 
+import Enumeration.TurnPhase;
+import Utils.ChatMessage;
 import Server.Model.GameModel;
-import Utils.MockObjects.MockBoard;
-import Utils.MockObjects.MockCommonGoal;
-import Utils.MockObjects.MockPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.UUID;
 
 public class MockModel {
-    private UUID uuid;
-    private String playerID;
+    private String lobbyID;
+    private String localPlayer;
     private MockBoard mockBoard;
     private List<MockPlayer> mockPlayers;
-    private MockCommonGoal mockCommonGoal;
+    private List<MockCommonGoal> mockCommonGoal;
+    private Stack<ChatMessage> chat;
+    private String currentPlayer;
+    private TurnPhase turnPhase;
 
-    public MockModel() {
-        this.uuid = null;
-        this.playerID = null;
-        this.mockBoard = null;
-        this.mockPlayers = new ArrayList<>();
-        this.mockCommonGoal = null;
+    public void setLobbyID(String lobbyID) {
+        this.lobbyID = lobbyID;
     }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public String getLobbyID() {
+        return lobbyID;
     }
-    public UUID getUuid() {
-        return uuid;
-    }
-
     public void setMockBoard(MockBoard mockBoard) {
         this.mockBoard = mockBoard;
     }
     public MockBoard getMockBoard() {
         return mockBoard;
     }
-
-    public void setMockCommonGoal(MockCommonGoal mockCommonGoal) {
+    public void setMockCommonGoal(List<MockCommonGoal> mockCommonGoal) {
         this.mockCommonGoal = mockCommonGoal;
     }
-    public MockCommonGoal getMockCommonGoal() {
+    public List<MockCommonGoal> getMockCommonGoal() {
         return mockCommonGoal;
     }
-
     public void setMockPlayers(List<MockPlayer> mockPlayers) {
         this.mockPlayers = mockPlayers;
     }
@@ -54,15 +46,40 @@ public class MockModel {
     public List<MockPlayer> getMockPlayers() {
         return mockPlayers;
     }
+    public String getLocalPlayer() {
+        return localPlayer;
+    }
+    public void setLocalPlayer(String playerID) {
+        this.localPlayer = playerID;
+    }
 
-    public String getPlayerID() {
-        return playerID;
-    }
-    public void setPlayerID(String playerID) {
-        this.playerID = playerID;
-    }
 
     public void setMockModel(GameModel model){
 
+    }
+    public Stack<ChatMessage> getChat(){
+        return chat;
+    }
+    public void setChat(Stack<ChatMessage> chat) {
+        this.chat = chat;
+    }
+    public void addMessage(ChatMessage message) {
+        chat.add(message);
+    }
+
+    public String getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(String turnPlayer) {
+        this.currentPlayer = turnPlayer;
+    }
+
+    public TurnPhase getTurnPhase() {
+        return turnPhase;
+    }
+
+    public void setTurnPhase(TurnPhase turnPhase) {
+        this.turnPhase = turnPhase;
     }
 }
