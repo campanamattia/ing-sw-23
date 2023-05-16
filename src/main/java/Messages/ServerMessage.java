@@ -3,8 +3,6 @@ package Messages;
 import Client.View.View;
 import Enumeration.MessageType;
 
-;
-
 public abstract class ServerMessage {
     protected MessageType messageType;
 

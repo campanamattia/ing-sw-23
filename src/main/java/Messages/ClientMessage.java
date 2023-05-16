@@ -1,6 +1,5 @@
 package Messages;
 
-import Enumeration.OperationType;
 import Server.Network.Client.SocketHandler;
 
 public abstract class ClientMessage {
