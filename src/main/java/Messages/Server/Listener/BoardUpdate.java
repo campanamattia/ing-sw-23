@@ -1,14 +1,12 @@
 package Messages.Server.Listener;
 
 import Client.View.View;
-
-import Interface.Client.RemoteView;
 import Messages.ServerMessage;
 import Utils.MockObjects.MockBoard;
 
 public class BoardUpdate extends ServerMessage {
 
-    private MockBoard mockBoard;
+    private final MockBoard mockBoard;
 
     public BoardUpdate(MockBoard mockBoard) {
         this.mockBoard = mockBoard;

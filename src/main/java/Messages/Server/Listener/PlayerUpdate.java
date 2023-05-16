@@ -5,7 +5,7 @@ import Messages.ServerMessage;
 import Utils.MockObjects.MockPlayer;
 
 public class PlayerUpdate extends ServerMessage {
-    MockPlayer mockPlayer;
+    private final MockPlayer mockPlayer;
 
     public PlayerUpdate(MockPlayer mockPlayer) {
         this.mockPlayer = mockPlayer;
