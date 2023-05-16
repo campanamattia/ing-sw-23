@@ -4,19 +4,10 @@ import Enumeration.OperationType;
 import Server.Network.Client.SocketHandler;
 
 public abstract class ClientMessage {
-    protected OperationType operationType;
     protected String playerID;
 
     public ClientMessage(){
-        this.operationType = null;
         this.playerID = null;
-    }
-
-    public OperationType getOperationType() {
-        return operationType;
-    }
-    public void setOperationType(OperationType operationType) {
-        this.operationType = operationType;
     }
 
     public String getPlayerID() {

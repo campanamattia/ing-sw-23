@@ -10,7 +10,7 @@ import Utils.Tile;
 import java.util.HashMap;
 
 public class AllGameMessage extends ServerMessage {
-    MockModel mockModel;
+    private final MockModel mockModel;
 
     public AllGameMessage(MockModel mockModel) {
         this.mockModel = mockModel;

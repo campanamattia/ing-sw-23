@@ -1,22 +1,24 @@
 package Messages.Client;
 
-import Enumeration.OperationType;
 import Messages.ClientMessage;
-import Server.Controller.GameController;
+import Server.Network.Client.SocketHandler;
 import Server.ServerApp;
+
+import java.rmi.RemoteException;
 
 public class PingMessage extends ClientMessage {
 
-    public PingMessage(){
-        super();
-    }
-
-    public PingMessage(String playerID){
-        this.operationType = OperationType.PING;
+    private final String lobbyID;
+    public PingMessage(String playerID,String lobbyID){
         this.playerID = playerID;
+        this.lobbyID = lobbyID;
     }
 
-    public void execute(GameController gameController){
-        ServerApp.lobby.ping(this.operationType,this.playerID);
+    public void execute(SocketHandler socketHandler){
+        try {
+            ServerApp.lobby.ping(this.playerID,this.lobbyID);
+        } catch (RemoteException e) {
+            ServerApp.logger.severe(e.toString());
+        }
     }
 }
