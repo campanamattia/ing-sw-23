@@ -10,29 +10,20 @@ import java.util.Stack;
 import java.util.UUID;
 
 public class MockModel {
-    private UUID uuid;
-    private String localPlayerID;
+    private String lobbyID;
+    private String localPlayer;
     private MockBoard mockBoard;
     private List<MockPlayer> mockPlayers;
     private List<MockCommonGoal> mockCommonGoal;
     private Stack<ChatMessage> chat;
-    private List<String> lobby;
     private String currentPlayer;
     private TurnPhase turnPhase;
 
-    public MockModel() {
-        this.uuid = null;
-        this.localPlayerID = null;
-        this.mockBoard = null;
-        this.mockPlayers = new ArrayList<>();
-        this.mockCommonGoal = null;
-        this.chat = null;
+    public void setLobbyID(String lobbyID) {
+        this.lobbyID = lobbyID;
     }
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-    public UUID getUuid() {
-        return uuid;
+    public String getLobbyID() {
+        return lobbyID;
     }
     public void setMockBoard(MockBoard mockBoard) {
         this.mockBoard = mockBoard;
@@ -55,20 +46,13 @@ public class MockModel {
     public List<MockPlayer> getMockPlayers() {
         return mockPlayers;
     }
-    public String getLocalPlayerID() {
-        return localPlayerID;
+    public String getLocalPlayer() {
+        return localPlayer;
     }
-    public void setLocalPlayerID(String playerID) {
-        this.localPlayerID = playerID;
-    }
-
-    public List<String> getLobby() {
-        return lobby;
+    public void setLocalPlayer(String playerID) {
+        this.localPlayer = playerID;
     }
 
-    public void setLobby(List<String> lobby) {
-        this.lobby = lobby;
-    }
 
     public void setMockModel(GameModel model){
 
