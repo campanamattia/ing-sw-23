@@ -1,4 +1,4 @@
-package Server.Controller.Players;
+package Server.Controller;
 
 import Server.Model.Player.Player;
 import Utils.Tile;
