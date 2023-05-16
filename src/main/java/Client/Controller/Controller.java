@@ -4,6 +4,7 @@ import Client.Network.*;
 import Client.View.View;
 import Enumeration.OperationType;
 import Exception.InvalidInputException;
+import Server.ServerApp;
 import Utils.Coordinates;
 
 import java.util.ArrayList;

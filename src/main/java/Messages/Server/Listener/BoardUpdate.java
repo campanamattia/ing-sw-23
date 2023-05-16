@@ -1,6 +1,7 @@
 package Messages.Server.Listener;
 
 import Client.View.View;
+
 import Interface.Client.RemoteView;
 import Messages.ServerMessage;
 import Utils.MockObjects.MockBoard;

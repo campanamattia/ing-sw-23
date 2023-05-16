@@ -1,5 +1,6 @@
 package Interface.Server;
 
+import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
 
 import java.rmi.Remote;
@@ -7,13 +8,15 @@ import java.rmi.RemoteException;
 
 public interface LobbyInterface extends Remote {
 
-    void setLobbySize(String playerID, int lobbySize) throws RemoteException;
+    void getLobbyInfo(RemoteView remote) throws RemoteException;
 
-    void logIn(String playerID, RemoteView remoteView) throws RemoteException;
+    void setLobbySize(String playerID, String lobbyID, int lobbySize) throws RemoteException;
 
-    void logOut(String playerID) throws RemoteException;
+    void logIn(String playerID, String lobbyID, RemoteView remoteView) throws RemoteException;
 
-    default void ping() throws RemoteException{
-        //return MessageType.PONG;
-    };
+    void ping(String playerID, String lobbyID) throws RemoteException;
+
+    void getGameController(String lobbyID, RemoteClient remote) throws RemoteException;
+
+    void logOut(String playerID, String lobbyID) throws RemoteException;
 }

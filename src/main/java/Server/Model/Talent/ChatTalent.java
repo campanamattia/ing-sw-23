@@ -5,7 +5,7 @@ import Utils.ChatRoom;
 
 public class ChatTalent extends Talent<ChatScout, ChatRoom>{
     @Override
-    public void notifyScout(ChatRoom chatRoom) {
+    public void notifyScouts(ChatRoom chatRoom) {
         for(ChatScout scout : this.scouts)
             scout.update(chatRoom.getFlow());
     }

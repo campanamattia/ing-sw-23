@@ -39,26 +39,6 @@ public class GameController {
     }
 
     /**
-     Constructs a new GameController by reading in a JSON file from the given file path and initializing its fields.
-     @param filepath the file path of the JSON file to read in
-     @throws FileNotFoundException if the given file path is not valid
-     */
-
-    /*public GameController(String filepath) throws FileNotFoundException {
-        JsonReader reader;
-        try{
--            reader = new JsonReader(new FileReader(filepath));
-        } catch(FileNotFoundException e){
-            System.out.println("The path isn't valid");
-            throw e;
-        }
-        this.gameModel = new Gson().fromJson(reader, GameModel.class);
-        this.uuid = this.gameModel.getUuid();
-        GameController.playersHandler = new PlayersHandler();
-        GameController.playersHandler.init(this.gameModel);
-    }
-    */
-    /**
      This method ends the current turn, checks for common goals, advances to the next player, and updates the gameModel status.
      If the gameModel has entered its last round, it changes the gameModel phase accordingly.
      If the gameModel has ended, it sets the leaderboard and gameModel phase to ended.
