@@ -12,7 +12,7 @@ public interface LobbyInterface extends Remote {
 
     void setLobbySize(String playerID, String lobbyID, int lobbySize) throws RemoteException;
 
-    void logIn(String playerID, String lobbyID, RemoteView remoteView) throws RemoteException;
+    void logIn(String playerID, String lobbyID, RemoteView remoteView, RemoteClient network) throws RemoteException;
 
     void ping(String playerID, String lobbyID) throws RemoteException;
 

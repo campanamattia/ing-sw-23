@@ -45,7 +45,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         if (this.lobbySize.get(lobbyID) == null) {
             if (sizeValid(lobbySize)) {
                 this.lobbySize.put(lobbyID, lobbySize);
-                this.lobby.get(lobbyID).get(playerID).remoteView().outcomeMessage("LobbySize set to " + lobbySize); // TODO: 12/05/2023
+                //this.lobby.get(lobbyID).get(playerID).remoteView().outcomeMessage("LobbySize set to " + lobbySize); // TODO: 12/05/2023
             } else {
                 this.lobby.get(lobbyID).get(playerID).remoteView().outcomeException(new RuntimeException("Lobby size must be between 2 and 4"));
                 this.lobby.get(lobbyID).get(playerID).remoteView().askLobbySize();
@@ -69,7 +69,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                     startTimer(playerID, lobbyID, network);
                 } else { //if the player is playing
                     client.outcomeException(new RuntimeException("Player is already playing"));
-                    client.askPlayerID();
+                    client.askPlayerInfo(getLobbyInfo());
                 }
             }
         } else if (this.lobby.get(lobbyID) != null) { //if the lobby exists

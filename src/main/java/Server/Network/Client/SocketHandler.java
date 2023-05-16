@@ -183,8 +183,12 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Player
     }
 
     @Override
-    public void setGameController(GameController gameController) throws Exception {
+    public void setGameController(GameController gameController) throws RemoteException {
+        this.controller = gameController;
+    }
 
+    public GameController getController() {
+        return controller;
     }
 
     private void send(ServerMessage output) throws IOException {
