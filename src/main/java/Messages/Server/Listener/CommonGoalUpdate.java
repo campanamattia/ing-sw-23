@@ -5,7 +5,7 @@ import Messages.ServerMessage;
 import Utils.MockObjects.MockCommonGoal;
 
 public class CommonGoalUpdate extends ServerMessage {
-    private MockCommonGoal mockCommonGoal;
+    private final MockCommonGoal mockCommonGoal;
 
     public CommonGoalUpdate(MockCommonGoal mockCommonGoal) {
         this.mockCommonGoal = mockCommonGoal;

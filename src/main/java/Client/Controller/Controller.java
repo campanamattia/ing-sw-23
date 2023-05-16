@@ -7,6 +7,7 @@ import Exception.InvalidInputException;
 import Server.ServerApp;
 import Utils.Coordinates;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,15 @@ public class Controller{
     public void doAction(String input) {
 
         // thread for afk
+
+        if(input.equals("showChat")){
+            this.view.showChat();
+            return;
+        }
+        if(input.equals("showGame")){
+            this.view.showGame();
+            return;
+        }
 
         try {
 
