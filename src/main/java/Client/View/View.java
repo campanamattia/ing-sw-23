@@ -35,40 +35,33 @@ public abstract class View implements RemoteView {
         this.network = network;
     }
 
-
     public void updateBoard(MockBoard mockBoard) throws RemoteException {
         mockModel.setMockBoard(mockBoard);
     }
-
 
     public void updateCommonGoal(List<MockCommonGoal> mockCommonGoals) throws RemoteException {
         mockModel.setMockCommonGoal(mockCommonGoals);
     }
 
-
     public void updatePlayer(MockPlayer mockPlayer) throws RemoteException {
-        for (int i=0; i<mockModel.getMockPlayers().size(); i++) {
+        for (int i = 0; i < mockModel.getMockPlayers().size(); i++) {
             if (mockModel.getMockPlayers().get(i).getPlayerID().equals(mockPlayer.getPlayerID())) {
-                mockModel.getMockPlayers().set(i,mockPlayer);
+                mockModel.getMockPlayers().set(i, mockPlayer);
             }
         }
     }
-
 
     public void updateChat(Stack<ChatMessage> chat) throws RemoteException {
         mockModel.setChat(chat);
     }
 
-
     public abstract void showBoard();
-
 
     public abstract void showChat();
 
-
     public abstract void showStatus();
 
-    public void showShelves () {
+    public void showShelves() {
 
     }
 
@@ -79,10 +72,4 @@ public abstract class View implements RemoteView {
     public void showRank(List<Rank> classification) {
 
     }
-
-
-
-
-
-
 }

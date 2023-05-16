@@ -12,10 +12,11 @@ import Messages.ServerMessage;
 import Server.Controller.GameController;
 import Server.ServerApp;
 import Utils.ChatMessage;
-import Utils.ClientMessageFactory;
 import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
+import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
+import Utils.Rank;
 import Utils.Tile;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -76,37 +77,14 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Player
         }
     }
 
+    // TODO: 16/05/2023  
     private ClientMessage deserialize(String line) {
         Gson gson = new Gson();
         JsonReader reader = new JsonReader(new StringReader(line));
         JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
         return ClientMessageFactory.getClientMessage(jsonObject.get("OperationType").getAsString(), line);
     }
-
-    @Override
-    public void updateBoard(MockBoard mockBoard) throws RemoteException {
-
-    }
-
-    @Override
-    public void updateCommonGoal(List<MockCommonGoal> mockCommonGoals) throws RemoteException {
-
-    }
-
-    @Override
-    public void updatePlayer(MockPlayer mockPlayer) throws RemoteException {
-
-    }
-
-    @Override
-    public void updateChat(Stack<ChatMessage> chatFlow) throws RemoteException {
-
-    }
-
-    @Override
-    public void updateLobby(String playerLogged) throws RemoteException {
-
-    }
+    
 
     @Override
     public void newTurn(String playerID) throws RemoteException {
@@ -127,11 +105,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Player
     public void outcomeInsertTiles(boolean success) throws RemoteException {
 
     }
-
-    @Override
-    public void outcomeWriteChat(boolean success) throws RemoteException {
-
-    }
+    
 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
@@ -139,19 +113,35 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Player
     }
 
     @Override
-    public void outcomeLogin(boolean success) throws RemoteException {
+    public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
+        
+    }
+
+    @Override
+    public void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException {
 
     }
 
     @Override
-    public void outcomeLogout(boolean success) throws RemoteException {
+    public void allGame(MockModel mockModel) throws RemoteException {
 
     }
 
     @Override
-    public void askPlayerID() throws RemoteException {
+    public void endGame(List<Rank> leaderboard) throws RemoteException {
 
     }
+
+    @Override
+    public void crashedPlayer(String crashedPlayer) throws RemoteException {
+
+    }
+
+    @Override
+    public void reloadPlayer(String reloadPlayer) throws RemoteException {
+
+    }
+    
 
     @Override
     public void update(MockBoard mockBoard) throws RemoteException {
@@ -165,11 +155,6 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Player
 
     @Override
     public void update(MockPlayer mockPlayer) throws RemoteException {
-
-    }
-
-    @Override
-    public void update(Object object) {
 
     }
 

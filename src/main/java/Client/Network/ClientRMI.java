@@ -15,6 +15,7 @@ import Utils.MockObjects.MockPlayer;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Stack;
 
@@ -28,7 +29,7 @@ public class ClientRMI extends Network {
     @Override
     public void init(String ip, int port) throws IOException {
         try{
-            registry = LocateRegistry.getRegistry(ip, port);
+            Registry registry = LocateRegistry.getRegistry(ip, port);
             this.lobby = (LobbyInterface) registry.lookup("LobbyInterface");
         } catch(Exception e){
             try {

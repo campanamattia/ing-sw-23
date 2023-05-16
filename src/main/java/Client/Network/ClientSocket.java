@@ -15,7 +15,6 @@ import Utils.Coordinates;
 import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockPlayer;
-import Utils.ServerMessageFactory;
 import com.google.gson.Gson;
 
 import com.google.gson.JsonObject;
@@ -124,7 +123,7 @@ public class ClientSocket extends Network{
         Gson gson = new Gson();
         JsonReader reader = new JsonReader(new StringReader(line));
         JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-        return ServerMessageFactory.getServerMessage(jsonObject.get("MessageType").getAsString(), line);
+        return erverMessageFactory.getServerMessage(jsonObject.get("MessageType").getAsString(), line);
     }
 
     @Override
