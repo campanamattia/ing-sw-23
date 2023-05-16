@@ -7,10 +7,12 @@ import Messages.Client.SelectedTilesMessage;
 import Messages.Client.WriteChatMessage;
 import Messages.ClientMessage;
 import Messages.ServerMessage;
+
 import Utils.ClientMessageFactory;
 import Utils.Coordinates;
 import Utils.ServerMessageFactory;
 import com.google.gson.Gson;
+
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
@@ -116,5 +118,4 @@ public class ClientSocket extends Network{
         JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
         return ServerMessageFactory.getServerMessage(jsonObject.get("MessageType").getAsString(), line);
     }
-
 }

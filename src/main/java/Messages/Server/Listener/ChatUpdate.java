@@ -31,4 +31,9 @@ public class ChatUpdate extends ServerMessage {
     public void setFlow(Stack<ChatMessage> flow) {
         this.flow = flow;
     }
+
+    @Override
+    public void execute(View view) {
+        view.updateChat(this.flow);
+    }
 }

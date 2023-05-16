@@ -1,5 +1,6 @@
 package Messages.Server;
 
+import Client.View.View;
 import Enumeration.MessageType;
 import Messages.ServerMessage;
 
@@ -21,5 +22,10 @@ public class ErrorMessage extends ServerMessage {
     }
     public void setError(Exception error){
         this.error = error;
+    }
+
+    @Override
+    public void execute(View view) {
+        view.outcomeException(this.error);
     }
 }

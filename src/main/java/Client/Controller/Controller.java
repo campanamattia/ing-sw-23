@@ -7,8 +7,6 @@ import Exception.InvalidInputException;
 import Server.ServerApp;
 import Utils.Coordinates;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,47 +21,40 @@ public class Controller{
         this.view = view;
     }
 
-    public void start(){
-        this.network = view.askConnection();
-        port = view.askPort();
-        ipAddress = view.askIpAddress();
-        network.init(port,ipAddress);
-        try {
-            view.askPlayerID();
-        } catch (RemoteException e) {
-            ServerApp.logger.log(Leve);
-        }
-        // make askPlayerID void
-        // add a method to set playerID
-    }
-
-    // add method are you still here ? in do action !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    public void doAction(String input) throws InvalidInputException {
-        OperationType operationType = checkInput(input);
-        String content = upLoadContent(input,operationType);
-        switch (operationType){
-            case WRITEMESSAGE -> {
-                network.writeChat(this.playerID,content);
-            }
-            case SELECTEDTILES -> {
-                List<Coordinates> selectCoordinate = extractCoordinates(content);
-                network.selectTiles(playerID, selectCoordinate);
-            }
-            case INSERTTILES -> {
-                String orderOfTiles = content.split("/")[0];
-                List<Integer> sorted = extractInteger(orderOfTiles);
-                int column = Integer.parseInt(content.split("/")[1]);
-                network.insertTiles(playerID, sorted, column);
-            }
-        }
-    }
-
     public void addPlayer(String playerID){
         this.playerID = playerID;
         network.addPlayer(this.playerID); // this method will go into set player id
     }
 
+    public void doAction(String input) {
+
+        // thread for afk
+
+        try {
+
+            OperationType operationType = checkInput(input);
+            String content = upLoadContent(input, operationType);
+
+            switch (operationType) {
+                case WRITEMESSAGE -> {
+                    network.writeChat(this.playerID, content);
+                }
+                case SELECTEDTILES -> {
+                    List<Coordinates> selectCoordinate = extractCoordinates(content);
+                    network.selectTiles(this.playerID, selectCoordinate);
+                }
+                case INSERTTILES -> {
+                    String orderOfTiles = content.split("/")[0];
+                    List<Integer> sorted = extractInteger(orderOfTiles);
+                    int column = Integer.parseInt(content.split("/")[1]);
+                    network.insertTiles(this.playerID, sorted, column);
+                }
+            }
+
+        }catch(InvalidInputException e){
+            view.outcomeException(e);
+        }
+    }
 
     /**
      * Checks if the input inserted by a user is valid.
