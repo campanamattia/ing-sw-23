@@ -1,5 +1,6 @@
 package Messages.Server;
 
+import Client.View.View;
 import Enumeration.MessageType;
 import Messages.ServerMessage;
 import Utils.Rank;
@@ -24,5 +25,10 @@ public class EndGameMessage extends ServerMessage {
     }
     public void setRank(List<Rank> rank) {
         this.rank = rank;
+    }
+
+    @Override
+    public void execute(View view) {
+        view.showRank(this.rank);
     }
 }
