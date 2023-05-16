@@ -427,4 +427,8 @@ public class GameModel {
     public void addChatScout(ChatScout interfaceChat) {
         this.chatRoom.getTalent().addScout(interfaceChat);
     }
+
+    public void completeTurn(String playerID) {
+        // TODO: 16/05/2023  
+    }
 }

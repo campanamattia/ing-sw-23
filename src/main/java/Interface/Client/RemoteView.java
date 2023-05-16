@@ -11,21 +11,19 @@ import java.rmi.RemoteException;
 
 public interface RemoteView extends Remote {
 
-    void updateLobby(String playerLogged) throws RemoteException;
+    void updateLobby(String loggedPlayer) throws RemoteException;
 
-    void newTurn(String playerID) throws RemoteException;
+    void newTurn(String currentPlayer) throws RemoteException;
 
     void askLobbySize() throws RemoteException;
 
-    void outcomeSelectTiles(List<Tile> tiles) throws RemoteException;
+    void outcomeSelectTiles(List<Tile> selectedTiles) throws RemoteException;
 
     void outcomeInsertTiles(boolean success) throws RemoteException;
 
-    void outcomeWriteChat(boolean success) throws RemoteException;
-
     void outcomeException(Exception e) throws RemoteException;
 
-    void outcomeLogin(String playerID) throws RemoteException;
+    void outcomeLogin(String localPlayer) throws RemoteException;
 
     void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException;
 
@@ -33,6 +31,7 @@ public interface RemoteView extends Remote {
 
     void endGame(List<Rank> leaderboard) throws RemoteException;
 
-    void crashedPlayer(String playerID) throws RemoteException;
+    void crashedPlayer(String crashedPlayer) throws RemoteException;
 
+    void reloadPlayer(String reloadPlayer) throws RemoteException;
 }

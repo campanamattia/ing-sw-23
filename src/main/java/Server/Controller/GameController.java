@@ -142,8 +142,8 @@ public class GameController implements GameCommand, Serializable {
             if(ableTo(playerID) == TurnPhase.PICKING) {
                 try {
                     this.gameModel.insertTiles(sort, currentPlayer.getTiles(), column);
-                    this.turnPhase = TurnPhase.PICKING;
                     this.players.get(playerID).remoteView().outcomeInsertTiles(true);
+                    this.turnPhase = TurnPhase.PICKING;
                     endTurn();
                 } catch (PlayerException e) {
                     this.players.get(playerID).remoteView().outcomeException(e);
@@ -160,7 +160,6 @@ public class GameController implements GameCommand, Serializable {
     public  synchronized void writeChat(String playerID, String message) throws RemoteException {
         try {
             this.gameModel.writeChat(playerID, message);
-            this.players.get(playerID).remoteView().outcomeWriteChat(true);
         } catch (ChatException e) {
             this.players.get(playerID).remoteView().outcomeException(e);
         }
@@ -185,7 +184,7 @@ public class GameController implements GameCommand, Serializable {
         }
         for(ClientHandler clientHandler : players.values()) {
             try {
-                clientHandler.remoteView().login(playerID);
+                clientHandler.remoteView().reloadPlayer(playerID);
             } catch (RemoteException e) {
                 ServerApp.logger.severe(e.toString());
             }
