@@ -1,17 +1,24 @@
 package Messages.Client;
 
-import Enumeration.OperationType;
 import Messages.ClientMessage;
-import Server.Controller.GameController;
+import Server.Network.Client.SocketHandler;
 import Server.ServerApp;
-public class AddPlayerMessage extends ClientMessage {
 
-    public AddPlayerMessage(String playerID) {
-        this.operationType = OperationType.ADDPLAYER;
+import java.rmi.RemoteException;
+
+public class AddPlayerMessage extends ClientMessage {
+    private final String lobbyID;
+
+    public AddPlayerMessage(String playerID, String lobbyID) {
         this.playerID = playerID;
+        this.lobbyID = lobbyID;
     }
 
-    public void execute(GameController gameController){
-        ServerApp.lobby.addPlayer(this.operationType,this.playerID);
+    public void execute(SocketHandler socketHandler){
+        try {
+            ServerApp.lobby.logIn(this.playerID,this.lobbyID, socketHandler, socketHandler);
+        } catch (RemoteException e) {
+            ServerApp.logger.severe(e.toString());
+        }
     }
 }

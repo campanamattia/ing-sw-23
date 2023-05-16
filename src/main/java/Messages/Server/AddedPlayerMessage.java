@@ -5,12 +5,13 @@ import Enumeration.MessageType;
 import Messages.ServerMessage;
 
 public class AddedPlayerMessage extends ServerMessage {
+    private final String playerID;
 
-    public AddedPlayerMessage() {
-        this.messageType = MessageType.RETURN;
+    public AddedPlayerMessage(String playerID) {
+        this.playerID = playerID;
     }
 
-    public void execute(View view, String playerID){
+    public void execute(View view){
         view.addedPlayer(playerID);
     }
 }
