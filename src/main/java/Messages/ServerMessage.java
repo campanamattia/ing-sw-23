@@ -11,11 +11,6 @@ public abstract class ServerMessage {
     public ServerMessage(){
         this.messageType = null;
     }
-    public MessageType getMessageType() {
-        return messageType;
-    }
-    public void setMessageType(MessageType messageType) {
-        this.messageType = messageType;
-    }
+
     public abstract void execute(View view);
 }

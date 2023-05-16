@@ -10,12 +10,5 @@ public abstract class ClientMessage {
         this.playerID = null;
     }
 
-    public String getPlayerID() {
-        return playerID;
-    }
-    public void setPlayerID(String playerID) {
-        this.playerID = playerID;
-    }
-
     public abstract void execute(SocketHandler socket);
 }
