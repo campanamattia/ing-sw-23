@@ -197,11 +197,11 @@ public class GameController implements GameCommand, Serializable {
             this.gameModel.getPlayer(playerID).setStatus(false);
             this.players.remove(playerID);
             if(this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
-                completeTurn(playerID);
+                this.gameModel.completeTurn(playerID);
             else {
                 for(ClientHandler client : players.values()) {
                     try {
-                        client.remoteView().logout(playerID);
+                        client.remoteView().crashedPlayer(playerID);
                     } catch (RemoteException e) {
                         ServerApp.logger.severe(e.toString());
                     }

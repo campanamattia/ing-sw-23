@@ -25,14 +25,14 @@ public interface RemoteView extends Remote {
 
     void outcomeException(Exception e) throws RemoteException;
 
-    void outcomeLogin(boolean success) throws RemoteException;
-
-    void outcomeLogout(boolean success) throws RemoteException;
+    void outcomeLogin(String playerID) throws RemoteException;
 
     void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException;
 
     void allGame(MockModel mockModel) throws RemoteException;
 
     void endGame(List<Rank> leaderboard) throws RemoteException;
+
+    void crashedPlayer(String playerID) throws RemoteException;
 
 }
