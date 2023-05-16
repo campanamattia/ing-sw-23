@@ -1,6 +1,7 @@
 package Interface.Client;
 
 import Utils.MockObjects.MockModel;
+import Utils.Rank;
 import Utils.Tile;
 
 import java.util.Collection;
@@ -31,5 +32,7 @@ public interface RemoteView extends Remote {
     void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException;
 
     void allGame(MockModel mockModel) throws RemoteException;
+
+    void endGame(List<Rank> leaderboard) throws RemoteException;
 
 }

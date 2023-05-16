@@ -9,5 +9,5 @@ public interface RemoteClient extends Remote {
 
     void pong() throws RemoteException;
 
-    void setGameController(GameController gameController) throws Exception;
+    void setGameController(GameController gameController) throws RemoteException;
 }
