@@ -4,15 +4,10 @@ import Client.View.Cli.Cli;
 import Client.View.Gui.Gui;
 
 public class ViewFactory {
-    public static View getView(String view){
+    public static void instanceView(String view) {
         switch (view) {
-            case "GUI" -> {
-                return new Gui();
-            }
-            case "CLI" -> {
-                return new Cli();
-            }
+            case "GUI" -> new Gui();
+            case "CLI" -> new Cli();
         }
-        return null;
     }
 }

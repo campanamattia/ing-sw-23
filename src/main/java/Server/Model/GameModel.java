@@ -5,7 +5,7 @@ import Exception.BoardException;
 import Exception.ChatException;
 import Exception.Player.NonConformingInputParametersException;
 import Exception.PlayerException;
-import Exception.PlayerNotFoundException;
+import Exception.Player.PlayerNotFoundException;
 import Interface.Scout.BoardScout;
 import Interface.Scout.ChatScout;
 import Interface.Scout.CommonGoalScout;
@@ -426,5 +426,9 @@ public class GameModel {
 
     public void addChatScout(ChatScout interfaceChat) {
         this.chatRoom.getTalent().addScout(interfaceChat);
+    }
+
+    public void completeTurn(String playerID) {
+        // TODO: 16/05/2023  
     }
 }

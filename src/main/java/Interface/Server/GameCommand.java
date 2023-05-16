@@ -16,10 +16,5 @@ public interface GameCommand extends Remote {
 
     void writeChat(String playerID, String message) throws RemoteException;
 
-    void liveStatus(String playerID) throws RemoteException;
-
-    void logOut(String playerID) throws RemoteException, PlayerNotFoundException;
-
     void addSubscriber(Object object) throws RemoteException;
-
 }

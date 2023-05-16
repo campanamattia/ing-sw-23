@@ -1,8 +1,9 @@
 package Server;
 
 
-import Server.Network.Lobby;
-import Server.Network.Servers.ServerRMI;
+import Server.Network.Lobby.Lobby;
+import Server.Network.Servers.SocketServer;
+import Server.Network.Servers.RMIServer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
@@ -19,8 +20,8 @@ import java.util.logging.Logger;
 
 public class ServerApp {
     public static Logger logger;
+    public static Lobby lobby;
     private static final String serverSetting = "serverSetting.json";
-    private static Lobby lobby;
     private static int socketPort = 0;
     private static int rmiPort = 0;
 
@@ -29,15 +30,15 @@ public class ServerApp {
         initLogger();
         setPort(args);
         initLobby();
-        serverRMI();
-        serverSocket();
+        rmiServer();
+        socketServer();
     }
 
 
-    private static void initLogger(){
+    private static void initLogger() {
         logger = Logger.getLogger(ServerApp.class.getName());
         try {
-            logger.addHandler(new FileHandler("src/main/resources/logger.json"));
+            logger.addHandler(new FileHandler("logger.json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -45,25 +46,23 @@ public class ServerApp {
         logger.info("Starting ServerApp");
     }
 
-    private static void setPort(String[] args){
-        try{
+    private static void setPort(String[] args) {
+        try {
             switch (args.length) {
                 case 2 -> {
                     socketPort = Integer.parseInt(args[0]);
                     rmiPort = Integer.parseInt(args[1]);
-                    return;
                 }
                 case 1 -> {
                     socketPort = Integer.parseInt(args[0]);
                     rmiPort = rmiFromJSON();
-                    return;
                 }
                 default -> {
                     socketPort = socketFromJSON();
                     rmiPort = rmiFromJSON();
                 }
             }
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             logger.log(Level.SEVERE, e.toString());
             System.exit(-1);
         }
@@ -78,7 +77,7 @@ public class ServerApp {
         }
     }
 
-    private static int socketFromJSON() throws RuntimeException{
+    private static int socketFromJSON() throws RuntimeException {
         Gson gson = new Gson();
         JsonReader reader;
         try {
@@ -90,7 +89,7 @@ public class ServerApp {
         }
     }
 
-    private static int rmiFromJSON() throws RuntimeException{
+    private static int rmiFromJSON() throws RuntimeException {
         Gson gson = new Gson();
         JsonReader reader;
         try {
@@ -102,17 +101,17 @@ public class ServerApp {
         }
     }
 
-    private static void serverRMI(){
-        try{
-            new ServerRMI().start(lobby, rmiPort);
-        }catch (RemoteException | AlreadyBoundException e){
+    private static void rmiServer() {
+        try {
+            new RMIServer().start(lobby, rmiPort);
+        } catch (RemoteException | AlreadyBoundException e) {
             logger.log(Level.SEVERE, e.toString());
             System.exit(-1);
         }
     }
 
-    private static void serverSocket() {
-
+    private static void socketServer() {
+        new SocketServer().start(socketPort);
     }
 
 }

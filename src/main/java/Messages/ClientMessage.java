@@ -1,6 +1,7 @@
 package Messages;
 
 import Enumeration.OperationType;
+import Server.Network.Client.SocketHandler;
 
 public abstract class ClientMessage {
     protected OperationType operationType;
@@ -25,5 +26,5 @@ public abstract class ClientMessage {
         this.playerID = playerID;
     }
 
-    public abstract void execute(Object serverObject);
+    public abstract void execute(SocketHandler socket);
 }
