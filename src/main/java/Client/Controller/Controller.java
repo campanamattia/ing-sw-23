@@ -6,7 +6,6 @@ import Enumeration.OperationType;
 import Exception.InvalidInputException;
 import Utils.Coordinates;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,18 +20,6 @@ public class Controller{
         this.view = view;
     }
 
-    /*public void start(){
-        view.askConnection();
-        view.askPlayerID();
-    }*/
-    public void sendConnection(String connection) {
-        this.network = NetworkFactory.instanceNetwork(connection,this.view);
-        this.view.askServerInfo();
-    }
-
-    public void sendServerInfo(String serverInfo){
-        // port ip address
-    }
     public void addPlayer(String playerID){
         this.playerID = playerID;
         network.addPlayer(this.playerID); // this method will go into set player id

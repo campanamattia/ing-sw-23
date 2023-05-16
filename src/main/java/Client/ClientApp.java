@@ -5,10 +5,14 @@ import java.util.Objects;
 
 public class ClientApp {
     public static void main(String[] args) {
+        String viewName;
 
-        String viewName = Objects.requireNonNullElse(args[1], "CLI");
+        if(!args[1].equals("CLI")){
+            viewName = "GUI";
+        }else{
+            viewName = args[1];
+        }
         ViewFactory.instanceView(viewName);
-
     }
 
 }

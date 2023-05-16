@@ -1,5 +1,6 @@
 package Messages.Server.Listener;
 
+import Client.View.View;
 import Enumeration.MessageType;
 import Messages.ServerMessage;
 import Utils.ChatMessage;
@@ -24,5 +25,10 @@ public class ChatUpdate extends ServerMessage {
     }
     public void setFlow(Stack<ChatMessage> flow) {
         this.flow = flow;
+    }
+
+    @Override
+    public void execute(View view) {
+        view.updateChat(this.flow);
     }
 }
