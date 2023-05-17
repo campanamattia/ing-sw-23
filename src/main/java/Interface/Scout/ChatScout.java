@@ -2,8 +2,10 @@ package Interface.Scout;
 
 import Utils.ChatMessage;
 
-import java.util.Stack;
+import java.rmi.RemoteException;
 
-public interface ChatScout extends Scout{
-    void update(Stack<ChatMessage> flow);
+
+public interface ChatScout extends Scout<ChatMessage>{
+    @Override
+    void update(ChatMessage objects) throws RemoteException;
 }

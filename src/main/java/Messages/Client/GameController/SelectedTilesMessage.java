@@ -1,4 +1,4 @@
-package Messages.Client;
+package Messages.Client.GameController;
 
 import Messages.ClientMessage;
 import Server.Controller.GameController;

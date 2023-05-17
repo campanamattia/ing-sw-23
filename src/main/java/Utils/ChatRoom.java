@@ -32,7 +32,7 @@ public class ChatRoom {
      */
     public synchronized void addMessage(ChatMessage message){
         this.flow.add(message);
-        this.talent.notifyScouts(this);
+        this.talent.notifyScouts(message);
     }
     /**
      Returns the flow of WriteChatMessage objects in the chat room.
