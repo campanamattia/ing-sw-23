@@ -1,14 +1,10 @@
 package Messages;
 
 import Client.View.View;
-import Enumeration.MessageType;
 
-public abstract class ServerMessage {
-    protected MessageType messageType;
+import java.io.Serializable;
 
-    public ServerMessage(){
-        this.messageType = null;
-    }
+public abstract class ServerMessage implements Serializable {
 
     public abstract void execute(View view);
 }

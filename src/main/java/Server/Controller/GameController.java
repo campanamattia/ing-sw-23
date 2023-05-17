@@ -120,7 +120,7 @@ public class GameController implements GameCommand, Serializable {
 
 
     @Override
-    public synchronized void selectedTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
+    public synchronized void selectTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
         try {
             if(ableTo(playerID) == TurnPhase.PICKING) {
                 try {
@@ -174,7 +174,7 @@ public class GameController implements GameCommand, Serializable {
         this.gameModel.addCommonGoalScout((CommonGoalScout) object);
     }
 
-    public void login (String playerID, ClientHandler client) throws RemoteException {
+    public void reload (String playerID, ClientHandler client) throws RemoteException {
         this.players.put(playerID, client);
         try {
             this.gameModel.getPlayer(playerID).setStatus(true);

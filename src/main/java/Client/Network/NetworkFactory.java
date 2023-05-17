@@ -9,6 +9,12 @@ public class NetworkFactory {
         if (network.equals("RMI")) {
             return new ClientRMI(view);
         }
-        return new ClientSocket(view);
+        try {
+            return new ClientSocket(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+        return null;
     }
 }

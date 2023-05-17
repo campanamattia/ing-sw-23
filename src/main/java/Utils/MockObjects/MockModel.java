@@ -22,47 +22,68 @@ public class MockModel {
     public void setLobbyID(String lobbyID) {
         this.lobbyID = lobbyID;
     }
+
     public String getLobbyID() {
         return lobbyID;
     }
+
     public void setMockBoard(MockBoard mockBoard) {
         this.mockBoard = mockBoard;
     }
+
     public MockBoard getMockBoard() {
         return mockBoard;
     }
+
     public void setMockCommonGoal(List<MockCommonGoal> mockCommonGoal) {
         this.mockCommonGoal = mockCommonGoal;
     }
+
     public List<MockCommonGoal> getMockCommonGoal() {
         return mockCommonGoal;
     }
+
     public void setMockPlayers(List<MockPlayer> mockPlayers) {
         this.mockPlayers = mockPlayers;
     }
-    public void addMockPlayer(MockPlayer mockPlayer){
+
+    public void setMockCommonGoal(MockCommonGoal mockCommonGoal) {
+        for (MockCommonGoal mock : this.mockCommonGoal) {
+            if (mock.equals(mockCommonGoal)) {
+                this.mockCommonGoal.set(this.mockCommonGoal.indexOf(mock), mockCommonGoal);
+            }
+        }
+    }
+
+    public void addMockPlayer(MockPlayer mockPlayer) {
         this.mockPlayers.add(mockPlayer);
     }
+
     public List<MockPlayer> getMockPlayers() {
         return mockPlayers;
     }
+
     public String getLocalPlayer() {
         return localPlayer;
     }
+
     public void setLocalPlayer(String playerID) {
         this.localPlayer = playerID;
     }
 
 
-    public void setMockModel(GameModel model){
+    public void setMockModel(GameModel model) {
 
     }
-    public Stack<ChatMessage> getChat(){
+
+    public Stack<ChatMessage> getChat() {
         return chat;
     }
+
     public void setChat(Stack<ChatMessage> chat) {
         this.chat = chat;
     }
+
     public void addMessage(ChatMessage message) {
         chat.add(message);
     }

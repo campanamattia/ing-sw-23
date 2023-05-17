@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
 
 public interface RemoteView extends Remote {
 
-    void updateLobby(String loggedPlayer) throws RemoteException;
+    //void logOpponent(String loggedPlayer) throws RemoteException; // TODO: 16/05/2023 to implement in future time
 
     void newTurn(String currentPlayer) throws RemoteException;
 
@@ -23,7 +23,7 @@ public interface RemoteView extends Remote {
 
     void outcomeException(Exception e) throws RemoteException;
 
-    void outcomeLogin(String localPlayer) throws RemoteException;
+    void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException;
 
     void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException;
 

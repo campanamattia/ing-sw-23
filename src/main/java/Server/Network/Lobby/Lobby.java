@@ -29,6 +29,10 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
 
     @Override
     public void getLobbyInfo(RemoteView remote) throws RemoteException {
+        remote.askPlayerInfo(getLobbyInfo());
+    }
+
+    public List<Collection<String>> getLobbyInfo(){
         List<Collection<String>> lobbyInfo = new ArrayList<>();
         Collection<String> lobbyID = this.lobby.keySet();
         Collection<String> gamesName = new ArrayList<>();
@@ -37,7 +41,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         }
         lobbyInfo.add(lobbyID);
         lobbyInfo.add(gamesName);
-        remote.askPlayerInfo(lobbyInfo);
+        return lobbyInfo;
     }
 
     @Override
@@ -45,7 +49,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         if (this.lobbySize.get(lobbyID) == null) {
             if (sizeValid(lobbySize)) {
                 this.lobbySize.put(lobbyID, lobbySize);
-                this.lobby.get(lobbyID).get(playerID).remoteView().outcomeMessage("LobbySize set to " + lobbySize); // TODO: 12/05/2023
+                //this.lobby.get(lobbyID).get(playerID).remoteView().outcomeMessage("LobbySize set to " + lobbySize); // TODO: 12/05/2023
             } else {
                 this.lobby.get(lobbyID).get(playerID).remoteView().outcomeException(new RuntimeException("Lobby size must be between 2 and 4"));
                 this.lobby.get(lobbyID).get(playerID).remoteView().askLobbySize();
@@ -59,7 +63,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         return lobbySize >= 2 && lobbySize <= 4;
     }
 
-    public synchronized void logIn(String playerID, String lobbyID, RemoteView client, RemoteClient network) throws RemoteException {
+    public synchronized void login(String playerID, String lobbyID, RemoteView client, RemoteClient network) throws RemoteException {
         Game game = findGame(lobbyID);
         if (game != null) { //if the game exists
             if (game.players().containsKey(playerID)) {
@@ -69,13 +73,13 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                     startTimer(playerID, lobbyID, network);
                 } else { //if the player is playing
                     client.outcomeException(new RuntimeException("Player is already playing"));
-                    client.askPlayerID();
+                    client.askPlayerInfo(getLobbyInfo());
                 }
             }
         } else if (this.lobby.get(lobbyID) != null) { //if the lobby exists
             if (this.lobby.get(lobbyID).containsKey(playerID)) { //if the playerID is already taken
                 this.lobby.get(lobbyID).get(playerID).remoteView().outcomeException(new RuntimeException("PlayerID already taken"));
-                this.lobby.get(lobbyID).get(playerID).remoteView().askPlayerID();
+                this.lobby.get(lobbyID).get(playerID).remoteView().askPlayerInfo(getLobbyInfo());
             } else { //if the playerID is not taken
                 this.lobby.get(lobbyID).put(playerID, new ClientHandler(playerID, lobbyID, client));
                 startTimer(playerID, lobbyID, network);
@@ -160,7 +164,10 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
 
     private void reload(String playerID, String lobbyID, RemoteView remoteView) {
         GameController gameController = this.games.get(findGame(lobbyID));
-        gameController.reload(playerID, remoteView);
+        try {
+            gameController.reload(playerID, new ClientHandler(playerID, lobbyID, remoteView));
+        } catch (RemoteException e) {
+            ServerApp.logger.severe("Error reloading player");
+        }
     }
-
 }

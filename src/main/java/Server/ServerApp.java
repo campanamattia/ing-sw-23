@@ -3,7 +3,7 @@ package Server;
 
 import Server.Network.Lobby.Lobby;
 import Server.Network.Servers.SocketServer;
-import Server.Network.Servers.RMIServer;
+import Server.Network.Servers.ServerRMI;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
@@ -103,7 +103,7 @@ public class ServerApp {
 
     private static void rmiServer() {
         try {
-            new RMIServer().start(lobby, rmiPort);
+            new ServerRMI().start(lobby, rmiPort);
         } catch (RemoteException | AlreadyBoundException e) {
             logger.log(Level.SEVERE, e.toString());
             System.exit(-1);
@@ -113,6 +113,5 @@ public class ServerApp {
     private static void socketServer() {
         new SocketServer().start(socketPort);
     }
-
 }
 

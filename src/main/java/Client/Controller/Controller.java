@@ -3,8 +3,7 @@ package Client.Controller;
 import Client.Network.*;
 import Client.View.View;
 import Enumeration.OperationType;
-import Exception.InvalidInputException;
-import Server.ServerApp;
+import Exception.Player.InvalidInputException;
 import Utils.Coordinates;
 
 import java.rmi.RemoteException;
@@ -20,11 +19,6 @@ public class Controller{
 
     public Controller(View view) {
         this.view = view;
-    }
-
-    public void addPlayer(String playerID){
-        this.playerID = playerID;
-        network.addPlayer(this.playerID); // this method will go into set player id
     }
 
     public void doAction(String input) {
@@ -62,7 +56,13 @@ public class Controller{
             }
 
         }catch(InvalidInputException e){
-            view.outcomeException(e);
+            try {
+                view.outcomeException(e);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
         }
     }
 
