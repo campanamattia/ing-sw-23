@@ -20,7 +20,7 @@ public class Cli extends View {
     MockModel mockModel;
     Network network;
 
-    public Cli () {
+    public Cli() {
         clientController = new Controller(this);
         mockModel = new MockModel();
     }
@@ -39,7 +39,7 @@ public class Cli extends View {
     @Override
     public void askLobbySize() throws RemoteException {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Please insert the numbers of players (insert a number between 2 and 4)" );
+        System.out.println("Please insert the numbers of players (insert a number between 2 and 4)");
         String input = scanner.nextLine();
 
         int playerNumber = Integer.parseInt(input);
@@ -52,8 +52,7 @@ public class Cli extends View {
         System.out.println("You are going to create a new Game, wait for the others players");
 
         scanner.close();
-        network.login(mockModel.getLocalPlayer(), mockModel.getLobbyID(), playerNumber);
-
+        network.setLobbySize(mockModel.getLocalPlayer(), mockModel.getLobbyID(), playerNumber);
     }
 
     public String askServerAddress() {
@@ -140,8 +139,8 @@ public class Cli extends View {
     // TODO: 16/05/23 we print the names of both the lobbies and the games and ask you to write the name you want to play with and in which lobby/game
     //if we don't find matches, a new lobby will be instantiated
     @Override
-    public void askPlayerInfo(List<Collection<String>> lobbyInfo ) throws RemoteException {
-        for (Collection<String> lobbyId : lobbyInfo ) {
+    public void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException {
+        for (Collection<String> lobbyId : lobbyInfo) {
             for (String gameId : lobbyId) {
                 System.out.println(gameId);
             }
@@ -171,7 +170,7 @@ public class Cli extends View {
     @Override
     public void showChat() {
         Stack<ChatMessage> chat = mockModel.getChat();
-        for (int i=0; i<chat.size(); i++) {
+        for (int i = 0; i < chat.size(); i++) {
             System.out.println(chat.pop().sender() + ": " + chat.pop().content());
         }
     }
@@ -181,8 +180,7 @@ public class Cli extends View {
         if (mockModel.getCurrentPlayer().equals(mockModel.getLocalPlayer())) {
             System.out.print("It's your turn. ");
             System.out.println(mockModel.getTurnPhase());
-        }
-        else {
+        } else {
             System.out.println("It's NOT your turn. Wait for other players. For help type 'help'");
         }
     }
@@ -191,12 +189,12 @@ public class Cli extends View {
     public void showTitle() {
         System.out.print("" + CliColor.CLEAR_ALL + CliColor.BOLDYELLOW);
         System.out.println("""
-                            ✹ ｡  .  ･ . ∴ * ███╗   ███╗██╗   ██╗    ██████╗██╗  ██╗███████╗██╗     ███████╗██╗███████╗. 　･ ∴　　｡ 　
-                           ｡    ✦    *      ████╗ ████║╚██╗ ██╔╝   ██╔════╝██║  ██║██╔════╝██║     ██╔════╝██║██╔════╝ ∴⋆  ˚  *   .
-                             ∴   *  ｡ .  ✹  ██╔████╔██║ ╚████╔╝    ╚█████╗ ███████║█████╗  ██║     █████╗  ██║█████╗   ｡ ·　 ✦   *
-                            .   ･  *   ｡  ∴ ██║╚██╔╝██║  ╚██╔╝      ╚═══██╗██╔══██║██╔══╝  ██║     ██╔══╝  ██║██╔══╝　   ✹  ｡   ·  ✧
-                             ･  .   ✦     * ██║ ╚═╝ ██║   ██║      ██████╔╝██║  ██║███████╗███████╗██║     ██║███████╗ ✦ ∴ 　･ ｡· ∴
-                             ✹   ｡ ∴.  ･   .╚═╝     ╚═╝   ╚═╝      ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚═╝╚══════╝ ･　 *　　✹　 ˚""" + CliColor.RESET);
+                 ✹ ｡  .  ･ . ∴ * ███╗   ███╗██╗   ██╗    ██████╗██╗  ██╗███████╗██╗     ███████╗██╗███████╗. 　･ ∴　　｡ 　
+                ｡    ✦    *      ████╗ ████║╚██╗ ██╔╝   ██╔════╝██║  ██║██╔════╝██║     ██╔════╝██║██╔════╝ ∴⋆  ˚  *   .
+                  ∴   *  ｡ .  ✹  ██╔████╔██║ ╚████╔╝    ╚█████╗ ███████║█████╗  ██║     █████╗  ██║█████╗   ｡ ·　 ✦   *
+                 .   ･  *   ｡  ∴ ██║╚██╔╝██║  ╚██╔╝      ╚═══██╗██╔══██║██╔══╝  ██║     ██╔══╝  ██║██╔══╝　   ✹  ｡   ·  ✧
+                  ･  .   ✦     * ██║ ╚═╝ ██║   ██║      ██████╔╝██║  ██║███████╗███████╗██║     ██║███████╗ ✦ ∴ 　･ ｡· ∴
+                  ✹   ｡ ∴.  ･   .╚═╝     ╚═╝   ╚═╝      ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚═╝╚══════╝ ･　 *　　✹　 ˚""" + CliColor.RESET);
 
         System.out.println("Complete rules are available here: " + CliColor.BOLDPINK + "https://www.craniocreations.it/prodotto/my-shelfie\n" + CliColor.RESET);
     }
@@ -204,8 +202,8 @@ public class Cli extends View {
 
     public void showTile(List<Tile> tiles) {
         System.out.print("\t");
-        for (int i=0; i < tiles.size(); i++) {
-            System.out.print(tiles.get(i).getColor().toString() + "|" + (i+1) + "|");
+        for (int i = 0; i < tiles.size(); i++) {
+            System.out.print(tiles.get(i).getColor().toString() + "|" + (i + 1) + "|");
             System.out.print(CliColor.RESET + "   ");
         }
         System.out.println();
@@ -228,12 +226,12 @@ public class Cli extends View {
     }
 
 
-    public void showShelves(){
+    public void showShelves() {
         int numColumn = 5;
         int numRow = 6;
         int numPlayer = mockModel.getMockPlayers().size();
 
-        for (int i = 0; i < numRow ; i++) {
+        for (int i = 0; i < numRow; i++) {
             System.out.print(" \t");
             for (int k = 0; k < numPlayer; k++) {
                 for (int j = 0; j < numColumn; j++) {
@@ -251,7 +249,7 @@ public class Cli extends View {
         }
         System.out.print("    ");
 
-        for (int k =0; k < numPlayer; k++){
+        for (int k = 0; k < numPlayer; k++) {
             System.out.print(mockModel.getMockPlayers().get(k).getPlayerID() + ": points");
             for (int i = 0; i < 32 - mockModel.getMockPlayers().get(k).getPlayerID().length() - 8; i++) {
                 System.out.print(" ");
@@ -260,7 +258,10 @@ public class Cli extends View {
         System.out.println("\n");
     }
 
+    @Override
+    public void showGame() {
 
+    }
 
 
     @Override
@@ -276,8 +277,8 @@ public class Cli extends View {
     @Override
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
         System.out.print("\t");
-        for (int i=0; i < tiles.size(); i++) {
-            System.out.print(tiles.get(i).getColor().toString() + "|" + (i+1) + "|");
+        for (int i = 0; i < tiles.size(); i++) {
+            System.out.print(tiles.get(i).getColor().toString() + "|" + (i + 1) + "|");
             System.out.print(CliColor.RESET + "   ");
         }
     }
@@ -313,15 +314,14 @@ public class Cli extends View {
 
         System.out.println("Well done you create a" + input.toLowerCase() + "connection");
 
-        if (input.equalsIgnoreCase("SOCKET")){
+        if (input.equalsIgnoreCase("SOCKET")) {
             return new ClientSocket(this);
         }
-        if (input.equalsIgnoreCase("RMI")){
+        if (input.equalsIgnoreCase("RMI")) {
             return new ClientRMI(this);
         }
         return null;
     }
-
 
 
     @Override
@@ -336,16 +336,18 @@ public class Cli extends View {
             while (true) {
                 if (scanner.hasNextLine()) {
                     userInput = scanner.nextLine();
-                    clientController.doAction(userInput);
-                }else {
+                    try {
+                        clientController.doAction(userInput);
+                    } catch (RuntimeException e) {
+                        System.out.println(CliColor.RED + e.getMessage() + CliColor.RESET);
+                    }
+                } else {
                     System.out.println("Don't enter without a body");
                 }
             }
         });
         inputThread.start();
     }
-
-
 
 
     public void clearCLI() {

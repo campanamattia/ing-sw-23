@@ -3,9 +3,9 @@ package Server.Network.Client;
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
 import Interface.Scout.BoardScout;
+import Interface.Scout.ChatScout;
 import Interface.Scout.CommonGoalScout;
 import Interface.Scout.PlayerScout;
-import Messages.ClientMessage;
 import Messages.Server.View.ErrorMessage;
 import Messages.Server.Network.PongMessage;
 import Messages.ServerMessage;
@@ -18,13 +18,10 @@ import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
 import Utils.Rank;
 import Utils.Tile;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
+
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -33,7 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 
-public class SocketHandler implements Runnable, RemoteView, RemoteClient, PlayerScout, BoardScout, CommonGoalScout {
+public class SocketHandler implements Runnable, RemoteView, RemoteClient, PlayerScout, BoardScout, CommonGoalScout, ChatScout {
     private final Socket socket;
     private Scanner input;
     private final ExecutorService executorService;
@@ -61,16 +58,12 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Player
             input = new Scanner(socket.getInputStream());
 
             while (!this.socket.isClosed()) {
-                String line = input.nextLine();
-                this.executorService.submit(() -> {
-                    ClientMessage input = deserialize(line);
-                    try {
-                        if (this.controller != null || ServerApp.lobby != null) input.execute(this);
-                        else send(new ErrorMessage(new RuntimeException("Server is not ready yet")));
-                    } catch (IOException e) {
-                        ServerApp.logger.log(Level.SEVERE, e.getMessage());
-                    }
-                });
+                if(input.hasNextLine()) {
+                    String line = input.nextLine();
+                    this.executorService.submit(() -> {
+                        deserialize(line);
+                    });
+                }
             }
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.getMessage());
@@ -78,11 +71,8 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Player
     }
 
     // TODO: 16/05/2023  
-    private ClientMessage deserialize(String line) {
-        Gson gson = new Gson();
-        JsonReader reader = new JsonReader(new StringReader(line));
-        JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-        return ClientMessageFactory.getClientMessage(jsonObject.get("OperationType").getAsString(), line);
+    private void deserialize(String line) {
+
     }
     
 
@@ -155,6 +145,11 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Player
 
     @Override
     public void update(MockPlayer mockPlayer) throws RemoteException {
+
+    }
+
+    @Override
+    public void update(ChatMessage chatMessage) throws RemoteException {
 
     }
 

@@ -22,16 +22,17 @@ import java.util.Stack;
 public class ClientRMI extends Network {
     private GameCommand gc;
     private LobbyInterface lobby;
-    public ClientRMI(View view){
+
+    public ClientRMI(View view) {
         this.view = view;
     }
 
     @Override
     public void init(String ip, int port) throws IOException {
-        try{
+        try {
             Registry registry = LocateRegistry.getRegistry(ip, port);
             this.lobby = (LobbyInterface) registry.lookup("LobbyInterface");
-        } catch(Exception e){
+        } catch (Exception e) {
             try {
                 view.outcomeException(e);
             } catch (RemoteException ex) {
@@ -57,32 +58,32 @@ public class ClientRMI extends Network {
     }
 
     @Override
-    public void addSubscriber(Object object) throws RemoteException{
+    public void addSubscriber(Object object) throws RemoteException {
         this.gc.addSubscriber(object);
     }
 
     @Override
-    public void getLobbyInfo(RemoteView remote) throws RemoteException{
+    public void getLobbyInfo(RemoteView remote) throws RemoteException {
         this.lobby.getLobbyInfo(remote);
     }
 
     @Override
-    public void setLobbySize(String playerID, String lobbyID, int lobbySize) throws RemoteException{
+    public void setLobbySize(String playerID, String lobbyID, int lobbySize) throws RemoteException {
         this.lobby.setLobbySize(playerID, lobbyID, lobbySize);
     }
 
     @Override
-    public void login(String playerID, String lobbyID, RemoteView remoteView, RemoteClient client) throws RemoteException{
+    public void login(String playerID, String lobbyID, RemoteView remoteView, RemoteClient client) throws RemoteException {
         this.lobby.login(playerID, lobbyID, remoteView, (RemoteClient) this);
     }
 
     @Override
-    public void ping(String playerID, String lobbyID) throws RemoteException{
+    public void ping(String playerID, String lobbyID) throws RemoteException {
         this.lobby.ping(playerID, lobbyID);
     }
 
     @Override
-    public void getGameController(String lobbyID, RemoteClient remote) throws RemoteException{
+    public void getGameController(String lobbyID, RemoteClient remote) throws RemoteException {
         try {
             this.lobby.getGameController(lobbyID, remote);
         } catch (Exception e) {
@@ -106,7 +107,7 @@ public class ClientRMI extends Network {
     }
 
     @Override
-    public void update(MockBoard mockBoard) throws RemoteException {
+    public void update(MockBoard mockBoard) {
         this.view.updateBoard(mockBoard);
     }
 
@@ -122,7 +123,7 @@ public class ClientRMI extends Network {
 
 
     @Override
-    public void update(Stack<ChatMessage> flow) {
-        this.view.updateChat(flow);
+    public void update(ChatMessage message) {
+            this.view.updateChat(message);
     }
 }

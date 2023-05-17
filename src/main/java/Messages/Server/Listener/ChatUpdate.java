@@ -4,17 +4,22 @@ import Client.View.View;
 import Messages.ServerMessage;
 import Utils.ChatMessage;
 
+import java.rmi.RemoteException;
 import java.util.Stack;
 
 public class ChatUpdate extends ServerMessage {
-    private final Stack<ChatMessage> flow;
+    private final ChatMessage message;
 
-    public ChatUpdate(Stack<ChatMessage> flow) {
-        this.flow = flow;
+    public ChatUpdate(ChatMessage message) {
+        this.message = message;
     }
 
     @Override
     public void execute(View view) {
-        view.updateChat(this.flow);
+        try {
+            view.updateChat(this.message);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

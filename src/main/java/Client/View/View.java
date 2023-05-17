@@ -8,12 +8,9 @@ import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
 import Utils.Rank;
-import Utils.Tile;
 
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Scanner;
-import java.util.Stack;
 
 public abstract class View implements RemoteView {
     MockModel mockModel;
@@ -35,15 +32,15 @@ public abstract class View implements RemoteView {
         this.network = network;
     }
 
-    public void updateBoard(MockBoard mockBoard) throws RemoteException {
+    public void updateBoard(MockBoard mockBoard) {
         mockModel.setMockBoard(mockBoard);
     }
 
-    public void updateCommonGoal(List<MockCommonGoal> mockCommonGoals) throws RemoteException {
+    public void updateCommonGoal(MockCommonGoal mockCommonGoals) {
         mockModel.setMockCommonGoal(mockCommonGoals);
     }
 
-    public void updatePlayer(MockPlayer mockPlayer) throws RemoteException {
+    public void updatePlayer(MockPlayer mockPlayer) {
         for (int i = 0; i < mockModel.getMockPlayers().size(); i++) {
             if (mockModel.getMockPlayers().get(i).getPlayerID().equals(mockPlayer.getPlayerID())) {
                 mockModel.getMockPlayers().set(i, mockPlayer);
@@ -51,8 +48,8 @@ public abstract class View implements RemoteView {
         }
     }
 
-    public void updateChat(Stack<ChatMessage> chat) throws RemoteException {
-        mockModel.setChat(chat);
+    public void updateChat(ChatMessage chat) {
+        mockModel.addMessage(chat);
     }
 
     public abstract void showBoard();
@@ -68,6 +65,8 @@ public abstract class View implements RemoteView {
     public void showHelp() {
 
     }
+
+    public abstract void showGame();
 
     public void showRank(List<Rank> classification) {
 

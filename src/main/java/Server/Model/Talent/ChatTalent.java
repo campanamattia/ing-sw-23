@@ -1,12 +1,16 @@
 package Server.Model.Talent;
 
 import Interface.Scout.ChatScout;
+import Utils.ChatMessage;
 import Utils.ChatRoom;
 
-public class ChatTalent extends Talent<ChatScout, ChatRoom>{
+import java.rmi.RemoteException;
+
+public class ChatTalent extends Talent<ChatScout, ChatMessage>{
     @Override
-    public void notifyScouts(ChatRoom chatRoom) {
-        for(ChatScout scout : this.scouts)
-            scout.update(chatRoom.getFlow());
+    public void notifyScouts(ChatMessage chatMessage) {
+        for(ChatScout scout : this.scouts) {
+            scout.update(chatMessage);
+        }
     }
 }

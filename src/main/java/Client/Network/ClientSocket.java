@@ -8,9 +8,11 @@ import Messages.Client.GameController.InsertTilesMessage;
 import Messages.Client.GameController.SelectedTilesMessage;
 import Messages.Client.GameController.WriteChatMessage;
 import Messages.ClientMessage;
+import Messages.Server.View.AddedPlayerMessage;
 import Messages.ServerMessage;
 
 import Server.Controller.GameController;
+import Utils.ChatMessage;
 import Utils.Coordinates;
 import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
@@ -62,8 +64,7 @@ public class ClientSocket extends Network{
                String input = inputStream.readObject().toString();
 
                this.executorService.submit(() -> {
-                   ServerMessage serverMessage = deserialize(input);
-                   serverMessage.execute(view);
+                   deserialize(input);
                });
             }
         }  catch (IOException | ClassNotFoundException e) {
@@ -119,11 +120,13 @@ public class ClientSocket extends Network{
         }
     }
 
-    private ServerMessage deserialize(String line) {
-        Gson gson = new Gson();
-        JsonReader reader = new JsonReader(new StringReader(line));
-        JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-        return erverMessageFactory.getServerMessage(jsonObject.get("MessageType").getAsString(), line);
+    private void deserialize(String line) {
+        try {
+            ServerMessage message = (ServerMessage) new ObjectInputStream(new FileInputStream(line)).readObject();
+            message.execute(view);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -169,7 +172,7 @@ public class ClientSocket extends Network{
 
     @Override
     public void login(String playerID, String lobbyID, RemoteView remoteView, RemoteClient network) throws RemoteException {
-
+        AddedPlayerMessage addedPlayerMessage = new AddedPlayerMessage(playerID, lobbyID);
     }
 
     @Override
@@ -184,6 +187,11 @@ public class ClientSocket extends Network{
 
     @Override
     public void logOut(String playerID, String lobbyID) throws RemoteException {
+
+    }
+
+    @Override
+    public void update(ChatMessage objects) {
 
     }
 }

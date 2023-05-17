@@ -2,6 +2,7 @@ package Server.Model.Talent;
 
 import Interface.Scout.Scout;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +22,13 @@ public abstract class Talent <T extends Scout, O>{
     }
 
     public void notifyScouts(O objects){
-        for(T scout : this.scouts)
-            scout.update(objects);
+        for(T scout : this.scouts) {
+            try {
+                scout.update(objects);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public List<T> getScouts() {

@@ -167,7 +167,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         try {
             gameController.reload(playerID, new ClientHandler(playerID, lobbyID, remoteView));
         } catch (RemoteException e) {
-            ServerApp.logger.severe("Error reloading game");
+            ServerApp.logger.severe("Error reloading player");
         }
     }
 }

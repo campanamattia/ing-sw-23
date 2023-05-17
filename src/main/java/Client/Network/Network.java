@@ -13,7 +13,7 @@ import Interface.Server.LobbyInterface;
 import java.io.IOException;
 
 
-public abstract class Network implements GameCommand, LobbyInterface, PlayerScout, BoardScout, CommonGoalScout, RemoteClient, ChatScout {
+public abstract class Network implements GameCommand, LobbyInterface, RemoteClient, PlayerScout, BoardScout, CommonGoalScout, ChatScout{
     protected String ipAddress;
     protected int port;
     protected View view;
