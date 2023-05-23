@@ -24,7 +24,7 @@ public class ClientRMI extends Network {
     private LobbyInterface lobby;
 
     public ClientRMI(View view) {
-        this.view = view;
+        super(view);
     }
 
     @Override
@@ -107,23 +107,11 @@ public class ClientRMI extends Network {
     }
 
     @Override
-    public void update(MockBoard mockBoard) {
-        this.view.updateBoard(mockBoard);
-    }
-
-    @Override
-    public void update(MockCommonGoal mockCommonGoal) throws RemoteException {
-        this.view.updateCommonGoal(mockCommonGoal);
-    }
-
-    @Override
-    public void update(MockPlayer mockPlayer) throws RemoteException {
-        this.view.updatePlayer(mockPlayer);
-    }
-
-
-    @Override
-    public void update(ChatMessage message) {
-            this.view.updateChat(message);
+    public void update(Object objects) throws RemoteException {
+        if(scouts.containsKey(objects.getClass())){
+            scouts.get(objects.getClass()).update(objects);
+        } else {
+            throw new RemoteException("Scout not found");
+        }
     }
 }

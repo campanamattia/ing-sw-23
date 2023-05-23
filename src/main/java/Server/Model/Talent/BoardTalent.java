@@ -1,8 +1,8 @@
 package Server.Model.Talent;
 
-import Interface.Scout.BoardScout;
+import Interface.Scout;
 import Utils.MockObjects.MockBoard;
 
-public class BoardTalent extends Talent<BoardScout, MockBoard>{
+public class BoardTalent extends Talent<Scout<BoardTalent>, MockBoard>{
 
 }

@@ -2,10 +2,8 @@ package Server.Network.Client;
 
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
-import Interface.Scout.BoardScout;
-import Interface.Scout.ChatScout;
-import Interface.Scout.CommonGoalScout;
-import Interface.Scout.PlayerScout;
+import Interface.Scout;
+import Messages.Server.UpdateMessage;
 import Messages.Server.View.ErrorMessage;
 import Messages.Server.Network.PongMessage;
 import Messages.ServerMessage;
@@ -30,11 +28,12 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 
-public class SocketHandler implements Runnable, RemoteView, RemoteClient, PlayerScout, BoardScout, CommonGoalScout, ChatScout {
+public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout {
     private final Socket socket;
     private Scanner input;
     private final ExecutorService executorService;
     private GameController controller;
+
 
 
     public SocketHandler(Socket socket) {
@@ -131,27 +130,6 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Player
     public void reloadPlayer(String reloadPlayer) throws RemoteException {
 
     }
-    
-
-    @Override
-    public void update(MockBoard mockBoard) throws RemoteException {
-
-    }
-
-    @Override
-    public void update(MockCommonGoal mockCommonGoal) throws RemoteException {
-
-    }
-
-    @Override
-    public void update(MockPlayer mockPlayer) throws RemoteException {
-
-    }
-
-    @Override
-    public void update(ChatMessage chatMessage) throws RemoteException {
-
-    }
 
     @Override
     public void pong() throws RemoteException {
@@ -185,5 +163,22 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Player
             ServerApp.logger.log(Level.SEVERE, e.getMessage());
         }
         this.executorService.shutdown();
+    }
+
+    @Override
+    public void update(Object objects) throws RemoteException {
+        try {
+            if(objects instanceof MockBoard)
+                send(new UpdateMessage((MockBoard) objects));
+            else if (objects instanceof MockPlayer)
+                send(new UpdateMessage((MockPlayer) objects));
+            else if (objects instanceof MockCommonGoal)
+                send(new UpdateMessage((MockCommonGoal) objects));
+            else if (objects instanceof ChatMessage)
+                send(new UpdateMessage((ChatMessage) objects));
+            else ServerApp.logger.log(Level.SEVERE, "Unknown object type");
+        } catch (Exception e) {
+            ServerApp.logger.log(Level.SEVERE, e.getMessage());
+        }
     }
 }

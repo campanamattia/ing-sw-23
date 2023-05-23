@@ -1,6 +1,6 @@
 package Server.Model.Talent;
 
-import Interface.Scout.Scout;
+import Interface.Scout;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

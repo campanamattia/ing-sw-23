@@ -34,7 +34,6 @@ public class ClientSocket extends Network{
     private Socket socket;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
-    private View view;
     private final AtomicBoolean clientConnected = new AtomicBoolean(false);
 
     private final Thread messageListener;
@@ -42,7 +41,7 @@ public class ClientSocket extends Network{
 
 
     public ClientSocket(View view) throws IOException {
-        this.view = view;
+        super(view);
         messageListener = new Thread(this::readMessages);
     }
 
@@ -145,22 +144,6 @@ public class ClientSocket extends Network{
     }
 
     @Override
-    public void update(MockBoard mockBoard) throws RemoteException {
-
-    }
-
-    @Override
-    public void update(MockCommonGoal mockCommonGoal) throws RemoteException {
-
-    }
-
-    @Override
-    public void update(MockPlayer mockPlayer) throws RemoteException {
-
-    }
-
-
-    @Override
     public void getLobbyInfo(RemoteView remote) throws RemoteException {
 
     }
@@ -191,7 +174,11 @@ public class ClientSocket extends Network{
     }
 
     @Override
-    public void update(ChatMessage objects) {
-
+    public void update(Object objects) throws RemoteException {
+        if(scouts.containsKey(objects.getClass())){
+            scouts.get(objects.getClass()).update(objects);
+        } else {
+            throw new RemoteException("Scout not found");
+        }
     }
 }
