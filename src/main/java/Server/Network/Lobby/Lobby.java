@@ -169,7 +169,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             this.games.put(new Game(lobbyID, players), new GameController(this.lobby.get(lobbyID)));
             for (ClientHandler client : this.lobby.get(lobbyID).values()) {
                 try {
-                    client.remoteView().allGame(MockFactory.getMock(games.get(findGame(lobbyID))));
+                    client.remoteView().allGame(MockFactory.getMock(games.get(findGame(lobbyID)).getGameModel()));
                 } catch (RemoteException e) {
                     ServerApp.logger.severe("Error sending game to player");
                 }

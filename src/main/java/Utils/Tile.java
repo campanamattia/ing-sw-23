@@ -3,9 +3,9 @@ package Utils;
 import Enumeration.Color;
 import com.google.gson.annotations.Expose;
 
-public class Tile {
+import java.io.Serializable;
 
-    @Expose
+public class Tile implements Cloneable, Serializable {
     private Color color;
 
     public Tile(Color color) {

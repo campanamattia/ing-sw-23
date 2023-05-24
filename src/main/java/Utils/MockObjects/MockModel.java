@@ -71,11 +71,6 @@ public class MockModel {
         this.localPlayer = playerID;
     }
 
-
-    public void setMockModel(GameModel model) {
-
-    }
-
     public Stack<ChatMessage> getChat() {
         return chat;
     }
@@ -102,5 +97,11 @@ public class MockModel {
 
     public void setTurnPhase(TurnPhase turnPhase) {
         this.turnPhase = turnPhase;
+    }
+
+    public void addMockCommonGoal(MockCommonGoal mock) {
+        if (mockCommonGoal == null)
+            mockCommonGoal = new ArrayList<>();
+        mockCommonGoal.add(mock);
     }
 }

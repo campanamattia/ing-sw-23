@@ -1,8 +1,9 @@
 package Utils.MockObjects;
 
 import Utils.Cell;
+import java.io.Serializable;
 
-public class MockBoard {
+public class MockBoard implements Serializable{
     private Cell[][] board;
     private boolean lastRound;
 

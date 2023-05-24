@@ -7,14 +7,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class PersonalGoal {
-    private Tile[][] pGoal;
+    private Tile[][] personalGoal;
 
     public PersonalGoal(JsonObject json) {
-        pGoal = new Tile[6][5];
+        personalGoal = new Tile[6][5];
         Coordinates cd;
         for(Color tmp : Color.values()){
             cd = takeCoordinates(json.get(tmp.toString()).getAsJsonArray());
-            pGoal[cd.x()][cd.y()] = new Tile(tmp);
+            personalGoal[cd.x()][cd.y()] = new Tile(tmp);
         }
     }
     public Coordinates takeCoordinates(JsonArray json) {
@@ -25,8 +25,8 @@ public class PersonalGoal {
         int points = 0;
         for(int i=0; i<6; i++){
             for(int j=0;j<5;j++){
-                if(pGoal[i][j] != null && myshelf[i][j] != null){
-                    if (myshelf[i][j].getTileColor() == pGoal[i][j].getTileColor()) count++;
+                if(personalGoal[i][j] != null && myshelf[i][j] != null){
+                    if (myshelf[i][j].getTileColor() == personalGoal[i][j].getTileColor()) count++;
                 }
             }
         }
@@ -44,6 +44,10 @@ public class PersonalGoal {
     }
 
     public Tile getPgoalTile(int i, int j){
-        return pGoal[i][j];
+        return personalGoal[i][j];
+    }
+
+    public Tile[][] getPersonalGoal() {
+        return personalGoal;
     }
 }
