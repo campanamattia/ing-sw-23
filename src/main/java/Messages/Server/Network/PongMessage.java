@@ -9,7 +9,7 @@ public class PongMessage extends ServerMessage {
     Network network;
 
     public PongMessage() {
-        this.messageType = MessageType.PONG;
+
     }
 
     @Override

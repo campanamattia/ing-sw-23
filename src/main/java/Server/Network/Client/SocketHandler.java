@@ -107,7 +107,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     }
 
     @Override
-    public void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException {
+    public void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException {
 
     }
 
@@ -132,7 +132,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     }
 
     @Override
-    public void pong() throws RemoteException {
+    public void pong(String playerID, String lobbyID) throws RemoteException {
         try {
             send(new PongMessage());
         } catch (IOException e) {
@@ -180,5 +180,9 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         } catch (Exception e) {
             ServerApp.logger.log(Level.SEVERE, e.getMessage());
         }
+    }
+
+    public GameController getGameController() {
+        return controller;
     }
 }

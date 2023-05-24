@@ -6,6 +6,7 @@ import Interface.Client.RemoteView;
 import Server.Controller.GameController;
 import Server.Network.Client.ClientHandler;
 import Server.ServerApp;
+import Utils.MockObjects.MockFactory;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -32,16 +33,27 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         remote.askPlayerInfo(getLobbyInfo());
     }
 
-    public List<Collection<String>> getLobbyInfo(){
-        List<Collection<String>> lobbyInfo = new ArrayList<>();
-        Collection<String> lobbyID = this.lobby.keySet();
-        Collection<String> gamesName = new ArrayList<>();
-        for (Game game : this.games.keySet()) {
-            gamesName.add(game.name());
+    private List<Map<String, String>> getLobbyInfo(){
+        List<Map<String, String>> lobbyInfo = new ArrayList<>();
+        Map<String, String> lobbies = new HashMap<>();
+        Map<String, String> games = new HashMap<>();
+        lobbyInfo.add(lobbies);
+        lobbyInfo.add(games);
+        for (String lobbyID : this.lobby.keySet()) {
+            lobbies.put(lobbyID, this.lobby.get(lobbyID).size() + "/" + this.lobbySize.get(lobbyID));
         }
-        lobbyInfo.add(lobbyID);
-        lobbyInfo.add(gamesName);
+        for(Game game : this.games.keySet()) {
+            games.put(game.name(),  activePlayers(game) + "/"+ game.players().size());
+        }
         return lobbyInfo;
+    }
+
+    private String activePlayers(Game game) {
+        int activePlayers = 0;
+        for (Boolean status : game.players().values()) {
+            activePlayers += status ? 1 : 0;
+        }
+        return String.valueOf(activePlayers);
     }
 
     @Override
@@ -103,7 +115,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     @Override
     public synchronized void ping(String playerID, String lobbyID) throws RemoteException {
         int hash =  Objects.hash(playerID, lobbyID);
-        this.heartbeat.get(hash).ping();
+        this.heartbeat.get(hash).receivedPing();
     }
 
     @Override
@@ -124,7 +136,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     }
 
 
-    @Override // TODO: 12/05/2023 da rifare assolutamente 
+    @Override // TODO: 12/05/2023
     public synchronized void logOut(String playerID, String lobbyID) throws RemoteException {
         ClientHandler client = this.lobby.get(lobbyID).remove(playerID);
         if (this.lobby.get(lobbyID).size() == 0) {
@@ -155,8 +167,13 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             for (String playerID : this.lobby.get(lobbyID).keySet())
                 players.put(playerID, true);
             this.games.put(new Game(lobbyID, players), new GameController(this.lobby.get(lobbyID)));
-            for (ClientHandler client : this.lobby.get(lobbyID).values());
-                //client.remoteView().allGame(MockFactory.getMock(games.get(findGame(lobbyID))));
+            for (ClientHandler client : this.lobby.get(lobbyID).values()) {
+                try {
+                    client.remoteView().allGame(MockFactory.getMock(games.get(findGame(lobbyID))));
+                } catch (RemoteException e) {
+                    ServerApp.logger.severe("Error sending game to player");
+                }
+            }
             this.lobby.remove(lobbyID);
             this.lobbySize.remove(lobbyID);
         }

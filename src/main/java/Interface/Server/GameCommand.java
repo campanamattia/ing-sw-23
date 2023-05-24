@@ -4,6 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import Interface.Scout;
 import Utils.Coordinates;
 
 public interface GameCommand extends Remote {
@@ -12,7 +13,7 @@ public interface GameCommand extends Remote {
 
     void insertTiles(String playerID, List<Integer> sort, int column) throws RemoteException;
 
-    void writeChat(String playerID, String message) throws RemoteException;
+    void writeChat(String from, String message, String to) throws RemoteException;
 
-    void addSubscriber(Object object) throws RemoteException;
+    void addSubscriber(Scout scout) throws RemoteException;
 }

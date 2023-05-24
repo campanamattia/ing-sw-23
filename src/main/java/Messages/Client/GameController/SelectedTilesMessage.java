@@ -3,7 +3,10 @@ package Messages.Client.GameController;
 import Messages.ClientMessage;
 import Server.Controller.GameController;
 import Server.Network.Client.SocketHandler;
+import Server.ServerApp;
 import Utils.Coordinates;
+
+import java.rmi.RemoteException;
 import java.util.List;
 
 public class SelectedTilesMessage extends ClientMessage {
@@ -16,6 +19,10 @@ public class SelectedTilesMessage extends ClientMessage {
 
     public void execute(SocketHandler socketHandler) {
         GameController gameController=  socketHandler.getGameController();
-        gameController.selectTiles(this.playerID,this.coordinates);
+        try {
+            gameController.selectTiles(this.playerID,this.coordinates);
+        } catch (RemoteException e) {
+            ServerApp.logger.severe(e.getMessage());
+        }
     }
 }

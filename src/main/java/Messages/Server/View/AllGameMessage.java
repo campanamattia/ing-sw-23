@@ -1,13 +1,10 @@
 package Messages.Server.View;
 
 import Client.View.View;
-import Enumeration.MessageType;
 import Messages.ServerMessage;
-import Utils.Cell;
 import Utils.MockObjects.MockModel;
-import Utils.Tile;
 
-import java.util.HashMap;
+import java.rmi.RemoteException;
 
 public class AllGameMessage extends ServerMessage {
     private final MockModel mockModel;
@@ -18,6 +15,10 @@ public class AllGameMessage extends ServerMessage {
 
     @Override
     public void execute(View view) {
-        view.allGame(this.mockModel);
+        try {
+            view.allGame(this.mockModel);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

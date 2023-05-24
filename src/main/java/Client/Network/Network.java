@@ -13,8 +13,13 @@ import Interface.Scout;
 
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public abstract class Network implements GameCommand, LobbyInterface, RemoteClient, Scout{
@@ -24,10 +29,14 @@ public abstract class Network implements GameCommand, LobbyInterface, RemoteClie
     protected int port;
 
     protected Map<Class<? extends Talent>, Scout> scouts;
+    protected Timer timer;
+    protected ExecutorService executor;
 
     public Network(View view) {
         this.view = view;
         this.scouts = new HashMap<>();
+        this.timer = null;
+        this.executor = Executors.newCachedThreadPool();
         this.scouts.put(PlayerTalent.class, new PlayerScout(this.view));
         this.scouts.put(BoardTalent.class, new BoardScout(this.view));
         this.scouts.put(CommonGoalTalent.class, new CommonGoalScout(this.view));
@@ -35,4 +44,40 @@ public abstract class Network implements GameCommand, LobbyInterface, RemoteClie
     }
 
     public abstract void init (String ipAddress, int ip) throws IOException;
+
+    public void startPing(String playerID, String lobbyID){
+        if(timer == null)
+            timer = new Timer();
+
+        this.executor.submit(()->{
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        ping(playerID, lobbyID);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            },0, 5000); // 5 seconds timeout
+        });
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void update(Object objects) throws RemoteException {
+        if(scouts.containsKey(objects.getClass())){
+            scouts.get(objects.getClass()).update(objects);
+        } else {
+            throw new RemoteException("Scout-handler not found");
+        }
+    }
+
+    @Override
+    public void pong(String playerID, String lobbyID) throws RemoteException {
+        if(timer != null)
+            timer.cancel();
+        timer = null;
+        startPing(playerID, lobbyID);
+    }
 }

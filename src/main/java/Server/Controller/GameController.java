@@ -8,6 +8,7 @@ import Exception.BoardException;
 import Exception.GamePhase.EndGameException;
 import Exception.GamePhaseException;
 import Exception.Player.NotYourTurnException;
+import Interface.Scout;
 import Interface.Server.GameCommand;
 import Server.Controller.Phase.EndedMatch;
 import Server.Controller.Phase.LastRoundState;
@@ -25,7 +26,6 @@ import java.util.*;
 import java.util.logging.Level;
 
 public class GameController implements GameCommand, Serializable {
-    private final UUID uuid;
     private GameModel gameModel;
     private final HashMap<String, ClientHandler> players;
 
@@ -36,11 +36,10 @@ public class GameController implements GameCommand, Serializable {
     private final CurrentPlayer currentPlayer;
 
     public GameController(HashMap<String, ClientHandler> players){
-        this.uuid = UUID.randomUUID();
         this.players = players;
         List<String> playersID = new ArrayList<>(players.keySet());
         try {
-            this.gameModel = new GameModel(this.uuid, playersID);
+            this.gameModel = new GameModel(playersID);
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.toString());
             for(ClientHandler client : players.values()) {
@@ -84,8 +83,6 @@ public class GameController implements GameCommand, Serializable {
                     this.phaseController = new LastRoundState(this.phaseController.getCurrentPlayer(), this.phaseController.getPlayers());
                     this.gameModel.setPhase(phaseController.getPhase());
                 }
-            } finally {
-                this.gameModel.updateStatus();
             }
         }while(true);
          for (ClientHandler client : players.values()) {
@@ -97,14 +94,6 @@ public class GameController implements GameCommand, Serializable {
          }
     }
 
-    /**
-     Returns the UUID associated with this GameController.
-     @return the UUID associated with this GameController
-     */
-    @SuppressWarnings("unused")
-    public UUID getUuid() {
-        return uuid;
-    }
     /**
      Returns the GameModel associated with this GameController.
      @return the GameModel associated with this GameController
@@ -153,9 +142,9 @@ public class GameController implements GameCommand, Serializable {
     }
 
     @Override
-    public  synchronized void writeChat(String playerID, String message) throws RemoteException {
+    public  synchronized void writeChat(String playerID, String message, String to) throws RemoteException {
         try {
-            this.gameModel.writeChat(playerID, message);
+            this.gameModel.writeChat(playerID, message, to);
         } catch (ChatException e) {
             this.players.get(playerID).remoteView().outcomeException(e);
         }
@@ -163,11 +152,11 @@ public class GameController implements GameCommand, Serializable {
 
 
     @Override
-    public synchronized void addSubscriber(Object object) throws RemoteException {
-        this.gameModel.addBoardScout((BoardScout) object);
-        this.gameModel.addChatScout((ChatScout) object);
-        this.gameModel.addPlayerScout((PlayerScout) object);
-        this.gameModel.addCommonGoalScout((CommonGoalScout) object);
+    public synchronized void addSubscriber(Scout scout) throws RemoteException {
+        this.gameModel.addBoardScout(scout);
+        this.gameModel.addChatScout(scout);
+        this.gameModel.addPlayerScout(scout);
+        this.gameModel.addCommonGoalScout(scout);
     }
 
     public void reload (String playerID, ClientHandler client) throws RemoteException {
