@@ -1,13 +1,9 @@
 package Utils;
 
+import java.io.Serializable;
 
-import Utils.Tile;
-import com.google.gson.annotations.Expose;
-
-public class Cell {
-    @Expose
+public class Cell implements Serializable, Cloneable {
     private Tile tile;
-    @Expose
     private boolean status;
 
     public Cell() {

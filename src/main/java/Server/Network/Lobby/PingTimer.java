@@ -33,15 +33,17 @@ public class PingTimer{
         }, 15000); //15 seconds timeout
     }
 
-    public void ping() {
+    public void receivedPing() {
         if (timer != null) {
             timer.cancel();
         }
-        start();
         try {
-            this.client.pong();
+            this.client.pong(this.clientID, this.lobbyID);
         } catch (RemoteException e) {
             ServerApp.logger.severe(e.getMessage());
+        }
+        finally {
+            start();
         }
     }
 

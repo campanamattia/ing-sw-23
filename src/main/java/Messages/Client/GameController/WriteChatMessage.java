@@ -8,17 +8,19 @@ import Server.ServerApp;
 import java.rmi.RemoteException;
 
 public class WriteChatMessage extends ClientMessage {
-    private final String text;
+    private final String message;
+    private final String to;
 
-    public WriteChatMessage(String playerID, String text){
-        this.playerID = playerID;
-        this.text = text;
+    public WriteChatMessage(String from, String message, String to){
+        this.playerID = from;
+        this.message = message;
+        this.to = to;
     }
 
     public void execute(SocketHandler socketHandler) {
         GameController gameController=  socketHandler.getGameController();
         try {
-            gameController.writeChat(this.playerID,this.text);
+            gameController.writeChat(this.playerID, this.message, this.to);
         } catch (RemoteException e) {
             ServerApp.logger.severe(e.toString());
         }

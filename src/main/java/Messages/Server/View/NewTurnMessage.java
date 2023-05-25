@@ -2,21 +2,20 @@ package Messages.Server.View;
 
 import Client.View.View;
 import Messages.ServerMessage;
-import Utils.MockObjects.MockModel;
 
 import java.rmi.RemoteException;
 
-public class AllGameMessage extends ServerMessage {
-    private final MockModel mockModel;
+public class NewTurnMessage extends ServerMessage {
+    private final String currentPlayer;
 
-    public AllGameMessage(MockModel mockModel) {
-        this.mockModel = mockModel;
+    public NewTurnMessage(String currentPlayer) {
+        this.currentPlayer = currentPlayer;
     }
 
     @Override
     public void execute(View view) {
         try {
-            view.allGame(this.mockModel);
+            view.newTurn(this.currentPlayer);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

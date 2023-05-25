@@ -95,7 +95,7 @@ class VerticesGoalTest {
     private JsonArray decoPersonal() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader("src/main/resources/personalgoal.json"));
+        reader = new JsonReader(new FileReader("src/main/resources/personalGoal.json"));
         return gson.fromJson(reader, JsonArray.class);
     }
 }

@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 public interface RemoteView extends Remote {
 
@@ -25,7 +26,7 @@ public interface RemoteView extends Remote {
 
     void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException;
 
-    void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException;
+    void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException;
 
     void allGame(MockModel mockModel) throws RemoteException;
 
