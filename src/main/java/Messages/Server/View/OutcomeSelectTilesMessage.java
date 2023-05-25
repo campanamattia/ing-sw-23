@@ -7,10 +7,10 @@ import Utils.Tile;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public class SelectedTilesMessage extends ServerMessage {
+public class OutcomeSelectTilesMessage extends ServerMessage {
     private final List<Tile> tiles;
 
-    public SelectedTilesMessage(List<Tile> tiles){
+    public OutcomeSelectTilesMessage(List<Tile> tiles){
         this.tiles = tiles;
     }
 

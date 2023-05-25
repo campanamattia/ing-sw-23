@@ -155,6 +155,7 @@ public class ClientRMI extends Network {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void update(Object objects) throws RemoteException {
         if(scouts.containsKey(objects.getClass())){
             scouts.get(objects.getClass()).update(objects);

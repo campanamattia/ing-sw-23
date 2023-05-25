@@ -7,9 +7,5 @@ import java.io.Serializable;
 public abstract class ClientMessage implements Serializable {
     protected String playerID;
 
-    public ClientMessage(){
-        this.playerID = null;
-    }
-
     public abstract void execute(SocketHandler socket);
 }

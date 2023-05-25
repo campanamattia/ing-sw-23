@@ -198,7 +198,6 @@ public class GameModel {
      * @throws PlayerException       if the player doesn't have enough space in their personal shelf
      * @throws InvalidInputException if the player didn't insert the correct parameters
      */
-    // TODO: 26/04/2023
     public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
         if (sort.size() != tiles.size()) throw new InvalidInputException();
         for (int i =1; i<=sort.size(); i++)

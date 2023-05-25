@@ -3,8 +3,9 @@ package Server.Network.Client;
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
 import Interface.Scout;
-import Messages.Server.UpdateMessage;
-import Messages.Server.View.ErrorMessage;
+import Messages.ClientMessage;
+import Messages.Server.Network.UpdateMessage;
+import Messages.Server.View.*;
 import Messages.Server.Network.PongMessage;
 import Messages.ServerMessage;
 import Server.Controller.GameController;
@@ -18,7 +19,9 @@ import Utils.Rank;
 import Utils.Tile;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
@@ -69,72 +72,121 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         }
     }
 
-    // TODO: 16/05/2023  
     private void deserialize(String line) {
-
+        try {
+            ClientMessage message = (ClientMessage) new ObjectInputStream(new FileInputStream(line)).readObject();
+            message.execute(this);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
     
 
     @Override
     public void newTurn(String playerID) throws RemoteException {
-
+        ServerMessage message = new NewTurnMessage(playerID);
+        try {
+            send(message);
+        } catch (IOException e) {
+            ServerApp.logger.log(Level.SEVERE, e.getMessage());
+        }
     }
 
     @Override
     public void askLobbySize() throws RemoteException {
-
+        ServerMessage message = new AskLobbySizeMessage();
+        try {
+            send(message);
+        } catch (IOException e) {
+            ServerApp.logger.log(Level.SEVERE, e.getMessage());
+        }
     }
 
     @Override
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
-
+        ServerMessage message = new OutcomeSelectTilesMessage(tiles);
+        try {
+            send(message);
+        } catch (IOException e) {
+            ServerApp.logger.log(Level.SEVERE, e.getMessage());
+        }
     }
 
     @Override
     public void outcomeInsertTiles(boolean success) throws RemoteException {
-
+        ServerMessage message = new OutcomeInsertTilesMessage(success);
+        try {
+            send(message);
+        } catch (IOException e) {
+            ServerApp.logger.log(Level.SEVERE, e.getMessage());
+        }
     }
     
 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
-
+        ServerMessage message = new ErrorMessage(e);
+        try {
+            send(message);
+        } catch (IOException ex) {
+            ServerApp.logger.log(Level.SEVERE, ex.getMessage());
+        }
     }
 
     @Override
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
-        
+        ServerMessage message = new OutcomeLoginMessage(localPlayer, lobbyID);
+        try {
+            send(message);
+        } catch (IOException ex) {
+            ServerApp.logger.log(Level.SEVERE, ex.getMessage());
+        }
     }
 
     @Override
     public void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException {
-
+        ServerMessage message = new AskPlayerInfoMessage(lobbyInfo);
+        try {
+            send(message);
+        } catch (IOException e) {
+            ServerApp.logger.log(Level.SEVERE, e.getMessage());
+        }
     }
 
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
-
+        ServerMessage message = new AllGameMessage(mockModel);
+        try {
+            send(message);
+        } catch (IOException e) {
+            ServerApp.logger.log(Level.SEVERE, e.getMessage());
+        }
     }
 
     @Override
     public void endGame(List<Rank> leaderboard) throws RemoteException {
-
+        ServerMessage message = new EndGameMessage(leaderboard);
+        try {
+            send(message);
+        } catch (IOException e) {
+            ServerApp.logger.log(Level.SEVERE, e.getMessage());
+        }
     }
 
     @Override
     public void crashedPlayer(String crashedPlayer) throws RemoteException {
-
+        // TODO: 25/05/2023
     }
 
     @Override
     public void reloadPlayer(String reloadPlayer) throws RemoteException {
-
+        // TODO: 25/05/2023
     }
 
     @Override
     public void pong(String playerID, String lobbyID) throws RemoteException {
         try {
-            send(new PongMessage());
+            send(new PongMessage(playerID, lobbyID));
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.getMessage());
         }
@@ -168,15 +220,13 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void update(Object objects) throws RemoteException {
         try {
-            if(objects instanceof MockBoard)
-                send(new UpdateMessage((MockBoard) objects));
-            else if (objects instanceof MockPlayer)
-                send(new UpdateMessage((MockPlayer) objects));
-            else if (objects instanceof MockCommonGoal)
-                send(new UpdateMessage((MockCommonGoal) objects));
-            else if (objects instanceof ChatMessage)
-                send(new UpdateMessage((ChatMessage) objects));
-            else ServerApp.logger.log(Level.SEVERE, "Unknown object type");
+            switch (objects) {
+                case MockBoard mockBoard -> send(new UpdateMessage(mockBoard));
+                case MockPlayer mockPlayer -> send(new UpdateMessage(mockPlayer));
+                case MockCommonGoal mockCommonGoal -> send(new UpdateMessage(mockCommonGoal));
+                case ChatMessage chatMessage -> send(new UpdateMessage(chatMessage));
+                case null, default -> ServerApp.logger.log(Level.SEVERE, "Unknown object type");
+            }
         } catch (Exception e) {
             ServerApp.logger.log(Level.SEVERE, e.getMessage());
         }

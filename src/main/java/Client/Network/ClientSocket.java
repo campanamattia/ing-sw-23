@@ -1,7 +1,6 @@
 package Client.Network;
 
 import Client.View.View;
-import Enumeration.OperationType;
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
 import Interface.Scout;
@@ -9,8 +8,8 @@ import Messages.Client.GameController.InsertTilesMessage;
 import Messages.Client.GameController.RegisterScout;
 import Messages.Client.GameController.SelectedTilesMessage;
 import Messages.Client.GameController.WriteChatMessage;
+import Messages.Client.Lobby.*;
 import Messages.ClientMessage;
-import Messages.Server.View.AddedPlayerMessage;
 import Messages.ServerMessage;
 
 import Server.Controller.GameController;
@@ -22,7 +21,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ClientSocket extends Network{
@@ -40,16 +38,19 @@ public class ClientSocket extends Network{
 
     @Override
     public void init(String ipAddress, int port) throws IOException {
-        Socket socket = new Socket();
-        socket.connect(new InetSocketAddress(ipAddress, port));
-        this.port = port;
-        outputStream = new ObjectOutputStream(socket.getOutputStream());
-        inputStream = new ObjectInputStream(socket.getInputStream());
-        this.ipAddress = ipAddress;
-        clientConnected.set(true);
-        messageListener.start();
-
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(ipAddress, port));
+            this.port = port;
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
+            inputStream = new ObjectInputStream(socket.getInputStream());
+            this.ipAddress = ipAddress;
+            clientConnected.set(true);
+            messageListener.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 
     public void readMessages(){
         try{
@@ -85,7 +86,7 @@ public class ClientSocket extends Network{
     @Override
     public void addSubscriber(Scout scout) throws RemoteException {
         try {
-            sendMessage(new RegisterScout("boring"));
+            sendMessage(new RegisterScout("useless"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -103,37 +104,67 @@ public class ClientSocket extends Network{
 
     @Override
     public void setGameController(GameController gameController) throws RemoteException {
-
+        return;
     }
 
     @Override
     public void getLobbyInfo(RemoteView remote) throws RemoteException {
-
+        ClientMessage clientMessage = new GetLobbiesInfoMessage();
+        try {
+            sendMessage(clientMessage);
+        } catch (IOException e) {
+            clientConnected.set(false);
+        }
     }
 
     @Override
     public void setLobbySize(String playerID, String lobbyID, int lobbySize) throws RemoteException {
-
+        ClientMessage clientMessage = new LobbySizeMessage(playerID, lobbyID, lobbySize);
+        try {
+            sendMessage(clientMessage);
+        } catch (IOException e) {
+            clientConnected.set(false);
+        }
     }
 
     @Override
     public void login(String playerID, String lobbyID, RemoteView remoteView, RemoteClient network) throws RemoteException {
-        AddedPlayerMessage addedPlayerMessage = new AddedPlayerMessage(playerID, lobbyID);
+        ClientMessage addedPlayerMessage = new AddPlayerMessage(playerID, lobbyID);
+        try {
+            sendMessage(addedPlayerMessage);
+        } catch (IOException e) {
+            clientConnected.set(false);
+        }
     }
 
     @Override
     public void ping(String playerID, String lobbyID) throws RemoteException {
-
+        ClientMessage clientMessage = new PingMessage(playerID, lobbyID);
+        try {
+            sendMessage(clientMessage);
+        } catch (IOException e) {
+            clientConnected.set(false);
+        }
     }
 
     @Override
     public void getGameController(String lobbyID, RemoteClient remote) throws Exception {
-
+        ClientMessage clientMessage = new GetGameMessage(lobbyID);
+        try {
+            sendMessage(clientMessage);
+        } catch (IOException e) {
+            clientConnected.set(false);
+        }
     }
 
     @Override
     public void logOut(String playerID, String lobbyID) throws RemoteException {
-
+        ClientMessage clientMessage = new LogOutMessage(playerID, lobbyID);
+        try {
+            sendMessage(clientMessage);
+        } catch (IOException e) {
+            clientConnected.set(false);
+        }
     }
 
     private void sendMessage(ClientMessage clientMessage) throws IOException {

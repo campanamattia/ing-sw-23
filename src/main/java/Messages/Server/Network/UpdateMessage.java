@@ -1,4 +1,4 @@
-package Messages.Server;
+package Messages.Server.Network;
 
 import Client.View.View;
 import Messages.ServerMessage;
