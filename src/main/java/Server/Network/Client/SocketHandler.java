@@ -62,9 +62,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
             while (!this.socket.isClosed()) {
                 if(input.hasNextLine()) {
                     String line = input.nextLine();
-                    this.executorService.submit(() -> {
-                        deserialize(line);
-                    });
+                    this.executorService.submit(() -> deserialize(line));
                 }
             }
         } catch (IOException e) {

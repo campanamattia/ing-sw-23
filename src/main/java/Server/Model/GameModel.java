@@ -200,8 +200,8 @@ public class GameModel {
      */
     public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
         if (sort.size() != tiles.size()) throw new InvalidInputException();
-        for (int i =1; i<=sort.size(); i++)
-            if (!sort.contains(i))  throw new InvalidInputException();
+        for (int i = 1; i <= sort.size(); i++)
+            if (!sort.contains(i)) throw new InvalidInputException();
         for (Integer integer : sort)
             tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
@@ -216,8 +216,7 @@ public class GameModel {
      * @param to      the player to whom the message is addressed NULL if it's broadcast
      */
     public void writeChat(String from, String message, String to) throws ChatException {
-        if (message.equals(""))
-            throw new ChatException();
+        if (message.equals("")) throw new ChatException();
         this.chatRoom.addMessage(new ChatMessage(from, message, to));
     }
 
@@ -373,13 +372,14 @@ public class GameModel {
 
 
     public void completeTurn(List<Tile> tiles) {
-         Shelf shelf = this.currentPlayer.getMyShelf();
-         for(int i=0; i<shelf.getMyShelf()[0].length; i++) {
-             try {
-                 shelf.insert(i, tiles);
-                 break;
-             } catch (ColumnNotValidException ignored) {}
-         }
+        Shelf shelf = this.currentPlayer.getMyShelf();
+        for (int i = 0; i < shelf.getMyShelf()[0].length; i++) {
+            try {
+                shelf.insert(i, tiles);
+                break;
+            } catch (ColumnNotValidException ignored) {
+            }
+        }
     }
 
     public String getLobbyID() {

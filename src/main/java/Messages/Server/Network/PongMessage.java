@@ -2,7 +2,6 @@ package Messages.Server.Network;
 
 import Client.Network.Network;
 import Client.View.View;
-import Enumeration.MessageType;
 import Messages.ServerMessage;
 
 import java.rmi.RemoteException;

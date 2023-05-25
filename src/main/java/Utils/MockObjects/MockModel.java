@@ -34,16 +34,8 @@ public class MockModel implements Serializable, Cloneable {
         return mockBoard;
     }
 
-    public void setMockCommonGoal(List<MockCommonGoal> mockCommonGoal) {
-        this.mockCommonGoal = mockCommonGoal;
-    }
-
     public List<MockCommonGoal> getMockCommonGoal() {
         return mockCommonGoal;
-    }
-
-    public void setMockPlayers(List<MockPlayer> mockPlayers) {
-        this.mockPlayers = mockPlayers;
     }
 
     public void setMockCommonGoal(MockCommonGoal mockCommonGoal) {

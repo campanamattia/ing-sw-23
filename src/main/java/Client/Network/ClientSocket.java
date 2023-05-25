@@ -37,7 +37,7 @@ public class ClientSocket extends Network{
     }
 
     @Override
-    public void init(String ipAddress, int port) throws IOException {
+    public void init(String ipAddress, int port){
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(ipAddress, port));
             this.port = port;
@@ -56,9 +56,7 @@ public class ClientSocket extends Network{
         try{
             while (clientConnected.get()) {
                String input = inputStream.readObject().toString();
-               this.executor.submit(() -> {
-                   deserialize(input);
-               });
+               this.executor.submit(() -> deserialize(input));
             }
         }  catch (IOException | ClassNotFoundException e) {
             clientConnected.set(false);
@@ -104,7 +102,6 @@ public class ClientSocket extends Network{
 
     @Override
     public void setGameController(GameController gameController) throws RemoteException {
-        return;
     }
 
     @Override
@@ -148,7 +145,7 @@ public class ClientSocket extends Network{
     }
 
     @Override
-    public void getGameController(String lobbyID, RemoteClient remote) throws Exception {
+    public void getGameController(String lobbyID, RemoteClient remote){
         ClientMessage clientMessage = new GetGameMessage(lobbyID);
         try {
             sendMessage(clientMessage);
