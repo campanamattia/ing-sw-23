@@ -1,20 +1,15 @@
 package Client.View.Gui;
 
 import Client.View.View;
-import Utils.ChatMessage;
-import Utils.MockObjects.MockBoard;
-import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
-import Utils.MockObjects.MockPlayer;
 import Utils.Rank;
 import Utils.Tile;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
 import java.util.List;
-import java.util.Stack;
+import java.util.Map;
 
-public class Gui extends View {
+public abstract class Gui extends View {
 
     @Override
     public void showBoard() {
@@ -67,7 +62,7 @@ public class Gui extends View {
     }
 
     @Override
-    public void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException {
+    public void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException {
 
     }
 

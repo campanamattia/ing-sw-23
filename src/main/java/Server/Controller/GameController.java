@@ -8,10 +8,7 @@ import Exception.BoardException;
 import Exception.GamePhase.EndGameException;
 import Exception.GamePhaseException;
 import Exception.Player.NotYourTurnException;
-import Interface.Scout.BoardScout;
-import Interface.Scout.ChatScout;
-import Interface.Scout.CommonGoalScout;
-import Interface.Scout.PlayerScout;
+import Interface.Scout;
 import Interface.Server.GameCommand;
 import Server.Controller.Phase.EndedMatch;
 import Server.Controller.Phase.LastRoundState;
@@ -28,23 +25,42 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Level;
 
+/**
+ The GameController class represents the controller for a game. It manages the game model, players, phases, and turn progression.
+ This class implements the GameCommand interface and is Serializable.
+ */
 public class GameController implements GameCommand, Serializable {
-    private final UUID uuid;
+    /**
+     The GameModel class represents the model for a game. It contains the gameModel board, players, and common goals.
+     */
     private GameModel gameModel;
+    /**
+     The players HashMap contains the players of the gameModel.
+     */
     private final HashMap<String, ClientHandler> players;
-
-
+    /**
+     The phaseController attribute represents the current phase of the gameModel.
+     */
     private PhaseController phaseController;
-
+    /**
+     The turnPhase attribute represents the current turn phase of the gameModel.
+     */
     private TurnPhase turnPhase;
+    /**
+     The currentPlayer attribute represents the current player of the gameModel.
+     */
     private final CurrentPlayer currentPlayer;
 
-    public GameController(HashMap<String, ClientHandler> players){
-        this.uuid = UUID.randomUUID();
+    /**
+     Constructs a new GameController instance with the specified game model and players.
+     @param lobbyID the lobby ID that the gameController is associated with.
+     @param players A HashMap of players participating in the game, where the key is the player ID and the value is the corresponding ClientHandler.
+     */
+    public GameController(String lobbyID, HashMap<String, ClientHandler> players){
         this.players = players;
         List<String> playersID = new ArrayList<>(players.keySet());
         try {
-            this.gameModel = new GameModel(this.uuid, playersID);
+            this.gameModel = new GameModel(lobbyID, playersID);
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.toString());
             for(ClientHandler client : players.values()) {
@@ -88,8 +104,6 @@ public class GameController implements GameCommand, Serializable {
                     this.phaseController = new LastRoundState(this.phaseController.getCurrentPlayer(), this.phaseController.getPlayers());
                     this.gameModel.setPhase(phaseController.getPhase());
                 }
-            } finally {
-                this.gameModel.updateStatus();
             }
         }while(true);
          for (ClientHandler client : players.values()) {
@@ -102,14 +116,6 @@ public class GameController implements GameCommand, Serializable {
     }
 
     /**
-     Returns the UUID associated with this GameController.
-     @return the UUID associated with this GameController
-     */
-    @SuppressWarnings("unused")
-    public UUID getUuid() {
-        return uuid;
-    }
-    /**
      Returns the GameModel associated with this GameController.
      @return the GameModel associated with this GameController
      */
@@ -119,10 +125,17 @@ public class GameController implements GameCommand, Serializable {
     }
 
 
+    /**
+     * Allows a player to select tiles during their turn. The selected tiles will be used for inserting them on the game board.
+     *
+     * @param playerID    The ID of the player making the selection.
+     * @param coordinates The list of coordinates representing the tiles to be selected.
+     * @throws RemoteException If a remote communication error occurs.
+     */
     @Override
     public synchronized void selectTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
         try {
-            if(ableTo(playerID) == TurnPhase.PICKING) {
+            if (ableTo(playerID) == TurnPhase.PICKING) {
                 try {
                     currentPlayer.setTiles(this.gameModel.selectedTiles(coordinates));
                     this.turnPhase = TurnPhase.INSERTING;
@@ -136,10 +149,18 @@ public class GameController implements GameCommand, Serializable {
         }
     }
 
+    /**
+     * Inserts the selected tiles onto the game board at the specified column.
+     *
+     * @param playerID The ID of the player performing the tile insertion.
+     * @param sort     The list of indexes representing the sorting order of the tiles to be inserted.
+     * @param column   The column where the tiles will be inserted.
+     * @throws RemoteException If a remote communication error occurs.
+     */
     @Override
     public synchronized void insertTiles(String playerID, List<Integer> sort, int column) throws RemoteException {
         try {
-            if(ableTo(playerID) == TurnPhase.PICKING) {
+            if (ableTo(playerID) == TurnPhase.PICKING) {
                 try {
                     this.gameModel.insertTiles(sort, currentPlayer.getTiles(), column);
                     this.players.get(playerID).remoteView().outcomeInsertTiles(true);
@@ -156,25 +177,46 @@ public class GameController implements GameCommand, Serializable {
         }
     }
 
+    /**
+     * Writes a chat message from a player to another player or the entire game.
+     * If the recipient is null, the message is sent to all players in the game.
+     * @param playerID The ID of the player sending the chat message.
+     * @param message  The content of the chat message.
+     * @param to       The recipient of the chat message. If null, the message is sent to all players in the game.
+     * @throws RemoteException If a remote communication error occurs.
+     */
     @Override
-    public  synchronized void writeChat(String playerID, String message) throws RemoteException {
+    public synchronized void writeChat(String playerID, String message, String to) throws RemoteException {
         try {
-            this.gameModel.writeChat(playerID, message);
+            this.gameModel.writeChat(playerID, message, to);
         } catch (ChatException e) {
             this.players.get(playerID).remoteView().outcomeException(e);
         }
     }
 
 
+    /**
+     * Adds a subscriber (Scout) to the game, allowing them to receive updates on the game state.
+     *
+     * @param scout The Scout object to be added as a subscriber.
+     * @throws RemoteException If a remote communication error occurs.
+     */
     @Override
-    public synchronized void addSubscriber(Object object) throws RemoteException {
-        this.gameModel.addBoardScout((BoardScout) object);
-        this.gameModel.addChatScout((ChatScout) object);
-        this.gameModel.addPlayerScout((PlayerScout) object);
-        this.gameModel.addCommonGoalScout((CommonGoalScout) object);
+    public synchronized void addSubscriber(Scout scout) throws RemoteException {
+        this.gameModel.addBoardScout(scout);
+        this.gameModel.addChatScout(scout);
+        this.gameModel.addPlayerScout(scout);
+        this.gameModel.addCommonGoalScout(scout);
     }
 
-    public void reload (String playerID, ClientHandler client) throws RemoteException {
+    /**
+     * Rejoin a player in the game after disconnecting.
+     *
+     * @param playerID The ID of the player to be reloaded.
+     * @param client   The ClientHandler object associated with the player.
+     * @throws RemoteException If a remote communication error occurs.
+     */
+    public void rejoin(String playerID, ClientHandler client) throws RemoteException {
         this.players.put(playerID, client);
         try {
             this.gameModel.getPlayer(playerID).setStatus(true);
@@ -182,7 +224,7 @@ public class GameController implements GameCommand, Serializable {
             ServerApp.logger.severe(e.toString());
             client.remoteView().outcomeException(e);
         }
-        for(ClientHandler clientHandler : players.values()) {
+        for (ClientHandler clientHandler : players.values()) {
             try {
                 clientHandler.remoteView().reloadPlayer(playerID);
             } catch (RemoteException e) {
@@ -191,14 +233,20 @@ public class GameController implements GameCommand, Serializable {
         }
     }
 
-    public synchronized void logOut(String playerID) throws RemoteException{
+    /**
+     * Logs out a player from the game and updates their status.
+     *
+     * @param playerID The ID of the player to be logged out.
+     * @return The ClientHandler object associated with the player.
+     * @throws RemoteException If a remote communication error occurs.
+     */
+    public ClientHandler logOut(String playerID) throws RemoteException {
         try {
             this.gameModel.getPlayer(playerID).setStatus(false);
-            this.players.remove(playerID);
-            if(this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
-                this.gameModel.completeTurn(playerID);
+            if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
+                this.gameModel.completeTurn(this.currentPlayer.getTiles());
             else {
-                for(ClientHandler client : players.values()) {
+                for (ClientHandler client : players.values()) {
                     try {
                         client.remoteView().crashedPlayer(playerID);
                     } catch (RemoteException e) {
@@ -207,12 +255,20 @@ public class GameController implements GameCommand, Serializable {
                 }
             }
         } catch (PlayerException e) {
-            ServerApp.logger.severe(e+" for logout");
+            ServerApp.logger.severe(e + " for logout");
         }
+        return this.players.remove(playerID);
     }
 
+    /**
+     * Checks if the specified player is able to perform an action based on the current turn phase.
+     *
+     * @param playerID The ID of the player to check.
+     * @return The TurnPhase indicating the player's ability to perform an action.
+     * @throws NotYourTurnException If it is not the specified player's turn.
+     */
     private TurnPhase ableTo(String playerID) throws NotYourTurnException {
-        if(!playerID.equals(this.currentPlayer.getCurrentPlayer().getPlayerID()))
+        if (!playerID.equals(this.currentPlayer.getCurrentPlayer().getPlayerID()))
             throw new NotYourTurnException(this.gameModel.getCurrentPlayer().getPlayerID());
         else return this.turnPhase;
     }

@@ -139,12 +139,8 @@ public class Cli extends View {
     // TODO: 16/05/23 we print the names of both the lobbies and the games and ask you to write the name you want to play with and in which lobby/game
     //if we don't find matches, a new lobby will be instantiated
     @Override
-    public void askPlayerInfo(List<Collection<String>> lobbyInfo) throws RemoteException {
-        for (Collection<String> lobbyId : lobbyInfo) {
-            for (String gameId : lobbyId) {
-                System.out.println(gameId);
-            }
-        }
+    public void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException {
+
     }
 
 
@@ -171,7 +167,7 @@ public class Cli extends View {
     public void showChat() {
         Stack<ChatMessage> chat = mockModel.getChat();
         for (int i = 0; i < chat.size(); i++) {
-            System.out.println(chat.pop().sender() + ": " + chat.pop().content());
+            System.out.println(chat.pop().from() + ": " + chat.pop().message());
         }
     }
 

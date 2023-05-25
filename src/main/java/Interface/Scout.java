@@ -1,4 +1,4 @@
-package Interface.Scout;
+package Interface;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

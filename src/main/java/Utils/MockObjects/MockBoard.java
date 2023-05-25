@@ -1,8 +1,9 @@
 package Utils.MockObjects;
 
 import Utils.Cell;
+import java.io.Serializable;
 
-public class MockBoard {
+public class MockBoard implements Serializable, Cloneable{
     private Cell[][] board;
     private boolean lastRound;
 
@@ -20,5 +21,19 @@ public class MockBoard {
 
     public void setLastRound(boolean lastRound) {
         this.lastRound = lastRound;
+    }
+
+    @Override
+    public MockBoard clone() {
+        try {
+            MockBoard clone = (MockBoard) super.clone();
+
+            clone.board = board.clone();
+            clone.lastRound = lastRound;
+
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 public class ServerApp {
     public static Logger logger;
     public static Lobby lobby;
-    private static final String serverSetting = "serverSetting.json";
+    private static final String serverSetting = "settings/serverSetting.json";
     private static int socketPort = 0;
     private static int rmiPort = 0;
 

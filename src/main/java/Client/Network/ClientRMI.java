@@ -3,32 +3,29 @@ package Client.Network;
 import Client.View.View;
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
+import Interface.Scout;
 import Interface.Server.GameCommand;
 import Interface.Server.LobbyInterface;
 import Server.Controller.GameController;
-import Utils.ChatMessage;
 import Utils.Coordinates;
-import Utils.MockObjects.MockBoard;
-import Utils.MockObjects.MockCommonGoal;
-import Utils.MockObjects.MockPlayer;
 
-import java.io.IOException;
+
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
-import java.util.Stack;
+
 
 public class ClientRMI extends Network {
     private GameCommand gc;
     private LobbyInterface lobby;
 
     public ClientRMI(View view) {
-        this.view = view;
+        super(view);
     }
 
     @Override
-    public void init(String ip, int port) throws IOException {
+    public void init(String ip, int port){
         try {
             Registry registry = LocateRegistry.getRegistry(ip, port);
             this.lobby = (LobbyInterface) registry.lookup("LobbyInterface");
@@ -43,62 +40,113 @@ public class ClientRMI extends Network {
 
     @Override
     public void selectTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
-        this.gc.selectTiles(playerID, coordinates);
-
+        this.executor.submit(()->{
+            try {
+                this.gc.selectTiles(playerID, coordinates);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
-    public void writeChat(String playerID, String text) throws RemoteException {
-        this.gc.writeChat(playerID, text);
+    public void writeChat(String from, String message, String to) throws RemoteException {
+        this.executor.submit(()->{
+            try {
+                this.gc.writeChat(from, message, to);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Override
+    public void addSubscriber(Scout scout) throws RemoteException {
+        this.executor.submit(()->{
+            try {
+                this.gc.addSubscriber(this);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
     public void insertTiles(String playerID, List<Integer> sorted, int column) throws RemoteException {
-        this.gc.insertTiles(playerID, sorted, column);
+        this.executor.submit(()->{
+            try {
+                this.gc.insertTiles(playerID, sorted, column);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
-    @Override
-    public void addSubscriber(Object object) throws RemoteException {
-        this.gc.addSubscriber(object);
-    }
 
     @Override
     public void getLobbyInfo(RemoteView remote) throws RemoteException {
-        this.lobby.getLobbyInfo(remote);
+        this.executor.submit(()->{
+            try {
+                this.lobby.getLobbyInfo(remote);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
     public void setLobbySize(String playerID, String lobbyID, int lobbySize) throws RemoteException {
-        this.lobby.setLobbySize(playerID, lobbyID, lobbySize);
+        this.executor.submit(()->{
+            try {
+                this.lobby.setLobbySize(playerID, lobbyID, lobbySize);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
     public void login(String playerID, String lobbyID, RemoteView remoteView, RemoteClient client) throws RemoteException {
-        this.lobby.login(playerID, lobbyID, remoteView, (RemoteClient) this);
+        this.executor.submit(()->{
+            try {
+                this.lobby.login(playerID, lobbyID, remoteView, client);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
     public void ping(String playerID, String lobbyID) throws RemoteException {
-        this.lobby.ping(playerID, lobbyID);
+        this.executor.submit(()->{
+            try {
+                this.lobby.ping(playerID, lobbyID);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
     public void getGameController(String lobbyID, RemoteClient remote) throws RemoteException {
-        try {
-            this.lobby.getGameController(lobbyID, remote);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        this.executor.submit(()->{
+            try {
+                this.lobby.getGameController(lobbyID, remote);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
     public void logOut(String playerID, String lobbyID) throws RemoteException {
-        this.lobby.logOut(playerID, lobbyID);
-    }
-
-    @Override
-    public void pong() throws RemoteException {
-
+        this.executor.submit(()->{
+            try {
+                this.lobby.logOut(playerID, lobbyID);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -107,23 +155,12 @@ public class ClientRMI extends Network {
     }
 
     @Override
-    public void update(MockBoard mockBoard) {
-        this.view.updateBoard(mockBoard);
-    }
-
-    @Override
-    public void update(MockCommonGoal mockCommonGoal) throws RemoteException {
-        this.view.updateCommonGoal(mockCommonGoal);
-    }
-
-    @Override
-    public void update(MockPlayer mockPlayer) throws RemoteException {
-        this.view.updatePlayer(mockPlayer);
-    }
-
-
-    @Override
-    public void update(ChatMessage message) {
-            this.view.updateChat(message);
+    @SuppressWarnings("unchecked")
+    public void update(Object objects) throws RemoteException {
+        if(scouts.containsKey(objects.getClass())){
+            scouts.get(objects.getClass()).update(objects);
+        } else {
+            throw new RemoteException("Scout not found");
+        }
     }
 }

@@ -22,7 +22,7 @@ class DiagonalGoalTest {
     JsonArray array;
     {
         try {
-            array = decoPersonal("src/main/resources/personalgoal.json");
+            array = decoPersonal("src/main/resources/personalGoal.json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

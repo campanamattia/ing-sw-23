@@ -1,11 +1,9 @@
 package Utils;
 
-import Interface.Scout.Scout;
 import Server.Model.Talent.ChatTalent;
 import com.google.gson.annotations.Expose;
 
 import java.util.*;
-import java.lang.*;
 
 /**
  Represents a chat room where users can send and receive messages.
@@ -20,7 +18,7 @@ public class ChatRoom {
     private final ChatTalent talent;
 
     /**
-     Constructs a new ChatUpdate object with an empty flow of messages.
+     Constructs a new ChatRoom object with an empty flow of messages.
      */
     public ChatRoom() {
         this.flow = new Stack<ChatMessage>();

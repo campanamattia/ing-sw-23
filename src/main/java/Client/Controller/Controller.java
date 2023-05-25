@@ -10,12 +10,11 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Controller{
-    private View view;
+public class Controller {
+    private final View view;
     private String playerID;
     private Network network;
-    private String ipAddress;
-    private int port;
+
 
     public Controller(View view) {
         this.view = view;
@@ -25,11 +24,11 @@ public class Controller{
 
         // thread for afk
 
-        if(input.equals("showChat")){
+        if (input.equals("showChat")) {
             this.view.showChat();
             return;
         }
-        if(input.equals("showGame")){
+        if (input.equals("showGame")) {
             this.view.showGame();
             return;
         }
@@ -40,9 +39,7 @@ public class Controller{
             String content = upLoadContent(input, operationType);
 
             switch (operationType) {
-                case WRITEMESSAGE -> {
-                    network.writeChat(this.playerID, content);
-                }
+                case WRITEMESSAGE -> network.writeChat(this.playerID, content, ""); // TODO: 24/05/2023
                 case SELECTEDTILES -> {
                     List<Coordinates> selectCoordinate = extractCoordinates(content);
                     network.selectTiles(this.playerID, selectCoordinate);
@@ -55,7 +52,7 @@ public class Controller{
                 }
             }
 
-        }catch(InvalidInputException e){
+        } catch (InvalidInputException e) {
             try {
                 view.outcomeException(e);
             } catch (RemoteException ex) {
@@ -68,9 +65,10 @@ public class Controller{
 
     /**
      * Checks if the input inserted by a user is valid.
+     *
      * @param input String received.
-     * @throws InvalidInputException if the input is not valid.
      * @return OperationType of the command in input.
+     * @throws InvalidInputException if the input is not valid.
      */
     private OperationType checkInput(String input) throws InvalidInputException {
 
@@ -80,7 +78,7 @@ public class Controller{
         // wm-text of the message
         // cv-CLI/GUI
         String prefix = input.split("-")[0];
-        if(!(prefix.equals("st")) && !(prefix.equals("it")) && !(prefix.equals("cv")) && !(prefix.equals("wm")))
+        if (!(prefix.equals("st")) && !(prefix.equals("it")) && !(prefix.equals("cv")) && !(prefix.equals("wm")))
             throw new InvalidInputException(input);
 
         OperationType opType = assignOpType(input.split("-")[0]);
@@ -106,9 +104,9 @@ public class Controller{
                 } catch (NumberFormatException e) {
                     throw new InvalidInputException(input);
                 }
-                try{
+                try {
                     Integer.parseInt(input.split("/")[1]);
-                }catch (NumberFormatException e){
+                } catch (NumberFormatException e) {
                     throw new InvalidInputException(input);
                 }
             }
@@ -155,18 +153,18 @@ public class Controller{
         throw new InvalidInputException(input);
     }
 
-    private String upLoadContent(String input,OperationType opType){
-        if(opType.equals(OperationType.WRITEMESSAGE)){
+    private String upLoadContent(String input, OperationType opType) {
+        if (opType.equals(OperationType.WRITEMESSAGE)) {
             int index = input.indexOf("-");
             // tmpOpType is a helper variable useful just for the creation of messageText
-            String tmpOpType = input.substring(0, index).trim();
             return input.substring(index + 1).trim();
-        }else
+        } else
             return input.split("-")[1];
     }
 
     /**
      * Receive coordinate in shape of String and turn them into list of coordinates.
+     *
      * @param input Receive coordinate in shape of String.
      * @return list of coordinates.
      */
@@ -196,14 +194,13 @@ public class Controller{
         return orderOfTiles;
     }
 
-
     /**
      * States whether the given address is valid or not.
      *
      * @param address the inserted IP address.
      * @return a boolean whose value is:
-     *  -{@code true} if the address is valid;
-     *  -{@code false} otherwise.
+     * -{@code true} if the address is valid;
+     * -{@code false} otherwise.
      */
     public boolean validateIP(String address) {
         String zeroTo255 = "([01]?\\d{1,2}|2[0-4]\\d|25[0-5])";
@@ -211,4 +208,11 @@ public class Controller{
         return address.matches(IP_REGEX);
     }
 
+    public void setPlayerID(String playerID) {
+        this.playerID = playerID;
+    }
+
+    public void setNetwork(Network network) {
+        this.network = network;
+    }
 }

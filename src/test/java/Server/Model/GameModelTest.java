@@ -9,9 +9,8 @@ import org.junit.jupiter.api.Test;
 import Exception.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Arrays;
-import java.util.UUID;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,8 +19,7 @@ class GameModelTest {
     @BeforeAll
     public static void setUp() {
         try{
-            gameModel = new GameModel(
-                    UUID.fromString("123e4567-e89b-12d3-a456-426655440000"),
+            gameModel = new GameModel("test",
                     Arrays.asList("Alice", "Bob", "Carlos")
             );
         }catch (IOException e) {
@@ -34,11 +32,11 @@ class GameModelTest {
         try{
             ChatMessage text = new ChatMessage(
                     "Alice",
-                    "Hello world!"
+                    "Hello world!",
+                    "Bob"
             );
-            gameModel.writeChat(text.sender(), text.content());
-            gameModel.updateStatus();
-        }catch(IOException | ChatException e){
+            gameModel.writeChat(text.from(), text.message(), text.to());
+        }catch(ChatException e){
             fail();
         }
     }
@@ -46,9 +44,9 @@ class GameModelTest {
     @Test
     public void selectedTilesWithNoValidCoordinate(){
         try{
-            List<Tile> list = gameModel.selectedTiles(Arrays.asList(new Coordinates(2,10), new Coordinates(5,4)));
+            gameModel.selectedTiles(Arrays.asList(new Coordinates(2,10), new Coordinates(5,4)));
         }catch (BoardException e){
-            System.out.println(e.toString());
+            System.out.println(e.getMessage());
             assertTrue(true);
         }
     }
@@ -56,9 +54,9 @@ class GameModelTest {
     @Test
     public void selectedTilesWithOutCoordinates(){
         try{
-            List<Tile> list = gameModel.selectedTiles(Arrays.asList());
+            gameModel.selectedTiles(List.of());
         }catch (BoardException e){
-            System.out.println(e.toString());
+            System.out.println(e.getMessage());
             assertTrue(true);
         }
     }
@@ -68,12 +66,13 @@ class GameModelTest {
         try{
             ChatMessage text = new ChatMessage(
                     "Alice",
-                    ""
+                    "",
+                    "Bob"
             );
-            gameModel.writeChat(text.sender(), text.content());
+            gameModel.writeChat(text.from(), text.message(), text.to());
             fail();
         }catch(ChatException e){
-            System.out.println(e.toString());
+            System.out.println(e.getMessage());
             assertTrue(true);
         }
     }
@@ -84,7 +83,7 @@ class GameModelTest {
             gameModel.insertTiles(Arrays.asList(2, 3), Arrays.asList(new Tile(Color.BLUE), new Tile(Color.GREEN), new Tile(Color.CYAN)), 7);
             fail();
         }catch (PlayerException e){
-            System.out.println(e.toString());
+            System.out.println(e.getMessage());
             assertTrue(true);
         }
     }
