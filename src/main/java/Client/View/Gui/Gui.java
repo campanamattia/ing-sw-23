@@ -16,7 +16,6 @@ import java.util.Stack;
 
 public class Gui extends View {
 
-
     @Override
     public void showBoard() {
 
@@ -29,6 +28,11 @@ public class Gui extends View {
 
     @Override
     public void showStatus() {
+
+    }
+
+    @Override
+    public void showGame() {
 
     }
 

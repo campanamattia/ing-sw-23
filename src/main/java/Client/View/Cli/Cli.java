@@ -10,6 +10,7 @@ import Utils.Cell;
 import Utils.MockObjects.MockModel;
 import Utils.Rank;
 import Utils.Tile;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -35,7 +36,6 @@ public class Cli extends View {
         network.init(address, port);
     }
 
-    // TODO: 16/05/23
     @Override
     public void askLobbySize() throws RemoteException {
         Scanner scanner = new Scanner(System.in);
@@ -200,7 +200,7 @@ public class Cli extends View {
     }
 
 
-    public void showTile(List<Tile> tiles) {
+    public void showTile(@NotNull List<Tile> tiles) {
         System.out.print("\t");
         for (int i = 0; i < tiles.size(); i++) {
             System.out.print(tiles.get(i).getColor().toString() + "|" + (i + 1) + "|");
@@ -288,10 +288,12 @@ public class Cli extends View {
         System.out.println("Tile inserted correctly");
     }
 
+
     @Override
     public void outcomeException(Exception e) throws RemoteException {
         System.out.println(CliColor.RED + e.toString());
     }
+
 
     @Override
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
