@@ -35,11 +35,11 @@ public class GameController implements GameCommand, Serializable {
     private TurnPhase turnPhase;
     private final CurrentPlayer currentPlayer;
 
-    public GameController(HashMap<String, ClientHandler> players){
+    public GameController(String lobbyID, HashMap<String, ClientHandler> players){
         this.players = players;
         List<String> playersID = new ArrayList<>(players.keySet());
         try {
-            this.gameModel = new GameModel(playersID);
+            this.gameModel = new GameModel(lobbyID, playersID);
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.toString());
             for(ClientHandler client : players.values()) {
@@ -181,7 +181,7 @@ public class GameController implements GameCommand, Serializable {
             this.gameModel.getPlayer(playerID).setStatus(false);
             this.players.remove(playerID);
             if(this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
-                this.gameModel.completeTurn(playerID);
+                this.gameModel.completeTurn(this.currentPlayer.getTiles());
             else {
                 for(ClientHandler client : players.values()) {
                     try {

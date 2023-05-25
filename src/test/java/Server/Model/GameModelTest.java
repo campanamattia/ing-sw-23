@@ -19,7 +19,7 @@ class GameModelTest {
     @BeforeAll
     public static void setUp() {
         try{
-            gameModel = new GameModel(
+            gameModel = new GameModel("test",
                     Arrays.asList("Alice", "Bob", "Carlos")
             );
         }catch (IOException e) {

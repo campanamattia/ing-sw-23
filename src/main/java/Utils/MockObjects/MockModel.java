@@ -1,5 +1,6 @@
 package Utils.MockObjects;
 
+import Enumeration.TurnPhase;
 import Utils.ChatMessage;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ public class MockModel implements Serializable, Cloneable {
     private List<MockCommonGoal> mockCommonGoal;
     private Stack<ChatMessage> chat;
     private String currentPlayer;
+    private TurnPhase turnPhase;
 
     public void setLobbyID(String lobbyID) {
         this.lobbyID = lobbyID;
@@ -94,6 +96,14 @@ public class MockModel implements Serializable, Cloneable {
         if (mockCommonGoal == null)
             mockCommonGoal = new ArrayList<>();
         mockCommonGoal.add(mock);
+    }
+
+    public TurnPhase getTurnPhase() {
+        return turnPhase;
+    }
+
+    public void setTurnPhase(TurnPhase turnPhase) {
+        this.turnPhase = turnPhase;
     }
 
     @Override

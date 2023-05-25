@@ -166,7 +166,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             HashMap<String, Boolean> players = new HashMap<>();
             for (String playerID : this.lobby.get(lobbyID).keySet())
                 players.put(playerID, true);
-            this.games.put(new Game(lobbyID, players), new GameController(this.lobby.get(lobbyID)));
+            this.games.put(new Game(lobbyID, players), new GameController(lobbyID, this.lobby.get(lobbyID)));
             for (ClientHandler client : this.lobby.get(lobbyID).values()) {
                 try {
                     client.remoteView().allGame(MockFactory.getMock(games.get(findGame(lobbyID)).getGameModel()));
