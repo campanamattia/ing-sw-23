@@ -2,7 +2,9 @@ package Utils.MockObjects;
 
 import Utils.Tile;
 
-public class MockPlayer {
+import java.io.Serializable;
+
+public class MockPlayer implements Serializable, Cloneable {
     private String playerID;
     private Tile[][] personalGoal;
     private Tile[][] shelf;
@@ -38,5 +40,21 @@ public class MockPlayer {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    @Override
+    public MockPlayer clone() {
+        try {
+            MockPlayer clone = (MockPlayer) super.clone();
+
+            clone.playerID = playerID;
+            clone.personalGoal = personalGoal.clone();
+            clone.shelf = shelf.clone();
+            clone.score = score;
+
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

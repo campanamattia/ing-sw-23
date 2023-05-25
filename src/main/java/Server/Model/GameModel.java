@@ -3,6 +3,7 @@ package Server.Model;
 import Enumeration.GamePhase;
 import Exception.BoardException;
 import Exception.ChatException;
+import Exception.Player.ColumnNotValidException;
 import Exception.Player.InvalidInputException;
 import Exception.PlayerException;
 import Exception.Player.PlayerNotFoundException;
@@ -11,6 +12,7 @@ import Server.Model.LivingRoom.CommonGoal.CommonGoal;
 import Server.Model.LivingRoom.CommonGoal.CommonGoalFactory;
 import Server.Model.LivingRoom.Bag;
 import Server.Model.LivingRoom.Board;
+import Server.Model.Player.Shelf;
 import Utils.ChatMessage;
 import Utils.ChatRoom;
 import Server.Model.Player.PersonalGoal;
@@ -31,6 +33,7 @@ import java.util.*;
  * Represents the game model, contain information about the game state, players, board, and chat.
  */
 public class GameModel {
+    private final String lobbyID;
     /**
      * the current phase of the game
      */
@@ -68,6 +71,7 @@ public class GameModel {
      */
     private final ChatRoom chatRoom;
 
+
     /**
      * Creates a new instance of GameModel class using the specified unique identifier and the list of players.
      * The method initializes all the class fields and generates the game objects (board, players, common goals)
@@ -77,7 +81,8 @@ public class GameModel {
      * @param players the list of names of players to be added to the game
      * @throws FileNotFoundException if the configuration files are not found
      */
-    public GameModel(List<String> players) throws IOException {
+    public GameModel(String lobbyID, List<String> players) throws IOException {
+        this.lobbyID = lobbyID;
         this.phase = GamePhase.STARTING;
         this.nPlayers = players.size();
         this.firstPlayer = players.get(0);
@@ -106,22 +111,6 @@ public class GameModel {
 
         this.phase = GamePhase.ONGOING;
     }
-
-    /**
-     * Builds a unique pathname for the game file by concatenating the IDs of all the players and the game UUID.
-     *
-     * @return a string representing the unique pathname for the game file
-     */
-    /*
-    private String buildPath() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("src/main/resources/game/");
-        for (Player tmp : this.players)
-            stringBuilder.append(tmp.getPlayerID()).append("_");
-        stringBuilder.append(LocalDate.now()).append(".json");
-        return stringBuilder.toString();
-    }*/
-
 
     /**
      * This method reads a JSON file containing the information for a board and returns the JSON object
@@ -212,6 +201,8 @@ public class GameModel {
     // TODO: 26/04/2023
     public void insertTiles(List<Integer> sort, List<Tile> tiles, int column) throws PlayerException {
         if (sort.size() != tiles.size()) throw new InvalidInputException();
+        for (int i =1; i<=sort.size(); i++)
+            if (!sort.contains(i))  throw new InvalidInputException();
         for (Integer integer : sort)
             tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
@@ -244,7 +235,6 @@ public class GameModel {
         throw new PlayerNotFoundException(id);
     }
 
-
     /**
      * Sets the current player.
      *
@@ -262,7 +252,6 @@ public class GameModel {
     public void setPhase(GamePhase phase) {
         this.phase = phase;
     }
-
 
     /**
      * Returns the game phase.
@@ -345,26 +334,56 @@ public class GameModel {
         return this.chatRoom;
     }
 
-
+    /**
+     * Adds a scout to the talent.
+     *
+     * @param interfaceBoard The scout to add.
+     */
     public void addBoardScout(Scout interfaceBoard) {
         this.board.getTalent().addScout(interfaceBoard);
     }
 
+    /**
+     * Adds a scout to the talent for each player.
+     *
+     * @param interfacePlayer The scout to add.
+     */
     public void addPlayerScout(Scout interfacePlayer) {
         for (Player player : this.players)
             player.getTalent().addScout(interfacePlayer);
     }
 
+    /**
+     * Adds a scout to the talent for each common goal.
+     *
+     * @param interfaceCommonGoal The scout to add.
+     */
     public void addCommonGoalScout(Scout interfaceCommonGoal) {
         for (CommonGoal commonGoal : this.commonGoals)
             commonGoal.getTalent().addScout(interfaceCommonGoal);
     }
 
+    /**
+     * Adds a scout to the talent for the chat room.
+     *
+     * @param interfaceChat The scout to add.
+     */
     public void addChatScout(Scout interfaceChat) {
         this.chatRoom.getTalent().addScout(interfaceChat);
     }
 
-    public void completeTurn(String playerID) {
-        // TODO: 16/05/2023  
+
+    public void completeTurn(List<Tile> tiles) {
+         Shelf shelf = this.currentPlayer.getMyShelf();
+         for(int i=0; i<shelf.getMyShelf()[0].length; i++) {
+             try {
+                 shelf.insert(i, tiles);
+                 break;
+             } catch (ColumnNotValidException ignored) {}
+         }
+    }
+
+    public String getLobbyID() {
+        return this.lobbyID;
     }
 }
