@@ -17,6 +17,7 @@ public class AddPlayerMessage extends ClientMessage {
     public void execute(SocketHandler socketHandler){
         try {
             ServerApp.lobby.login(this.playerID,this.lobbyID, socketHandler, socketHandler);
+            socketHandler.setLobbyID(this.lobbyID);
         } catch (RemoteException e) {
             ServerApp.logger.severe(e.toString());
         }

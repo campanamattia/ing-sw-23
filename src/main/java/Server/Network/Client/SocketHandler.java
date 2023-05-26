@@ -33,6 +33,7 @@ import java.util.logging.Level;
 
 public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout {
     private final Socket socket;
+    private String lobbyID = null;
     private Scanner input;
     private final ExecutorService executorService;
     private GameController controller;
@@ -156,6 +157,13 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         ServerMessage message = new AllGameMessage(mockModel);
         try {
             send(message);
+            this.executorService.submit(()-> {
+                try {
+                    ServerApp.lobby.getGameController(this.lobbyID, this);
+                } catch (RemoteException e) {
+                    ServerApp.logger.log(Level.SEVERE, e.getMessage());
+                }
+            });
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.getMessage());
         }
@@ -232,5 +240,9 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
 
     public GameController getGameController() {
         return controller;
+    }
+
+    public void setLobbyID(String lobbyID) {
+        this.lobbyID = lobbyID;
     }
 }

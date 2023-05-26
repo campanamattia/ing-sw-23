@@ -16,7 +16,7 @@ public class SocketServer {
         ServerApp.logger.info("Starting Server Socket");
         ExecutorService executor = Executors.newCachedThreadPool();
         try (ServerSocket serverSocket = new ServerSocket(socketPort)) {
-            ServerApp.logger.info("Server Socket ready");
+            ServerApp.logger.info("Server Socket ready on port " + socketPort);
             while (true) {
                 try {
                     Socket socket = serverSocket.accept();

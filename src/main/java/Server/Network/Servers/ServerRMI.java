@@ -23,6 +23,6 @@ public class ServerRMI {
             ServerApp.logger.log(Level.SEVERE, e.toString());
             System.exit(-1);
         }
-        ServerApp.logger.info("Server RMI ready");
+        ServerApp.logger.info("Server RMI ready on port " + rmiPort);
     }
 }
