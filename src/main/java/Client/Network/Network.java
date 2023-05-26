@@ -43,7 +43,7 @@ public abstract class Network implements GameCommand, LobbyInterface, RemoteClie
         this.scouts.put(ChatTalent.class, new ChatScout(this.view));
     }
 
-    public abstract void init (String ipAddress, int ip) throws IOException;
+    public abstract void init (String ipAddress, int ip);
 
     public void startPing(String playerID, String lobbyID){
         if(timer == null)

@@ -11,8 +11,6 @@ import Utils.MockObjects.MockModel;
 import Utils.Rank;
 import Utils.Tile;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -21,12 +19,13 @@ public class Cli extends View {
     MockModel mockModel;
     Network network;
 
-    public Cli() {
+    public Cli()  {
         clientController = new Controller(this);
         mockModel = new MockModel();
+        start();
     }
 
-    public void start() throws IOException {
+    public void start()  {
         int port;
         String address;
         showTitle();
@@ -83,7 +82,6 @@ public class Cli extends View {
             }
         } while (!validInput);
 
-        scanner.close();
 
         return ip;
 
@@ -300,10 +298,11 @@ public class Cli extends View {
     }
 
 
-    public Network askConnection() throws IOException {
-        Scanner scanner = new Scanner(System.in);
+    public Network askConnection() {
+        String input;
         System.out.println("Select connection Mode (insert SOCKET or RMI): ");
-        String input = scanner.nextLine();
+        Scanner scanner = new Scanner(System.in);
+        input = scanner.nextLine();
 
         while (!input.equalsIgnoreCase("SOCKET") && !input.equalsIgnoreCase("RMI")) {
             System.out.println(CliColor.RED + "ERROR: you type something wrong, please enter SOCKET or RMI" + CliColor.RESET);

@@ -5,6 +5,7 @@ import Client.View.Gui.Gui;
 
 public class ViewFactory {
     public static void instanceView(String view) {
+        // TODO: 26/05/23
         switch (view) {
             //case "GUI" -> new Gui();
             case "CLI" -> new Cli();

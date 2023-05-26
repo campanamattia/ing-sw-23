@@ -31,7 +31,7 @@ public class ClientSocket extends Network{
     private final Thread messageListener;
 
 
-    public ClientSocket(View view) throws IOException {
+    public ClientSocket(View view) {
         super(view);
         messageListener = new Thread(this::readMessages);
     }
