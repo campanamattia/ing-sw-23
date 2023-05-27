@@ -9,7 +9,6 @@ import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
 import Utils.Rank;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
 public abstract class View implements RemoteView {
