@@ -58,17 +58,11 @@ public abstract class View implements RemoteView {
 
     public abstract void showStatus();
 
-    public void showShelves() {
+    public abstract void showShelves();
 
-    }
-
-    public void showHelp() {
-
-    }
+    public abstract void showHelp();
 
     public abstract void showGame();
 
-    public void showRank(List<Rank> classification) {
-
-    }
+    public abstract void showRank(List<Rank> classification);
 }

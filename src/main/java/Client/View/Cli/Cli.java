@@ -5,23 +5,23 @@ import Client.Network.ClientRMI;
 import Client.Network.ClientSocket;
 import Client.Network.Network;
 import Client.View.View;
-import Utils.ChatMessage;
-import Utils.Cell;
+import Utils.*;
 import Utils.MockObjects.MockModel;
-import Utils.Rank;
-import Utils.Tile;
 import org.jetbrains.annotations.NotNull;
 import java.rmi.RemoteException;
 import java.util.*;
+
 
 public class Cli extends View {
     Controller clientController;
     MockModel mockModel;
     Network network;
+    InputThread inputThread;
 
     public Cli()  {
         clientController = new Controller(this);
         mockModel = new MockModel();
+        inputThread = new InputThread();
         start();
     }
 
@@ -29,28 +29,50 @@ public class Cli extends View {
         int port;
         String address;
         showTitle();
+        inputThread.start();
+
         network = askConnection();
         address = askServerAddress();
         port = askServerPort();
         network.init(address, port);
     }
 
+    public Network askConnection() {
+        String input;
+        System.out.print(CliColor.BOLD + "Select connection Mode insert 'SOCKET' or 'RMI': " + CliColor.RESET);
+
+        input = inputThread.getUserInput();
+
+        while (!input.equalsIgnoreCase("SOCKET") && !input.equalsIgnoreCase("RMI")) {
+            System.out.println(CliColor.RED + "ERROR: you type something wrong, please enter 'SOCKET' or 'RMI'" + CliColor.RESET);
+            input = inputThread.getUserInput();
+        }
+
+        System.out.println(CliColor.YELLOW + "Well done are you going to create a " + input.toLowerCase() + " connection" + CliColor.RESET);
+
+        if (input.equalsIgnoreCase("SOCKET")) {
+            return new ClientSocket(this);
+        }
+        if (input.equalsIgnoreCase("RMI")) {
+            return new ClientRMI(this);
+        }
+        return null;
+    }
+
     @Override
     public void askLobbySize() throws RemoteException {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Please insert the numbers of players (insert a number between 2 and 4)");
-        String input = scanner.nextLine();
+        System.out.print(CliColor.BOLD + "Please insert the numbers of players (insert a number between 2 and 4): \n" + CliColor.RESET);
+        String input = inputThread.getUserInput();
 
         int playerNumber = Integer.parseInt(input);
         while (playerNumber != 2 && playerNumber != 3 && playerNumber != 4) {
             System.out.println(CliColor.RED + "ERROR: you type something wrong, match can only start with 2, 3 or 4 players" + CliColor.RESET);
-            input = scanner.nextLine();
+            input = inputThread.getUserInput();
             playerNumber = Integer.parseInt(input);
         }
 
-        System.out.println("You are going to create a new Game, wait for the others players");
+        System.out.println(CliColor.YELLOW + "You are going to create a new Game, wait for the others players" + CliColor.RESET);
 
-        scanner.close();
         network.setLobbySize(mockModel.getLocalPlayer(), mockModel.getLobbyID(), playerNumber);
     }
 
@@ -60,17 +82,15 @@ public class Cli extends View {
         boolean validInput = false;
         boolean firstTry = true;
 
-        Scanner scanner = new Scanner(System.in);
-
         String address;
         do {
             if (!firstTry)
                 System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
             else
-                System.out.println("Please enter the server address");
+                System.out.print(CliColor.BOLD + "Please enter the server address. " + CliColor.RESET);
 
-            System.out.println("Insert 'd' for the default value (" + DEFAULT_ADDRESS + "): ");
-            address = scanner.nextLine();
+            System.out.print(CliColor.BOLD + "Insert 'd' or 'localhost' for the default value (" + DEFAULT_ADDRESS + "): " + CliColor.RESET);
+            address = inputThread.getUserInput();
 
             if (address.equalsIgnoreCase("d") || address.equalsIgnoreCase("localhost") || address.equals(DEFAULT_ADDRESS)) {
                 validInput = true;
@@ -82,21 +102,19 @@ public class Cli extends View {
             }
         } while (!validInput);
 
-
         return ip;
-
     }
 
     public int askServerPort() {
-        final int DEFAULT_PORT = 2807;
+        final int DEFAULT_SOCKET_PORT = 50000;
+        final int DEFAULT_RMI_PORT = 50001;
         final int MIN_PORT = 1024;
         final int MAX_PORT = 65535;
-        int port = DEFAULT_PORT;
+        int port = DEFAULT_SOCKET_PORT;
+
         boolean validInput = false;
         boolean notAnInt = false;
         boolean wrongPort = false;
-
-        Scanner scanner = new Scanner(System.in);
 
         String input;
         while (!validInput) {
@@ -109,12 +127,12 @@ public class Cli extends View {
                 System.out.println(CliColor.RED + "ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + "." + CliColor.RESET + " Try again.");
             }
 
-            System.out.println("Select a valid port between [" + MIN_PORT + ", " + MAX_PORT + "]");
-            System.out.println("Insert 'd' for the default value (" + DEFAULT_PORT + "): ");
+            System.out.print(CliColor.BOLD + "Select a valid port between [" + MIN_PORT + ", " + MAX_PORT + "]. ");
+            System.out.print("Insert 'ds' for the default value of SOCKET (" + DEFAULT_SOCKET_PORT + ") or 'dr' for default value of RMI (" + DEFAULT_RMI_PORT + "): " + CliColor.RESET);
 
-            input = scanner.nextLine();
+            input = inputThread.getUserInput();
 
-            if (input.equalsIgnoreCase("d")) {
+            if (input.equalsIgnoreCase("ds") || input.equalsIgnoreCase("dr") ) {
                 validInput = true;
             } else {
                 try {
@@ -129,8 +147,6 @@ public class Cli extends View {
                 }
             }
         }
-
-        scanner.close();
         return port;
     }
 
@@ -181,7 +197,7 @@ public class Cli extends View {
 
 
     public void showTitle() {
-        System.out.print("" + CliColor.CLEAR_ALL + CliColor.BOLDYELLOW);
+        System.out.print(CliColor.BOLDYELLOW);
         System.out.println("""
                  ✹ ｡  .  ･ . ∴ * ███╗   ███╗██╗   ██╗    ██████╗██╗  ██╗███████╗██╗     ███████╗██╗███████╗. 　･ ∴　　｡ 　
                 ｡    ✦    *      ████╗ ████║╚██╗ ██╔╝   ██╔════╝██║  ██║██╔════╝██║     ██╔════╝██║██╔════╝ ∴⋆  ˚  *   .
@@ -253,7 +269,17 @@ public class Cli extends View {
     }
 
     @Override
+    public void showHelp() {
+
+    }
+
+    @Override
     public void showGame() {
+
+    }
+
+    @Override
+    public void showRank(List<Rank> classification) {
 
     }
 
@@ -298,36 +324,13 @@ public class Cli extends View {
     }
 
 
-    public Network askConnection() {
-        String input;
-        System.out.println("Select connection Mode (insert SOCKET or RMI): ");
-        Scanner scanner = new Scanner(System.in);
-        input = scanner.nextLine();
-
-        while (!input.equalsIgnoreCase("SOCKET") && !input.equalsIgnoreCase("RMI")) {
-            System.out.println(CliColor.RED + "ERROR: you type something wrong, please enter SOCKET or RMI" + CliColor.RESET);
-            input = scanner.nextLine();
-        }
-
-        System.out.println("Well done you create a" + input.toLowerCase() + "connection");
-
-        if (input.equalsIgnoreCase("SOCKET")) {
-            return new ClientSocket(this);
-        }
-        if (input.equalsIgnoreCase("RMI")) {
-            return new ClientRMI(this);
-        }
-        return null;
-    }
-
-
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
         newTurn(mockModel.getCurrentPlayer());
 
         Thread inputThread = new Thread(() -> {
-            Scanner scanner = new Scanner(System.in);
+            final Scanner scanner = new Scanner(System.in);
             String userInput;
 
             while (true) {
