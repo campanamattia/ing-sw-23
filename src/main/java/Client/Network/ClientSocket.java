@@ -29,7 +29,7 @@ public class ClientSocket extends Network {
     private ObjectOutputStream outputStream;
     private final AtomicBoolean clientConnected = new AtomicBoolean(false);
 
-    public ClientSocket(View view) {
+    public ClientSocket(View view) throws RemoteException {
         super(view);
     }
 

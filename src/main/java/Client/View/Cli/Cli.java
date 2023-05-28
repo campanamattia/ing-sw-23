@@ -1,13 +1,13 @@
 package Client.View.Cli;
 
 import Client.Controller.Controller;
-import Client.Network.ClientRMI;
-import Client.Network.ClientSocket;
 import Client.Network.Network;
+import Client.Network.NetworkFactory;
 import Client.View.View;
 import Utils.*;
 import Utils.MockObjects.MockModel;
 import org.jetbrains.annotations.NotNull;
+
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -18,26 +18,32 @@ public class Cli extends View {
     Network network;
     InputThread inputThread;
 
-    public Cli()  {
+    public Cli() throws RemoteException {
+        super();
         clientController = new Controller(this);
         mockModel = new MockModel();
         inputThread = new InputThread();
         start();
     }
 
-    public void start()  {
+    public void start() {
         int port;
         String address;
         showTitle();
         inputThread.start();
 
-        network = askConnection();
+        try {
+            network = askConnection();
+        } catch (RemoteException e) {
+            System.out.println("Error while creating connection object");
+            System.exit(-1);
+        }
         address = askServerAddress();
         port = askServerPort();
         network.init(address, port);
     }
 
-    public Network askConnection() {
+    public Network askConnection() throws RemoteException {
         String input;
         System.out.print(CliColor.BOLD + "Select connection Mode insert 'SOCKET' or 'RMI': " + CliColor.RESET);
 
@@ -50,13 +56,7 @@ public class Cli extends View {
 
         System.out.println(CliColor.YELLOW + "Well done are you going to create a " + input.toLowerCase() + " connection" + CliColor.RESET);
 
-        if (input.equalsIgnoreCase("SOCKET")) {
-            return new ClientSocket(this);
-        }
-        if (input.equalsIgnoreCase("RMI")) {
-            return new ClientRMI(this);
-        }
-        return null;
+        return NetworkFactory.instanceNetwork(input, this);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class Cli extends View {
         String input = inputThread.getUserInput();
 
         int playerNumber = Integer.parseInt(input);
-        while (playerNumber != 2 && playerNumber != 3 && playerNumber != 4) {
+        while (playerNumber < 2 || playerNumber > 4) {
             System.out.println(CliColor.RED + "ERROR: you type something wrong, match can only start with 2, 3 or 4 players" + CliColor.RESET);
             input = inputThread.getUserInput();
             playerNumber = Integer.parseInt(input);
@@ -86,8 +86,7 @@ public class Cli extends View {
         do {
             if (!firstTry)
                 System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
-            else
-                System.out.print(CliColor.BOLD + "Please enter the server address. " + CliColor.RESET);
+            else System.out.print(CliColor.BOLD + "Please enter the server address. " + CliColor.RESET);
 
             System.out.print(CliColor.BOLD + "Insert 'd' or 'localhost' for the default value (" + DEFAULT_ADDRESS + "): " + CliColor.RESET);
             address = inputThread.getUserInput();
@@ -132,7 +131,7 @@ public class Cli extends View {
 
             input = inputThread.getUserInput();
 
-            if (input.equalsIgnoreCase("ds") || input.equalsIgnoreCase("dr") ) {
+            if (input.equalsIgnoreCase("ds") || input.equalsIgnoreCase("dr")) {
                 validInput = true;
                 if (input.equalsIgnoreCase("ds")) {
                     port = DEFAULT_SOCKET_PORT;
@@ -160,13 +159,13 @@ public class Cli extends View {
         String inputLobby;
         String inputName;
 
-
-        System.out.println("Here you can find the lobbies with the the players in waiting room. Write an ID for the lobby if it no matches with others a new lobby will be instantiated");
-        for (Map<String,String> map : lobbyInfo) {
-            for (Object s : map.keySet()) {
-                System.out.println("LobbyID: " + s + "\tWaiting Room: " + map.get(s));
-            }
-        }
+        if (lobbyInfo != null) {
+            System.out.println("Here you can find the lobbies with the the players in waiting room. Write an ID for the lobby if it no matches with others a new lobby will be instantiated");
+            for (String object : lobbyInfo.get(0).keySet())
+                System.out.println("LobbyID: " + object + "\tWaiting Room: " + lobbyInfo.get(0).get(object));
+            for (String object : lobbyInfo.get(1).keySet())
+                System.out.println("GameID: " + object + "\tPlayers Online: " + lobbyInfo.get(1).get(object));
+        } else System.out.println("There are no lobby or games: create a new one");
         System.out.print(CliColor.BOLD + "\nInsert a lobby ID: " + CliColor.RESET);
         inputLobby = inputThread.getUserInput();
 
@@ -341,7 +340,7 @@ public class Cli extends View {
         System.out.println("You login into the server");
         mockModel.setLocalPlayer(localPlayer);
         mockModel.setLobbyID(lobbyID);
-
+        network.startPing(localPlayer, lobbyID);
     }
 
 

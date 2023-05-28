@@ -272,4 +272,8 @@ public class GameController implements GameCommand, Serializable {
             throw new NotYourTurnException(this.gameModel.getCurrentPlayer().getPlayerID());
         else return this.turnPhase;
     }
+
+    public List<ClientHandler> getClients(){
+        return (List<ClientHandler>) this.players.values();
+    }
 }

@@ -11,6 +11,9 @@ import java.util.Map;
 
 public abstract class Gui extends View {
 
+    public Gui() throws RemoteException {
+    }
+
     @Override
     public void showBoard() {
 

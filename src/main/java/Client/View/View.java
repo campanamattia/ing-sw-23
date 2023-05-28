@@ -9,18 +9,16 @@ import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
 import Utils.Rank;
 
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
-public abstract class View implements RemoteView {
+public abstract class View extends UnicastRemoteObject implements RemoteView {
     MockModel mockModel;
     Network network;
 
-    public MockModel getMockmodel() {
-        return mockModel;
-    }
-
-    public void setMockModel(MockModel mockmodel) {
-        this.mockModel = mockmodel;
+    public View() throws RemoteException {
+        super();
     }
 
     public Network getNetwork() {

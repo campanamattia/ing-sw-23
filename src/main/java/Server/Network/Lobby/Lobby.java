@@ -63,8 +63,14 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      * @throws RemoteException if a communication error occurs during the remote method call
      */
     @Override
-    public void getLobbyInfo(RemoteView remote) throws RemoteException {
-        remote.askPlayerInfo(getLobbyInfo());
+    public synchronized void getLobbyInfo(RemoteView remote) throws RemoteException {
+        this.executorService.submit(() -> {
+            try {
+                remote.askPlayerInfo(getLobbyInfo());
+            } catch (RemoteException e) {
+                ServerApp.logger.severe(e.getMessage());
+            }
+        });
     }
 
     /**
@@ -73,23 +79,25 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      * @return a list of maps representing the lobby information. Each map contains lobby ID and player count, and game name and active player count.
      */
     public List<Map<String, String>> getLobbyInfo() {
-        List<Map<String, String>> lobbyInfo = new ArrayList<>();
-        Map<String, String> lobbies = new HashMap<>();
-        Map<String, String> games = new HashMap<>();
-        lobbyInfo.add(lobbies);
-        lobbyInfo.add(games);
+        if (!this.lobby.isEmpty() || !this.games.isEmpty()) {
+            List<Map<String, String>> lobbyInfo = new ArrayList<>();
+            Map<String, String> lobbies = new HashMap<>();
+            Map<String, String> games = new HashMap<>();
+            lobbyInfo.add(lobbies);
+            lobbyInfo.add(games);
 
-        // Retrieve lobby information
-        for (String lobbyID : this.lobby.keySet()) {
-            lobbies.put(lobbyID, this.lobby.get(lobbyID).size() + "/" + this.lobbySize.get(lobbyID));
-        }
+            // Retrieve lobby information
+            for (String lobbyID : this.lobby.keySet()) {
+                lobbies.put(lobbyID, this.lobby.get(lobbyID).size() + "/" + this.lobbySize.get(lobbyID));
+            }
 
-        // Retrieve game information
-        for (Game game : this.games.keySet()) {
-            games.put(game.name(), activePlayers(game) + "/" + game.players().size());
-        }
+            // Retrieve game information
+            for (Game game : this.games.keySet()) {
+                games.put(game.name(), activePlayers(game) + "/" + game.players().size());
+            }
 
-        return lobbyInfo;
+            return lobbyInfo;
+        } else return null;
     }
 
 
@@ -118,28 +126,31 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      */
     @Override
     public synchronized void setLobbySize(String playerID, String lobbyID, int lobbySize) throws RemoteException {
-        if (this.lobbySize.get(lobbyID) == null) {
-            if (sizeValid(lobbySize)) {
-                this.lobbySize.put(lobbyID, lobbySize);
+        if(this.lobby.containsKey(lobbyID)){
+            if (this.lobbySize.get(lobbyID) == null) {
+                if (sizeValid(lobbySize)) {
+                    this.lobbySize.put(lobbyID, lobbySize);
+                    ServerApp.logger.info("Setting lobby-size to " + lobbySize + "for lobby: " + lobbyID);
+                } else {
+                    this.executorService.submit(() -> {
+                        try {
+                            this.lobby.get(lobbyID).get(playerID).remoteView().outcomeException(new RuntimeException("Lobby size must be between 2 and 4"));
+                            this.lobby.get(lobbyID).get(playerID).remoteView().askLobbySize();
+                        } catch (RemoteException e) {
+                            ServerApp.logger.log(Level.SEVERE, e.getMessage());
+                        }
+                    });
+                }
             } else {
                 this.executorService.submit(() -> {
                     try {
-                        this.lobby.get(lobbyID).get(playerID).remoteView().outcomeException(new RuntimeException("Lobby size must be between 2 and 4"));
-                        this.lobby.get(lobbyID).get(playerID).remoteView().askLobbySize();
+                        this.lobby.get(lobbyID).get(playerID).remoteView().outcomeException(new RuntimeException("LobbySize has already been set"));
                     } catch (RemoteException e) {
                         ServerApp.logger.log(Level.SEVERE, e.getMessage());
                     }
                 });
             }
-        } else {
-            this.executorService.submit(() -> {
-                try {
-                    this.lobby.get(lobbyID).get(playerID).remoteView().outcomeException(new RuntimeException("LobbySize has already been set"));
-                } catch (RemoteException e) {
-                    ServerApp.logger.log(Level.SEVERE, e.getMessage());
-                }
-            });
-        }
+        } else ServerApp.logger.severe("can't find the lobby to set it's size");
     }
 
     /**
@@ -162,6 +173,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      * @throws RemoteException if a communication error occurs during the remote method call
      */
     public synchronized void login(String playerID, String lobbyID, RemoteView client, RemoteClient network) throws RemoteException {
+        ServerApp.logger.info(playerID + " is trying to log in " + lobbyID);
         Game game = findGame(lobbyID);
         if (game != null) { //if the game exists
             if (game.players().containsKey(playerID)) {
@@ -169,6 +181,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                     if (rejoin(playerID, lobbyID, client)) {
                         this.executorService.submit(() -> {
                             try {
+                                client.outcomeLogin(playerID, lobbyID);
                                 client.allGame(MockFactory.getMock(this.games.get(game).getGameModel()));
                             } catch (RemoteException e) {
                                 ServerApp.logger.log(Level.SEVERE, e.getMessage());
@@ -188,7 +201,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                     });
                 }
             }
-        } else if (this.lobby.get(lobbyID) != null) { //if the lobby exists
+        } else if (this.lobby.containsKey(lobbyID)) { //if the lobby exists
             if (this.lobby.get(lobbyID).containsKey(playerID)) { //if the playerID is already taken
                 this.executorService.submit(() -> {
                     try {
@@ -200,12 +213,28 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                 });
             } else { //if the playerID is not taken
                 this.lobby.get(lobbyID).put(playerID, new ClientHandler(playerID, lobbyID, client));
+                this.executorService.execute(()-> {
+                    try {
+                        client.outcomeLogin(playerID, lobbyID);
+                        ServerApp.logger.info(lobbyID+" registered new login by: "+playerID);
+                    } catch (RemoteException e) {
+                        ServerApp.logger.severe(e.getMessage());
+                    }
+                });
                 startTimer(playerID, lobbyID, network);
                 initGame(lobbyID);
             }
         } else { //if the lobby does not exist
             this.lobby.put(lobbyID, new HashMap<>());
             this.lobby.get(lobbyID).put(playerID, new ClientHandler(playerID, lobbyID, client));
+            this.executorService.execute(()-> {
+                try {
+                    client.outcomeLogin(playerID, lobbyID);
+                    ServerApp.logger.info(playerID+" created new lobby called: "+lobbyID);
+                } catch (RemoteException e) {
+                    ServerApp.logger.severe(e.getMessage());
+                }
+            });
             startTimer(playerID, lobbyID, network);
             if (!firstPlayer(lobbyID, client)) initGame(lobbyID);
         }
@@ -234,7 +263,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     @Override
     public synchronized void ping(String playerID, String lobbyID) throws RemoteException {
         int hash = Objects.hash(playerID, lobbyID);
-        this.executorService.submit(() -> this.heartbeat.get(hash).receivedPing());
+        this.executorService.execute(() -> this.heartbeat.get(hash).receivedPing());
     }
 
     /**
@@ -248,7 +277,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     public void getGameController(String lobbyID, RemoteClient remote) throws RemoteException {
         Game game = findGame(lobbyID);
         if (game != null) {
-            this.executorService.submit(()-> {
+            this.executorService.execute(() -> {
                 try {
                     remote.setGameController(this.games.get(game));
                 } catch (RemoteException e) {
@@ -263,11 +292,11 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     /**
      * Finds a game with the specified lobby ID.
      *
-     * @param lobbyID the ID of the lobby
+     * @param gameID the ID of the lobby
      * @return the Game object corresponding to the lobby ID, or null if no matching game is found
      */
-    private Game findGame(String lobbyID) {
-        return this.games.keySet().stream().filter(game -> game.name().equals(lobbyID)).findFirst().orElse(null);
+    private Game findGame(String gameID) {
+        return this.games.keySet().stream().filter(game -> game.name().equals(gameID)).findFirst().orElse(null);
     }
 
     /**
@@ -279,11 +308,14 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      */
     @Override
     public synchronized void logOut(String playerID, String lobbyID) throws RemoteException {
+        ServerApp.logger.info("On going: logout for "+playerID+"in "+lobbyID);
         Game game = findGame(lobbyID);
         ClientHandler clientHandler;
         if (game != null) {
             game.setStatus(playerID, false);
             clientHandler = this.games.get(game).logOut(playerID);
+            for(ClientHandler client : this.games.get(game).getClients())
+                client.remoteView().crashedPlayer(playerID);
             if ((long) game.players().values().size() <= 1) {
                 this.games.remove(game);
             }
@@ -320,7 +352,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      */
     private boolean firstPlayer(String lobbyID, RemoteView client) throws RemoteException {
         if (this.lobbySize.get(lobbyID) == null) {
-            this.executorService.submit(()-> {
+            this.executorService.submit(() -> {
                 try {
                     client.askLobbySize();
                 } catch (RemoteException e) {
@@ -344,7 +376,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                 players.put(playerID, true);
             this.games.put(new Game(lobbyID, players), new GameController(lobbyID, this.lobby.get(lobbyID)));
             for (ClientHandler client : this.lobby.get(lobbyID).values()) {
-                this.executorService.submit(()-> {
+                this.executorService.submit(() -> {
                     try {
                         client.remoteView().allGame(MockFactory.getMock(games.get(findGame(lobbyID)).getGameModel()));
                     } catch (RemoteException e) {
