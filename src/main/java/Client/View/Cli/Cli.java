@@ -110,7 +110,7 @@ public class Cli extends View {
         final int DEFAULT_RMI_PORT = 50001;
         final int MIN_PORT = 1024;
         final int MAX_PORT = 65535;
-        int port = DEFAULT_SOCKET_PORT;
+        int port = 0;
 
         boolean validInput = false;
         boolean notAnInt = false;
@@ -134,6 +134,11 @@ public class Cli extends View {
 
             if (input.equalsIgnoreCase("ds") || input.equalsIgnoreCase("dr") ) {
                 validInput = true;
+                if (input.equalsIgnoreCase("ds")) {
+                    port = DEFAULT_SOCKET_PORT;
+                } else if (input.equalsIgnoreCase("dr")) {
+                    port = DEFAULT_RMI_PORT;
+                }
             } else {
                 try {
                     port = Integer.parseInt(input);
@@ -150,10 +155,26 @@ public class Cli extends View {
         return port;
     }
 
-    // TODO: 16/05/23 we print the names of both the lobbies and the games and ask you to write the name you want to play with and in which lobby/game
-    //if we don't find matches, a new lobby will be instantiated
     @Override
     public void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException {
+        String inputLobby;
+        String inputName;
+
+
+        System.out.println("Here you can find the lobbies with the the players in waiting room. Write an ID for the lobby if it no matches with others a new lobby will be instantiated");
+        for (Map<String,String> map : lobbyInfo) {
+            for (Object s : map.keySet()) {
+                System.out.println("LobbyID: " + s + "\tWaiting Room: " + map.get(s));
+            }
+        }
+        System.out.print(CliColor.BOLD + "\nInsert a lobby ID: " + CliColor.RESET);
+        inputLobby = inputThread.getUserInput();
+
+        System.out.print(CliColor.BOLD + "Insert your Nickname: " + CliColor.RESET);
+
+        inputName = inputThread.getUserInput();
+
+        network.login(inputName, inputLobby, this, network);
 
     }
 
