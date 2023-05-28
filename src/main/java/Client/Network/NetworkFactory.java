@@ -9,7 +9,7 @@ public class NetworkFactory {
         if (network.equalsIgnoreCase("RMI")) {
             return new ClientRMI(view);
         }
-        else if (network.equalsIgnoreCase("CLI")) {
+        else if (network.equalsIgnoreCase("SOCKET")) {
             return new ClientSocket(view);
         }
         return null;

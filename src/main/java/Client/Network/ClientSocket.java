@@ -25,19 +25,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class ClientSocket extends Network {
+    private Socket socket;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
     private final AtomicBoolean clientConnected = new AtomicBoolean(false);
 
     public ClientSocket(View view) throws RemoteException {
         super(view);
+        this.socket = null;
     }
 
     @Override
-    public void init(String ipAddress, int port){
-        try(Socket socket = new Socket()){
+    public void init(String ipAddress, int port) {
+        port = (port == -1) ? 50000 : port;
+        try {
+            this.socket = new Socket();
             socket.connect(new InetSocketAddress(ipAddress, port));
-            if(socket.isConnected()){
+            if (socket.isConnected()) {
                 inputStream = new ObjectInputStream(socket.getInputStream());
                 outputStream = new ObjectOutputStream(socket.getOutputStream());
                 clientConnected.set(true);
@@ -60,14 +64,18 @@ public class ClientSocket extends Network {
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        } finally {
             clientConnected.set(false);
+            try {
+                logOut(null, null);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
     public void selectTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
         ClientMessage clientMessage = new SelectedTilesMessage(playerID, coordinates);
-        try{
+        try {
             sendMessage(clientMessage);
         } catch (IOException e) {
             clientConnected.set(false);
@@ -93,7 +101,7 @@ public class ClientSocket extends Network {
     }
 
     @Override
-    public void insertTiles(String playerID, List<Integer> sorting, int column) throws RemoteException{
+    public void insertTiles(String playerID, List<Integer> sorting, int column) throws RemoteException {
         ClientMessage clientMessage = new InsertTilesMessage(playerID, sorting, column);
         try {
             sendMessage(clientMessage);
@@ -147,7 +155,7 @@ public class ClientSocket extends Network {
     }
 
     @Override
-    public void getGameController(String lobbyID, RemoteClient remote){
+    public void getGameController(String lobbyID, RemoteClient remote) {
         ClientMessage clientMessage = new GetGameMessage(lobbyID);
         try {
             sendMessage(clientMessage);
@@ -164,21 +172,21 @@ public class ClientSocket extends Network {
         } catch (IOException e) {
             clientConnected.set(false);
         }
+        System.exit(-1);
     }
 
     private void sendMessage(ClientMessage clientMessage) throws IOException {
-        if(clientConnected.get()) {
-            if (clientConnected.get()) {
-                try {
-                    outputStream.writeObject(clientMessage);
-                    outputStream.flush();
-                    outputStream.reset();
-                } catch (IOException e) {
-                    clientConnected.set(false);
-                }
+        if (clientConnected.get()) {
+            try {
+                outputStream.writeObject(clientMessage);
+                outputStream.flush();
+                outputStream.reset();
+            } catch (IOException e) {
+                clientConnected.set(false);
             }
         }
     }
+
 
     private void deserialize(ServerMessage message) {
         message.execute(this.view);

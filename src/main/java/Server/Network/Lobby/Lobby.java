@@ -130,7 +130,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             if (this.lobbySize.get(lobbyID) == null) {
                 if (sizeValid(lobbySize)) {
                     this.lobbySize.put(lobbyID, lobbySize);
-                    ServerApp.logger.info("Setting lobby-size to " + lobbySize + "for lobby: " + lobbyID);
+                    ServerApp.logger.info("Setting lobby-size to " + lobbySize + "\tfor lobby: " + lobbyID);
                 } else {
                     this.executorService.submit(() -> {
                         try {
@@ -150,7 +150,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                     }
                 });
             }
-        } else ServerApp.logger.severe("can't find the lobby to set it's size");
+        } else ServerApp.logger.severe("Can't find the lobby to set it's size");
     }
 
     /**
@@ -173,7 +173,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      * @throws RemoteException if a communication error occurs during the remote method call
      */
     public synchronized void login(String playerID, String lobbyID, RemoteView client, RemoteClient network) throws RemoteException {
-        ServerApp.logger.info(playerID + " is trying to log in " + lobbyID);
+        ServerApp.logger.info(playerID + " is trying to login " + lobbyID);
         Game game = findGame(lobbyID);
         if (game != null) { //if the game exists
             if (game.players().containsKey(playerID)) {
@@ -216,7 +216,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                 this.executorService.execute(()-> {
                     try {
                         client.outcomeLogin(playerID, lobbyID);
-                        ServerApp.logger.info(lobbyID+" registered new login by: "+playerID);
+                        ServerApp.logger.info(lobbyID+" registered new player: "+playerID);
                     } catch (RemoteException e) {
                         ServerApp.logger.severe(e.getMessage());
                     }
@@ -308,7 +308,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      */
     @Override
     public synchronized void logOut(String playerID, String lobbyID) throws RemoteException {
-        ServerApp.logger.info("On going: logout for "+playerID+"in "+lobbyID);
+        ServerApp.logger.info("Logout for "+playerID+"\tin "+lobbyID);
         Game game = findGame(lobbyID);
         ClientHandler clientHandler;
         if (game != null) {
@@ -380,7 +380,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                     try {
                         client.remoteView().allGame(MockFactory.getMock(games.get(findGame(lobbyID)).getGameModel()));
                     } catch (RemoteException e) {
-                        ServerApp.logger.severe("Error sending game to player");
+                        ServerApp.logger.severe("Error sending gameController to player");
                     }
                 });
             }

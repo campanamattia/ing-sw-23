@@ -32,6 +32,11 @@ public class Controller {
             this.view.showGame();
             return;
         }
+        if(input.equals("help") || input.equals("?")){
+            this.view.showHelp();
+            return;
+        }
+
 
         try {
 

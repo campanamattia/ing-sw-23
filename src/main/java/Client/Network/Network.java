@@ -5,7 +5,6 @@ import Interface.Server.GameCommand;
 import Interface.Server.LobbyInterface;
 import Client.View.View;
 import Server.Model.Talent.*;
-import Server.ServerApp;
 import Utils.Scouts.ChatScout;
 import Utils.Scouts.CommonGoalScout;
 import Utils.Scouts.PlayerScout;
@@ -55,7 +54,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
             @Override
             public void run() {
                 try {
-                    ServerApp.lobby.logOut(playerID, lobbyID);
+                    logOut(playerID, lobbyID);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }

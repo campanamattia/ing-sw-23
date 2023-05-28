@@ -42,21 +42,21 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         this.controller = null;
         this.executorService = Executors.newCachedThreadPool();
         this.socket = socket;
-        try {
-            output = new ObjectOutputStream(socket.getOutputStream());
-            input = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            try {
-                send(new ErrorMessage(new RuntimeException("Server is not ready yet")));
-            } catch (IOException ex) {
-                ServerApp.logger.log(Level.SEVERE, ex.toString());
-            }
-        }
     }
 
     @Override
     public void run() {
         try {
+            try {
+                output = new ObjectOutputStream(socket.getOutputStream());
+                input = new ObjectInputStream(socket.getInputStream());
+            } catch (IOException e) {
+                try {
+                    send(new ErrorMessage(new RuntimeException("Server is not ready yet")));
+                } catch (IOException ex) {
+                    ServerApp.logger.log(Level.SEVERE, ex.toString());
+                }
+            }
             ServerApp.logger.info("trying to set up new connection");
             send(new AskPlayerInfoMessage(ServerApp.lobby.getLobbyInfo()));
             while (!this.socket.isClosed()) {

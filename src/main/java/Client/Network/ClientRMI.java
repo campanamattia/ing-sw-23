@@ -26,6 +26,7 @@ public class ClientRMI extends Network {
 
     @Override
     public void init(String ip, int port) {
+        port = (port == -1) ? 50001 : port;
         try {
             Registry registry = LocateRegistry.getRegistry(ip, port);
             this.lobby = (LobbyInterface) registry.lookup("Lobby");
