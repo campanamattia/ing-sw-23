@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2023-05-28T16:12:27.902200500Z</date>
+  <millis>1685290347902</millis>
+  <nanos>200500</nanos>
+  <sequence>0</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.ServerApp</class>
+  <method>initLogger</method>
+  <thread>1</thread>
+  <message>Starting ServerApp</message>
+</record>
+<record>
+  <date>2023-05-28T16:12:28.242786300Z</date>
+  <millis>1685290348242</millis>
+  <nanos>786300</nanos>
+  <sequence>1</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.ServerApp</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>ServerApp started</message>
+</record>
+<record>
+  <date>2023-05-28T16:12:28.243787500Z</date>
+  <millis>1685290348243</millis>
+  <nanos>787500</nanos>
+  <sequence>2</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Servers.ServerRMI</class>
+  <method>start</method>
+  <thread>27</thread>
+  <message>Starting RMI server</message>
+</record>
+<record>
+  <date>2023-05-28T16:12:28.243787500Z</date>
+  <millis>1685290348243</millis>
+  <nanos>787500</nanos>
+  <sequence>3</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Servers.SocketServer</class>
+  <method>start</method>
+  <thread>28</thread>
+  <message>Starting Server Socket</message>
+</record>
+<record>
+  <date>2023-05-28T16:12:28.245786900Z</date>
+  <millis>1685290348245</millis>
+  <nanos>786900</nanos>
+  <sequence>4</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Servers.SocketServer</class>
+  <method>start</method>
+  <thread>28</thread>
+  <message>Server Socket ready on port 50000</message>
+</record>
+<record>
+  <date>2023-05-28T16:12:28.248792600Z</date>
+  <millis>1685290348248</millis>
+  <nanos>792600</nanos>
+  <sequence>5</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Servers.ServerRMI</class>
+  <method>start</method>
+  <thread>27</thread>
+  <message>Lobby bound correctly</message>
+</record>
+<record>
+  <date>2023-05-28T16:12:28.249810100Z</date>
+  <millis>1685290348249</millis>
+  <nanos>810100</nanos>
+  <sequence>6</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Servers.ServerRMI</class>
+  <method>start</method>
+  <thread>27</thread>
+  <message>Server RMI ready on port 50001</message>
+</record>
+</log>

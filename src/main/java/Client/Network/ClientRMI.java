@@ -28,7 +28,8 @@ public class ClientRMI extends Network {
     public void init(String ip, int port){
         try {
             Registry registry = LocateRegistry.getRegistry(ip, port);
-            this.lobby = (LobbyInterface) registry.lookup("LobbyInterface");
+            this.lobby = (LobbyInterface) registry.lookup("Lobby");
+            this.lobby.getLobbyInfo((RemoteView) view);
         } catch (Exception e) {
             try {
                 view.outcomeException(e);

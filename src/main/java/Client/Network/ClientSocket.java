@@ -23,42 +23,44 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ClientSocket extends Network{
+
+public class ClientSocket extends Network {
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
     private final AtomicBoolean clientConnected = new AtomicBoolean(false);
 
-    private final Thread messageListener;
-
-
     public ClientSocket(View view) {
         super(view);
-        messageListener = new Thread(this::readMessages);
     }
 
     @Override
     public void init(String ipAddress, int port){
-        try (Socket socket = new Socket()) {
+        try(Socket socket = new Socket()){
             socket.connect(new InetSocketAddress(ipAddress, port));
-            this.port = port;
-            outputStream = new ObjectOutputStream(socket.getOutputStream());
-            inputStream = new ObjectInputStream(socket.getInputStream());
-            this.ipAddress = ipAddress;
-            clientConnected.set(true);
-            messageListener.start();
+            if(socket.isConnected()){
+                inputStream = new ObjectInputStream(socket.getInputStream());
+                outputStream = new ObjectOutputStream(socket.getOutputStream());
+                clientConnected.set(true);
+                this.executor.submit(this::readMessages);
+            } else System.out.println(socket);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
-
-    public void readMessages(){
-        try{
+    public void readMessages() {
+        try {
             while (clientConnected.get()) {
-               String input = inputStream.readObject().toString();
-               this.executor.submit(() -> deserialize(input));
+                Object input = inputStream.readObject();
+                if (input instanceof ServerMessage message) {
+                    this.executor.submit(() -> deserialize((message)));
+                } else {
+                    System.err.println("Received an unexpected object from the server.");
+                }
             }
-        }  catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
             clientConnected.set(false);
         }
     }
@@ -166,22 +168,19 @@ public class ClientSocket extends Network{
 
     private void sendMessage(ClientMessage clientMessage) throws IOException {
         if(clientConnected.get()) {
-            try{
-                outputStream.writeObject(clientMessage);
-                outputStream.flush();
-                outputStream.reset();
-            } catch (IOException e ){
-                clientConnected.set(false);
+            if (clientConnected.get()) {
+                try {
+                    outputStream.writeObject(clientMessage);
+                    outputStream.flush();
+                    outputStream.reset();
+                } catch (IOException e) {
+                    clientConnected.set(false);
+                }
             }
         }
     }
 
-    private void deserialize(String line) {
-        try {
-            ServerMessage message = (ServerMessage) new ObjectInputStream(new FileInputStream(line)).readObject();
-            message.execute(view);
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    private void deserialize(ServerMessage message) {
+        message.execute(this.view);
     }
 }

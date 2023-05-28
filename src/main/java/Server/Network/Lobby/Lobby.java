@@ -72,7 +72,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      *
      * @return a list of maps representing the lobby information. Each map contains lobby ID and player count, and game name and active player count.
      */
-    private List<Map<String, String>> getLobbyInfo() {
+    public List<Map<String, String>> getLobbyInfo() {
         List<Map<String, String>> lobbyInfo = new ArrayList<>();
         Map<String, String> lobbies = new HashMap<>();
         Map<String, String> games = new HashMap<>();
