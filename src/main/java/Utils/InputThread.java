@@ -4,17 +4,19 @@ import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class InputThread extends Thread{
-    private final Scanner scanner;
+public class InputThread extends Thread {
+    private Scanner scanner;
     private final BlockingQueue<String> userInputQueue;
+    private volatile boolean running;
 
     public InputThread() {
         this.scanner = new Scanner(System.in);
         this.userInputQueue = new LinkedBlockingQueue<>();
+        this.running = true;
     }
 
     public void run() {
-        while (!isInterrupted()) {
+        while (running && !isInterrupted()) {
             String input = scanner.nextLine();
             if (input != null && !input.isEmpty()) {
                 try {
@@ -24,6 +26,7 @@ public class InputThread extends Thread{
                 }
             }
         }
+        scanner.close();
     }
 
     public String getUserInput() {
@@ -32,5 +35,10 @@ public class InputThread extends Thread{
         } catch (InterruptedException e) {
             return null;
         }
+    }
+
+    public void stopThread() {
+        running = false;
+        interrupt();
     }
 }

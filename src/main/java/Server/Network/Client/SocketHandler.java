@@ -19,10 +19,7 @@ import Utils.Rank;
 import Utils.Tile;
 
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -34,7 +31,8 @@ import java.util.logging.Level;
 public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout {
     private final Socket socket;
     private String lobbyID = null;
-    private Scanner input;
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
     private final ExecutorService executorService;
     private GameController controller;
 
@@ -45,7 +43,8 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         this.executorService = Executors.newCachedThreadPool();
         this.socket = socket;
         try {
-            this.input = new Scanner(socket.getInputStream());
+            output = new ObjectOutputStream(socket.getOutputStream());
+            input = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             try {
                 send(new ErrorMessage(new RuntimeException("Server is not ready yet")));
@@ -58,12 +57,16 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void run() {
         try {
-            input = new Scanner(socket.getInputStream());
-
+            ServerApp.logger.info("trying to set up new connection");
+            send(new AskPlayerInfoMessage(ServerApp.lobby.getLobbyInfo()));
             while (!this.socket.isClosed()) {
-                if(input.hasNextLine()) {
-                    String line = input.nextLine();
-                    this.executorService.submit(() -> deserialize(line));
+                try {
+                    Object object = input.readObject();
+                    if(object instanceof ClientMessage message)
+                        this.executorService.submit(()->deserialize(message));
+                    else ServerApp.logger.severe("incorrect object in input");
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
             }
         } catch (IOException e) {
@@ -71,13 +74,8 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         }
     }
 
-    private void deserialize(String line) {
-        try {
-            ClientMessage message = (ClientMessage) new ObjectInputStream(new FileInputStream(line)).readObject();
-            message.execute(this);
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    private void deserialize(ClientMessage message) {
+        message.execute(this);
     }
     
 
@@ -207,14 +205,23 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         return controller;
     }
 
-    private void send(ServerMessage output) throws IOException {
-        PrintWriter out = new PrintWriter(socket.getOutputStream());
-        out.println(output);
-        out.flush();
+    private void send(ServerMessage message) throws IOException {
+        try {
+            ServerApp.logger.info("Sending: "+message);
+            this.output.writeObject(message);
+            this.output.flush();
+            this.output.reset();
+        } catch (IOException e) {
+            logOut();
+        }
     }
 
     public void logOut() {
-        this.input.close();
+        try {
+            this.input.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         try {
             socket.close();
         } catch (IOException e) {
