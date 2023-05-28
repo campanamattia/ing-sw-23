@@ -134,6 +134,7 @@ public class GameController implements GameCommand, Serializable {
      */
     @Override
     public synchronized void selectTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
+        ServerApp.logger.info("Player " + playerID + " is trying to select tiles");
         try {
             if (ableTo(playerID) == TurnPhase.PICKING) {
                 try {
@@ -159,6 +160,7 @@ public class GameController implements GameCommand, Serializable {
      */
     @Override
     public synchronized void insertTiles(String playerID, List<Integer> sort, int column) throws RemoteException {
+        ServerApp.logger.info("Player " + playerID + " is trying to insert tiles");
         try {
             if (ableTo(playerID) == TurnPhase.PICKING) {
                 try {
@@ -173,6 +175,7 @@ public class GameController implements GameCommand, Serializable {
                 }
             }
         } catch (NotYourTurnException e) {
+            ServerApp.logger.severe(e.getMessage());
             this.players.get(playerID).remoteView().outcomeException(e);
         }
     }
@@ -190,6 +193,7 @@ public class GameController implements GameCommand, Serializable {
         try {
             this.gameModel.writeChat(playerID, message, to);
         } catch (ChatException e) {
+            ServerApp.logger.severe(e.getMessage());
             this.players.get(playerID).remoteView().outcomeException(e);
         }
     }
@@ -221,14 +225,14 @@ public class GameController implements GameCommand, Serializable {
         try {
             this.gameModel.getPlayer(playerID).setStatus(true);
         } catch (PlayerNotFoundException e) {
-            ServerApp.logger.severe(e.toString());
+            ServerApp.logger.severe(e.getMessage());
             client.remoteView().outcomeException(e);
         }
         for (ClientHandler clientHandler : players.values()) {
             try {
                 clientHandler.remoteView().reloadPlayer(playerID);
             } catch (RemoteException e) {
-                ServerApp.logger.severe(e.toString());
+                ServerApp.logger.severe(e.getMessage());
             }
         }
     }
@@ -250,12 +254,12 @@ public class GameController implements GameCommand, Serializable {
                     try {
                         client.remoteView().crashedPlayer(playerID);
                     } catch (RemoteException e) {
-                        ServerApp.logger.severe(e.toString());
+                        ServerApp.logger.severe(e.getMessage());
                     }
                 }
             }
         } catch (PlayerException e) {
-            ServerApp.logger.severe(e + " for logout");
+            ServerApp.logger.severe(e.getMessage() + " for logout");
         }
         return this.players.remove(playerID);
     }
