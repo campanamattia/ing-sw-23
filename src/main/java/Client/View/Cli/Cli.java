@@ -61,7 +61,7 @@ public class Cli extends View {
 
     @Override
     public void askLobbySize() throws RemoteException {
-        System.out.print(CliColor.BOLD + "Please insert the numbers of players (insert a number between 2 and 4): \n" + CliColor.RESET);
+        System.out.print(CliColor.BOLD + "Please insert the numbers of players (insert a number between 2 and 4): " + CliColor.RESET);
         String input = inputThread.getUserInput();
 
         int playerNumber = Integer.parseInt(input);

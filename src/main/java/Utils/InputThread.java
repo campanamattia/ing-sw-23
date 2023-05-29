@@ -5,7 +5,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class InputThread extends Thread {
-    private Scanner scanner;
+    private final Scanner scanner;
     private final BlockingQueue<String> userInputQueue;
     private volatile boolean running;
 
