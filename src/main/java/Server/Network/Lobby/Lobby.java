@@ -213,10 +213,10 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                 });
             } else { //if the playerID is not taken
                 this.lobby.get(lobbyID).put(playerID, new ClientHandler(playerID, lobbyID, client));
+                ServerApp.logger.info(lobbyID+" registered new player: "+playerID);
                 this.executorService.execute(()-> {
                     try {
                         client.outcomeLogin(playerID, lobbyID);
-                        ServerApp.logger.info(lobbyID+" registered new player: "+playerID);
                     } catch (RemoteException e) {
                         ServerApp.logger.severe(e.getMessage());
                     }
@@ -263,7 +263,13 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     @Override
     public synchronized void ping(String playerID, String lobbyID) throws RemoteException {
         int hash = Objects.hash(playerID, lobbyID);
-        this.executorService.execute(() -> this.heartbeat.get(hash).receivedPing());
+        this.executorService.execute(() ->{
+                try {
+                    this.heartbeat.get(hash).receivedPing();
+                } catch (Exception e) {
+                    ServerApp.logger.severe(e.getMessage());
+                }
+        });
     }
 
     /**
@@ -371,21 +377,25 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      */
     private void initGame(String lobbyID) {
         if (this.lobby.get(lobbyID).size() == this.lobbySize.get(lobbyID)) {
-            HashMap<String, Boolean> players = new HashMap<>();
-            for (String playerID : this.lobby.get(lobbyID).keySet())
-                players.put(playerID, true);
-            this.games.put(new Game(lobbyID, players), new GameController(lobbyID, this.lobby.get(lobbyID)));
-            for (ClientHandler client : this.lobby.get(lobbyID).values()) {
-                this.executorService.submit(() -> {
-                    try {
-                        client.remoteView().allGame(MockFactory.getMock(games.get(findGame(lobbyID)).getGameModel()));
-                    } catch (RemoteException e) {
-                        ServerApp.logger.severe("Error sending gameController to player");
-                    }
-                });
-            }
-            this.lobby.remove(lobbyID);
-            this.lobbySize.remove(lobbyID);
+            this.executorService.execute(()->{
+                ServerApp.logger.info("Starting GameID: "+lobbyID);
+                HashMap<String, Boolean> players = new HashMap<>();
+                for (String playerID : this.lobby.get(lobbyID).keySet())
+                    players.put(playerID, true);
+                this.games.put(new Game(lobbyID, players), new GameController(lobbyID, this.lobby.get(lobbyID)));
+                for (ClientHandler client : this.lobby.get(lobbyID).values()) {
+                    this.executorService.execute(() -> {
+                        try {
+                            client.remoteView().allGame(MockFactory.getMock(games.get(findGame(lobbyID)).getGameModel()));
+                        } catch (RemoteException e) {
+                            ServerApp.logger.severe("Error sending gameController to player");
+                        }
+                    });
+                }
+                this.lobby.remove(lobbyID);
+                this.lobbySize.remove(lobbyID);
+                ServerApp.logger.info("Started new Game: "+lobbyID);
+            });
         }
     }
 

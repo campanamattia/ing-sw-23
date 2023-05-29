@@ -20,7 +20,7 @@ public class SocketServer {
             while (true) {
                 try {
                     Socket socket = serverSocket.accept();
-                    executor.submit(new SocketHandler(socket));
+                    executor.execute(new SocketHandler(socket));
                 } catch(IOException e) {
                     ServerApp.logger.log(Level.SEVERE, e.toString());
                     System.exit(-1);

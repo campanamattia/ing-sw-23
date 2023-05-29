@@ -55,11 +55,12 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
             public void run() {
                 try {
                     logOut(playerID, lobbyID);
+                    System.exit(-1);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
             }
-        }, 15000); //15 seconds timeout
+        }, 10000); //15 seconds timeout
     }
 
     @Override
@@ -78,7 +79,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
         timer = null;
         this.executor.execute(() -> {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(7000);
                 startPing(playerID, lobbyID);
             } catch (InterruptedException e) {
                 e.printStackTrace();

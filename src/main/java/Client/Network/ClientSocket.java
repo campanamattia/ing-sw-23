@@ -55,12 +55,14 @@ public class ClientSocket extends Network {
     public void readMessages() {
         try {
             while (clientConnected.get()) {
-                Object input = inputStream.readObject();
-                if (input instanceof ServerMessage message) {
-                    this.executor.submit(() -> deserialize((message)));
-                } else {
-                    System.err.println("Received an unexpected object from the server.");
-                }
+                if(socket.isConnected()) {
+                    Object input = inputStream.readObject();
+                    if (input instanceof ServerMessage message) {
+                        this.executor.submit(() -> deserialize((message)));
+                    } else {
+                        System.err.println("Received an unexpected object from the server.");
+                    }
+                } else throw new IOException("the socket closed itself but i donno why");
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

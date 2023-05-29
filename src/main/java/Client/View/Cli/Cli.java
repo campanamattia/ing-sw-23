@@ -182,7 +182,7 @@ public class Cli extends View {
             System.out.print(i + "\t");
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j].getStatus()) {
-                    String colorString = board[i][j].getTile().getColor().toString();
+                    String colorString = board[i][j].getTile().getColor().getCode();
                     System.out.print(CliColor.BBLACK + "|" + colorString + i + " , " + j + CliColor.BBLACK + "|" + CliColor.RESET);
                 } else {
                     System.out.print(CliColor.BBLACK + "|     |" + CliColor.RESET); //print empty black space
@@ -229,7 +229,7 @@ public class Cli extends View {
     public void showTile(@NotNull List<Tile> tiles) {
         System.out.print("\t");
         for (int i = 0; i < tiles.size(); i++) {
-            System.out.print(tiles.get(i).getColor().toString() + "|" + (i + 1) + "|");
+            System.out.print(tiles.get(i).getColor().getCode() + "|" + (i + 1) + "|");
             System.out.print(CliColor.RESET + "   ");
         }
         System.out.println();
@@ -263,7 +263,7 @@ public class Cli extends View {
                 for (int j = 0; j < numColumn; j++) {
                     Tile[][] shelf = mockModel.getMockPlayers().get(k).getShelf();
                     if (shelf[i][j] != null) {
-                        String colorString = shelf[i][j].getColor().toString();
+                        String colorString = shelf[i][j].getColor().getCode();
                         System.out.print(CliColor.BBLACK + "|" + colorString + i + "," + j + CliColor.BBLACK + "|" + CliColor.RESET);
                     } else {
                         System.out.print(CliColor.BBLACK + "|   |" + CliColor.RESET);
@@ -314,7 +314,7 @@ public class Cli extends View {
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
         System.out.print("\t");
         for (int i = 0; i < tiles.size(); i++) {
-            System.out.print(tiles.get(i).getColor().toString() + "|" + (i + 1) + "|");
+            System.out.print(tiles.get(i).getColor().getCode() + "|" + (i + 1) + "|");
             System.out.print(CliColor.RESET + "   ");
         }
     }
