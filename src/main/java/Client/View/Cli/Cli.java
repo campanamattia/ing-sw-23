@@ -61,7 +61,7 @@ public class Cli extends View {
 
     @Override
     public void askLobbySize() throws RemoteException {
-        System.out.print(CliColor.BOLD + "Please insert the numbers of players (insert a number between 2 and 4): " + CliColor.RESET);
+        System.out.print(CliColor.BOLD + "Please insert the numbers of players (insert a number between 2 and 4): \n" + CliColor.RESET);
         String input = inputThread.getUserInput();
 
         int playerNumber = Integer.parseInt(input);
@@ -85,7 +85,7 @@ public class Cli extends View {
         String address;
         do {
             if (!firstTry)
-                System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx). Try again" + CliColor.RESET);
+                System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
             else System.out.print(CliColor.BOLD + "Please enter the server address. " + CliColor.RESET);
 
             System.out.print(CliColor.BOLD + "\nInsert 'localhost' for the default value (" + DEFAULT_ADDRESS + "): " + CliColor.RESET);
@@ -156,11 +156,11 @@ public class Cli extends View {
         String inputName;
 
         if (lobbyInfo != null) {
-            System.out.println(CliColor.BOLD + "Here you can find the lobbies or games with the players logged. Write an ID for the lobby/game; if it doesn't match with others, a new lobby will be instantiated." + CliColor.RESET);
+            System.out.println("Here you can find the lobbies or games with the players logged. Write an ID for the lobby/game; if it doesn't match with others, a new lobby will be instantiated.");
             for (String object : lobbyInfo.get(0).keySet())
-                System.out.println(CliColor.BOLD + "LobbyID: " + object + "\t|\tWaiting Room: " + lobbyInfo.get(0).get(object) + CliColor.RESET);
+                System.out.println("LobbyID: " + object + "\tWaiting Room: " + lobbyInfo.get(0).get(object));
             for (String object : lobbyInfo.get(1).keySet())
-                System.out.println(CliColor.BOLD + "GameID: " + object + "\t|\tPlayers Online: " + lobbyInfo.get(1).get(object) + CliColor.RESET);
+                System.out.println("GameID: " + object + "\tPlayers Online: " + lobbyInfo.get(1).get(object));
         } else System.out.println("There are no lobby or games: create a new one");
         System.out.print(CliColor.BOLD + "\nInsert a lobby ID: " + CliColor.RESET);
         inputLobby = inputThread.getUserInput();
@@ -344,14 +344,22 @@ public class Cli extends View {
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
         newTurn(mockModel.getCurrentPlayer());
-        inputThread.stopThread();
 
-        Thread inputThreadGame = new Thread(() -> {
+        Thread inputThread = new Thread(() -> {
             final Scanner scanner = new Scanner(System.in);
+            String userInput;
 
             while (true) {
-                    String userInput = scanner.nextLine();
+                if (scanner.hasNextLine()) {
+                    userInput = scanner.nextLine();
+                    try {
                         clientController.doAction(userInput);
+                    } catch (RuntimeException e) {
+                        System.out.println(CliColor.RED + e.getMessage() + CliColor.RESET);
+                    }
+                } else {
+                    System.out.println("Don't enter without a body");
+                }
             }
         });
         inputThread.start();

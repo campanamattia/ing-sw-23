@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2023-05-29T15:45:17.472750Z</date>
-  <millis>1685375117472</millis>
-  <nanos>750000</nanos>
+  <date>2023-05-29T11:39:45.319826Z</date>
+  <millis>1685360385319</millis>
+  <nanos>826000</nanos>
   <sequence>0</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -14,9 +14,9 @@
   <message>Starting ServerApp</message>
 </record>
 <record>
-  <date>2023-05-29T15:45:17.681447Z</date>
-  <millis>1685375117681</millis>
-  <nanos>447000</nanos>
+  <date>2023-05-29T11:39:45.675063600Z</date>
+  <millis>1685360385675</millis>
+  <nanos>63600</nanos>
   <sequence>1</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -26,52 +26,184 @@
   <message>ServerApp started</message>
 </record>
 <record>
-  <date>2023-05-29T15:45:17.681876Z</date>
-  <millis>1685375117681</millis>
-  <nanos>876000</nanos>
+  <date>2023-05-29T11:39:45.675063600Z</date>
+  <millis>1685360385675</millis>
+  <nanos>63600</nanos>
   <sequence>2</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.ServerRMI</class>
   <method>start</method>
-  <thread>26</thread>
+  <thread>27</thread>
   <message>Starting RMI server</message>
 </record>
 <record>
-  <date>2023-05-29T15:45:17.682325Z</date>
-  <millis>1685375117682</millis>
-  <nanos>325000</nanos>
+  <date>2023-05-29T11:39:45.676062900Z</date>
+  <millis>1685360385676</millis>
+  <nanos>62900</nanos>
   <sequence>3</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.SocketServer</class>
   <method>start</method>
-  <thread>27</thread>
+  <thread>28</thread>
   <message>Starting Server Socket</message>
 </record>
 <record>
-  <date>2023-05-29T15:45:17.684564Z</date>
-  <millis>1685375117684</millis>
-  <nanos>564000</nanos>
+  <date>2023-05-29T11:39:45.677281800Z</date>
+  <millis>1685360385677</millis>
+  <nanos>281800</nanos>
   <sequence>4</sequence>
   <logger>Server.ServerApp</logger>
-  <level>SEVERE</level>
+  <level>INFO</level>
   <class>Server.Network.Servers.SocketServer</class>
   <method>start</method>
-  <thread>27</thread>
-  <message>java.net.BindException: Address already in use</message>
+  <thread>28</thread>
+  <message>Server Socket ready on port 50000</message>
 </record>
 <record>
-  <date>2023-05-29T15:45:17.685670Z</date>
-  <millis>1685375117685</millis>
-  <nanos>670000</nanos>
+  <date>2023-05-29T11:39:45.680280900Z</date>
+  <millis>1685360385680</millis>
+  <nanos>280900</nanos>
   <sequence>5</sequence>
   <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Servers.ServerRMI</class>
+  <method>start</method>
+  <thread>27</thread>
+  <message>Lobby bound correctly</message>
+</record>
+<record>
+  <date>2023-05-29T11:39:45.681280700Z</date>
+  <millis>1685360385681</millis>
+  <nanos>280700</nanos>
+  <sequence>6</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Servers.ServerRMI</class>
+  <method>start</method>
+  <thread>27</thread>
+  <message>Server RMI ready on port 50001</message>
+</record>
+<record>
+  <date>2023-05-29T11:40:05.323597900Z</date>
+  <millis>1685360405323</millis>
+  <nanos>597900</nanos>
+  <sequence>7</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>login</method>
+  <thread>33</thread>
+  <message>p1 is trying to login l1</message>
+</record>
+<record>
+  <date>2023-05-29T11:40:05.332601300Z</date>
+  <millis>1685360405332</millis>
+  <nanos>601300</nanos>
+  <sequence>8</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>lambda$login$7</method>
+  <thread>35</thread>
+  <message>p1 created new lobby called: l1</message>
+</record>
+<record>
+  <date>2023-05-29T11:40:06.576754200Z</date>
+  <millis>1685360406576</millis>
+  <nanos>754200</nanos>
+  <sequence>9</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>setLobbySize</method>
+  <thread>33</thread>
+  <message>Setting lobby-size to 2	for lobby: l1</message>
+</record>
+<record>
+  <date>2023-05-29T11:40:35.309630800Z</date>
+  <millis>1685360435309</millis>
+  <nanos>630800</nanos>
+  <sequence>10</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>login</method>
+  <thread>42</thread>
+  <message>p2 is trying to login l1</message>
+</record>
+<record>
+  <date>2023-05-29T11:40:35.310697600Z</date>
+  <millis>1685360435310</millis>
+  <nanos>697600</nanos>
+  <sequence>11</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>login</method>
+  <thread>42</thread>
+  <message>l1 registered new player: p2</message>
+</record>
+<record>
+  <date>2023-05-29T11:40:35.313655100Z</date>
+  <millis>1685360435313</millis>
+  <nanos>655100</nanos>
+  <sequence>12</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>lambda$initGame$13</method>
+  <thread>35</thread>
+  <message>Starting GameID: l1</message>
+</record>
+<record>
+  <date>2023-05-29T11:40:35.350529500Z</date>
+  <millis>1685360435350</millis>
+  <nanos>529500</nanos>
+  <sequence>13</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>lambda$initGame$13</method>
+  <thread>35</thread>
+  <message>Started new Game: l1</message>
+</record>
+<record>
+  <date>2023-05-29T11:44:29.434342300Z</date>
+  <millis>1685360669434</millis>
+  <nanos>342300</nanos>
+  <sequence>14</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>logOut</method>
+  <thread>116</thread>
+  <message>Logout for p2	in l1</message>
+</record>
+<record>
+  <date>2023-05-29T11:44:29.931727300Z</date>
+  <millis>1685360669931</millis>
+  <nanos>727300</nanos>
+  <sequence>15</sequence>
+  <logger>Server.ServerApp</logger>
   <level>SEVERE</level>
-  <class>Server.ServerApp</class>
-  <method>rmiServer</method>
-  <thread>26</thread>
-  <message>java.rmi.server.ExportException: Port already in use: 50001; nested exception is: 
-	java.net.BindException: Address already in use</message>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>lambda$getLobbyInfo$0</method>
+  <thread>37</thread>
+  <message>Error unmarshaling return header; nested exception is: 
+	java.net.SocketException: Connection reset</message>
+</record>
+<record>
+  <date>2023-05-29T11:45:14.728064600Z</date>
+  <millis>1685360714728</millis>
+  <nanos>64600</nanos>
+  <sequence>16</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>login</method>
+  <thread>109</thread>
+  <message>p2 is trying to login l1</message>
 </record>
 </log>
