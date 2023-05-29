@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2023-05-29T11:39:45.319826Z</date>
-  <millis>1685360385319</millis>
-  <nanos>826000</nanos>
+  <date>2023-05-29T23:53:41.102224700Z</date>
+  <millis>1685404421102</millis>
+  <nanos>224700</nanos>
   <sequence>0</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -14,9 +14,9 @@
   <message>Starting ServerApp</message>
 </record>
 <record>
-  <date>2023-05-29T11:39:45.675063600Z</date>
-  <millis>1685360385675</millis>
-  <nanos>63600</nanos>
+  <date>2023-05-29T23:54:11.574349300Z</date>
+  <millis>1685404451574</millis>
+  <nanos>349300</nanos>
   <sequence>1</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -26,184 +26,173 @@
   <message>ServerApp started</message>
 </record>
 <record>
-  <date>2023-05-29T11:39:45.675063600Z</date>
-  <millis>1685360385675</millis>
-  <nanos>63600</nanos>
+  <date>2023-05-29T23:54:11.574349300Z</date>
+  <millis>1685404451574</millis>
+  <nanos>349300</nanos>
   <sequence>2</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.ServerRMI</class>
   <method>start</method>
-  <thread>27</thread>
+  <thread>29</thread>
   <message>Starting RMI server</message>
 </record>
 <record>
-  <date>2023-05-29T11:39:45.676062900Z</date>
-  <millis>1685360385676</millis>
-  <nanos>62900</nanos>
+  <date>2023-05-29T23:54:11.575349900Z</date>
+  <millis>1685404451575</millis>
+  <nanos>349900</nanos>
   <sequence>3</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.SocketServer</class>
   <method>start</method>
-  <thread>28</thread>
+  <thread>30</thread>
   <message>Starting Server Socket</message>
 </record>
 <record>
-  <date>2023-05-29T11:39:45.677281800Z</date>
-  <millis>1685360385677</millis>
-  <nanos>281800</nanos>
+  <date>2023-05-29T23:54:11.578351200Z</date>
+  <millis>1685404451578</millis>
+  <nanos>351200</nanos>
   <sequence>4</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.SocketServer</class>
   <method>start</method>
-  <thread>28</thread>
+  <thread>30</thread>
   <message>Server Socket ready on port 50000</message>
 </record>
 <record>
-  <date>2023-05-29T11:39:45.680280900Z</date>
-  <millis>1685360385680</millis>
-  <nanos>280900</nanos>
+  <date>2023-05-29T23:54:11.581349100Z</date>
+  <millis>1685404451581</millis>
+  <nanos>349100</nanos>
   <sequence>5</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.ServerRMI</class>
   <method>start</method>
-  <thread>27</thread>
+  <thread>29</thread>
   <message>Lobby bound correctly</message>
 </record>
 <record>
-  <date>2023-05-29T11:39:45.681280700Z</date>
-  <millis>1685360385681</millis>
-  <nanos>280700</nanos>
+  <date>2023-05-29T23:54:11.582348600Z</date>
+  <millis>1685404451582</millis>
+  <nanos>348600</nanos>
   <sequence>6</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.ServerRMI</class>
   <method>start</method>
-  <thread>27</thread>
+  <thread>29</thread>
   <message>Server RMI ready on port 50001</message>
 </record>
 <record>
-  <date>2023-05-29T11:40:05.323597900Z</date>
-  <millis>1685360405323</millis>
-  <nanos>597900</nanos>
+  <date>2023-05-29T23:54:54.792298Z</date>
+  <millis>1685404494792</millis>
+  <nanos>298000</nanos>
   <sequence>7</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
   <method>login</method>
-  <thread>33</thread>
+  <thread>35</thread>
   <message>p1 is trying to login l1</message>
 </record>
 <record>
-  <date>2023-05-29T11:40:05.332601300Z</date>
-  <millis>1685360405332</millis>
-  <nanos>601300</nanos>
+  <date>2023-05-29T23:55:13.418002500Z</date>
+  <millis>1685404513418</millis>
+  <nanos>2500</nanos>
   <sequence>8</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
-  <method>lambda$login$7</method>
-  <thread>35</thread>
+  <method>lambda$login$8</method>
+  <thread>37</thread>
   <message>p1 created new lobby called: l1</message>
 </record>
 <record>
-  <date>2023-05-29T11:40:06.576754200Z</date>
-  <millis>1685360406576</millis>
-  <nanos>754200</nanos>
+  <date>2023-05-29T23:55:30.635502600Z</date>
+  <millis>1685404530635</millis>
+  <nanos>502600</nanos>
   <sequence>9</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
   <method>setLobbySize</method>
-  <thread>33</thread>
-  <message>Setting lobby-size to 2	for lobby: l1</message>
+  <thread>35</thread>
+  <message>Setting lobby-size to 3	for lobby: l1</message>
 </record>
 <record>
-  <date>2023-05-29T11:40:35.309630800Z</date>
-  <millis>1685360435309</millis>
-  <nanos>630800</nanos>
+  <date>2023-05-29T23:55:47.152588200Z</date>
+  <millis>1685404547152</millis>
+  <nanos>588200</nanos>
   <sequence>10</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
   <method>login</method>
-  <thread>42</thread>
+  <thread>44</thread>
   <message>p2 is trying to login l1</message>
 </record>
 <record>
-  <date>2023-05-29T11:40:35.310697600Z</date>
-  <millis>1685360435310</millis>
-  <nanos>697600</nanos>
+  <date>2023-05-29T23:55:52.089947200Z</date>
+  <millis>1685404552089</millis>
+  <nanos>947200</nanos>
   <sequence>11</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
   <method>login</method>
-  <thread>42</thread>
+  <thread>44</thread>
   <message>l1 registered new player: p2</message>
 </record>
 <record>
-  <date>2023-05-29T11:40:35.313655100Z</date>
-  <millis>1685360435313</millis>
-  <nanos>655100</nanos>
+  <date>2023-05-29T23:55:52.092949Z</date>
+  <millis>1685404552092</millis>
+  <nanos>949000</nanos>
   <sequence>12</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
-  <method>lambda$initGame$13</method>
-  <thread>35</thread>
-  <message>Starting GameID: l1</message>
+  <method>logOut</method>
+  <thread>55</thread>
+  <message>Logout for p1	in l1</message>
 </record>
 <record>
-  <date>2023-05-29T11:40:35.350529500Z</date>
-  <millis>1685360435350</millis>
-  <nanos>529500</nanos>
+  <date>2023-05-29T23:56:03.868334800Z</date>
+  <millis>1685404563868</millis>
+  <nanos>334800</nanos>
   <sequence>13</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
-  <method>lambda$initGame$13</method>
-  <thread>35</thread>
-  <message>Started new Game: l1</message>
+  <method>logOut</method>
+  <thread>57</thread>
+  <message>Logout for p1	in l1</message>
 </record>
 <record>
-  <date>2023-05-29T11:44:29.434342300Z</date>
-  <millis>1685360669434</millis>
-  <nanos>342300</nanos>
+  <date>2023-05-29T23:56:09.649115600Z</date>
+  <millis>1685404569649</millis>
+  <nanos>115600</nanos>
   <sequence>14</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
-  <method>logOut</method>
-  <thread>116</thread>
-  <message>Logout for p2	in l1</message>
+  <method>printLobbyStatus</method>
+  <thread>39</thread>
+  <message>LOBBY STATUS: 
+LobbyID: l1	Waiting Room: 1/3
+</message>
 </record>
 <record>
-  <date>2023-05-29T11:44:29.931727300Z</date>
-  <millis>1685360669931</millis>
-  <nanos>727300</nanos>
+  <date>2023-05-29T23:56:09.650460500Z</date>
+  <millis>1685404569650</millis>
+  <nanos>460500</nanos>
   <sequence>15</sequence>
   <logger>Server.ServerApp</logger>
   <level>SEVERE</level>
   <class>Server.Network.Lobby.Lobby</class>
-  <method>lambda$getLobbyInfo$0</method>
-  <thread>37</thread>
-  <message>Error unmarshaling return header; nested exception is: 
-	java.net.SocketException: Connection reset</message>
-</record>
-<record>
-  <date>2023-05-29T11:45:14.728064600Z</date>
-  <millis>1685360714728</millis>
-  <nanos>64600</nanos>
-  <sequence>16</sequence>
-  <logger>Server.ServerApp</logger>
-  <level>INFO</level>
-  <class>Server.Network.Lobby.Lobby</class>
-  <method>login</method>
-  <thread>109</thread>
-  <message>p2 is trying to login l1</message>
+  <method>lambda$ping$9</method>
+  <thread>61</thread>
+  <message>Cannot invoke "Server.Network.Lobby.PingTimer.receivedPing()" because the return value of "java.util.HashMap.get(Object)" is null</message>
 </record>
 </log>

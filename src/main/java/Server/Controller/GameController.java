@@ -245,19 +245,22 @@ public class GameController implements GameCommand, Serializable {
             this.gameModel.getPlayer(playerID).setStatus(false);
             if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
                 this.gameModel.completeTurn(this.currentPlayer.getTiles());
-            else {
-                for (ClientHandler client : players.values()) {
+            ClientHandler crashed = this.players.remove(playerID);
+            for (ClientHandler client : players.values()) {
+                Thread thread = new Thread(() -> {
                     try {
                         client.remoteView().crashedPlayer(playerID);
                     } catch (RemoteException e) {
                         ServerApp.logger.severe(e.toString());
                     }
-                }
+                });
+                thread.start();
             }
+            return crashed;
         } catch (PlayerException e) {
             ServerApp.logger.severe(e + " for logout");
         }
-        return this.players.remove(playerID);
+        return null;
     }
 
     /**

@@ -14,15 +14,15 @@ import java.util.*;
 
 public class Cli extends View {
     Controller clientController;
+    Scanner scanner = new Scanner(System.in);
+    Thread inputThread;
     MockModel mockModel;
     Network network;
-    InputThread inputThread;
 
     public Cli() throws RemoteException {
         super();
         clientController = new Controller(this);
         mockModel = new MockModel();
-        inputThread = new InputThread();
         start();
     }
 
@@ -30,7 +30,6 @@ public class Cli extends View {
         int port;
         String address;
         showTitle();
-        inputThread.start();
 
         try {
             network = askConnection();
@@ -47,11 +46,11 @@ public class Cli extends View {
         String input;
         System.out.print(CliColor.BOLD + "To start select a connection protocol between 'SOCKET' or 'RMI': " + CliColor.RESET);
 
-        input = inputThread.getUserInput();
+        input = scanner.nextLine();
 
         while (!input.equalsIgnoreCase("SOCKET") && !input.equalsIgnoreCase("RMI")) {
             System.out.println(CliColor.RED + "ERROR: you type something wrong, please enter 'SOCKET' or 'RMI'" + CliColor.RESET);
-            input = inputThread.getUserInput();
+            input = scanner.nextLine();
         }
 
         System.out.println(CliColor.YELLOW + "Good! You are going to create a " + input.toLowerCase() + " connection." + CliColor.RESET);
@@ -62,17 +61,16 @@ public class Cli extends View {
     @Override
     public void askLobbySize() throws RemoteException {
         System.out.print(CliColor.BOLD + "Please insert the numbers of players (insert a number between 2 and 4): \n" + CliColor.RESET);
-        String input = inputThread.getUserInput();
+        String input = scanner.nextLine();
 
         int playerNumber = Integer.parseInt(input);
         while (playerNumber < 2 || playerNumber > 4) {
             System.out.println(CliColor.RED + "ERROR: you type something wrong, match can only start with 2, 3 or 4 players" + CliColor.RESET);
-            input = inputThread.getUserInput();
+            input = scanner.nextLine();
             playerNumber = Integer.parseInt(input);
         }
 
         System.out.println(CliColor.YELLOW + "You are going to create a new Game, wait for the others players" + CliColor.RESET);
-
         network.setLobbySize(mockModel.getLocalPlayer(), mockModel.getLobbyID(), playerNumber);
     }
 
@@ -81,7 +79,6 @@ public class Cli extends View {
         String ip = DEFAULT_ADDRESS;
         boolean validInput = false;
         boolean firstTry = true;
-
         String address;
         do {
             if (!firstTry)
@@ -89,9 +86,9 @@ public class Cli extends View {
             else System.out.print(CliColor.BOLD + "Please enter the server address. " + CliColor.RESET);
 
             System.out.print(CliColor.BOLD + "\nInsert 'localhost' for the default value (" + DEFAULT_ADDRESS + "): " + CliColor.RESET);
-            address = inputThread.getUserInput();
+            address = scanner.nextLine();
 
-            if (address.equalsIgnoreCase("localhost") || address.equals(DEFAULT_ADDRESS)) {
+            if (address.equalsIgnoreCase("localhost") || address.equals(DEFAULT_ADDRESS) || address.equals("d")) {
                 validInput = true;
             } else if (clientController.validateIP(address)) {
                 ip = address;
@@ -129,9 +126,9 @@ public class Cli extends View {
             System.out.print(CliColor.BOLD + "Select a valid port between [" + MIN_PORT + ", " + MAX_PORT + "]. ");
             System.out.print("\nInsert 'default' for the default value [for SOCKET (" + DEFAULT_SOCKET_PORT + "); for RMI (" + DEFAULT_RMI_PORT + ")]: " + CliColor.RESET);
 
-            input = inputThread.getUserInput();
+            input = scanner.nextLine();
 
-            if (input.equalsIgnoreCase("default")) {
+            if (input.equalsIgnoreCase("default") || input.equals("d")) {
                 validInput = true;
                 port = -1;
             } else {
@@ -163,14 +160,12 @@ public class Cli extends View {
                 System.out.println("GameID: " + object + "\tPlayers Online: " + lobbyInfo.get(1).get(object));
         } else System.out.println("There are no lobby or games: create a new one");
         System.out.print(CliColor.BOLD + "\nInsert a lobby ID: " + CliColor.RESET);
-        inputLobby = inputThread.getUserInput();
+        inputLobby = scanner.nextLine();
 
         System.out.print(CliColor.BOLD + "Insert your Nickname: " + CliColor.RESET);
 
-        inputName = inputThread.getUserInput();
-
+        inputName = scanner.nextLine();
         network.login(inputName, inputLobby, this, network);
-
     }
 
 
@@ -286,7 +281,7 @@ public class Cli extends View {
 
     @Override
     public void showHelp() {
-
+        System.out.println("Commands: help");
     }
 
     @Override
@@ -327,7 +322,7 @@ public class Cli extends View {
 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
-        System.out.println(CliColor.RED + e.toString());
+        System.out.println(CliColor.RED + e.getMessage());
     }
 
 
@@ -344,27 +339,16 @@ public class Cli extends View {
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
         newTurn(mockModel.getCurrentPlayer());
-
-        Thread inputThread = new Thread(() -> {
-            final Scanner scanner = new Scanner(System.in);
-            String userInput;
-
-            while (true) {
-                if (scanner.hasNextLine()) {
-                    userInput = scanner.nextLine();
-                    try {
-                        clientController.doAction(userInput);
-                    } catch (RuntimeException e) {
-                        System.out.println(CliColor.RED + e.getMessage() + CliColor.RESET);
-                    }
-                } else {
-                    System.out.println("Don't enter without a body");
+        this.inputThread = new Thread(()->{
+            while(true){
+                String input = this.scanner.nextLine();
+                if (input != null && !input.isEmpty()) {
+                    clientController.doAction(input);
                 }
             }
         });
-        inputThread.start();
+        this.inputThread.start();
     }
-
 
     public void clearCLI() {
         System.out.print(CliColor.CLEAR_ALL);
