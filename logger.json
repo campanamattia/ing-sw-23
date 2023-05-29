@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2023-05-28T20:39:49.272012Z</date>
-  <millis>1685306389272</millis>
-  <nanos>12000</nanos>
+  <date>2023-05-29T15:45:17.472750Z</date>
+  <millis>1685375117472</millis>
+  <nanos>750000</nanos>
   <sequence>0</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -14,9 +14,9 @@
   <message>Starting ServerApp</message>
 </record>
 <record>
-  <date>2023-05-28T20:39:49.457201Z</date>
-  <millis>1685306389457</millis>
-  <nanos>201000</nanos>
+  <date>2023-05-29T15:45:17.681447Z</date>
+  <millis>1685375117681</millis>
+  <nanos>447000</nanos>
   <sequence>1</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -26,9 +26,9 @@
   <message>ServerApp started</message>
 </record>
 <record>
-  <date>2023-05-28T20:39:49.458837Z</date>
-  <millis>1685306389458</millis>
-  <nanos>837000</nanos>
+  <date>2023-05-29T15:45:17.681876Z</date>
+  <millis>1685375117681</millis>
+  <nanos>876000</nanos>
   <sequence>2</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -38,9 +38,9 @@
   <message>Starting RMI server</message>
 </record>
 <record>
-  <date>2023-05-28T20:39:49.462360Z</date>
-  <millis>1685306389462</millis>
-  <nanos>360000</nanos>
+  <date>2023-05-29T15:45:17.682325Z</date>
+  <millis>1685375117682</millis>
+  <nanos>325000</nanos>
   <sequence>3</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -50,39 +50,28 @@
   <message>Starting Server Socket</message>
 </record>
 <record>
-  <date>2023-05-28T20:39:49.463580Z</date>
-  <millis>1685306389463</millis>
-  <nanos>580000</nanos>
+  <date>2023-05-29T15:45:17.684564Z</date>
+  <millis>1685375117684</millis>
+  <nanos>564000</nanos>
   <sequence>4</sequence>
   <logger>Server.ServerApp</logger>
-  <level>INFO</level>
+  <level>SEVERE</level>
   <class>Server.Network.Servers.SocketServer</class>
   <method>start</method>
   <thread>27</thread>
-  <message>Server Socket ready on port 50000</message>
+  <message>java.net.BindException: Address already in use</message>
 </record>
 <record>
-  <date>2023-05-28T20:39:49.467119Z</date>
-  <millis>1685306389467</millis>
-  <nanos>119000</nanos>
+  <date>2023-05-29T15:45:17.685670Z</date>
+  <millis>1685375117685</millis>
+  <nanos>670000</nanos>
   <sequence>5</sequence>
   <logger>Server.ServerApp</logger>
-  <level>INFO</level>
-  <class>Server.Network.Servers.ServerRMI</class>
-  <method>start</method>
+  <level>SEVERE</level>
+  <class>Server.ServerApp</class>
+  <method>rmiServer</method>
   <thread>26</thread>
-  <message>Lobby bound correctly</message>
-</record>
-<record>
-  <date>2023-05-28T20:39:49.468137Z</date>
-  <millis>1685306389468</millis>
-  <nanos>137000</nanos>
-  <sequence>6</sequence>
-  <logger>Server.ServerApp</logger>
-  <level>INFO</level>
-  <class>Server.Network.Servers.ServerRMI</class>
-  <method>start</method>
-  <thread>26</thread>
-  <message>Server RMI ready on port 50001</message>
+  <message>java.rmi.server.ExportException: Port already in use: 50001; nested exception is: 
+	java.net.BindException: Address already in use</message>
 </record>
 </log>

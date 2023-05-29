@@ -45,7 +45,7 @@ public class Cli extends View {
 
     public Network askConnection() throws RemoteException {
         String input;
-        System.out.print(CliColor.BOLD + "Select connection Mode insert 'SOCKET' or 'RMI': " + CliColor.RESET);
+        System.out.print(CliColor.BOLD + "To start select a connection protocol between 'SOCKET' or 'RMI': " + CliColor.RESET);
 
         input = inputThread.getUserInput();
 
@@ -54,7 +54,7 @@ public class Cli extends View {
             input = inputThread.getUserInput();
         }
 
-        System.out.println(CliColor.YELLOW + "Well done are you going to create a " + input.toLowerCase() + " connection" + CliColor.RESET);
+        System.out.println(CliColor.YELLOW + "Good! You are going to create a " + input.toLowerCase() + " connection." + CliColor.RESET);
 
         return NetworkFactory.instanceNetwork(input, this);
     }
@@ -85,13 +85,13 @@ public class Cli extends View {
         String address;
         do {
             if (!firstTry)
-                System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
+                System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx). Try again" + CliColor.RESET);
             else System.out.print(CliColor.BOLD + "Please enter the server address. " + CliColor.RESET);
 
-            System.out.print(CliColor.BOLD + "Insert 'd' or 'localhost' for the default value (" + DEFAULT_ADDRESS + "): " + CliColor.RESET);
+            System.out.print(CliColor.BOLD + "\nInsert 'localhost' for the default value (" + DEFAULT_ADDRESS + "): " + CliColor.RESET);
             address = inputThread.getUserInput();
 
-            if (address.equalsIgnoreCase("d") || address.equalsIgnoreCase("localhost") || address.equals(DEFAULT_ADDRESS)) {
+            if (address.equalsIgnoreCase("localhost") || address.equals(DEFAULT_ADDRESS)) {
                 validInput = true;
             } else if (clientController.validateIP(address)) {
                 ip = address;
@@ -119,7 +119,7 @@ public class Cli extends View {
         while (!validInput) {
             if (notAnInt) {
                 notAnInt = false;
-                System.out.println(CliColor.RED + "ERROR: Please insert only numbers or \"d\"." + CliColor.RESET + " Try again.");
+                System.out.println(CliColor.RED + "ERROR: Please insert only numbers or \"default\"." + CliColor.RESET + " Try again.");
             }
             if (wrongPort) {
                 wrongPort = false;
@@ -127,17 +127,13 @@ public class Cli extends View {
             }
 
             System.out.print(CliColor.BOLD + "Select a valid port between [" + MIN_PORT + ", " + MAX_PORT + "]. ");
-            System.out.print("Insert 'ds' for the default value of SOCKET (" + DEFAULT_SOCKET_PORT + ") or 'dr' for default value of RMI (" + DEFAULT_RMI_PORT + "): " + CliColor.RESET);
+            System.out.print("\nInsert 'default' for the default value [for SOCKET (" + DEFAULT_SOCKET_PORT + "); for RMI (" + DEFAULT_RMI_PORT + ")]: " + CliColor.RESET);
 
             input = inputThread.getUserInput();
 
-            if (input.equalsIgnoreCase("ds") || input.equalsIgnoreCase("dr")) {
+            if (input.equalsIgnoreCase("default")) {
                 validInput = true;
-                if (input.equalsIgnoreCase("ds")) {
-                    port = DEFAULT_SOCKET_PORT;
-                } else if (input.equalsIgnoreCase("dr")) {
-                    port = DEFAULT_RMI_PORT;
-                }
+                port = -1;
             } else {
                 try {
                     port = Integer.parseInt(input);
@@ -160,11 +156,11 @@ public class Cli extends View {
         String inputName;
 
         if (lobbyInfo != null) {
-            System.out.println("Here you can find the lobbies with the the players in waiting room. Write an ID for the lobby if it no matches with others a new lobby will be instantiated");
+            System.out.println(CliColor.BOLD + "Here you can find the lobbies or games with the players logged. Write an ID for the lobby/game; if it doesn't match with others, a new lobby will be instantiated." + CliColor.RESET);
             for (String object : lobbyInfo.get(0).keySet())
-                System.out.println("LobbyID: " + object + "\tWaiting Room: " + lobbyInfo.get(0).get(object));
+                System.out.println(CliColor.BOLD + "LobbyID: " + object + "\t|\tWaiting Room: " + lobbyInfo.get(0).get(object) + CliColor.RESET);
             for (String object : lobbyInfo.get(1).keySet())
-                System.out.println("GameID: " + object + "\tPlayers Online: " + lobbyInfo.get(1).get(object));
+                System.out.println(CliColor.BOLD + "GameID: " + object + "\t|\tPlayers Online: " + lobbyInfo.get(1).get(object) + CliColor.RESET);
         } else System.out.println("There are no lobby or games: create a new one");
         System.out.print(CliColor.BOLD + "\nInsert a lobby ID: " + CliColor.RESET);
         inputLobby = inputThread.getUserInput();
@@ -186,7 +182,7 @@ public class Cli extends View {
             System.out.print(i + "\t");
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j].getStatus()) {
-                    String colorString = board[i][j].getTile().getColor().toString();
+                    String colorString = board[i][j].getTile().getColor().getCode();
                     System.out.print(CliColor.BBLACK + "|" + colorString + i + " , " + j + CliColor.BBLACK + "|" + CliColor.RESET);
                 } else {
                     System.out.print(CliColor.BBLACK + "|     |" + CliColor.RESET); //print empty black space
@@ -208,10 +204,10 @@ public class Cli extends View {
     @Override
     public void showStatus() {
         if (mockModel.getCurrentPlayer().equals(mockModel.getLocalPlayer())) {
-            System.out.print("It's your turn. ");
+            System.out.print("It's your turn.");
             System.out.println(mockModel.getTurnPhase());
         } else {
-            System.out.println("It's NOT your turn. Wait for other players. For help type 'help'");
+            System.out.println("It's NOT your turn. For help type 'help' or '?'");
         }
     }
 
@@ -233,13 +229,13 @@ public class Cli extends View {
     public void showTile(@NotNull List<Tile> tiles) {
         System.out.print("\t");
         for (int i = 0; i < tiles.size(); i++) {
-            System.out.print(tiles.get(i).getColor().toString() + "|" + (i + 1) + "|");
+            System.out.print(tiles.get(i).getColor().getCode() + "|" + (i + 1) + "|");
             System.out.print(CliColor.RESET + "   ");
         }
         System.out.println();
     }
 
-    // TODO: 16/05/23 farlo bello
+    // TODO: 16/05/23
     @Override
     public void endGame(List<Rank> classification) {
 
@@ -247,12 +243,12 @@ public class Cli extends View {
 
     @Override
     public void crashedPlayer(String crashedPlayer) throws RemoteException {
-        System.out.println(crashedPlayer + "is crashed but the game continue!!");
+        System.out.println(crashedPlayer + "is crashed but the game still continue!!");
     }
 
     @Override
     public void reloadPlayer(String reloadPlayer) throws RemoteException {
-        System.out.println(reloadPlayer + "reconnected in the game");
+        System.out.println(reloadPlayer + "rejoined the game");
     }
 
 
@@ -267,7 +263,7 @@ public class Cli extends View {
                 for (int j = 0; j < numColumn; j++) {
                     Tile[][] shelf = mockModel.getMockPlayers().get(k).getShelf();
                     if (shelf[i][j] != null) {
-                        String colorString = shelf[i][j].getColor().toString();
+                        String colorString = shelf[i][j].getColor().getCode();
                         System.out.print(CliColor.BBLACK + "|" + colorString + i + "," + j + CliColor.BBLACK + "|" + CliColor.RESET);
                     } else {
                         System.out.print(CliColor.BBLACK + "|   |" + CliColor.RESET);
@@ -318,7 +314,7 @@ public class Cli extends View {
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
         System.out.print("\t");
         for (int i = 0; i < tiles.size(); i++) {
-            System.out.print(tiles.get(i).getColor().toString() + "|" + (i + 1) + "|");
+            System.out.print(tiles.get(i).getColor().getCode() + "|" + (i + 1) + "|");
             System.out.print(CliColor.RESET + "   ");
         }
     }
@@ -337,7 +333,7 @@ public class Cli extends View {
 
     @Override
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
-        System.out.println("You login into the server");
+        System.out.println("You logged into the lobby");
         mockModel.setLocalPlayer(localPlayer);
         mockModel.setLobbyID(lobbyID);
         network.startPing(localPlayer, lobbyID);
@@ -348,22 +344,14 @@ public class Cli extends View {
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
         newTurn(mockModel.getCurrentPlayer());
+        inputThread.stopThread();
 
-        Thread inputThread = new Thread(() -> {
+        Thread inputThreadGame = new Thread(() -> {
             final Scanner scanner = new Scanner(System.in);
-            String userInput;
 
             while (true) {
-                if (scanner.hasNextLine()) {
-                    userInput = scanner.nextLine();
-                    try {
+                    String userInput = scanner.nextLine();
                         clientController.doAction(userInput);
-                    } catch (RuntimeException e) {
-                        System.out.println(CliColor.RED + e.getMessage() + CliColor.RESET);
-                    }
-                } else {
-                    System.out.println("Don't enter without a body");
-                }
             }
         });
         inputThread.start();

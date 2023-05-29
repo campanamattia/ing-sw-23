@@ -5,7 +5,6 @@ import Interface.Server.GameCommand;
 import Interface.Server.LobbyInterface;
 import Client.View.View;
 import Server.Model.Talent.*;
-import Server.ServerApp;
 import Utils.Scouts.ChatScout;
 import Utils.Scouts.CommonGoalScout;
 import Utils.Scouts.PlayerScout;
@@ -55,12 +54,13 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
             @Override
             public void run() {
                 try {
-                    ServerApp.lobby.logOut(playerID, lobbyID);
+                    logOut(playerID, lobbyID);
+                    System.exit(-1);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
             }
-        }, 15000); //15 seconds timeout
+        }, 10000); //15 seconds timeout
     }
 
     @Override
@@ -79,7 +79,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
         timer = null;
         this.executor.execute(() -> {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(7000);
                 startPing(playerID, lobbyID);
             } catch (InterruptedException e) {
                 e.printStackTrace();
