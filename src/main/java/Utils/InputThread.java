@@ -15,6 +15,7 @@ public class InputThread extends Thread {
         this.running = true;
     }
 
+    @Override
     public void run() {
         while (running && !isInterrupted()) {
             String input = scanner.nextLine();

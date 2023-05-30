@@ -17,7 +17,6 @@ import Utils.Coordinates;
 
 
 import java.io.*;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -26,8 +25,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ClientSocket extends Network {
     private Socket socket;
-    private ObjectInputStream inputStream;
-    private ObjectOutputStream outputStream;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
     private final AtomicBoolean clientConnected = new AtomicBoolean(false);
 
     public ClientSocket(View view) throws RemoteException {
@@ -39,40 +38,25 @@ public class ClientSocket extends Network {
     public void init(String ipAddress, int port) {
         port = (port == -1) ? 50000 : port;
         try {
-            this.socket = new Socket();
-            socket.connect(new InetSocketAddress(ipAddress, port));
-            if (socket.isConnected()) {
-                inputStream = new ObjectInputStream(socket.getInputStream());
-                outputStream = new ObjectOutputStream(socket.getOutputStream());
-                clientConnected.set(true);
-                this.executor.submit(this::readMessages);
-            } else System.out.println(socket);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            this.socket = new Socket(ipAddress, port);
+            this.out = new ObjectOutputStream(socket.getOutputStream());
+            this.in = new ObjectInputStream(socket.getInputStream());
+            System.out.println("Connected to server");
+            while(true){
+                Object ob;
+                ob = in.readObject();
+                deserialize(ob);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Connection failed");
         }
     }
 
-    public void readMessages() {
-        try {
-            while (clientConnected.get()) {
-                if(socket.isConnected()) {
-                    Object input = inputStream.readObject();
-                    if (input instanceof ServerMessage message) {
-                        this.executor.submit(() -> deserialize((message)));
-                    } else {
-                        System.err.println("Received an unexpected object from the server.");
-                    }
-                } else throw new IOException("the socket closed itself but i donno why");
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            clientConnected.set(false);
-            try {
-                logOut(null, null);
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
+    private void deserialize(Object message) {
+        System.out.println("Received message: " + message);
+        if (message instanceof ServerMessage serverMessage) {
+            serverMessage.execute(view);
+        } else System.out.println("Message not recognized");
     }
 
     public void selectTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
@@ -178,19 +162,12 @@ public class ClientSocket extends Network {
     }
 
     private void sendMessage(ClientMessage clientMessage) throws IOException {
-        if (clientConnected.get()) {
-            try {
-                outputStream.writeObject(clientMessage);
-                outputStream.flush();
-                outputStream.reset();
-            } catch (IOException e) {
-                clientConnected.set(false);
-            }
+        try {
+            this.out.writeObject(clientMessage);
+            this.out.flush();
+            this.out.reset();
+        } catch (IOException e) {
+            clientConnected.set(false);
         }
-    }
-
-
-    private void deserialize(ServerMessage message) {
-        message.execute(this.view);
     }
 }

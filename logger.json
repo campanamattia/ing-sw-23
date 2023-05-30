@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2023-05-30T14:19:44.619654Z</date>
-  <millis>1685456384619</millis>
-  <nanos>654000</nanos>
+  <date>2023-05-30T14:19:24.000052400Z</date>
+  <millis>1685456364000</millis>
+  <nanos>52400</nanos>
   <sequence>0</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -14,9 +14,9 @@
   <message>Starting ServerApp</message>
 </record>
 <record>
-  <date>2023-05-30T14:19:44.863558Z</date>
-  <millis>1685456384863</millis>
-  <nanos>558000</nanos>
+  <date>2023-05-30T14:19:24.279589900Z</date>
+  <millis>1685456364279</millis>
+  <nanos>589900</nanos>
   <sequence>1</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -26,62 +26,377 @@
   <message>ServerApp started</message>
 </record>
 <record>
-  <date>2023-05-30T14:19:44.864082Z</date>
-  <millis>1685456384864</millis>
-  <nanos>82000</nanos>
+  <date>2023-05-30T14:19:24.279589900Z</date>
+  <millis>1685456364279</millis>
+  <nanos>589900</nanos>
   <sequence>2</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.ServerRMI</class>
   <method>start</method>
-  <thread>26</thread>
+  <thread>27</thread>
   <message>Starting RMI server</message>
 </record>
 <record>
-  <date>2023-05-30T14:19:44.864089Z</date>
-  <millis>1685456384864</millis>
-  <nanos>89000</nanos>
+  <date>2023-05-30T14:19:24.280592400Z</date>
+  <millis>1685456364280</millis>
+  <nanos>592400</nanos>
   <sequence>3</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.SocketServer</class>
   <method>start</method>
-  <thread>27</thread>
+  <thread>28</thread>
   <message>Starting Server Socket</message>
 </record>
 <record>
-  <date>2023-05-30T14:19:44.865593Z</date>
-  <millis>1685456384865</millis>
-  <nanos>593000</nanos>
+  <date>2023-05-30T14:19:24.281589600Z</date>
+  <millis>1685456364281</millis>
+  <nanos>589600</nanos>
   <sequence>4</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.SocketServer</class>
   <method>start</method>
-  <thread>27</thread>
+  <thread>28</thread>
   <message>Server Socket ready on port 50000</message>
 </record>
 <record>
-  <date>2023-05-30T14:19:44.867176Z</date>
-  <millis>1685456384867</millis>
-  <nanos>176000</nanos>
+  <date>2023-05-30T14:19:24.283590200Z</date>
+  <millis>1685456364283</millis>
+  <nanos>590200</nanos>
   <sequence>5</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.ServerRMI</class>
   <method>start</method>
-  <thread>26</thread>
+  <thread>27</thread>
   <message>Lobby bound correctly</message>
 </record>
 <record>
-  <date>2023-05-30T14:19:44.867793Z</date>
-  <millis>1685456384867</millis>
-  <nanos>793000</nanos>
+  <date>2023-05-30T14:19:24.284591600Z</date>
+  <millis>1685456364284</millis>
+  <nanos>591600</nanos>
   <sequence>6</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.ServerRMI</class>
   <method>start</method>
-  <thread>26</thread>
+  <thread>27</thread>
   <message>Server RMI ready on port 50001</message>
 </record>
+<record>
+  <date>2023-05-30T14:19:37.100373700Z</date>
+  <millis>1685456377100</millis>
+  <nanos>373700</nanos>
+  <sequence>7</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>login</method>
+  <thread>33</thread>
+  <message>p1 is trying to login l1</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:37.107374400Z</date>
+  <millis>1685456377107</millis>
+  <nanos>374400</nanos>
+  <sequence>8</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>lambda$login$8</method>
+  <thread>35</thread>
+  <message>p1 created new lobby called: l1</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:39.421897500Z</date>
+  <millis>1685456379421</millis>
+  <nanos>897500</nanos>
+  <sequence>9</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>setLobbySize</method>
+  <thread>33</thread>
+  <message>Setting lobby-size to 2	for lobby: l1</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:44.577074500Z</date>
+  <millis>1685456384577</millis>
+  <nanos>74500</nanos>
+  <sequence>10</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>41</thread>
+  <message>Sending: Messages.Server.View.AskPlayerInfoMessage@16e059a4</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:48.933914100Z</date>
+  <millis>1685456388933</millis>
+  <nanos>914100</nanos>
+  <sequence>11</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>login</method>
+  <thread>40</thread>
+  <message>p1 is trying to login l1</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:48.934925100Z</date>
+  <millis>1685456388934</millis>
+  <nanos>925100</nanos>
+  <sequence>12</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.View.ErrorMessage@78297970</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:48.941920200Z</date>
+  <millis>1685456388941</millis>
+  <nanos>920200</nanos>
+  <sequence>13</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.View.AskPlayerInfoMessage@7edc8d92</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:52.593535200Z</date>
+  <millis>1685456392593</millis>
+  <nanos>535200</nanos>
+  <sequence>14</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>login</method>
+  <thread>40</thread>
+  <message>p2 is trying to login l1</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:52.594536300Z</date>
+  <millis>1685456392594</millis>
+  <nanos>536300</nanos>
+  <sequence>15</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>login</method>
+  <thread>40</thread>
+  <message>l1 registered new player: p2</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:52.595535700Z</date>
+  <millis>1685456392595</millis>
+  <nanos>535700</nanos>
+  <sequence>16</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.View.OutcomeLoginMessage@54095b0d</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:52.603557100Z</date>
+  <millis>1685456392603</millis>
+  <nanos>557100</nanos>
+  <sequence>17</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@301c17e</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:52.634058500Z</date>
+  <millis>1685456392634</millis>
+  <nanos>58500</nanos>
+  <sequence>18</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>printLobbyStatus</method>
+  <thread>35</thread>
+  <message>LOBBY STATUS: 
+GameID: l1	Players Online: 2/2		GameController: on going
+</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:52.636054100Z</date>
+  <millis>1685456392636</millis>
+  <nanos>54100</nanos>
+  <sequence>19</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>45</thread>
+  <message>Sending: Messages.Server.View.AllGameMessage@13ea145a</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:52.654053900Z</date>
+  <millis>1685456392654</millis>
+  <nanos>53900</nanos>
+  <sequence>20</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>SEVERE</level>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>getGameController</method>
+  <thread>41</thread>
+  <message>Game not found</message>
+</record>
+<record>
+  <date>2023-05-30T14:19:59.610817500Z</date>
+  <millis>1685456399610</millis>
+  <nanos>817500</nanos>
+  <sequence>21</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@4ed995f</message>
+</record>
+<record>
+  <date>2023-05-30T14:20:06.617422500Z</date>
+  <millis>1685456406617</millis>
+  <nanos>422500</nanos>
+  <sequence>22</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@38cdd01e</message>
+</record>
+<record>
+  <date>2023-05-30T14:20:13.621281200Z</date>
+  <millis>1685456413621</millis>
+  <nanos>281200</nanos>
+  <sequence>23</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@2f40e761</message>
+</record>
+<record>
+  <date>2023-05-30T14:20:20.624098700Z</date>
+  <millis>1685456420624</millis>
+  <nanos>98700</nanos>
+  <sequence>24</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@64c31b48</message>
+</record>
+<record>
+  <date>2023-05-30T14:20:27.626555200Z</date>
+  <millis>1685456427626</millis>
+  <nanos>555200</nanos>
+  <sequence>25</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@c8c41ee</message>
+</record>
+<record>
+  <date>2023-05-30T14:20:34.628315400Z</date>
+  <millis>1685456434628</millis>
+  <nanos>315400</nanos>
+  <sequence>26</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@5a173d41</message>
+</record>
+<record>
+  <date>2023-05-30T14:20:41.631238800Z</date>
+  <millis>1685456441631</millis>
+  <nanos>238800</nanos>
+  <sequence>27</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@7244a28d</message>
+</record>
+<record>
+  <date>2023-05-30T14:20:48.632907300Z</date>
+  <millis>1685456448632</millis>
+  <nanos>907300</nanos>
+  <sequence>28</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@ea1eed6</message>
+</record>
+<record>
+  <date>2023-05-30T14:20:55.636180900Z</date>
+  <millis>1685456455636</millis>
+  <nanos>180900</nanos>
+  <sequence>29</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@60cc4ddd</message>
+</record>
+<record>
+  <date>2023-05-30T14:21:02.639739Z</date>
+  <millis>1685456462639</millis>
+  <nanos>739000</nanos>
+  <sequence>30</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@3d289b0</message>
+</record>
+<record>
+  <date>2023-05-30T14:21:09.642204Z</date>
+  <millis>1685456469642</millis>
+  <nanos>204000</nanos>
+  <sequence>31</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@54d5038d</message>
+</record>
+<record>
+  <date>2023-05-30T14:21:16.644118600Z</date>
+  <millis>1685456476644</millis>
+  <nanos>118600</nanos>
+  <sequence>32</sequence>
+  <logger>Server.ServerApp</logger>
+  <level>INFO</level>
+  <class>Server.Network.Client.SocketHandler</class>
+  <method>send</method>
+  <thread>37</thread>
+  <message>Sending: Messages.Server.Network.PongMessage@5583909f</message>
+</record>
+</log>

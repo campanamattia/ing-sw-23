@@ -47,9 +47,7 @@ public class PingTimer{
         } catch (RemoteException e) {
             ServerApp.logger.severe(e.getMessage());
         }
-        finally {
-            start();
-        }
+        start();
     }
 
     public void interrupt() {

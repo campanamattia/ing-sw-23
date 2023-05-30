@@ -31,8 +31,8 @@ import java.util.logging.Level;
 public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout {
     private final Socket socket;
     private String lobbyID = null;
-    private ObjectInputStream input;
-    private ObjectOutputStream output;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
     private final ExecutorService executorService;
     private GameController controller;
 
@@ -46,36 +46,28 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
 
     @Override
     public void run() {
-        try {
-            try {
-                output = new ObjectOutputStream(socket.getOutputStream());
-                input = new ObjectInputStream(socket.getInputStream());
-            } catch (IOException e) {
+        try{
+            this.in = new ObjectInputStream(socket.getInputStream());
+            this.out = new ObjectOutputStream(socket.getOutputStream());
+            this.executorService.execute(()-> {
                 try {
-                    send(new ErrorMessage(new RuntimeException("Server is not ready yet")));
-                } catch (IOException ex) {
-                    ServerApp.logger.log(Level.SEVERE, ex.toString());
+                    askPlayerInfo(ServerApp.lobby.getLobbyInfo());
+                } catch (RemoteException e) {
+                    ServerApp.logger.log(Level.SEVERE, e.getMessage());
                 }
+            });
+            while (true) {
+                deserialize(in.readObject());
             }
-            ServerApp.logger.info("trying to set up new connection");
-            send(new AskPlayerInfoMessage(ServerApp.lobby.getLobbyInfo()));
-            while (this.socket.isConnected()) {
-                try {
-                    Object object = input.readObject();
-                    if(object instanceof ClientMessage message)
-                        this.executorService.submit(()->deserialize(message));
-                    else ServerApp.logger.severe("incorrect object in input");
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage() + "\tIO MAIN THREAD");
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private void deserialize(ClientMessage message) {
-        message.execute(this);
+    private void deserialize(Object message) {
+        if(message instanceof ClientMessage clientMessage){
+            clientMessage.execute(this);
+        } else ServerApp.logger.log(Level.SEVERE, "Message not recognized");
     }
     
 
@@ -217,21 +209,16 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
 
     private void send(ServerMessage message) throws IOException {
         try {
-            this.output.reset();
             ServerApp.logger.info("Sending: "+message);
-            this.output.writeObject(message);
-            this.output.flush();
+            this.out.writeObject(message);
+            this.out.flush();
+            this.out.reset();
         } catch (IOException e) {
             logOut();
         }
     }
 
     public void logOut() {
-        try {
-            this.input.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         try {
             socket.close();
         } catch (IOException e) {
