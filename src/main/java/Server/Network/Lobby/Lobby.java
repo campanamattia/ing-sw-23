@@ -8,6 +8,7 @@ import Server.Network.Client.ClientHandler;
 import Server.Network.Client.SocketHandler;
 import Server.ServerApp;
 import Utils.MockObjects.MockFactory;
+import Utils.MockObjects.MockModel;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -400,18 +401,20 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                 for (String playerID : this.lobby.get(lobbyID).keySet())
                     players.put(playerID, true);
                 this.games.put(new Game(lobbyID, players), new GameController(lobbyID, this.lobby.get(lobbyID)));
-                for (ClientHandler client : this.lobby.get(lobbyID).values()) {
-                    this.executorService.execute(() -> {
+                this.executorService.execute(() -> {
+                    MockModel model = MockFactory.getMock(games.get(findGame(lobbyID)).getGameModel());
+                    for (ClientHandler client : this.lobby.get(lobbyID).values()) {
+                        model.setLocalPlayer(client.playerID());
                         try {
-                            client.remoteView().allGame(MockFactory.getMock(games.get(findGame(lobbyID)).getGameModel()));
+                            client.remoteView().allGame(model);
                         } catch (RemoteException e) {
                             ServerApp.logger.severe("Error sending gameController to player");
                         }
-                    });
-                }
-                this.lobby.remove(lobbyID);
-                this.lobbySize.remove(lobbyID);
-                printLobbyStatus();
+                    }
+                    this.lobby.remove(lobbyID);
+                    this.lobbySize.remove(lobbyID);
+                    printLobbyStatus();
+                });
             });
         }
     }

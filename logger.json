@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2023-05-30T14:38:13.579883Z</date>
-  <millis>1685457493579</millis>
-  <nanos>883000</nanos>
+  <date>2023-05-30T15:49:05.119665600Z</date>
+  <millis>1685461745119</millis>
+  <nanos>665600</nanos>
   <sequence>0</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -14,9 +14,9 @@
   <message>Starting ServerApp</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:13.859528Z</date>
-  <millis>1685457493859</millis>
-  <nanos>528000</nanos>
+  <date>2023-05-30T15:49:05.441336500Z</date>
+  <millis>1685461745441</millis>
+  <nanos>336500</nanos>
   <sequence>1</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
@@ -26,247 +26,137 @@
   <message>ServerApp started</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:13.859953Z</date>
-  <millis>1685457493859</millis>
-  <nanos>953000</nanos>
+  <date>2023-05-30T15:49:05.442337600Z</date>
+  <millis>1685461745442</millis>
+  <nanos>337600</nanos>
   <sequence>2</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.ServerRMI</class>
   <method>start</method>
-  <thread>26</thread>
+  <thread>27</thread>
   <message>Starting RMI server</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:13.860100Z</date>
-  <millis>1685457493860</millis>
-  <nanos>100000</nanos>
+  <date>2023-05-30T15:49:05.442337600Z</date>
+  <millis>1685461745442</millis>
+  <nanos>337600</nanos>
   <sequence>3</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.SocketServer</class>
   <method>start</method>
-  <thread>27</thread>
+  <thread>28</thread>
   <message>Starting Server Socket</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:13.863230Z</date>
-  <millis>1685457493863</millis>
-  <nanos>230000</nanos>
+  <date>2023-05-30T15:49:05.444336800Z</date>
+  <millis>1685461745444</millis>
+  <nanos>336800</nanos>
   <sequence>4</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.SocketServer</class>
   <method>start</method>
-  <thread>27</thread>
+  <thread>28</thread>
   <message>Server Socket ready on port 50000</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:13.863520Z</date>
-  <millis>1685457493863</millis>
-  <nanos>520000</nanos>
+  <date>2023-05-30T15:49:05.447336600Z</date>
+  <millis>1685461745447</millis>
+  <nanos>336600</nanos>
   <sequence>5</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.ServerRMI</class>
   <method>start</method>
-  <thread>26</thread>
+  <thread>27</thread>
   <message>Lobby bound correctly</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:13.864644Z</date>
-  <millis>1685457493864</millis>
-  <nanos>644000</nanos>
+  <date>2023-05-30T15:49:05.448336700Z</date>
+  <millis>1685461745448</millis>
+  <nanos>336700</nanos>
   <sequence>6</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Servers.ServerRMI</class>
   <method>start</method>
-  <thread>26</thread>
+  <thread>27</thread>
   <message>Server RMI ready on port 50001</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:34.660192Z</date>
-  <millis>1685457514660</millis>
-  <nanos>192000</nanos>
+  <date>2023-05-30T15:49:17.971369100Z</date>
+  <millis>1685461757971</millis>
+  <nanos>369100</nanos>
   <sequence>7</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
   <method>login</method>
-  <thread>32</thread>
-  <message>ale is trying to login lobby</message>
+  <thread>33</thread>
+  <message>p1 is trying to login l1</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:34.666323Z</date>
-  <millis>1685457514666</millis>
-  <nanos>323000</nanos>
+  <date>2023-05-30T15:49:17.981101100Z</date>
+  <millis>1685461757981</millis>
+  <nanos>101100</nanos>
   <sequence>8</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
   <method>lambda$login$8</method>
-  <thread>34</thread>
-  <message>ale created new lobby called: lobby</message>
+  <thread>35</thread>
+  <message>p1 created new lobby called: l1</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:36.742948Z</date>
-  <millis>1685457516742</millis>
-  <nanos>948000</nanos>
+  <date>2023-05-30T15:49:19.533076200Z</date>
+  <millis>1685461759533</millis>
+  <nanos>76200</nanos>
   <sequence>9</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
   <method>setLobbySize</method>
-  <thread>32</thread>
-  <message>Setting lobby-size to 2	for lobby: lobby</message>
+  <thread>33</thread>
+  <message>Setting lobby-size to 2	for lobby: l1</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:43.011286Z</date>
-  <millis>1685457523011</millis>
-  <nanos>286000</nanos>
+  <date>2023-05-30T15:49:28.158936600Z</date>
+  <millis>1685461768158</millis>
+  <nanos>936600</nanos>
   <sequence>10</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
-  <class>Server.Network.Client.SocketHandler</class>
-  <method>send</method>
+  <class>Server.Network.Lobby.Lobby</class>
+  <method>login</method>
   <thread>40</thread>
-  <message>Sending: Messages.Server.View.AskPlayerInfoMessage@199c0de2</message>
+  <message>p2 is trying to login l1</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:47.468898Z</date>
-  <millis>1685457527468</millis>
-  <nanos>898000</nanos>
+  <date>2023-05-30T15:49:28.159892200Z</date>
+  <millis>1685461768159</millis>
+  <nanos>892200</nanos>
   <sequence>11</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
   <method>login</method>
-  <thread>39</thread>
-  <message>jdweou is trying to login lobby</message>
+  <thread>40</thread>
+  <message>l1 registered new player: p2</message>
 </record>
 <record>
-  <date>2023-05-30T14:38:47.469973Z</date>
-  <millis>1685457527469</millis>
-  <nanos>973000</nanos>
+  <date>2023-05-30T15:49:28.257428300Z</date>
+  <millis>1685461768257</millis>
+  <nanos>428300</nanos>
   <sequence>12</sequence>
   <logger>Server.ServerApp</logger>
   <level>INFO</level>
   <class>Server.Network.Lobby.Lobby</class>
-  <method>login</method>
-  <thread>39</thread>
-  <message>lobby registered new player: jdweou</message>
-</record>
-<record>
-  <date>2023-05-30T14:38:47.471120Z</date>
-  <millis>1685457527471</millis>
-  <nanos>120000</nanos>
-  <sequence>13</sequence>
-  <logger>Server.ServerApp</logger>
-  <level>INFO</level>
-  <class>Server.Network.Client.SocketHandler</class>
-  <method>send</method>
-  <thread>36</thread>
-  <message>Sending: Messages.Server.View.OutcomeLoginMessage@11380641</message>
-</record>
-<record>
-  <date>2023-05-30T14:38:47.477759Z</date>
-  <millis>1685457527477</millis>
-  <nanos>759000</nanos>
-  <sequence>14</sequence>
-  <logger>Server.ServerApp</logger>
-  <level>INFO</level>
-  <class>Server.Network.Client.SocketHandler</class>
-  <method>send</method>
-  <thread>36</thread>
-  <message>Sending: Messages.Server.Network.PongMessage@251a944b</message>
-</record>
-<record>
-  <date>2023-05-30T14:38:47.500489Z</date>
-  <millis>1685457527500</millis>
-  <nanos>489000</nanos>
-  <sequence>15</sequence>
-  <logger>Server.ServerApp</logger>
-  <level>INFO</level>
-  <class>Server.Network.Lobby.Lobby</class>
   <method>printLobbyStatus</method>
-  <thread>34</thread>
+  <thread>37</thread>
   <message>LOBBY STATUS: 
-GameID: lobby	Players Online: 2/2		GameController: on going
-</message>
-</record>
-<record>
-  <date>2023-05-30T14:38:47.501426Z</date>
-  <millis>1685457527501</millis>
-  <nanos>426000</nanos>
-  <sequence>16</sequence>
-  <logger>Server.ServerApp</logger>
-  <level>INFO</level>
-  <class>Server.Network.Client.SocketHandler</class>
-  <method>send</method>
-  <thread>36</thread>
-  <message>Sending: Messages.Server.View.AllGameMessage@5d9f580</message>
-</record>
-<record>
-  <date>2023-05-30T14:38:47.510037Z</date>
-  <millis>1685457527510</millis>
-  <nanos>37000</nanos>
-  <sequence>17</sequence>
-  <logger>Server.ServerApp</logger>
-  <level>SEVERE</level>
-  <class>Server.Network.Lobby.Lobby</class>
-  <method>getGameController</method>
-  <thread>40</thread>
-  <message>Game not found</message>
-</record>
-<record>
-  <date>2023-05-30T14:38:54.486917Z</date>
-  <millis>1685457534486</millis>
-  <nanos>917000</nanos>
-  <sequence>18</sequence>
-  <logger>Server.ServerApp</logger>
-  <level>INFO</level>
-  <class>Server.Network.Client.SocketHandler</class>
-  <method>send</method>
-  <thread>44</thread>
-  <message>Sending: Messages.Server.Network.PongMessage@131c736d</message>
-</record>
-<record>
-  <date>2023-05-30T14:39:04.492514Z</date>
-  <millis>1685457544492</millis>
-  <nanos>514000</nanos>
-  <sequence>19</sequence>
-  <logger>Server.ServerApp</logger>
-  <level>INFO</level>
-  <class>Server.Network.Lobby.Lobby</class>
-  <method>logOut</method>
-  <thread>39</thread>
-  <message>Logout for jdweou	in lobby</message>
-</record>
-<record>
-  <date>2023-05-30T14:39:04.493899Z</date>
-  <millis>1685457544493</millis>
-  <nanos>899000</nanos>
-  <sequence>20</sequence>
-  <logger>Server.ServerApp</logger>
-  <level>INFO</level>
-  <class>Server.Network.Lobby.Lobby</class>
-  <method>logOut</method>
-  <thread>46</thread>
-  <message>Logout for jdweou	in lobby</message>
-</record>
-<record>
-  <date>2023-05-30T14:39:04.495141Z</date>
-  <millis>1685457544495</millis>
-  <nanos>141000</nanos>
-  <sequence>21</sequence>
-  <logger>Server.ServerApp</logger>
-  <level>INFO</level>
-  <class>Server.Network.Lobby.Lobby</class>
-  <method>printLobbyStatus</method>
-  <thread>44</thread>
-  <message>LOBBY STATUS: 
-GameID: lobby	Players Online: 1/2		GameController: null
+GameID: l1	Players Online: 2/2		GameController: on going
 </message>
 </record>
 </log>
