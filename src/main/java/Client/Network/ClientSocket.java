@@ -4,6 +4,7 @@ import Client.View.View;
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
 import Interface.Scout;
+import Interface.Server.GameCommand;
 import Messages.Client.GameController.InsertTilesMessage;
 import Messages.Client.GameController.RegisterScout;
 import Messages.Client.GameController.SelectedTilesMessage;
@@ -96,7 +97,8 @@ public class ClientSocket extends Network {
     }
 
     @Override
-    public void setGameController(GameController gameController) throws RemoteException {
+    public void setGameController(GameCommand gameController) throws RemoteException {
+        //never called
     }
 
     @Override

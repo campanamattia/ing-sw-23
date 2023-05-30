@@ -3,6 +3,7 @@ package Server.Network.Client;
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
 import Interface.Scout;
+import Interface.Server.GameCommand;
 import Messages.ClientMessage;
 import Messages.Server.Network.UpdateMessage;
 import Messages.Server.View.*;
@@ -30,11 +31,10 @@ import java.util.logging.Level;
 
 public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout {
     private final Socket socket;
-    private String lobbyID = null;
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private final ExecutorService executorService;
-    private GameController controller;
+    private GameCommand controller;
 
 
 
@@ -147,13 +147,6 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         ServerMessage message = new AllGameMessage(mockModel);
         try {
             send(message);
-            this.executorService.submit(()-> {
-                try {
-                    ServerApp.lobby.getGameController(this.lobbyID, this);
-                } catch (RemoteException e) {
-                    ServerApp.logger.log(Level.SEVERE, e.getMessage());
-                }
-            });
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.getMessage());
         }
@@ -199,17 +192,13 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     }
 
     @Override
-    public void setGameController(GameController gameController) throws RemoteException {
+    public void setGameController(GameCommand gameController) throws RemoteException {
+        ServerApp.logger.info("Setting game controller");
         this.controller = gameController;
-    }
-
-    public GameController getController() {
-        return controller;
     }
 
     private void send(ServerMessage message) throws IOException {
         try {
-            ServerApp.logger.info("Sending: "+message);
             this.out.writeObject(message);
             this.out.flush();
             this.out.reset();
@@ -242,11 +231,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         }
     }
 
-    public GameController getGameController() {
+    public GameCommand getGameController() {
         return controller;
-    }
-
-    public void setLobbyID(String lobbyID) {
-        this.lobbyID = lobbyID;
     }
 }

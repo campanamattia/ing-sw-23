@@ -1,5 +1,6 @@
 package Messages.Client.GameController;
 
+import Interface.Server.GameCommand;
 import Messages.ClientMessage;
 import Server.Controller.GameController;
 import Server.Network.Client.SocketHandler;
@@ -18,7 +19,7 @@ public class SelectedTilesMessage extends ClientMessage {
     }
 
     public void execute(SocketHandler socketHandler) {
-        GameController gameController=  socketHandler.getGameController();
+        GameCommand gameController=  socketHandler.getGameController();
         try {
             gameController.selectTiles(this.playerID,this.coordinates);
         } catch (RemoteException e) {
