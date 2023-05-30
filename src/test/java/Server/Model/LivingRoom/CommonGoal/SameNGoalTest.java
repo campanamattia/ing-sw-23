@@ -1,4 +1,4 @@
-package Server.Model.CommonGoal;
+package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
 import Enumeration.Color;
