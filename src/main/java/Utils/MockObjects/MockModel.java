@@ -2,7 +2,6 @@ package Utils.MockObjects;
 
 import Enumeration.TurnPhase;
 import Utils.ChatMessage;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

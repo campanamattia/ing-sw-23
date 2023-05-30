@@ -5,6 +5,7 @@ import Client.Network.Network;
 import Client.Network.NetworkFactory;
 import Client.View.View;
 import Utils.*;
+import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,7 +62,7 @@ public class Cli extends View {
 
     @Override
     public void askLobbySize() throws RemoteException {
-        System.out.print(CliColor.BOLD + "Please insert the numbers of players (insert a number between 2 and 4): \n" + CliColor.RESET);
+        System.out.print(CliColor.BOLD + "Please insert the numbers of players (insert a number between 2 and 4): " + CliColor.RESET);
         String input = inputThread.getUserInput();
 
         int playerNumber = Integer.parseInt(input);
@@ -170,14 +171,24 @@ public class Cli extends View {
         inputName = inputThread.getUserInput();
 
         network.login(inputName, inputLobby, this, network);
-
     }
 
 
     @Override
     public void showBoard() {
         Cell[][] board = mockModel.getMockBoard().getBoard();
-        System.out.println(" \t   0   " + "   1   " + "   2   " + "   3   " + "   4   " + "   5   " + "   6   " + "   7   " + "   8   ");
+        int numberPlayer = mockModel.getMockPlayers().size();
+        MockCommonGoal commonGoal1 = mockModel.getMockCommonGoal().get(0);
+        MockCommonGoal commonGoal2 = mockModel.getMockCommonGoal().get(1);
+
+        if (numberPlayer == 2) {
+            System.out.print(" \t   0   " + "   1   " + "   2   " + "   3   " + "   4   " + "   5   " + "   6   \t* ");
+        } else {
+            System.out.print(" \t   0   " + "   1   " + "   2   " + "   3   " + "   4   " + "   5   " + "   6   " + "   7   " + "   8   \t* ");
+        }
+
+        System.out.println(CliColor.BOLD + "COMMON GOAL" + CliColor.RESET);
+
         for (int i = 0; i < board.length; i++) {
             System.out.print(i + "\t");
             for (int j = 0; j < board[0].length; j++) {
@@ -188,7 +199,7 @@ public class Cli extends View {
                     System.out.print(CliColor.BBLACK + "|     |" + CliColor.RESET); //print empty black space
                 }
             }
-            System.out.println();
+            System.out.println("\t*");
         }
         System.out.println();
     }
@@ -261,13 +272,18 @@ public class Cli extends View {
             System.out.print(" \t");
             for (int k = 0; k < numPlayer; k++) {
                 for (int j = 0; j < numColumn; j++) {
+
                     Tile[][] shelf = mockModel.getMockPlayers().get(k).getShelf();
-                    if (shelf[i][j] != null) {
-                        String colorString = shelf[i][j].getColor().getCode();
-                        System.out.print(CliColor.BBLACK + "|" + colorString + i + "," + j + CliColor.BBLACK + "|" + CliColor.RESET);
+                    Tile[][] privateGoal = mockModel.getMockPlayers().get(k).getPersonalGoal();
+                    String colorString = (shelf[i][j] != null) ? shelf[i][j].getColor().getCode() : CliColor.BBLACK.toString();
+                    String colorBar;
+
+                    if (mockModel.getLocalPlayer().equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
+                        colorBar = (privateGoal[i][j] != null) ? privateGoal[i][j].getColor().getCode() : CliColor.BBLACK.toString();
                     } else {
-                        System.out.print(CliColor.BBLACK + "|   |" + CliColor.RESET);
+                        colorBar = CliColor.BBLACK.toString();
                     }
+                    System.out.print(colorBar + "|" + colorString + "   " + colorBar + "|" + CliColor.RESET);
                 }
                 System.out.print("\t\t");
             }
@@ -343,7 +359,6 @@ public class Cli extends View {
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
-        newTurn(mockModel.getCurrentPlayer());
 
         Thread inputThread = new Thread(() -> {
             final Scanner scanner = new Scanner(System.in);
@@ -363,6 +378,8 @@ public class Cli extends View {
             }
         });
         inputThread.start();
+
+        newTurn(mockModel.getCurrentPlayer());
     }
 
 
