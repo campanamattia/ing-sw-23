@@ -78,7 +78,7 @@ public class Controller {
     private OperationType checkInput(String input) throws InvalidInputException {
 
         // check syntax of the command.
-        // st-x,y/x,y/x,y
+        // st-(x,y)-(x,y)-(x,y)
         // it-x,y,z/c
         // wm-text of the message
         // cv-CLI/GUI

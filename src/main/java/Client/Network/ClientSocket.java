@@ -53,7 +53,6 @@ public class ClientSocket extends Network {
     }
 
     private void deserialize(Object message) {
-        System.out.println("Received message: " + message);
         if (message instanceof ServerMessage serverMessage) {
             serverMessage.execute(view);
         } else System.out.println("Message not recognized");

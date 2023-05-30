@@ -157,7 +157,8 @@ public class GameModel {
         json = json.get("scoringToken").getAsJsonObject();
         List<Integer> scoringToken = getAsList(json.get(Integer.toString(this.nPlayers)).getAsJsonArray());
         Random random = new Random();
-        this.commonGoals.add(CommonGoalFactory.getCommonGoal(scoringToken, array.remove(random.nextInt(array.size())).getAsJsonObject()));
+        for(int i =0; i<2; i++)
+            this.commonGoals.add(CommonGoalFactory.getCommonGoal(scoringToken, array.remove(random.nextInt(array.size())).getAsJsonObject()));
     }
 
     /**
