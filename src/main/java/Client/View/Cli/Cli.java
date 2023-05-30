@@ -173,8 +173,8 @@ public class Cli extends View {
     public void showBoard() {
         Cell[][] board = mockModel.getMockBoard().getBoard();
         int numberPlayer = mockModel.getMockPlayers().size();
-        MockCommonGoal commonGoal1 = mockModel.getMockCommonGoal().get(0);
-        MockCommonGoal commonGoal2 = mockModel.getMockCommonGoal().get(1);
+//        MockCommonGoal commonGoal1 = mockModel.getMockCommonGoal().get(0);
+//        MockCommonGoal commonGoal2 = mockModel.getMockCommonGoal().get(1);
 
         if (numberPlayer == 2) {
             System.out.print(" \t   0   " + "   1   " + "   2   " + "   3   " + "   4   " + "   5   " + "   6   \t* ");
