@@ -14,15 +14,17 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
 public abstract class View extends UnicastRemoteObject implements RemoteView {
-    MockModel mockModel;
-    Network network;
+    protected MockModel mockModel;
+    protected Network network;
 
     public View() throws RemoteException {
         super();
     }
 
     public Network getNetwork() {
-        return network;
+        if (network == null) {
+            throw new RuntimeException("Network not set");
+        } else return this.network;
     }
 
     public void setNetwork(Network network) {

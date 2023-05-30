@@ -16,8 +16,6 @@ public class Cli extends View {
     Controller clientController;
     Scanner scanner = new Scanner(System.in);
     Thread inputThread;
-    MockModel mockModel;
-    Network network;
 
     public Cli() throws RemoteException {
         super();
@@ -32,14 +30,15 @@ public class Cli extends View {
         showTitle();
 
         try {
-            network = askConnection();
+            this.network = askConnection();
         } catch (RemoteException e) {
             System.out.println("Error while creating connection object");
             System.exit(-1);
         }
         address = askServerAddress();
         port = askServerPort();
-        network.init(address, port);
+        Thread connection = new Thread(()->network.init(address, port));
+        connection.start();
     }
 
     public Network askConnection() throws RemoteException {
@@ -322,7 +321,7 @@ public class Cli extends View {
 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
-        System.out.println(CliColor.RED + e.getMessage());
+        System.out.println(CliColor.RED + e.getMessage()+ CliColor.RESET);
     }
 
 
