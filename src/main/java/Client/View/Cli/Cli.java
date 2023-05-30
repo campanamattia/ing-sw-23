@@ -210,8 +210,7 @@ public class Cli extends View {
     @Override
     public void showStatus() {
         if (mockModel.getCurrentPlayer().equals(mockModel.getLocalPlayer())) {
-            System.out.print("It's your turn.");
-            System.out.println(mockModel.getTurnPhase());
+            System.out.println("It's your turn." + mockModel.getTurnPhase() + "For more help type 'help' or '?'");
         } else {
             System.out.println("It's NOT your turn. For help type 'help' or '?'");
         }
@@ -317,7 +316,7 @@ public class Cli extends View {
         mockModel.setCurrentPlayer(playerID);
         showBoard();
         showShelves();
-        showHelp();
+        showStatus();
     }
 
 
@@ -364,8 +363,6 @@ public class Cli extends View {
             }
         });
         this.inputThread.start();
-
-        newTurn(mockModel.getCurrentPlayer());
     }
 
     public void clearCLI() {
