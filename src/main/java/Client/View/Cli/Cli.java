@@ -116,7 +116,7 @@ public class Cli extends View {
         while (!validInput) {
             if (notAnInt) {
                 notAnInt = false;
-                System.out.println(CliColor.RED + "ERROR: Please insert only numbers or \"default\"." + CliColor.RESET + " Try again.");
+                System.out.println(CliColor.RED + "ERROR: Please insert only numbers or 'default'." + CliColor.RESET + " Try again.");
             }
             if (wrongPort) {
                 wrongPort = false;
@@ -176,10 +176,50 @@ public class Cli extends View {
         MockCommonGoal commonGoal1 = mockModel.getMockCommonGoal().get(0);
         MockCommonGoal commonGoal2 = mockModel.getMockCommonGoal().get(1);
 
+        List<String> subString1 = new ArrayList<>(10);
+        List<String> subString2 = new ArrayList<>(10);
+
+        StringBuilder sb1 = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
+
+        for (String parola : commonGoal1.getDescription().split(" ")) {
+            if (sb1.length() + parola.length() <= 100) {
+                if (sb1.length() > 0) {
+                    sb1.append(" ");
+                }
+                sb1.append(parola);
+            } else {
+                subString1.add(sb1.toString());
+                sb1.setLength(0);
+                sb1.append(parola);
+            }
+        }
+        if (sb1.length() > 0) {
+            subString1.add(sb1.toString());
+        }
+
+        for (String parola : commonGoal2.getDescription().split(" ")) {
+            if (sb2.length() + parola.length() <= 100) {
+                if (sb2.length() > 0) {
+                    sb2.append(" ");
+                }
+                sb2.append(parola);
+            } else {
+                subString2.add(sb2.toString());
+                sb2.setLength(0);
+                sb2.append(parola);
+            }
+        }
+        if (sb2.length() > 0) {
+            subString2.add(sb2.toString());
+        }
+
+
+
         if (numberPlayer == 2) {
-            System.out.print(" \t   0   " + "   1   " + "   2   " + "   3   " + "   4   " + "   5   " + "   6   \t* ");
+            System.out.print(" \t   0   " + "   1   " + "   2   " + "   3   " + "   4   " + "   5   " + "   6   \t| ");
         } else {
-            System.out.print(" \t   0   " + "   1   " + "   2   " + "   3   " + "   4   " + "   5   " + "   6   " + "   7   " + "   8   \t* ");
+            System.out.print(" \t   0   " + "   1   " + "   2   " + "   3   " + "   4   " + "   5   " + "   6   " + "   7   " + "   8   \t| ");
         }
 
         System.out.println(CliColor.BOLD + "COMMON GOAL" + CliColor.RESET);
@@ -194,9 +234,22 @@ public class Cli extends View {
                     System.out.print(CliColor.BBLACK + "|     |" + CliColor.RESET); //print empty black space
                 }
             }
-            System.out.println("\t*");
+            System.out.print("\t| ");
+
+            //print CommonGoal
+            if (i <= 2) {
+                if (subString1.get(i) != null)
+                    System.out.println(subString1.get(i));
+                else
+                    System.out.println();
+            }
+            if (i >= 3 && i <= 5) {
+                if (subString2.get(i) != null)
+                    System.out.println(subString2.get(i));
+                else
+                    System.out.println();
+            }
         }
-        System.out.println();
     }
 
     @Override
