@@ -1,6 +1,5 @@
 package Client.Controller;
 
-import Client.Network.*;
 import Client.View.View;
 import Enumeration.OperationType;
 import Exception.Player.InvalidInputException;
@@ -13,7 +12,6 @@ import java.util.List;
 public class Controller {
     private final View view;
     private String playerID;
-    private Network network;
 
 
     public Controller(View view) {
@@ -44,16 +42,16 @@ public class Controller {
             String content = upLoadContent(input, operationType);
 
             switch (operationType) {
-                case WRITEMESSAGE -> network.writeChat(this.playerID, content, ""); // TODO: 24/05/2023
+                case WRITEMESSAGE -> view.getNetwork().writeChat(this.playerID, content, ""); // TODO: 24/05/2023
                 case SELECTEDTILES -> {
                     List<Coordinates> selectCoordinate = extractCoordinates(content);
-                    network.selectTiles(this.playerID, selectCoordinate);
+                    this.view.getNetwork().selectTiles(this.playerID, selectCoordinate);
                 }
                 case INSERTTILES -> {
                     String orderOfTiles = content.split("/")[0];
                     List<Integer> sorted = extractInteger(orderOfTiles);
                     int column = Integer.parseInt(content.split("/")[1]);
-                    network.insertTiles(this.playerID, sorted, column);
+                    this.view.getNetwork().insertTiles(this.playerID, sorted, column);
                 }
             }
 
@@ -178,7 +176,7 @@ public class Controller {
         List<Coordinates> coordinates = new ArrayList<>();
         Coordinates tmpCoordinates;
         for (int i = 0; i < tmp.length; i++) {
-            tmpCoordinates = new Coordinates(Integer.parseInt(input.split("/")[i].split(";")[0]), Integer.parseInt(input.split("/")[i].split(";")[1]));
+            tmpCoordinates = new Coordinates(Integer.parseInt(input.split("/")[i].split(",")[0]), Integer.parseInt(input.split("/")[i].split(",")[1]));
             coordinates.add(tmpCoordinates);
         }
         return coordinates;
@@ -217,7 +215,4 @@ public class Controller {
         this.playerID = playerID;
     }
 
-    public void setNetwork(Network network) {
-        this.network = network;
-    }
 }

@@ -28,9 +28,9 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      */
     private final HashMap<String, HashMap<String, ClientHandler>> lobby;
     /**
-     * A mapping of games to their corresponding game controllers.
+     * A list of active games.
      */
-    private final HashMap<Game, GameController> games;
+    private final List<GameController> games;
     /**
      * A mapping of player-hashcode to their heartbeat timer.
      */
@@ -54,7 +54,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         this.heartbeat = new HashMap<>();
         this.lobby = new HashMap<>();
         this.lobbySize = new HashMap<>();
-        this.games = new HashMap<>();
+        this.games = new ArrayList<>();
     }
 
     /**
@@ -93,14 +93,13 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             }
 
             // Retrieve game information
-            for (Game game : this.games.keySet()) {
-                games.put(game.name(), activePlayers(game) + "/" + game.players().size());
+            for (GameController game : this.games) {
+                games.put(game.getGameID(), activePlayers(game) + "/" + game.getPlayers().size());
             }
 
             return lobbyInfo;
         } else return null;
     }
-
 
     /**
      * Calculates the number of active players in the specified game.
@@ -108,14 +107,165 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      * @param game the game for which to count the active players
      * @return the number of active players in the game
      */
-    private int activePlayers(Game game) {
+    private int activePlayers(GameController game) {
         int activePlayers = 0;
-        for (Boolean status : game.players().values()) {
-            activePlayers += (status) ? 1 : 0;
+        for (ClientHandler status : game.getClients()) {
+            activePlayers += (status != null) ? 1 : 0;
         }
         return activePlayers;
     }
 
+    /**
+     * Handles the login process for a player.
+     *
+     * @param playerID the ID of the player logging in
+     * @param lobbyID  the ID of the lobby in which the player is logging in
+     * @param client   the remote view of the player
+     * @param network  the remote client representing the player's network connection
+     * @throws RemoteException if a communication error occurs during the remote method call
+     */
+    public synchronized void login(String playerID, String lobbyID, RemoteView client, RemoteClient network) throws RemoteException {
+        ServerApp.logger.info(playerID + " is trying to login " + lobbyID);
+        GameController game = findGame(lobbyID);
+        if (game != null)
+            rejoinGame(playerID, lobbyID, client, network, game);//if the game exists
+        else
+            logInLobby(playerID, lobbyID, client, network);
+    }
+
+    /**
+     * Finds a game with the specified lobby ID.
+     *
+     * @param gameID the ID of the lobby
+     * @return the GameController object corresponding to the lobby ID, or null if no matching game is found
+     */
+    private GameController findGame(String gameID) {
+        return this.games.stream().filter(game -> game.getGameID().equals(gameID)).findFirst().orElse(null);
+    }
+
+    /**
+     * Attempts to rejoin a disconnected player to the game.
+     *
+     * @param playerID   The ID of the player who wants to rejoin.
+     * @param lobbyID    The ID of the lobby where the player wants to rejoin.
+     * @param remoteView The remote view of the player.
+     */
+    private void rejoinGame(String playerID, String lobbyID, RemoteView remoteView, RemoteClient network, GameController gameController) {
+        if (gameController.getPlayers().containsKey(playerID)) {
+            if (gameController.getPlayers().get(playerID) == null) {//if the player is not playing
+                this.executorService.execute(() -> {
+                    try {
+                        gameController.rejoin(playerID, new ClientHandler(playerID, lobbyID, remoteView));
+                        remoteView.outcomeLogin(playerID, lobbyID);
+                        MockModel model = MockFactory.getMock(gameController.getGameModel());
+                        model.setLocalPlayer(playerID);
+                        remoteView.allGame(model);
+                        startTimer(playerID, lobbyID, network);
+                        network.setGameController(gameController);
+                    } catch (RemoteException e) {
+                        ServerApp.logger.severe("Error rejoining player to game");
+                    }
+                });
+            } else { //if the player is playing
+                this.executorService.submit(() -> {
+                    try {
+                        remoteView.outcomeException(new RuntimeException("Player is already playing"));
+                        remoteView.askPlayerInfo(getLobbyInfo());
+                    } catch (RemoteException e) {
+                        ServerApp.logger.log(Level.SEVERE, e.getMessage());
+                    }
+                });
+            }
+        }
+    }
+
+    private void logInLobby(String playerID, String lobbyID, RemoteView client, RemoteClient network) throws RemoteException {
+        if (this.lobby.containsKey(lobbyID)) { //if the lobby exists
+            if (this.lobby.get(lobbyID).containsKey(playerID)) { //if the playerID is already taken
+                this.executorService.submit(() -> {
+                    try {
+                        client.outcomeException(new RuntimeException("PlayerID already taken"));
+                        client.askPlayerInfo(getLobbyInfo());
+                    } catch (RemoteException e) {
+                        ServerApp.logger.log(Level.SEVERE, e.getMessage());
+                    }
+                });
+            } else { //if the playerID is not taken
+                this.lobby.get(lobbyID).put(playerID, new ClientHandler(playerID, lobbyID, client));
+                ServerApp.logger.info(lobbyID + " registered new player: " + playerID);
+                this.executorService.execute(() -> {
+                    try {
+                        client.outcomeLogin(playerID, lobbyID);
+                    } catch (RemoteException e) {
+                        ServerApp.logger.severe(e.getMessage());
+                    }
+                });
+                startTimer(playerID, lobbyID, network);
+                startGame(lobbyID);
+            }
+        } else { //if the lobby does not exist
+            createLobby(lobbyID, playerID, client, network);
+        }
+    }
+
+    /**
+     * Handles the creation process for a lobby.
+     *
+     * @param playerID the ID of the player creating the lobby
+     * @param lobbyID  the ID of the lobby the player is creating
+     * @param client   the remote view of the player
+     * @param network  the remote client representing the player's network connection
+     * @throws RemoteException if a communication error occurs during the remote method call
+     */
+    private void createLobby(String lobbyID, String playerID, RemoteView client, RemoteClient network) throws RemoteException {
+        this.lobby.put(lobbyID, new HashMap<>());
+        this.lobby.get(lobbyID).put(playerID, new ClientHandler(playerID, lobbyID, client));
+        this.executorService.execute(() -> {
+            try {
+                client.outcomeLogin(playerID, lobbyID);
+                ServerApp.logger.info(playerID + " created new lobby called: " + lobbyID);
+            } catch (RemoteException e) {
+                ServerApp.logger.severe(e.getMessage());
+            }
+        });
+        startTimer(playerID, lobbyID, network);
+        if (!firstPlayer(lobbyID, client)) startGame(lobbyID);
+    }
+
+    /**
+     * Checks if the lobby has no players and prompts the client to provide the lobby size.
+     *
+     * @param lobbyID the ID of the lobby
+     * @param client  the remote view of the client
+     * @return true if the lobby size needs to be set, false otherwise
+     * @throws RemoteException if a communication error occurs during the remote method call
+     */
+    private boolean firstPlayer(String lobbyID, RemoteView client) throws RemoteException {
+        if (this.lobbySize.get(lobbyID) == null) {
+            this.executorService.submit(() -> {
+                try {
+                    client.askLobbySize();
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Starts a ping timer for the specified player in the given lobby.
+     *
+     * @param playerID the ID of the player
+     * @param lobbyID  the ID of the lobby
+     * @param client   the remote client representing the player's network connection
+     */
+    private void startTimer(String playerID, String lobbyID, RemoteClient client) {
+        int hash = Objects.hash(playerID, lobbyID);
+        this.heartbeat.put(hash, new PingTimer(playerID, lobbyID, client));
+        this.heartbeat.get(hash).start();
+    }
 
     /**
      * Sets the lobby size for the specified lobby.
@@ -133,7 +283,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                     if (sizeValid(lobbySize)) {
                         this.lobbySize.put(lobbyID, lobbySize);
                         ServerApp.logger.info("Setting lobby-size to " + lobbySize + "\tfor lobby: " + lobbyID);
-                        initGame(lobbyID);
+                        startGame(lobbyID);
                     } else {
                         this.executorService.submit(() -> {
                             try {
@@ -177,96 +327,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     }
 
     /**
-     * Handles the login process for a player.
-     *
-     * @param playerID the ID of the player logging in
-     * @param lobbyID  the ID of the lobby in which the player is logging in
-     * @param client   the remote view of the player
-     * @param network  the remote client representing the player's network connection
-     * @throws RemoteException if a communication error occurs during the remote method call
-     */
-    public synchronized void login(String playerID, String lobbyID, RemoteView client, RemoteClient network) throws RemoteException {
-        ServerApp.logger.info(playerID + " is trying to login " + lobbyID);
-        Game game = findGame(lobbyID);
-        if (game != null) { //if the game exists
-            if (game.players().containsKey(playerID)) {
-                if (!game.players().get(playerID)) { //if the player is not playing
-                    if (rejoin(playerID, lobbyID, client)) {
-                        this.executorService.submit(() -> {
-                            try {
-                                client.outcomeLogin(playerID, lobbyID);
-                                client.allGame(MockFactory.getMock(this.games.get(game).getGameModel()));
-                            } catch (RemoteException e) {
-                                ServerApp.logger.log(Level.SEVERE, e.getMessage());
-                            }
-                        });
-                        game.setStatus(playerID, true);
-                        startTimer(playerID, lobbyID, network);
-                    }
-                } else { //if the player is playing
-                    this.executorService.submit(() -> {
-                        try {
-                            client.outcomeException(new RuntimeException("Player is already playing"));
-                            client.askPlayerInfo(getLobbyInfo());
-                        } catch (RemoteException e) {
-                            ServerApp.logger.log(Level.SEVERE, e.getMessage());
-                        }
-                    });
-                }
-            }
-        } else if (this.lobby.containsKey(lobbyID)) { //if the lobby exists
-            if (this.lobby.get(lobbyID).containsKey(playerID)) { //if the playerID is already taken
-                this.executorService.submit(() -> {
-                    try {
-                        client.outcomeException(new RuntimeException("PlayerID already taken"));
-                        client.askPlayerInfo(getLobbyInfo());
-                    } catch (RemoteException e) {
-                        ServerApp.logger.log(Level.SEVERE, e.getMessage());
-                    }
-                });
-            } else { //if the playerID is not taken
-                this.lobby.get(lobbyID).put(playerID, new ClientHandler(playerID, lobbyID, client));
-                ServerApp.logger.info(lobbyID + " registered new player: " + playerID);
-                this.executorService.execute(() -> {
-                    try {
-                        client.outcomeLogin(playerID, lobbyID);
-                    } catch (RemoteException e) {
-                        ServerApp.logger.severe(e.getMessage());
-                    }
-                });
-                startTimer(playerID, lobbyID, network);
-                initGame(lobbyID);
-            }
-        } else { //if the lobby does not exist
-            this.lobby.put(lobbyID, new HashMap<>());
-            this.lobby.get(lobbyID).put(playerID, new ClientHandler(playerID, lobbyID, client));
-            this.executorService.execute(() -> {
-                try {
-                    client.outcomeLogin(playerID, lobbyID);
-                    ServerApp.logger.info(playerID + " created new lobby called: " + lobbyID);
-                } catch (RemoteException e) {
-                    ServerApp.logger.severe(e.getMessage());
-                }
-            });
-            startTimer(playerID, lobbyID, network);
-            if (!firstPlayer(lobbyID, client)) initGame(lobbyID);
-        }
-    }
-
-    /**
-     * Starts a ping timer for the specified player in the given lobby.
-     *
-     * @param playerID the ID of the player
-     * @param lobbyID  the ID of the lobby
-     * @param client   the remote client representing the player's network connection
-     */
-    private void startTimer(String playerID, String lobbyID, RemoteClient client) {
-        int hash = Objects.hash(playerID, lobbyID);
-        this.heartbeat.put(hash, new PingTimer(playerID, lobbyID, client));
-        this.heartbeat.get(hash).start();
-    }
-
-    /**
      * Receives a ping message from the specified player in the given lobby, indicating that the player is still active.
      *
      * @param playerID the ID of the player
@@ -294,11 +354,11 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      */
     @Override
     public void getGameController(String lobbyID, RemoteClient remote) throws RemoteException {
-        Game game = findGame(lobbyID);
+        GameController game = findGame(lobbyID);
         if (game != null) {
             this.executorService.execute(() -> {
                 try {
-                    remote.setGameController(this.games.get(game));
+                    remote.setGameController(game);
                 } catch (RemoteException e) {
                     ServerApp.logger.log(Level.SEVERE, e.getMessage());
                 }
@@ -306,16 +366,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         } else {
             ServerApp.logger.severe("Game not found");
         }
-    }
-
-    /**
-     * Finds a game with the specified lobby ID.
-     *
-     * @param gameID the ID of the lobby
-     * @return the Game object corresponding to the lobby ID, or null if no matching game is found
-     */
-    private Game findGame(String gameID) {
-        return this.games.keySet().stream().filter(game -> game.name().equals(gameID)).findFirst().orElse(null);
     }
 
     /**
@@ -329,19 +379,20 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     public synchronized void logOut(String playerID, String lobbyID) throws RemoteException {
         ServerApp.logger.info("Logout for " + playerID + "\tin " + lobbyID);
         this.executorService.execute(() -> {
-            Game game = findGame(lobbyID);
-            GameController controller = this.games.get(game);
+            GameController game = findGame(lobbyID);
             ClientHandler clientHandler;
-            if (controller != null && game != null) {
-                game.setStatus(playerID, false);
+            if (game != null) {
                 try {
-                    clientHandler = controller.logOut(playerID);
-                    if(activePlayers(game) <= 1)
+                    clientHandler = game.logOut(playerID);
+                    if (activePlayers(game) <= 1) {
                         this.games.remove(game);
+                        for (ClientHandler handler : game.getClients())
+                            handler.remoteView().outcomeException(new Exception("The game was concluded due to insufficient active players."));
+                    }
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
-            } else if (this.lobby.containsKey(lobbyID)){
+            } else if (this.lobby.containsKey(lobbyID)) {
                 clientHandler = this.lobby.get(lobbyID).remove(playerID);
                 if (this.lobby.get(lobbyID).isEmpty()) {
                     this.lobby.remove(lobbyID);
@@ -363,30 +414,8 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      */
     private void deleteTimer(String playerID, String lobbyID) {
         int hash = Objects.hash(playerID, lobbyID);
-        this.heartbeat.get(hash).interrupt();
-        this.heartbeat.remove(hash);
-    }
-
-    /**
-     * Checks if the lobby has no players and prompts the client to provide the lobby size.
-     *
-     * @param lobbyID the ID of the lobby
-     * @param client  the remote view of the client
-     * @return true if the lobby size needs to be set, false otherwise
-     * @throws RemoteException if a communication error occurs during the remote method call
-     */
-    private boolean firstPlayer(String lobbyID, RemoteView client) throws RemoteException {
-        if (this.lobbySize.get(lobbyID) == null) {
-            this.executorService.submit(() -> {
-                try {
-                    client.askLobbySize();
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            return true;
-        }
-        return false;
+        PingTimer interrupter = this.heartbeat.remove(hash);
+        if (interrupter != null) interrupter.interrupt();
     }
 
     /**
@@ -394,27 +423,30 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      *
      * @param lobbyID the ID of the lobby
      */
-    private void initGame(String lobbyID) {
+    private void startGame(String lobbyID) {
         if (this.lobby.get(lobbyID).size() == this.lobbySize.get(lobbyID) || this.lobby.get(lobbyID).size() == 4) {
             this.executorService.execute(() -> {
-                HashMap<String, Boolean> players = new HashMap<>();
-                for (String playerID : this.lobby.get(lobbyID).keySet())
-                    players.put(playerID, true);
-                this.games.put(new Game(lobbyID, players), new GameController(lobbyID, this.lobby.get(lobbyID)));
-                this.executorService.execute(() -> {
-                    MockModel model = MockFactory.getMock(games.get(findGame(lobbyID)).getGameModel());
-                    for (ClientHandler client : this.lobby.get(lobbyID).values()) {
-                        model.setLocalPlayer(client.playerID());
-                        try {
-                            client.remoteView().allGame(model);
-                        } catch (RemoteException e) {
-                            ServerApp.logger.severe("Error sending gameController to player");
+                try {
+                    GameController game = new GameController(lobbyID, this.lobby.get(lobbyID));
+                    this.games.add(game);
+                    this.executorService.execute(() -> {
+                        MockModel model = MockFactory.getMock(game.getGameModel());
+                        for (ClientHandler client : this.lobby.get(lobbyID).values()) {
+                            model.setLocalPlayer(client.playerID());
+                            try {
+                                client.remoteView().allGame(model);
+                                this.heartbeat.get(Objects.hash(client.playerID(), lobbyID)).getClient().setGameController(game);
+                            } catch (RemoteException e) {
+                                ServerApp.logger.severe("Error sending gameController to player");
+                            }
                         }
-                    }
-                    this.lobby.remove(lobbyID);
-                    this.lobbySize.remove(lobbyID);
-                    printLobbyStatus();
-                });
+                        this.lobby.remove(lobbyID);
+                        this.lobbySize.remove(lobbyID);
+                        printLobbyStatus();
+                    });
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
             });
         }
     }
@@ -423,27 +455,8 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         StringBuilder print = new StringBuilder("LOBBY STATUS: \n");
         for (String object : this.lobby.keySet())
             print.append("LobbyID: ").append(object).append("\tWaiting Room: ").append(this.lobby.get(object).size()).append("/").append(this.lobbySize.get(object)).append("\n");
-        for (Game object : this.games.keySet())
-            print.append("GameID: ").append(object.name()).append("\tPlayers Online: ").append(activePlayers(object)).append("/").append(object.players().size()).append("\t\t").append("GameController: ").append((this.games.get(object) == null) ? null : "on going").append("\n");
+        for (GameController object : this.games)
+            print.append("GameID: ").append(object.getGameID()).append("\tPlayers Online: ").append(activePlayers(object)).append("/").append(object.getPlayers().size()).append("\t\t").append("GameController: ").append((this.games.contains(object)) ? "on going" : null).append("\n");
         ServerApp.logger.info(print.toString());
-    }
-
-    /**
-     * Attempts to rejoin a disconnected player to the game.
-     *
-     * @param playerID   The ID of the player who wants to rejoin.
-     * @param lobbyID    The ID of the lobby where the player wants to rejoin.
-     * @param remoteView The remote view of the player.
-     * @return {@code true} if the player successfully rejoins the game, {@code false} otherwise.
-     */
-    private boolean rejoin(String playerID, String lobbyID, RemoteView remoteView) {
-        GameController gameController = this.games.get(findGame(lobbyID));
-        try {
-            gameController.rejoin(playerID, new ClientHandler(playerID, lobbyID, remoteView));
-            return true;
-        } catch (RemoteException e) {
-            ServerApp.logger.severe("Error reloading player");
-            return false;
-        }
     }
 }

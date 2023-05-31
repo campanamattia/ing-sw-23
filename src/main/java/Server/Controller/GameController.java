@@ -22,6 +22,7 @@ import Utils.Rank;
 
 import java.io.*;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -29,7 +30,8 @@ import java.util.logging.Level;
  The GameController class represents the controller for a game. It manages the game model, players, phases, and turn progression.
  This class implements the GameCommand interface and is Serializable.
  */
-public class GameController implements GameCommand, Serializable {
+public class GameController extends UnicastRemoteObject implements GameCommand, Serializable {
+    private final String gameID;
     /**
      The GameModel class represents the model for a game. It contains the gameModel board, players, and common goals.
      */
@@ -56,11 +58,12 @@ public class GameController implements GameCommand, Serializable {
      @param lobbyID the lobby ID that the gameController is associated with.
      @param players A HashMap of players participating in the game, where the key is the player ID and the value is the corresponding ClientHandler.
      */
-    public GameController(String lobbyID, HashMap<String, ClientHandler> players){
+    public GameController(String lobbyID, HashMap<String, ClientHandler> players) throws RemoteException{
+        super();
+        this.gameID = lobbyID;
         this.players = players;
-        List<String> playersID = new ArrayList<>(players.keySet());
         try {
-            this.gameModel = new GameModel(lobbyID, playersID);
+            this.gameModel = new GameModel(lobbyID, new ArrayList<>(players.keySet()));
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.toString());
             for(ClientHandler client : players.values()) {
@@ -214,15 +217,18 @@ public class GameController implements GameCommand, Serializable {
      *
      * @param playerID The ID of the player to be reloaded.
      * @param client   The ClientHandler object associated with the player.
-     * @throws RemoteException If a remote communication error occurs.
      */
-    public void rejoin(String playerID, ClientHandler client) throws RemoteException {
+    public void rejoin(String playerID, ClientHandler client){
         this.players.put(playerID, client);
         try {
             this.gameModel.getPlayer(playerID).setStatus(true);
         } catch (PlayerNotFoundException e) {
             ServerApp.logger.severe(e.toString());
-            client.remoteView().outcomeException(e);
+            try {
+                client.remoteView().outcomeException(e);
+            } catch (RemoteException ex) {
+                ServerApp.logger.severe(ex.getMessage());
+            }
         }
         for (ClientHandler clientHandler : players.values()) {
             try {
@@ -245,22 +251,25 @@ public class GameController implements GameCommand, Serializable {
             this.gameModel.getPlayer(playerID).setStatus(false);
             if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
                 this.gameModel.completeTurn(this.currentPlayer.getTiles());
-            ClientHandler crashed = this.players.remove(playerID);
+            ClientHandler crashed = this.players.get(playerID);
+            this.players.put(playerID, null);
             for (ClientHandler client : players.values()) {
-                Thread thread = new Thread(() -> {
-                    try {
-                        client.remoteView().crashedPlayer(playerID);
-                    } catch (RemoteException e) {
-                        ServerApp.logger.severe(e.toString());
-                    }
-                });
-                thread.start();
+                if (client != null) {
+                    Thread thread = new Thread(() -> {
+                        try {
+                            client.remoteView().crashedPlayer(playerID);
+                        } catch (RemoteException e) {
+                            ServerApp.logger.severe(e.toString());
+                        }
+                    });
+                    thread.start();
+                }
             }
             return crashed;
         } catch (PlayerException e) {
             ServerApp.logger.severe(e + " for logout");
+            return null;
         }
-        return null;
     }
 
     /**
@@ -276,7 +285,31 @@ public class GameController implements GameCommand, Serializable {
         else return this.turnPhase;
     }
 
+    /**
+     * Returns the ID of the game.
+     * @return The ID of the game.
+     */
+    public String getGameID() {
+        return this.gameID;
+    }
+
+    /**
+     * Returns the list of players in the game.
+     * @return The list of players in the game.
+     */
     public List<ClientHandler> getClients(){
-        return (List<ClientHandler>) this.players.values();
+        List<ClientHandler> clients = new ArrayList<>();
+        for (ClientHandler client : this.players.values()) {
+            if (client != null) clients.add(client);
+        }
+        return clients;
+    }
+
+    /**
+     * Returns the map of players in the game.
+     * @return The map of players in the game.
+     */
+    public HashMap<String, ClientHandler> getPlayers() {
+        return players;
     }
 }

@@ -1,5 +1,6 @@
 package Interface.Client;
 
+import Interface.Server.GameCommand;
 import Server.Controller.GameController;
 
 import java.rmi.Remote;
@@ -9,5 +10,5 @@ public interface RemoteClient extends Remote {
 
     void pong(String playerID, String lobbyID) throws RemoteException;
 
-    void setGameController(GameController gameController) throws RemoteException;
+    void setGameController(GameCommand gameController) throws RemoteException;
 }

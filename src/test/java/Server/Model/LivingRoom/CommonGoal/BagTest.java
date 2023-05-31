@@ -1,4 +1,4 @@
-package Server.Model;
+package Server.Model.LivingRoom.CommonGoal;
 
 import Server.Model.LivingRoom.Bag;
 import org.junit.jupiter.api.Test;

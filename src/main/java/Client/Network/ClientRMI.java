@@ -152,7 +152,7 @@ public class ClientRMI extends Network {
     }
 
     @Override
-    public void setGameController(GameController gameController) throws RemoteException {
+    public void setGameController(GameCommand gameController) throws RemoteException {
         this.gc = gameController;
     }
 
