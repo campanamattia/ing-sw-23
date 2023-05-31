@@ -8,6 +8,7 @@ import Utils.*;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import org.jetbrains.annotations.NotNull;
+import Enumeration.TurnPhase;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -189,44 +190,77 @@ public class Cli extends View {
         MockCommonGoal commonGoal1 = mockModel.getMockCommonGoal().get(0);
         MockCommonGoal commonGoal2 = mockModel.getMockCommonGoal().get(1);
 
-        List<String> subString1 = new ArrayList<>(10);
-        List<String> subString2 = new ArrayList<>(10);
+        List<String> subString1 = new LinkedList<>();
+        List<String> subString2 = new LinkedList<>();
+
+        String[] parole1 = commonGoal1.getDescription().split(" ");
+        String[] parole2 = commonGoal2.getDescription().split(" ");
 
         StringBuilder sb1 = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
 
-        for (String parola : commonGoal1.getDescription().split(" ")) {
-            if (sb1.length() + parola.length() <= 100) {
+        int maxLength = 85;
+
+        for (String parola : parole1) {
+            if (parola.length() > maxLength) {
+                // Se la singola parola supera la lunghezza massima consentita, aggiungi la parola come una sottostringa separata
                 if (sb1.length() > 0) {
-                    sb1.append(" ");
+                    subString1.add(sb1.toString().trim());
+                    sb1.setLength(0);
                 }
-                sb1.append(parola);
+                subString1.add(parola);
+            } else if (sb1.length() + parola.length() <= maxLength) {
+                sb1.append(parola).append(" ");
+                if (sb1.length() > maxLength) {
+                    subString1.add(sb1.toString().trim());
+                    sb1.setLength(0);
+                }
             } else {
-                subString1.add(sb1.toString());
+                subString1.add(sb1.toString().trim());
                 sb1.setLength(0);
-                sb1.append(parola);
+                sb1.append(parola).append(" ");
             }
         }
         if (sb1.length() > 0) {
-            subString1.add(sb1.toString());
+            subString1.add(sb1.toString().trim());
         }
 
-        for (String parola : commonGoal2.getDescription().split(" ")) {
-            if (sb2.length() + parola.length() <= 100) {
+        while (subString2.size() <= 3)
+            subString2.add(null);
+
+
+
+        for (String parola : parole2) {
+            if (parola.length() > maxLength) {
+                // Se la singola parola supera la lunghezza massima consentita, aggiungi la parola come una sottostringa separata
                 if (sb2.length() > 0) {
-                    sb2.append(" ");
+                    subString2.add(sb2.toString().trim());
+                    sb2.setLength(0);
                 }
-                sb2.append(parola);
+                subString2.add(parola);
+            } else if (sb2.length() + parola.length() <= maxLength) {
+                sb2.append(parola).append(" ");
+                if (sb2.length() > maxLength) {
+                    subString2.add(sb2.toString().trim());
+                    sb2.setLength(0);
+                }
             } else {
-                subString2.add(sb2.toString());
+                subString2.add(sb2.toString().trim());
                 sb2.setLength(0);
-                sb2.append(parola);
+                sb2.append(parola).append(" ");
             }
         }
         if (sb2.length() > 0) {
-            subString2.add(sb2.toString());
+            subString2.add(sb2.toString().trim());
         }
 
+        while (subString1.size() <= 3) {
+            subString1.add(null);
+        }
+
+        while (subString2.size() <= 8) {
+            subString2.add(null);
+        }
 
 
         if (numberPlayer == 2) {
@@ -251,18 +285,30 @@ public class Cli extends View {
 
             //print CommonGoal
             if (i <= 2) {
+                if (i==0) {
+                    System.out.print("[" + CliColor.BRED + " " + commonGoal1.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
+                }
                 if (subString1.get(i) != null)
-                    System.out.println(subString1.get(i));
+                    System.out.print(subString1.get(i));
                 else
-                    System.out.println();
+                    System.out.print("");
             }
-            if (i >= 3 && i <= 5) {
+
+
+            if (i >= 4 && i <= 6) {
+                if (i==4) {
+                    System.out.print("[" + CliColor.BRED + " " + commonGoal2.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
+                }
+
                 if (subString2.get(i) != null)
-                    System.out.println(subString2.get(i));
+                    System.out.print(subString2.get(i));
                 else
-                    System.out.println();
+                    System.out.print("");
             }
+
+            System.out.println();
         }
+        System.out.println("\n");
     }
 
     @Override
@@ -276,9 +322,9 @@ public class Cli extends View {
     @Override
     public void showStatus() {
         if (mockModel.getCurrentPlayer().equals(mockModel.getLocalPlayer())) {
-            System.out.println("It's your turn." + mockModel.getTurnPhase() + "For more help type 'help' or '?'");
+            System.out.println("It's your turn. " + mockModel.getTurnPhase() + " For more help type 'help' or '?'");
         } else {
-            System.out.println("It's NOT your turn. For help type 'help' or '?'");
+            System.out.println("It's NOT your turn. Wait for others player. For help type 'help' or '?'");
         }
     }
 
@@ -380,9 +426,11 @@ public class Cli extends View {
     public void newTurn(String playerID) throws RemoteException {
         clearCLI();
         mockModel.setCurrentPlayer(playerID);
+        mockModel.setTurnPhase(TurnPhase.PICKING);
         showBoard();
         showShelves();
         showStatus();
+
     }
 
 
