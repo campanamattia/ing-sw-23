@@ -9,7 +9,6 @@ import Messages.Server.Network.UpdateMessage;
 import Messages.Server.View.*;
 import Messages.Server.Network.PongMessage;
 import Messages.ServerMessage;
-import Server.Controller.GameController;
 import Server.ServerApp;
 import Utils.ChatMessage;
 import Utils.MockObjects.MockBoard;
