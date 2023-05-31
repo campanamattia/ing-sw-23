@@ -196,7 +196,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         this.controller = gameController;
     }
 
-    private void send(ServerMessage message) throws IOException {
+    private synchronized void send(ServerMessage message) throws IOException {
         try {
             this.out.writeObject(message);
             this.out.flush();

@@ -9,6 +9,7 @@ import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -53,7 +54,7 @@ public class Cli extends View {
             input = scanner.nextLine();
         }
 
-        System.out.println(CliColor.YELLOW + "Good! You are going to create a " + input.toLowerCase() + " connection." + CliColor.RESET);
+        System.out.println(CliColor.BOLDGREEN + "Good! You are going to create a " + input.toLowerCase() + " connection." + CliColor.RESET);
 
         return NetworkFactory.instanceNetwork(input, this);
     }
@@ -70,7 +71,7 @@ public class Cli extends View {
             playerNumber = Integer.parseInt(input);
         }
 
-        System.out.println(CliColor.YELLOW + "You are going to create a new Game, wait for the others players" + CliColor.RESET);
+        System.out.println(CliColor.BOLDGREEN + "You are going to create a new Game, wait for the others players" + CliColor.RESET);
         network.setLobbySize(mockModel.getLocalPlayer(), mockModel.getLobbyID(), playerNumber);
     }
 
@@ -159,12 +160,24 @@ public class Cli extends View {
             for (String object : lobbyInfo.get(1).keySet())
                 System.out.println("GameID: " + object + "\tPlayers Online: " + lobbyInfo.get(1).get(object));
         } else System.out.println("There are no lobby or games: create a new one");
-        System.out.print(CliColor.BOLD + "\nInsert a lobby ID: " + CliColor.RESET);
-        inputLobby = scanner.nextLine();
 
-        System.out.print(CliColor.BOLD + "Insert your Nickname: " + CliColor.RESET);
 
-        inputName = scanner.nextLine();
+        while(true){
+            System.out.print(CliColor.BOLD + "\nInsert a lobby ID: " + CliColor.RESET);
+            inputLobby = scanner.nextLine();
+            if( !inputLobby.isBlank())
+                break;
+            else System.out.println(CliColor.RED + "ERROR: you type something wrong, lobby can't be empty" + CliColor.RESET);
+        }
+
+        while(true){
+            System.out.print(CliColor.BOLD + "Insert your Nickname: " + CliColor.RESET);
+            inputName = scanner.nextLine();
+            if( !inputName.isBlank())
+                break;
+            else System.out.println(CliColor.RED + "ERROR: you type something wrong, nickname can't be empty" + CliColor.RESET);
+        }
+
         network.login(inputName, inputLobby, this, network);
     }
 
@@ -346,6 +359,7 @@ public class Cli extends View {
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
         System.out.println("You logged into the lobby");
         mockModel.setLocalPlayer(localPlayer);
+        this.clientController.setPlayerID(localPlayer);
         mockModel.setLobbyID(lobbyID);
         network.startPing(localPlayer, lobbyID);
     }
@@ -355,6 +369,18 @@ public class Cli extends View {
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
         newTurn(mockModel.getCurrentPlayer());
+        while(true) {
+            try {
+                if (!(System.in.available()>0)) break;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                System.in.read();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         this.inputThread = new Thread(()->{
             while(true){
                 String input = this.scanner.nextLine();
