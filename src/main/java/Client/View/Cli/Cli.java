@@ -79,19 +79,15 @@ public class Cli extends View {
             }
         }
 
-
         System.out.println(CliColor.BOLDGREEN + "You are going to create a new Game, wait for the others players" + CliColor.RESET);
         network.setLobbySize(mockModel.getLocalPlayer(), mockModel.getLobbyID(), playerNumber);
     }
 
     public String askServerAddress() {
         final String DEFAULT_ADDRESS = "127.0.0.1";
-        boolean firstTry = true;
-        do {
-            if (!firstTry)
-                System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
-            else System.out.print(CliColor.BOLD + "Please enter the server address. " + CliColor.RESET);
 
+        System.out.print(CliColor.BOLD + "Please enter the server address. " + CliColor.RESET);
+        do {
             System.out.print(CliColor.BOLD + "\nInsert 'localhost' for the default value (" + DEFAULT_ADDRESS + "): " + CliColor.RESET);
             String address = scanner.nextLine();
 
@@ -100,7 +96,7 @@ public class Cli extends View {
             } else if (clientController.validateIP(address)) {
                 return address;
             } else {
-                firstTry = false;
+                System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
             }
         } while (true);
     }
@@ -183,7 +179,7 @@ public class Cli extends View {
         String[] parole1 = commonGoal1.getDescription().split(" ");
         String[] parole2 = commonGoal2.getDescription().split(" ");
 
-        List<String> subString1 = new LinkedList<>(clientController.subString(parole1));
+        List<String> subString1 = new LinkedList<>(subString(parole1));
         while (subString1.size() <= 3) {
             subString1.add(null);
         }
@@ -192,16 +188,19 @@ public class Cli extends View {
         while (subString2.size() <= 3) {
             subString2.add(null);
         }
-        subString2.addAll(clientController.subString(parole2));
+        subString2.addAll(subString(parole2));
         while (subString2.size() <= 8) {
             subString2.add(null);
         }
 
-        if (numberPlayer == 2) {
-            System.out.print(" \t  0  " + "  1  " + "  2  " + "  3  " + "  4  " + "  5  " + "  6  \t| ");
-        } else {
-            System.out.print(" \t  0  " + "  1  " + "  2  " + "  3  " + "  4  " + "  5  " + "  6  " + "  7  " + "  8  \t| ");
-        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(" \t");
+        if (numberPlayer == 2) for (int i = 0; i <= 6; i++)
+            stringBuilder.append("  ").append(i).append("  ");
+        else for (int i = 0; i <= 8; i++)
+            stringBuilder.append("  ").append(i).append("  ");
+        System.out.print(stringBuilder.append("\t|\t "));
+
 
         System.out.println(CliColor.BOLD + "COMMON GOAL" + CliColor.RESET);
 
@@ -239,6 +238,36 @@ public class Cli extends View {
             System.out.println();
         }
         System.out.println("\n");
+    }
+
+    private List<String> subString(String[] words) {
+        List<String> subString = new LinkedList<>();
+        StringBuilder sb1 = new StringBuilder();
+        int maxLength = 85;
+
+        for (String word : words) {
+            if (word.length() > maxLength) {
+                if (sb1.length() > 0) {
+                    subString.add(sb1.toString().trim());
+                    sb1.setLength(0);
+                }
+                subString.add(word);
+            } else if (sb1.length() + word.length() <= maxLength) {
+                sb1.append(word).append(" ");
+                if (sb1.length() > maxLength) {
+                    subString.add(sb1.toString().trim());
+                    sb1.setLength(0);
+                }
+            } else {
+                subString.add(sb1.toString().trim());
+                sb1.setLength(0);
+                sb1.append(word).append(" ");
+            }
+        }
+        if (sb1.length() > 0) {
+            subString.add(sb1.toString().trim());
+        }
+        return subString;
     }
 
     @Override
@@ -367,7 +396,7 @@ public class Cli extends View {
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
         System.out.print("\t");
         showTile(tiles);
-        System.out.print("Now it's time to place the tiles. Write "+CliColor.BOLD+"it-x,y,z/c"+CliColor.RESET+" where:"+CliColor.BOLD+"\n\t\t-x, y, z are the order in which to insert the tiles\n\t\t-c is the column.\n"+CliColor.RESET);
+        System.out.print("Indicate how you want to insert the tiles: \t"+CliColor.BOLD+"it-x,y,z/c\n\t-x, y, z are the position of the tiles in the list\n\t-c is the column to insert\n"+CliColor.RESET);
     }
 
     @Override
