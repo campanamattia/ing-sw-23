@@ -190,83 +190,27 @@ public class Cli extends View {
         MockCommonGoal commonGoal1 = mockModel.getMockCommonGoal().get(0);
         MockCommonGoal commonGoal2 = mockModel.getMockCommonGoal().get(1);
 
-        List<String> subString1 = new LinkedList<>();
-        List<String> subString2 = new LinkedList<>();
-
         String[] parole1 = commonGoal1.getDescription().split(" ");
         String[] parole2 = commonGoal2.getDescription().split(" ");
 
-        StringBuilder sb1 = new StringBuilder();
-        StringBuilder sb2 = new StringBuilder();
-
-        int maxLength = 85;
-
-        for (String parola : parole1) {
-            if (parola.length() > maxLength) {
-                // Se la singola parola supera la lunghezza massima consentita, aggiungi la parola come una sottostringa separata
-                if (sb1.length() > 0) {
-                    subString1.add(sb1.toString().trim());
-                    sb1.setLength(0);
-                }
-                subString1.add(parola);
-            } else if (sb1.length() + parola.length() <= maxLength) {
-                sb1.append(parola).append(" ");
-                if (sb1.length() > maxLength) {
-                    subString1.add(sb1.toString().trim());
-                    sb1.setLength(0);
-                }
-            } else {
-                subString1.add(sb1.toString().trim());
-                sb1.setLength(0);
-                sb1.append(parola).append(" ");
-            }
-        }
-        if (sb1.length() > 0) {
-            subString1.add(sb1.toString().trim());
-        }
-
-        while (subString2.size() <= 3)
-            subString2.add(null);
-
-
-
-        for (String parola : parole2) {
-            if (parola.length() > maxLength) {
-                // Se la singola parola supera la lunghezza massima consentita, aggiungi la parola come una sottostringa separata
-                if (sb2.length() > 0) {
-                    subString2.add(sb2.toString().trim());
-                    sb2.setLength(0);
-                }
-                subString2.add(parola);
-            } else if (sb2.length() + parola.length() <= maxLength) {
-                sb2.append(parola).append(" ");
-                if (sb2.length() > maxLength) {
-                    subString2.add(sb2.toString().trim());
-                    sb2.setLength(0);
-                }
-            } else {
-                subString2.add(sb2.toString().trim());
-                sb2.setLength(0);
-                sb2.append(parola).append(" ");
-            }
-        }
-        if (sb2.length() > 0) {
-            subString2.add(sb2.toString().trim());
-        }
-
+        List<String> subString1 = new LinkedList<>(clientController.subString(parole1));
         while (subString1.size() <= 3) {
             subString1.add(null);
         }
 
+        List<String> subString2 = new LinkedList<>();
+        while (subString2.size() <= 3) {
+            subString2.add(null);
+        }
+        subString2.addAll(clientController.subString(parole2));
         while (subString2.size() <= 8) {
             subString2.add(null);
         }
 
-
         if (numberPlayer == 2) {
-            System.out.print(" \t   0   " + "   1   " + "   2   " + "   3   " + "   4   " + "   5   " + "   6   \t| ");
+            System.out.print(" \t  0  " + "  1  " + "  2  " + "  3  " + "  4  " + "  5  " + "  6  \t| ");
         } else {
-            System.out.print(" \t   0   " + "   1   " + "   2   " + "   3   " + "   4   " + "   5   " + "   6   " + "   7   " + "   8   \t| ");
+            System.out.print(" \t  0  " + "  1  " + "  2  " + "  3  " + "  4  " + "  5  " + "  6  " + "  7  " + "  8  \t| ");
         }
 
         System.out.println(CliColor.BOLD + "COMMON GOAL" + CliColor.RESET);
@@ -276,9 +220,9 @@ public class Cli extends View {
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j].getStatus()) {
                     String colorString = board[i][j].getTile().getColor().getCode();
-                    System.out.print(CliColor.BBLACK + "|" + colorString + i + " , " + j + CliColor.BBLACK + "|" + CliColor.RESET);
+                    System.out.print(CliColor.BBLACK + "|" + colorString + i + "," + j + CliColor.BBLACK + "|" + CliColor.RESET);
                 } else {
-                    System.out.print(CliColor.BBLACK + "|     |" + CliColor.RESET); //print empty black space
+                    System.out.print(CliColor.BBLACK + "|   |" + CliColor.RESET); //print empty black space
                 }
             }
             System.out.print("\t| ");
@@ -286,7 +230,7 @@ public class Cli extends View {
             //print CommonGoal
             if (i <= 2) {
                 if (i==0) {
-                    System.out.print("[" + CliColor.BRED + " " + commonGoal1.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
+                    System.out.print("[" + CliColor.BBLACK + " " + commonGoal1.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
                 }
                 if (subString1.get(i) != null)
                     System.out.print(subString1.get(i));
@@ -297,7 +241,7 @@ public class Cli extends View {
 
             if (i >= 4 && i <= 6) {
                 if (i==4) {
-                    System.out.print("[" + CliColor.BRED + " " + commonGoal2.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
+                    System.out.print("[" + CliColor.BBLACK + " " + commonGoal2.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
                 }
 
                 if (subString2.get(i) != null)
@@ -322,9 +266,9 @@ public class Cli extends View {
     @Override
     public void showStatus() {
         if (mockModel.getCurrentPlayer().equals(mockModel.getLocalPlayer())) {
-            System.out.println("It's your turn. " + mockModel.getTurnPhase() + " For more help type 'help' or '?'");
+            System.out.println(CliColor.BOLD + "It's your turn. " + mockModel.getTurnPhase() + " For more help type 'help'"+ CliColor.RESET);
         } else {
-            System.out.println("It's NOT your turn. Wait for others player. For help type 'help' or '?'");
+            System.out.println(CliColor.BOLD + "It's NOT your turn. Wait for others player. For help type 'help'" + CliColor.RESET);
         }
     }
 
