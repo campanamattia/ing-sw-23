@@ -62,15 +62,23 @@ public class Cli extends View {
 
     @Override
     public void askLobbySize() throws RemoteException {
-        System.out.print(CliColor.BOLD + "Please insert the numbers of players (insert a number between 2 and 4): " + CliColor.RESET);
-        String input = scanner.nextLine();
+        int playerNumber;
+        String input;
 
-        int playerNumber = Integer.parseInt(input);
-        while (playerNumber < 2 || playerNumber > 4) {
-            System.out.println(CliColor.RED + "ERROR: you type something wrong, match can only start with 2, 3 or 4 players" + CliColor.RESET);
-            input = scanner.nextLine();
-            playerNumber = Integer.parseInt(input);
+        while (true) {
+            try {
+                System.out.print(CliColor.BOLD + "Please insert the numbers of players (insert a number between 2 and 4): " + CliColor.RESET);
+                input = scanner.nextLine();
+                playerNumber = Integer.parseInt(input);
+                if (playerNumber >= 2 && playerNumber <= 4) {
+                    break;
+                }
+                System.out.println(CliColor.RED + "ERROR: the game can start only with 2, 3 or 4 players." + CliColor.RESET);
+            } catch (NumberFormatException exception) {
+                System.out.println(CliColor.RED + "ERROR: don't insert letter, only number" + CliColor.RESET);
+            }
         }
+
 
         System.out.println(CliColor.BOLDGREEN + "You are going to create a new Game, wait for the others players" + CliColor.RESET);
         network.setLobbySize(mockModel.getLocalPlayer(), mockModel.getLobbyID(), playerNumber);
@@ -221,7 +229,7 @@ public class Cli extends View {
 
             if (i >= 4 && i <= 6) {
                 if (i == 4) {
-                    System.out.print("[" + CliColor.BBLACK + " " + commonGoal2.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
+                    System.out.print("[" + CliColor.BRED + " " + commonGoal2.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
                 }
 
                 if (subString2.get(i) != null) System.out.print(subString2.get(i));
