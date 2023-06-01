@@ -215,36 +215,4 @@ public class Controller {
     public void setPlayerID(String playerID) {
         this.playerID = playerID;
     }
-
-    public List<String> subString (String[] parole){
-        List<String> subString = new LinkedList<>();
-        StringBuilder sb1 = new StringBuilder();
-        int maxLength = 85;
-
-        for (String parola : parole) {
-            if (parola.length() > maxLength) {
-                if (sb1.length() > 0) {
-                    subString.add(sb1.toString().trim());
-                    sb1.setLength(0);
-                }
-                subString.add(parola);
-            } else if (sb1.length() + parola.length() <= maxLength) {
-                sb1.append(parola).append(" ");
-                if (sb1.length() > maxLength) {
-                    subString.add(sb1.toString().trim());
-                    sb1.setLength(0);
-                }
-            } else {
-                subString.add(sb1.toString().trim());
-                sb1.setLength(0);
-                sb1.append(parola).append(" ");
-            }
-        }
-        if (sb1.length() > 0) {
-            subString.add(sb1.toString().trim());
-        }
-
-        return subString;
-
-    }
 }

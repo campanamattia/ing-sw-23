@@ -40,7 +40,7 @@ public class Cli extends View {
         }
         address = askServerAddress();
         port = askServerPort();
-        Thread connection = new Thread(()->network.init(address, port));
+        Thread connection = new Thread(() -> network.init(address, port));
         connection.start();
     }
 
@@ -78,29 +78,20 @@ public class Cli extends View {
 
     public String askServerAddress() {
         final String DEFAULT_ADDRESS = "127.0.0.1";
-        String ip = DEFAULT_ADDRESS;
-        boolean validInput = false;
-        boolean firstTry = true;
-        String address;
+
+        System.out.print(CliColor.BOLD + "Please enter the server address. " + CliColor.RESET);
         do {
-            if (!firstTry)
-                System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
-            else System.out.print(CliColor.BOLD + "Please enter the server address. " + CliColor.RESET);
-
             System.out.print(CliColor.BOLD + "\nInsert 'localhost' for the default value (" + DEFAULT_ADDRESS + "): " + CliColor.RESET);
-            address = scanner.nextLine();
+            String address = scanner.nextLine();
 
-            if (address.equalsIgnoreCase("localhost") || address.equals(DEFAULT_ADDRESS) || address.equals("d")) {
-                validInput = true;
+            if (address.equalsIgnoreCase("localhost") || address.equals("d")) {
+                return DEFAULT_ADDRESS;
             } else if (clientController.validateIP(address)) {
-                ip = address;
-                validInput = true;
+                return address;
             } else {
-                firstTry = false;
+                System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
             }
-        } while (!validInput);
-
-        return ip;
+        } while (true);
     }
 
     public int askServerPort() {
@@ -108,45 +99,29 @@ public class Cli extends View {
         final int DEFAULT_RMI_PORT = 50001;
         final int MIN_PORT = 1024;
         final int MAX_PORT = 65535;
-        int port = 0;
 
-        boolean validInput = false;
-        boolean notAnInt = false;
-        boolean wrongPort = false;
 
-        String input;
-        while (!validInput) {
-            if (notAnInt) {
-                notAnInt = false;
-                System.out.println(CliColor.RED + "ERROR: Please insert only numbers or 'default'." + CliColor.RESET + " Try again.");
-            }
-            if (wrongPort) {
-                wrongPort = false;
-                System.out.println(CliColor.RED + "ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + "." + CliColor.RESET + " Try again.");
-            }
-
+        while (true) {
             System.out.print(CliColor.BOLD + "Select a valid port between [" + MIN_PORT + ", " + MAX_PORT + "]. ");
             System.out.print("\nInsert 'default' for the default value [for SOCKET (" + DEFAULT_SOCKET_PORT + "); for RMI (" + DEFAULT_RMI_PORT + ")]: " + CliColor.RESET);
 
-            input = scanner.nextLine();
+            String input = scanner.nextLine();
 
             if (input.equalsIgnoreCase("default") || input.equals("d")) {
-                validInput = true;
-                port = -1;
+                return -1;
             } else {
                 try {
-                    port = Integer.parseInt(input);
+                    int port = Integer.parseInt(input);
                     if (MIN_PORT <= port && port <= MAX_PORT) {
-                        validInput = true;
+                        return port;
                     } else {
-                        wrongPort = true;
+                        System.out.println(CliColor.RED + "ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + "." + CliColor.RESET + " Try again.");
                     }
                 } catch (NumberFormatException e) {
-                    notAnInt = true;
+                    System.out.println(CliColor.RED + "ERROR: Please insert only numbers or 'default'." + CliColor.RESET + " Try again.");
                 }
             }
         }
-        return port;
     }
 
     @Override
@@ -163,20 +138,24 @@ public class Cli extends View {
         } else System.out.println("There are no lobby or games: create a new one");
 
 
-        while(true){
+        while (true) {
             System.out.print(CliColor.BOLD + "\nInsert a lobby ID: " + CliColor.RESET);
-            inputLobby = scanner.nextLine();
-            if( !inputLobby.isBlank())
+            String input = scanner.nextLine();
+            if (!input.isBlank()) {
+                inputLobby = input;
                 break;
-            else System.out.println(CliColor.RED + "ERROR: you type something wrong, lobby can't be empty" + CliColor.RESET);
+            } else
+                System.out.println(CliColor.RED + "ERROR: you type something wrong, lobby can't be empty" + CliColor.RESET);
         }
 
-        while(true){
+        while (true) {
             System.out.print(CliColor.BOLD + "Insert your Nickname: " + CliColor.RESET);
-            inputName = scanner.nextLine();
-            if( !inputName.isBlank())
+            String input = scanner.nextLine();
+            if (!input.isBlank()) {
+                inputName = input;
                 break;
-            else System.out.println(CliColor.RED + "ERROR: you type something wrong, nickname can't be empty" + CliColor.RESET);
+            } else
+                System.out.println(CliColor.RED + "ERROR: you type something wrong, nickname can't be empty" + CliColor.RESET);
         }
 
         network.login(inputName, inputLobby, this, network);
@@ -193,7 +172,7 @@ public class Cli extends View {
         String[] parole1 = commonGoal1.getDescription().split(" ");
         String[] parole2 = commonGoal2.getDescription().split(" ");
 
-        List<String> subString1 = new LinkedList<>(clientController.subString(parole1));
+        List<String> subString1 = new LinkedList<>(subString(parole1));
         while (subString1.size() <= 3) {
             subString1.add(null);
         }
@@ -202,16 +181,19 @@ public class Cli extends View {
         while (subString2.size() <= 3) {
             subString2.add(null);
         }
-        subString2.addAll(clientController.subString(parole2));
+        subString2.addAll(subString(parole2));
         while (subString2.size() <= 8) {
             subString2.add(null);
         }
 
-        if (numberPlayer == 2) {
-            System.out.print(" \t  0  " + "  1  " + "  2  " + "  3  " + "  4  " + "  5  " + "  6  \t| ");
-        } else {
-            System.out.print(" \t  0  " + "  1  " + "  2  " + "  3  " + "  4  " + "  5  " + "  6  " + "  7  " + "  8  \t| ");
-        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(" \t");
+        if (numberPlayer == 2) for (int i = 0; i <= 6; i++)
+            stringBuilder.append("  ").append(i).append("  ");
+        else for (int i = 0; i <= 8; i++)
+            stringBuilder.append("  ").append(i).append("  ");
+        System.out.print(stringBuilder.append("\t|\t "));
+
 
         System.out.println(CliColor.BOLD + "COMMON GOAL" + CliColor.RESET);
 
@@ -229,30 +211,56 @@ public class Cli extends View {
 
             //print CommonGoal
             if (i <= 2) {
-                if (i==0) {
+                if (i == 0) {
                     System.out.print("[" + CliColor.BBLACK + " " + commonGoal1.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
                 }
-                if (subString1.get(i) != null)
-                    System.out.print(subString1.get(i));
-                else
-                    System.out.print("");
+                if (subString1.get(i) != null) System.out.print(subString1.get(i));
+                else System.out.print("");
             }
 
 
             if (i >= 4 && i <= 6) {
-                if (i==4) {
+                if (i == 4) {
                     System.out.print("[" + CliColor.BBLACK + " " + commonGoal2.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
                 }
 
-                if (subString2.get(i) != null)
-                    System.out.print(subString2.get(i));
-                else
-                    System.out.print("");
+                if (subString2.get(i) != null) System.out.print(subString2.get(i));
+                else System.out.print("");
             }
 
             System.out.println();
         }
         System.out.println("\n");
+    }
+
+    private List<String> subString(String[] words) {
+        List<String> subString = new LinkedList<>();
+        StringBuilder sb1 = new StringBuilder();
+        int maxLength = 85;
+
+        for (String word : words) {
+            if (word.length() > maxLength) {
+                if (sb1.length() > 0) {
+                    subString.add(sb1.toString().trim());
+                    sb1.setLength(0);
+                }
+                subString.add(word);
+            } else if (sb1.length() + word.length() <= maxLength) {
+                sb1.append(word).append(" ");
+                if (sb1.length() > maxLength) {
+                    subString.add(sb1.toString().trim());
+                    sb1.setLength(0);
+                }
+            } else {
+                subString.add(sb1.toString().trim());
+                sb1.setLength(0);
+                sb1.append(word).append(" ");
+            }
+        }
+        if (sb1.length() > 0) {
+            subString.add(sb1.toString().trim());
+        }
+        return subString;
     }
 
     @Override
@@ -266,7 +274,7 @@ public class Cli extends View {
     @Override
     public void showStatus() {
         if (mockModel.getCurrentPlayer().equals(mockModel.getLocalPlayer())) {
-            System.out.println(CliColor.BOLD + "It's your turn. " + mockModel.getTurnPhase() + " For more help type 'help'"+ CliColor.RESET);
+            System.out.println(CliColor.BOLD + "It's your turn. " + mockModel.getTurnPhase() + " For more help type 'help'" + CliColor.RESET);
         } else {
             System.out.println(CliColor.BOLD + "It's NOT your turn. Wait for others player. For help type 'help'" + CliColor.RESET);
         }
@@ -377,14 +385,11 @@ public class Cli extends View {
 
     }
 
-
     @Override
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
         System.out.print("\t");
-        for (int i = 0; i < tiles.size(); i++) {
-            System.out.print(tiles.get(i).getColor().getCode() + "|" + (i + 1) + "|");
-            System.out.print(CliColor.RESET + "   ");
-        }
+        showTile(tiles);
+        System.out.print("Indicate how you want to insert the tiles: \t"+CliColor.BOLD+"it-x,y,z/c\n\t-x, y, z are the position of the tiles in the list\n\t-c is the column to insert\n"+CliColor.RESET);
     }
 
     @Override
@@ -395,7 +400,7 @@ public class Cli extends View {
 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
-        System.out.println(CliColor.RED + e.getMessage()+ CliColor.RESET);
+        System.out.println(CliColor.RED + e.getMessage() + CliColor.RESET);
     }
 
 
@@ -413,9 +418,9 @@ public class Cli extends View {
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
         newTurn(mockModel.getCurrentPlayer());
-        while(true) {
+        while (true) {
             try {
-                if (!(System.in.available()>0)) break;
+                if (!(System.in.available() > 0)) break;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -425,8 +430,8 @@ public class Cli extends View {
                 throw new RuntimeException(e);
             }
         }
-        this.inputThread = new Thread(()->{
-            while(true){
+        this.inputThread = new Thread(() -> {
+            while (true) {
                 String input = this.scanner.nextLine();
                 if (input != null && !input.isEmpty()) {
                     clientController.doAction(input);
