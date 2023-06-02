@@ -223,6 +223,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      */
     @Override
     public synchronized void addScout(Scout scout) throws RemoteException {
+        logger.info("Scout " + scout + " is subscribing to the game");
         this.gameModel.addScout(scout);
     }
 

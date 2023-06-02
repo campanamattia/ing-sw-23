@@ -26,6 +26,7 @@ public class Talent {
 
     public void onEvent(Object O){
         for(Scout scout : this.scouts) {
+            logger.info("Scout: " + scout.getClass().getSimpleName() + " is updating for " + O.getClass().getSimpleName());
             executorService.execute(()-> {
                 try {
                     scout.update(O);

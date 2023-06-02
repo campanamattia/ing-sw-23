@@ -30,17 +30,17 @@ public class Cli extends View {
 
     @Override
     public void updateBoard(MockBoard mockBoard) {
-
+        this.mockModel.setMockBoard(mockBoard);
     }
 
     @Override
     public void updateCommonGoal(MockCommonGoal mockCommonGoal) {
-
+        this.mockModel.update(mockCommonGoal);
     }
 
     @Override
     public void updatePlayer(MockPlayer mockPlayer) {
-
+        this.mockModel.update(mockPlayer);
     }
 
     @Override
@@ -241,7 +241,7 @@ public class Cli extends View {
         for (int i = 0; i < board.length; i++) {
             System.out.print(i + "\t");
             for (int j = 0; j < board[0].length; j++) {
-                if (board[i][j].getStatus()) {
+                if (board[i][j].getStatus() && board[i][j].getTile() != null) {
                     String colorString = board[i][j].getTile().getColor().getCode();
                     System.out.print(CliColor.BBLACK + "|" + colorString + i + "," + j + CliColor.BBLACK + "|" + CliColor.RESET);
                 } else {
@@ -253,7 +253,7 @@ public class Cli extends View {
             //print CommonGoal
             if (i <= 2) {
                 if (i == 0) {
-                    System.out.print("[" + CliColor.BBLACK + " " + commonGoal1.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
+                    System.out.print("[" + CliColor.BBLACK + " " + commonGoal1.getScoringToken().get(commonGoal1.getScoringToken().size()-1) + " " + CliColor.RESET + "] - ");
                 }
                 if (subString1.get(i) != null) System.out.print(subString1.get(i));
                 else System.out.print("");
@@ -262,7 +262,7 @@ public class Cli extends View {
 
             if (i >= 4 && i <= 6) {
                 if (i == 4) {
-                    System.out.print("[" + CliColor.BBLACK + " " + commonGoal2.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
+                    System.out.print("[" + CliColor.BBLACK + " " + commonGoal2.getScoringToken().get(commonGoal2.getScoringToken().size()-1) + " " + CliColor.RESET + "] - ");
                 }
 
                 if (subString2.get(i) != null) System.out.print(subString2.get(i));
@@ -419,6 +419,10 @@ public class Cli extends View {
         clearCLI();
         mockModel.setCurrentPlayer(playerID);
         mockModel.setTurnPhase(TurnPhase.PICKING);
+        showAll();
+    }
+
+    private void showAll() {
         showBoard();
         showShelves();
         showStatus();

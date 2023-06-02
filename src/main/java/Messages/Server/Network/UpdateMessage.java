@@ -7,6 +7,8 @@ import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockPlayer;
 
+
+
 public class UpdateMessage extends ServerMessage{
     private final MockBoard board;
     private final MockCommonGoal commonGoal;

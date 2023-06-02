@@ -204,7 +204,7 @@ public class GameModel {
             tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
         this.currentPlayer.insert(column , tiles);
-        talent.onEvent(this.currentPlayer);
+        talent.onEvent(MockFactory.getMock(this.currentPlayer));
     }
 
     /**

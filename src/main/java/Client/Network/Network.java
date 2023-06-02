@@ -65,7 +65,6 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
             scouts.get(objects.getClass()).update(objects);
         } else {
             view.printError("Scout-handler not found");
-            throw new RemoteException("Scout-handler not found");
         }
     }
 

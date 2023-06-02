@@ -6,7 +6,6 @@ import Interface.Client.RemoteView;
 import Interface.Scout;
 import Interface.Server.GameCommand;
 import Messages.Client.GameController.InsertTilesMessage;
-import Messages.Client.GameController.RegisterScout;
 import Messages.Client.GameController.SelectedTilesMessage;
 import Messages.Client.GameController.WriteChatMessage;
 import Messages.Client.Lobby.*;
@@ -81,11 +80,7 @@ public class ClientSocket extends Network {
 
     @Override
     public synchronized void addScout(Scout scout) throws RemoteException {
-        try {
-            sendMessage(new RegisterScout("useless"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        //never called
     }
 
     @Override
