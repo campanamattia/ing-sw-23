@@ -26,8 +26,7 @@ public class LightController {
             case "back", "quit" -> view.showStatus();
             case "st" -> executorService.execute(() -> selectTiles(split));
             case "it" -> executorService.execute(() -> insertTiles(split));
-            case "wc" -> executorService.execute(() -> writeChat(split));
-            default -> view.printError("INVALID COMMAND");
+            default -> executorService.execute(() -> writeChat(input));
         }
     }
 
@@ -160,18 +159,26 @@ public class LightController {
         return tiles;
     }
 
-    private void writeChat(String[] split) {
-        String[] data = split[1].split("/to");
+    private void writeChat(String input) {
+        String[] data = input.split("/to");
         data = Arrays.stream(data).map(String::trim).toArray(String[]::new);
         if (data.length != 2){
-            view.printError("You must follow the correct format: wc-message/to playerID");
+            view.printError("You must follow the correct format: message/to playerID");
             return;
         }
-        if(data[1].equalsIgnoreCase("ALL"))
-            data[1] = null;
+        if(data[1].trim().equalsIgnoreCase("all"))
+            try {
+                network.writeChat(playerID, data[0], null);
+            } catch (RemoteException e) {
+                view.printError(e.getMessage());
+            }
         else {
             for (MockPlayer player : view.getMockModel().getMockPlayers())
-                if (player.getPlayerID().equalsIgnoreCase(data[1])){
+                if (player.getPlayerID().equalsIgnoreCase(data[1].trim())){
+                    if (view.getMockModel().getLocalPlayer().equalsIgnoreCase(data[1].trim())){
+                        view.printError("You can't send a message to yourself");
+                        return;
+                    }
                     try {
                         network.writeChat(playerID, data[0], player.getPlayerID());
                     } catch (RemoteException e) {
@@ -179,7 +186,7 @@ public class LightController {
                     }
                     return;
                 }
+            view.printError("Player not found");
         }
-        view.printError("Player not found");
     }
 }

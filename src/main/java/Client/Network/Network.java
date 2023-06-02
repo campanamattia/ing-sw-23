@@ -74,7 +74,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
         timer = null;
         executorService.execute(() -> {
             try {
-                Thread.sleep(800000000); //7000 //TODO change to 7 seconds
+                Thread.sleep(7000); //7 seconds timeout
                 startPing(playerID, lobbyID);
             } catch (InterruptedException e) {
                 e.printStackTrace();

@@ -161,7 +161,6 @@ public class ClientSocket extends Network {
     }
 
     private synchronized void sendMessage(ClientMessage clientMessage) throws IOException {
-        view.printMessage(clientMessage.getClass().getSimpleName());
         try {
             this.out.writeObject(clientMessage);
             this.out.flush();
