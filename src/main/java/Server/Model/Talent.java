@@ -1,14 +1,15 @@
-package Server.Model.Talent;
+package Server.Model;
 
 import Interface.Scout;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+
 import static Server.ServerApp.executorService;
 import static Server.ServerApp.logger;
 
-public abstract class Talent <O>{
+public class Talent {
     protected List<Scout> scouts;
 
     public Talent(){
@@ -23,11 +24,11 @@ public abstract class Talent <O>{
         this.scouts.remove(scout);
     }
 
-    public void notifyScouts(O objects){
+    public void onEvent(Object O){
         for(Scout scout : this.scouts) {
             executorService.execute(()-> {
                 try {
-                    scout.update(objects);
+                    scout.update(O);
                 } catch (RemoteException e) {
                     logger.severe(e.getMessage());
                 }

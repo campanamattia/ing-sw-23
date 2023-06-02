@@ -20,7 +20,7 @@ public class RegisterScout extends ClientMessage {
     @Override
     public void execute(SocketHandler socket) {
         try {
-            socket.getGameController().addSubscriber(socket);
+            socket.getGameController().addScout(socket);
         } catch (RemoteException e) {
             ServerApp.logger.severe(e.getMessage());
         }

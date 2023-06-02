@@ -1,18 +1,12 @@
-package Utils.Scouts;
+package Client.Network.Scouts;
 
-import Client.View.View;
+import static Client.ClientApp.view;
 import Interface.Scout;
 import Utils.ChatMessage;
 
 public class ChatScout implements Scout<ChatMessage>{
-    View view;
-
-    public ChatScout(View view) {
-        this.view = view;
-    }
-
     @Override
     public void update(ChatMessage object) {
-        this.view.updateChat(object);
+        view.updateChat(object);
     }
 }

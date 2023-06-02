@@ -21,6 +21,7 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.List;
 import static Client.ClientApp.executorService;
+import static Client.ClientApp.view;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -79,7 +80,7 @@ public class ClientSocket extends Network {
     }
 
     @Override
-    public synchronized void addSubscriber(Scout scout) throws RemoteException {
+    public synchronized void addScout(Scout scout) throws RemoteException {
         try {
             sendMessage(new RegisterScout("useless"));
         } catch (IOException e) {

@@ -17,6 +17,7 @@ import Utils.ChatRoom;
 import Server.Model.Player.PersonalGoal;
 import Server.Model.Player.Player;
 import Utils.Coordinates;
+import Utils.MockObjects.MockFactory;
 import Utils.Tile;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -37,10 +38,6 @@ public class GameModel {
      */
     private final String lobbyID;
     /**
-     * the total number of players in the game
-     */
-    private final int nPlayers;
-    /**
      * the ID of the first player who starts the game
      */
     private final String firstPlayer;
@@ -52,6 +49,8 @@ public class GameModel {
      * list of all players in the game
      */
     private final List<Player> players;
+
+    private final Talent talent;
     /**
      * the list of the two common goals for the game
      */
@@ -82,17 +81,17 @@ public class GameModel {
      */
     public GameModel(String lobbyID, List<String> players) throws IOException {
         this.lobbyID = lobbyID;
-        this.nPlayers = players.size();
         this.firstPlayer = players.get(0);
 
         this.bag = new Bag();
         this.chatRoom = new ChatRoom();
+        this.talent = new Talent();
 
         this.players = new ArrayList<>();
         this.commonGoals = new ArrayList<>();
 
         //creating board
-        JsonObject board_json = decoBoard();
+        JsonObject board_json = decoBoard(players.size());
         this.board = new Board(board_json, this.bag);
 
         //creating Players
@@ -105,7 +104,7 @@ public class GameModel {
         this.currentPlayer = this.players.get(0);
 
         //creating 2 commonGoal
-        generateCommonGoal();
+        generateCommonGoal(players.size());
     }
 
     /**
@@ -115,12 +114,12 @@ public class GameModel {
      * @return the JSON object representing the board for the specified number of players
      * @throws FileNotFoundException if the specified file is not found
      */
-    private JsonObject decoBoard() throws FileNotFoundException {
+    private JsonObject decoBoard(int players) throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
         reader = new JsonReader(new FileReader(Objects.requireNonNull(GameModel.class.getResource("/settings/board.json")).getFile()));
         JsonObject json = gson.fromJson(reader, JsonObject.class);
-        return json.getAsJsonObject(Integer.toString(this.nPlayers));
+        return json.getAsJsonObject(Integer.toString(players));
     }
 
     /**
@@ -144,14 +143,14 @@ public class GameModel {
      *
      * @throws FileNotFoundException if the specified filepath is not found
      */
-    private void generateCommonGoal() throws FileNotFoundException {
+    private void generateCommonGoal(int players) throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
         reader = new JsonReader(new FileReader(Objects.requireNonNull(GameModel.class.getResource("/settings/commonGoal.json")).getFile()));
         JsonObject json = gson.fromJson(reader, JsonObject.class);
         JsonArray array = json.get("commonGoal").getAsJsonArray();
         json = json.get("scoringToken").getAsJsonObject();
-        List<Integer> scoringToken = getAsList(json.get(Integer.toString(this.nPlayers)).getAsJsonArray());
+        List<Integer> scoringToken = getAsList(json.get(Integer.toString(players)).getAsJsonArray());
         Random random = new Random();
         for(int i =0; i<2; i++)
             this.commonGoals.add(CommonGoalFactory.getCommonGoal(scoringToken, array.remove(random.nextInt(array.size())).getAsJsonObject()));
@@ -183,7 +182,9 @@ public class GameModel {
      */
     public List<Tile> selectTiles(List<Coordinates> coordinates) throws BoardException {
         this.board.convalidateMove(coordinates);
-        return this.board.getTiles(coordinates);
+        List<Tile> tiles = this.board.getTiles(coordinates);
+        talent.onEvent(MockFactory.getMock(this.board));
+        return tiles;
     }
 
     /**
@@ -203,6 +204,7 @@ public class GameModel {
             tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
         this.currentPlayer.insert(column , tiles);
+        talent.onEvent(this.currentPlayer);
     }
 
     /**
@@ -214,7 +216,9 @@ public class GameModel {
      */
     public void writeChat(String from, String message, String to) throws ChatException {
         if (message.equals("")) throw new ChatException();
-        this.chatRoom.addMessage(new ChatMessage(from, message, to));
+        ChatMessage chatMessage = new ChatMessage(from, message, to);
+        this.chatRoom.addMessage(chatMessage);
+        talent.onEvent(chatMessage);
     }
 
     /**
@@ -238,7 +242,6 @@ public class GameModel {
     public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
-
 
     /**
      * Returns the current player.
@@ -294,45 +297,6 @@ public class GameModel {
         return this.chatRoom;
     }
 
-    /**
-     * Adds a scout to the talent.
-     *
-     * @param interfaceBoard The scout to add.
-     */
-    public void addBoardScout(Scout interfaceBoard) {
-        this.board.getTalent().addScout(interfaceBoard);
-    }
-
-    /**
-     * Adds a scout to the talent for each player.
-     *
-     * @param interfacePlayer The scout to add.
-     */
-    public void addPlayerScout(Scout interfacePlayer) {
-        for (Player player : this.players)
-            player.getTalent().addScout(interfacePlayer);
-    }
-
-    /**
-     * Adds a scout to the talent for each common goal.
-     *
-     * @param interfaceCommonGoal The scout to add.
-     */
-    public void addCommonGoalScout(Scout interfaceCommonGoal) {
-        for (CommonGoal commonGoal : this.commonGoals)
-            commonGoal.getTalent().addScout(interfaceCommonGoal);
-    }
-
-    /**
-     * Adds a scout to the talent for the chat room.
-     *
-     * @param interfaceChat The scout to add.
-     */
-    public void addChatScout(Scout interfaceChat) {
-        this.chatRoom.getTalent().addScout(interfaceChat);
-    }
-
-
     public void completeTurn(List<Tile> tiles) {
         Shelf shelf = this.currentPlayer.getMyShelf();
         for (int i = 0; i < shelf.getMyShelf()[0].length; i++) {
@@ -346,5 +310,13 @@ public class GameModel {
 
     public String getLobbyID() {
         return this.lobbyID;
+    }
+
+    public void addScout(Scout scout) {
+        this.talent.addScout(scout);
+    }
+
+    public Talent getScouts() {
+        return this.talent;
     }
 }

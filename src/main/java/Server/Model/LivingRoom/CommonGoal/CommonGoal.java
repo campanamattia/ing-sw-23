@@ -2,7 +2,6 @@ package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
 import Server.Model.Player.Player;
-import Server.Model.Talent.CommonGoalTalent;
 
 import java.util.*;
 
@@ -32,11 +31,6 @@ public abstract class CommonGoal {
      */
     protected String description;
 
-    protected final CommonGoalTalent talent;
-
-    public CommonGoal(){
-        this.talent = new CommonGoalTalent();
-    }
 
     /**
      * Getter for accomplished.
@@ -77,7 +71,4 @@ public abstract class CommonGoal {
      */
     public abstract void check(Player player) throws NullPlayerException;
 
-    public CommonGoalTalent getTalent() {
-        return talent;
-    }
 }

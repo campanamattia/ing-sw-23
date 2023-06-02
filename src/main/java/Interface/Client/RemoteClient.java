@@ -1,8 +1,6 @@
 package Interface.Client;
 
 import Interface.Server.GameCommand;
-import Server.Controller.GameController;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 

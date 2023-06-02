@@ -4,41 +4,37 @@ import Interface.Client.RemoteClient;
 import Interface.Server.GameCommand;
 import Interface.Server.LobbyInterface;
 import Client.View.View;
-import Server.Model.Talent.*;
-import Utils.Scouts.ChatScout;
-import Utils.Scouts.CommonGoalScout;
-import Utils.Scouts.PlayerScout;
-import Utils.Scouts.BoardScout;
 import Interface.Scout;
+import Utils.ChatMessage;
+import Utils.MockObjects.MockBoard;
+import Utils.MockObjects.MockCommonGoal;
+import Utils.MockObjects.MockPlayer;
+import Client.Network.Scouts.BoardScout;
+import Client.Network.Scouts.ChatScout;
+import Client.Network.Scouts.CommonGoalScout;
+import Client.Network.Scouts.PlayerScout;
 
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.*;
+import static Client.ClientApp.executorService;
+import static Client.ClientApp.view;
 
 
 public abstract class Network extends UnicastRemoteObject implements GameCommand, LobbyInterface, RemoteClient, Scout {
-    protected View view;
 
-    protected Map<Class<? extends Talent>, Scout> scouts;
+    protected HashMap<Class<?>, Scout> scouts;
     protected Timer timer;
-    protected ExecutorService executor;
 
     public Network(View view) throws RemoteException {
         super();
-        this.view = view;
         this.scouts = new HashMap<>();
+        scouts.put(MockBoard.class, new BoardScout());
+        scouts.put(ChatMessage.class, new ChatScout());
+        scouts.put(MockPlayer.class, new PlayerScout());
+        scouts.put(MockCommonGoal.class, new CommonGoalScout());
         this.timer = new Timer();
-        this.executor = Executors.newCachedThreadPool();
-        this.scouts.put(PlayerTalent.class, new PlayerScout(this.view));
-        this.scouts.put(BoardTalent.class, new BoardScout(this.view));
-        this.scouts.put(CommonGoalTalent.class, new CommonGoalScout(this.view));
-        this.scouts.put(ChatTalent.class, new ChatScout(this.view));
     }
 
     public abstract void init(String ipAddress, int ip);
@@ -64,11 +60,11 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void update(Object objects) throws RemoteException {
         if (scouts.containsKey(objects.getClass())) {
             scouts.get(objects.getClass()).update(objects);
         } else {
+            view.printError("Scout-handler not found");
             throw new RemoteException("Scout-handler not found");
         }
     }
@@ -77,7 +73,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
     public void pong(String playerID, String lobbyID) throws RemoteException {
         if (timer != null) timer.cancel();
         timer = null;
-        this.executor.execute(() -> {
+        executorService.execute(() -> {
             try {
                 Thread.sleep(800000000); //7000 //TODO change to 7 seconds
                 startPing(playerID, lobbyID);

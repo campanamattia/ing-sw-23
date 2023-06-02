@@ -222,11 +222,8 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * @throws RemoteException If a remote communication error occurs.
      */
     @Override
-    public synchronized void addSubscriber(Scout scout) throws RemoteException {
-        this.gameModel.addBoardScout(scout);
-        this.gameModel.addChatScout(scout);
-        this.gameModel.addPlayerScout(scout);
-        this.gameModel.addCommonGoalScout(scout);
+    public synchronized void addScout(Scout scout) throws RemoteException {
+        this.gameModel.addScout(scout);
     }
 
     /**
@@ -241,18 +238,22 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             this.gameModel.getPlayer(playerID).setStatus(true);
         } catch (PlayerNotFoundException e) {
             logger.severe(e.toString());
-            try {
-                client.remoteView().outcomeException(e);
-            } catch (RemoteException ex) {
-                logger.severe(ex.getMessage());
-            }
+            executorService.execute(() -> {
+                try {
+                    client.remoteView().outcomeException(e);
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
         }
         for (ClientHandler clientHandler : players.values()) {
-            try {
-                clientHandler.remoteView().reloadPlayer(playerID);
-            } catch (RemoteException e) {
-                logger.severe(e.toString());
-            }
+            executorService.execute(() -> {
+                try {
+                    clientHandler.remoteView().reloadPlayer(playerID);
+                } catch (RemoteException e) {
+                    logger.severe(e.getMessage());
+                }
+            });
         }
     }
 
