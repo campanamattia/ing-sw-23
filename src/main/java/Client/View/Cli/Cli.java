@@ -5,8 +5,10 @@ import Client.Network.Network;
 import Client.Network.NetworkFactory;
 import Client.View.View;
 import Utils.*;
+import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
+import Utils.MockObjects.MockPlayer;
 import org.jetbrains.annotations.NotNull;
 import Enumeration.TurnPhase;
 
@@ -25,6 +27,29 @@ public class Cli extends View {
         clientController = new Controller(this);
         mockModel = new MockModel();
         start();
+    }
+
+    @Override
+    public void updateBoard(MockBoard mockBoard) {
+
+    }
+
+    @Override
+    public void updateCommonGoal(MockCommonGoal mockCommonGoal) {
+
+    }
+
+    @Override
+    public void updatePlayer(MockPlayer mockPlayer) {
+
+    }
+
+    @Override
+    public void updateChat(ChatMessage message) {
+        if (message.to() == null || message.to().equals(mockModel.getLocalPlayer())) {
+            this.mockModel.addMessage(message);
+            System.out.println(CliColor.BOLD + "\rNew Message" + CliColor.RESET);
+        }
     }
 
     public void start() {
@@ -265,9 +290,8 @@ public class Cli extends View {
 
     @Override
     public void showChat() {
-        Stack<ChatMessage> chat = mockModel.getChat();
-        for (int i = 0; i < chat.size(); i++) {
-            System.out.println(chat.pop().from() + ": " + chat.pop().message());
+        for (ChatMessage message : mockModel.getChat()) {
+            System.out.println(message);
         }
     }
 
@@ -382,14 +406,15 @@ public class Cli extends View {
         showBoard();
         showShelves();
         showStatus();
-
     }
 
     @Override
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
         System.out.print("\t");
         showTile(tiles);
-        System.out.print("Indicate how you want to insert the tiles: \t"+CliColor.BOLD+"it-x,y,z/c\n\t-x, y, z are the position of the tiles in the list\n\t-c is the column to insert\n"+CliColor.RESET);
+        System.out.print("Indicate how you want to insert the tiles: \t"+CliColor.BOLD+"it-x,y,z/c\n" +
+                "\t-x, y, z are the position of the tiles in the list\n" +
+                "\t-c is the column to insert\n"+CliColor.RESET);
     }
 
     @Override
@@ -417,6 +442,7 @@ public class Cli extends View {
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
+        if (mockModel.getChat() != null) fixChat();
         newTurn(mockModel.getCurrentPlayer());
         while (true) {
             try {
@@ -439,6 +465,10 @@ public class Cli extends View {
             }
         });
         this.inputThread.start();
+    }
+
+    private void fixChat() {
+        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(mockModel.getLocalPlayer()));
     }
 
     public void clearCLI() {

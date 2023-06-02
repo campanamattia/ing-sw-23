@@ -1,6 +1,5 @@
 package Server.Controller.Phase;
 
-import Enumeration.GamePhase;
 import Exception.GamePhase.EndGameException;
 import Exception.GamePhaseException;
 import Server.Model.Player.Player;
@@ -10,7 +9,6 @@ import java.util.List;
 public class LastRoundState extends PhaseController {
     public LastRoundState(Player currentPlayer, List<Player> players) {
         super(currentPlayer, players);
-        this.phase = GamePhase.ENDING;
     }
 
     @Override

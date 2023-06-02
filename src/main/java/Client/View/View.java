@@ -31,25 +31,13 @@ public abstract class View extends UnicastRemoteObject implements RemoteView {
         this.network = network;
     }
 
-    public void updateBoard(MockBoard mockBoard) {
-        mockModel.setMockBoard(mockBoard);
-    }
+    public abstract void updateBoard(MockBoard mockBoard);
 
-    public void updateCommonGoal(MockCommonGoal mockCommonGoals) {
-        mockModel.setMockCommonGoal(mockCommonGoals);
-    }
+    public abstract void updateCommonGoal(MockCommonGoal mockCommonGoal);
 
-    public void updatePlayer(MockPlayer mockPlayer) {
-        for (int i = 0; i < mockModel.getMockPlayers().size(); i++) {
-            if (mockModel.getMockPlayers().get(i).getPlayerID().equals(mockPlayer.getPlayerID())) {
-                mockModel.getMockPlayers().set(i, mockPlayer);
-            }
-        }
-    }
+    public abstract void updatePlayer(MockPlayer mockPlayer);
 
-    public void updateChat(ChatMessage chat) {
-        mockModel.addMessage(chat);
-    }
+    public abstract void updateChat(ChatMessage message);
 
     public abstract void showBoard();
 

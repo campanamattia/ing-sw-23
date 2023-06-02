@@ -1,20 +1,19 @@
 package Server.Model.Player;
 
+import Exception.Player.ColumnNotValidException;
 import Server.Model.Talent.PlayerTalent;
 import Utils.MockObjects.MockFactory;
+import Utils.Tile;
 import com.google.gson.annotations.Expose;
 
 import java.util.List;
 
 public class Player {
-    @Expose
     private final String playerID;
-    @Expose
-    private PersonalGoal personalGoal;
-    @Expose
+    private final PersonalGoal personalGoal;
+    private final Shelf myShelf;
+
     private int score;
-    @Expose
-    private Shelf myShelf;
     private final PlayerTalent talent;
     private boolean status;
 
@@ -27,7 +26,12 @@ public class Player {
         this.talent = new PlayerTalent();
     }
 
-    public void updateScore(int score){
+    public void insert(int n, List<Tile> tiles) throws ColumnNotValidException {
+        myShelf.insert(n, tiles);
+        talent.notifyScouts(MockFactory.getMock(this));
+    }
+
+    public void updateScore(int score) {
         this.score += score;
         this.talent.notifyScouts(MockFactory.getMock(this));
     }
@@ -36,13 +40,9 @@ public class Player {
         this.status = status;
     }
 
-    public boolean equals(String s) {
-        return this.playerID.equals(s);
-    }
-
     public void endGame() {
-        this.updateScore(myShelf.checkEndGame());
         this.updateScore(personalGoal.check(myShelf.getMyShelf()));
+        this.updateScore(myShelf.checkEndGame());
     }
 
     public int getScore() {
@@ -61,8 +61,12 @@ public class Player {
         return myShelf;
     }
 
-    public Boolean getStatus(){
+    public Boolean getStatus() {
         return this.status;
+    }
+
+    public boolean equals(String playerID) {
+        return this.playerID.equals(playerID);
     }
 
     public PlayerTalent getTalent() {

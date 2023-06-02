@@ -1,5 +1,7 @@
 package Utils;
 
+import Client.View.Cli.CliColor;
+
 /**
  * Represents a message sent by a user in a chat room.
  */
@@ -12,6 +14,8 @@ public record ChatMessage(String from, String message, String to) {
      */
     @Override
     public String toString() {
-        return (to == null) ? "From " + from + " to ALL" + ":\n" + message : "From " + from + " to " + to + ":\n" + message;
+        return (to == null) ?
+                CliColor.BOLD + "From " + from + " to ALL" + ":\n" + CliColor.RESET + message :
+                CliColor.BOLD + "From " + from + " to " + CliColor.RESET + CliColor.BGREEN + "you" + CliColor.RESET + CliColor.BOLD +  ":\n" +CliColor.RESET + message;
     }
 }

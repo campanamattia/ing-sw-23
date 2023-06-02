@@ -1,6 +1,5 @@
 package Server.Model;
 
-import Enumeration.GamePhase;
 import Exception.BoardException;
 import Exception.ChatException;
 import Exception.Player.ColumnNotValidException;
@@ -33,11 +32,10 @@ import java.util.*;
  * Represents the game model, contain information about the game state, players, board, and chat.
  */
 public class GameModel {
-    private final String lobbyID;
     /**
-     * the current phase of the game
+     * the unique identifier of the game
      */
-    private GamePhase phase;
+    private final String lobbyID;
     /**
      * the total number of players in the game
      */
@@ -78,12 +76,12 @@ public class GameModel {
      * based on the JSON configuration files. It also sets the initial state of the game to STARTING and
      * the current player to the first player in the list.
      *
+     * @param lobbyID the unique identifier of the game
      * @param players the list of names of players to be added to the game
      * @throws FileNotFoundException if the configuration files are not found
      */
     public GameModel(String lobbyID, List<String> players) throws IOException {
         this.lobbyID = lobbyID;
-        this.phase = GamePhase.STARTING;
         this.nPlayers = players.size();
         this.firstPlayer = players.get(0);
 
@@ -108,8 +106,6 @@ public class GameModel {
 
         //creating 2 commonGoal
         generateCommonGoal();
-
-        this.phase = GamePhase.ONGOING;
     }
 
     /**
@@ -185,7 +181,7 @@ public class GameModel {
      * @return a list of Tile objects representing the tiles at the given coordinates
      * @throws BoardException if the move is not valid according to the rules of the game
      */
-    public List<Tile> selectedTiles(List<Coordinates> coordinates) throws BoardException {
+    public List<Tile> selectTiles(List<Coordinates> coordinates) throws BoardException {
         this.board.convalidateMove(coordinates);
         return this.board.getTiles(coordinates);
     }
@@ -206,7 +202,7 @@ public class GameModel {
         for (Integer integer : sort)
             tiles.add(tiles.get(integer - 1));
         tiles.subList(0, sort.size()).clear();
-        this.currentPlayer.getMyShelf().insert(column - 1, tiles);
+        this.currentPlayer.insert(column , tiles);
     }
 
     /**
@@ -243,23 +239,6 @@ public class GameModel {
         this.currentPlayer = currentPlayer;
     }
 
-    /**
-     * Sets the game phase.
-     *
-     * @param phase the game phase
-     */
-    public void setPhase(GamePhase phase) {
-        this.phase = phase;
-    }
-
-    /**
-     * Returns the game phase.
-     *
-     * @return the game phase
-     */
-    public GamePhase getPhase() {
-        return this.phase;
-    }
 
     /**
      * Returns the number of players.

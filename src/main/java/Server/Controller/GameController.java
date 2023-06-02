@@ -1,6 +1,7 @@
 package Server.Controller;
 
 import Enumeration.TurnPhase;
+import Exception.GamePhase.EndingStateException;
 import Exception.Player.PlayerNotFoundException;
 import Exception.PlayerException;
 import Exception.ChatException;
@@ -25,6 +26,9 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Level;
+
+import static Server.ServerApp.executorService;
+import static Server.ServerApp.logger;
 
 /**
  The GameController class represents the controller for a game. It manages the game model, players, phases, and turn progression.
@@ -89,32 +93,26 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         do {
             try {
                 phaseController.nextPlayer();
-                this.gameModel.setCurrentPlayer(this.phaseController.getCurrentPlayer());
-                this.currentPlayer.reset(this.gameModel.getCurrentPlayer());
-                break;
             } catch (GamePhaseException e) {
-                if (e instanceof EndGameException) {
-                    List<Rank> leaderboard = EndedMatch.doRank(this.gameModel.getPlayers());
-                    for (ClientHandler client : players.values()) {
-                        try {
-                            client.remoteView().endGame(leaderboard);
-                        } catch (RemoteException ex) {
-                            ServerApp.logger.severe(ex.toString());
-                        }
-                    }
-                    break;
-                } else {
+                if (e instanceof EndingStateException) {
                     this.phaseController = new LastRoundState(this.phaseController.getCurrentPlayer(), this.phaseController.getPlayers());
-                    this.gameModel.setPhase(phaseController.getPhase());
+                    continue;
+                } else {
+                    EndedMatch.doRank(this.players.values(), this.gameModel.getPlayers());
+                    return;
                 }
             }
+            this.gameModel.setCurrentPlayer(this.phaseController.getCurrentPlayer());
+            this.currentPlayer.reset(this.gameModel.getCurrentPlayer());
+            break;
         }while(true);
          for (ClientHandler client : players.values()) {
-             try {
-                 client.remoteView().newTurn(this.gameModel.getCurrentPlayer().getPlayerID());
-             } catch (RemoteException ex) {
-                 ServerApp.logger.severe(ex.toString());
-             }
+             executorService.execute(()-> {
+                 try {
+                     client.remoteView().newTurn(this.gameModel.getCurrentPlayer().getPlayerID());
+                 } catch (RemoteException e) {
+                        ServerApp.logger.severe(e.getMessage());                     }
+             });
          }
     }
 
@@ -122,7 +120,6 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      Returns the GameModel associated with this GameController.
      @return the GameModel associated with this GameController
      */
-    @SuppressWarnings("unused")
     public GameModel getGameModel() {
         return gameModel;
     }
@@ -140,7 +137,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         try {
             if (ableTo(playerID) == TurnPhase.PICKING) {
                 try {
-                    currentPlayer.setTiles(this.gameModel.selectedTiles(coordinates));
+                    currentPlayer.setTiles(this.gameModel.selectTiles(coordinates));
                     this.turnPhase = TurnPhase.INSERTING;
                     this.players.get(playerID).remoteView().outcomeSelectTiles(currentPlayer.getTiles());
                 } catch (BoardException e) {
@@ -163,7 +160,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
     @Override
     public synchronized void insertTiles(String playerID, List<Integer> sort, int column) throws RemoteException {
         try {
-            if (ableTo(playerID) == TurnPhase.PICKING) {
+            if (ableTo(playerID) == TurnPhase.INSERTING) {
                 try {
                     this.gameModel.insertTiles(sort, currentPlayer.getTiles(), column);
                     this.players.get(playerID).remoteView().outcomeInsertTiles(true);

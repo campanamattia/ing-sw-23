@@ -1,24 +1,19 @@
 package Server.Controller.Phase;
-import Enumeration.GamePhase;
+
 import Exception.CommonGoal.NullPlayerException;
 import Exception.GamePhaseException;
 import Server.Model.LivingRoom.CommonGoal.CommonGoal;
 import Server.Model.Player.Player;
-
+import Server.ServerApp;
 import java.util.List;
 
 public abstract class PhaseController {
-    protected GamePhase phase;
     protected Player currentPlayer;
     protected List<Player> players;
 
     public PhaseController(Player currentPlayer, List<Player> players) {
         this.currentPlayer = currentPlayer;
         this.players = players;
-    }
-
-    public GamePhase getPhase() {
-        return phase;
     }
 
     public Player getCurrentPlayer() {
@@ -37,7 +32,7 @@ public abstract class PhaseController {
                 try{
                     common.check(this.currentPlayer);
                 }catch(NullPlayerException e){
-                    System.out.println(e.toString());
+                    ServerApp.logger.severe(e.getMessage());
                 }
     }
 }
