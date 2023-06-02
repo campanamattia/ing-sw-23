@@ -79,7 +79,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
         timer = null;
         this.executor.execute(() -> {
             try {
-                Thread.sleep(7000);
+                Thread.sleep(800000000); //7000 //TODO change to 7 seconds
                 startPing(playerID, lobbyID);
             } catch (InterruptedException e) {
                 e.printStackTrace();

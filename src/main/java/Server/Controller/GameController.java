@@ -156,6 +156,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      */
     @Override
     public synchronized void insertTiles(String playerID, List<Integer> sort, int column) throws RemoteException {
+        logger.info("Player " + playerID + " is inserting tiles");
         try {
             if (ableTo(playerID) == TurnPhase.INSERTING) {
                 try {

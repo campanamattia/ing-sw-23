@@ -1,6 +1,5 @@
 package Client.View.Cli;
 
-import Client.Controller.Controller;
 import Client.Network.Network;
 import Client.Network.NetworkFactory;
 import Client.View.View;
@@ -19,7 +18,7 @@ import java.util.*;
 import static Client.ClientApp.network;
 
 public class Cli extends View {
-    private Controller controller;
+    private LightController controller;
     private final Scanner scanner = new Scanner(System.in);
     private Thread inputThread;
 
@@ -59,7 +58,7 @@ public class Cli extends View {
         try {
             network = askConnection();
         } catch (RemoteException e) {
-            System.out.println("Error while creating connection object");
+            printError("ERROR: " + e.getMessage());
             System.exit(-1);
         }
         address = askServerAddress();
@@ -75,11 +74,11 @@ public class Cli extends View {
         input = scanner.nextLine();
 
         while (!input.equalsIgnoreCase("SOCKET") && !input.equalsIgnoreCase("RMI")) {
-            System.out.println(CliColor.RED + "ERROR: you type something wrong, please enter 'SOCKET' or 'RMI'" + CliColor.RESET);
+            printError("ERROR: you type something wrong, please enter 'SOCKET' or 'RMI'");
             input = scanner.nextLine();
         }
 
-        System.out.println(CliColor.BOLDGREEN + "Good! You are going to create a " + input.toLowerCase() + " connection." + CliColor.RESET);
+        printMessage("Good! You are going to create a " + input.toLowerCase() + " connection.");
 
         return NetworkFactory.instanceNetwork(input, this);
     }
@@ -91,12 +90,13 @@ public class Cli extends View {
 
         int playerNumber = Integer.parseInt(input);
         while (playerNumber < 2 || playerNumber > 4) {
-            System.out.println(CliColor.RED + "ERROR: you type something wrong, match can only start with 2, 3 or 4 players" + CliColor.RESET);
+            printError("ERROR: you type something wrong, please enter a number between 2 and 4\t");
             input = scanner.nextLine();
             playerNumber = Integer.parseInt(input);
         }
 
-        System.out.println(CliColor.BOLDGREEN + "You are going to create a new Game, wait for the others players" + CliColor.RESET);
+        printMessage("You are going to create a new Game, wait for the others players");
+
         network.setLobbySize(mockModel.getLocalPlayer(), mockModel.getLobbyID(), playerNumber);
     }
 
@@ -113,7 +113,8 @@ public class Cli extends View {
             } else if (validateIP(address)) {
                 return address;
             } else {
-                System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
+                printError("ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)");
+                System.out.println(" Try again.");
             }
         } while (true);
     }
@@ -153,10 +154,12 @@ public class Cli extends View {
                     if (MIN_PORT <= port && port <= MAX_PORT) {
                         return port;
                     } else {
-                        System.out.println(CliColor.RED + "ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + "." + CliColor.RESET + " Try again.");
+                        printError("ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + ".");
+                        System.out.println(" Try again.");
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println(CliColor.RED + "ERROR: Please insert only numbers or 'default'." + CliColor.RESET + " Try again.");
+                    printError("ERROR: Please insert only numbers or 'default'.");
+                    System.out.println("Try again.");
                 }
             }
         }
@@ -183,7 +186,7 @@ public class Cli extends View {
                 inputLobby = input;
                 break;
             } else
-                System.out.println(CliColor.RED + "ERROR: you type something wrong, lobby can't be empty" + CliColor.RESET);
+                printError("ERROR: you type something wrong, lobby can't be empty");
         }
 
         while (true) {
@@ -193,7 +196,7 @@ public class Cli extends View {
                 inputName = input;
                 break;
             } else
-                System.out.println(CliColor.RED + "ERROR: you type something wrong, nickname can't be empty" + CliColor.RESET);
+                printError("ERROR: you type something wrong, nickname can't be empty");
         }
 
         network.login(inputName, inputLobby, this, network);
@@ -423,11 +426,9 @@ public class Cli extends View {
 
     @Override
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
-        System.out.print("\t");
+        this.mockModel.setTurnPhase(TurnPhase.INSERTING);
         showTile(tiles);
-        System.out.print("Indicate how you want to insert the tiles: \t"+CliColor.BOLD+"it-x,y,z/c\n" +
-                "\t-x, y, z are the position of the tiles in the list\n" +
-                "\t-c is the column to insert\n"+CliColor.RESET);
+        showStatus();
     }
 
     @Override
@@ -438,9 +439,17 @@ public class Cli extends View {
 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
-        System.out.println(CliColor.RED + e.getMessage() + CliColor.RESET);
+        printError(e.getMessage());
     }
 
+    public void printError(String error) {
+        System.out.println(CliColor.BOLDRED + error + CliColor.RESET);
+    }
+
+    @Override
+    public void printMessage(String message) {
+        System.out.println(CliColor.BOLDGREEN + message + CliColor.RESET);
+    }
 
     @Override
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
@@ -454,7 +463,7 @@ public class Cli extends View {
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
-        this.controller = new Controller(mockModel.getLocalPlayer());
+        this.controller = new LightController(mockModel.getLocalPlayer());
         if (mockModel.getChat() != null) fixChat();
         newTurn(mockModel.getCurrentPlayer());
         while (true) {
@@ -473,7 +482,7 @@ public class Cli extends View {
             while (true) {
                 String input = this.scanner.nextLine();
                 if (input != null && !input.isEmpty()) {
-                    controller.doAction(input);
+                    controller.elaborate(input);
                 }
             }
         });

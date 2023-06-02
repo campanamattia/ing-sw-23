@@ -42,4 +42,12 @@ public abstract class View extends UnicastRemoteObject implements RemoteView {
     public abstract void showRank(List<Rank> classification);
 
     public abstract void start();
+
+    public abstract void printError(String error);
+
+    public abstract void printMessage(String message);
+
+    public MockModel getMockModel(){
+        return mockModel;
+    }
 }

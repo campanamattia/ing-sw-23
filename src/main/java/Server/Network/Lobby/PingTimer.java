@@ -34,7 +34,7 @@ public class PingTimer{
                     throw new RuntimeException(e);
                 }
             }
-        }, 10000); //10 seconds timeout
+        }, 1000000000); //10 seconds timeout //TODO change to 10 seconds
     }
 
     public void receivedPing() {
