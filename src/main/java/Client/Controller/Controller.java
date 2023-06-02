@@ -1,6 +1,5 @@
 package Client.Controller;
 
-import Client.View.View;
 import Enumeration.OperationType;
 import Exception.Player.InvalidInputException;
 import Utils.Coordinates;
