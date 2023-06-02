@@ -2,20 +2,20 @@ package Server.Model.Player;
 
 import Enumeration.Color;
 import Exception.Player.ColumnNotValidException;
-import Server.Model.Player.Shelf;
 import Utils.Tile;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 class ShelfTest {
 
     @Test
     void insert() throws ColumnNotValidException {
 
         Shelf TestShelf = new Shelf();
-        List<Tile> InsTiles = new ArrayList<Tile>();
+        List<Tile> InsTiles = new ArrayList<>();
 
 
         InsTiles.add(new Tile(Color.PINK));

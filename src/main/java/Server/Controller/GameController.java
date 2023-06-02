@@ -6,7 +6,6 @@ import Exception.Player.PlayerNotFoundException;
 import Exception.PlayerException;
 import Exception.ChatException;
 import Exception.BoardException;
-import Exception.GamePhase.EndGameException;
 import Exception.GamePhaseException;
 import Exception.Player.NotYourTurnException;
 import Interface.Scout;
@@ -17,9 +16,7 @@ import Server.Controller.Phase.NormalState;
 import Server.Controller.Phase.PhaseController;
 import Server.Model.*;
 import Server.Network.Client.ClientHandler;
-import Server.ServerApp;
 import Utils.Coordinates;
-import Utils.Rank;
 
 import java.io.*;
 import java.rmi.RemoteException;
@@ -69,12 +66,12 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         try {
             this.gameModel = new GameModel(lobbyID, new ArrayList<>(players.keySet()));
         } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.toString());
+            logger.log(Level.SEVERE, e.toString());
             for(ClientHandler client : players.values()) {
                 try {
                     client.remoteView().outcomeException(e);
                 } catch (RemoteException ex) {
-                    ServerApp.logger.severe(ex.toString());
+                    logger.severe(ex.toString());
                 }
             }
         }
@@ -111,7 +108,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                  try {
                      client.remoteView().newTurn(this.gameModel.getCurrentPlayer().getPlayerID());
                  } catch (RemoteException e) {
-                        ServerApp.logger.severe(e.getMessage());                     }
+                        logger.severe(e.getMessage());                     }
              });
          }
     }
@@ -169,7 +166,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                 } catch (PlayerException e) {
                     this.players.get(playerID).remoteView().outcomeException(e);
                 } catch (IOException e) {
-                    ServerApp.logger.severe(e.toString());
+                    logger.severe(e.toString());
                 }
             }
         } catch (NotYourTurnException e) {
@@ -220,18 +217,18 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         try {
             this.gameModel.getPlayer(playerID).setStatus(true);
         } catch (PlayerNotFoundException e) {
-            ServerApp.logger.severe(e.toString());
+            logger.severe(e.toString());
             try {
                 client.remoteView().outcomeException(e);
             } catch (RemoteException ex) {
-                ServerApp.logger.severe(ex.getMessage());
+                logger.severe(ex.getMessage());
             }
         }
         for (ClientHandler clientHandler : players.values()) {
             try {
                 clientHandler.remoteView().reloadPlayer(playerID);
             } catch (RemoteException e) {
-                ServerApp.logger.severe(e.toString());
+                logger.severe(e.toString());
             }
         }
     }
@@ -256,7 +253,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                         try {
                             client.remoteView().crashedPlayer(playerID);
                         } catch (RemoteException e) {
-                            ServerApp.logger.severe(e.toString());
+                            logger.severe(e.toString());
                         }
                     });
                     thread.start();
@@ -264,7 +261,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             }
             return crashed;
         } catch (PlayerException e) {
-            ServerApp.logger.severe(e + " for logout");
+            logger.severe(e + " for logout");
             return null;
         }
     }

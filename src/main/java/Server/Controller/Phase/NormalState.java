@@ -1,6 +1,5 @@
 package Server.Controller.Phase;
 
-import Enumeration.*;
 import Exception.GamePhase.EndingStateException;
 import Exception.GamePhaseException;
 import Server.Model.Player.Player;

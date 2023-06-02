@@ -4,7 +4,6 @@ import Exception.Player.ColumnNotValidException;
 import Server.Model.Talent.PlayerTalent;
 import Utils.MockObjects.MockFactory;
 import Utils.Tile;
-import com.google.gson.annotations.Expose;
 
 import java.util.List;
 

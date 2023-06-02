@@ -241,24 +241,6 @@ public class GameModel {
 
 
     /**
-     * Returns the number of players.
-     *
-     * @return the number of players
-     */
-    public int getNPlayers() {
-        return this.nPlayers;
-    }
-
-    /**
-     * Returns the first player.
-     *
-     * @return the first player
-     */
-    public String getFirstPlayer() {
-        return this.firstPlayer;
-    }
-
-    /**
      * Returns the current player.
      *
      * @return the current player
