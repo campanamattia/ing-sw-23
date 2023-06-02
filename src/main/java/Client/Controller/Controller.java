@@ -7,16 +7,17 @@ import Utils.Coordinates;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
+import static Client.ClientApp.network;
+import static Client.ClientApp.view;
+
 public class Controller {
-    private final View view;
     private String playerID;
 
 
-    public Controller(View view) {
-        this.view = view;
+    public Controller(String playerID) {
+        this.playerID = playerID;
     }
 
     public void doAction(String input) {
@@ -24,15 +25,15 @@ public class Controller {
         // thread for afk
 
         if (input.equals("showChat")) {
-            this.view.showChat();
+            view.showChat();
             return;
         }
         if (input.equals("showGame")) {
-            this.view.showGame();
+            view.showGame();
             return;
         }
         if(input.equals("help") || input.equals("?")){
-            this.view.showHelp();
+            view.showHelp();
             return;
         }
 
@@ -43,16 +44,16 @@ public class Controller {
             String content = upLoadContent(input, operationType);
 
             switch (operationType) {
-                case WRITEMESSAGE -> view.getNetwork().writeChat(this.playerID, content, ""); // TODO: 24/05/2023
+                case WRITEMESSAGE -> network.writeChat(this.playerID, content, ""); // TODO: 24/05/2023
                 case SELECTEDTILES -> {
                     List<Coordinates> selectCoordinate = extractCoordinates(content);
-                    this.view.getNetwork().selectTiles(this.playerID, selectCoordinate);
+                    network.selectTiles(this.playerID, selectCoordinate);
                 }
                 case INSERTTILES -> {
                     String orderOfTiles = content.split("/")[0];
                     List<Integer> sorted = extractInteger(orderOfTiles);
                     int column = Integer.parseInt(content.split("/")[1]);
-                    this.view.getNetwork().insertTiles(this.playerID, sorted, column);
+                    network.insertTiles(this.playerID, sorted, column);
                 }
             }
 
@@ -196,20 +197,6 @@ public class Controller {
             orderOfTiles.add(Integer.parseInt(s));
         }
         return orderOfTiles;
-    }
-
-    /**
-     * States whether the given address is valid or not.
-     *
-     * @param address the inserted IP address.
-     * @return a boolean whose value is:
-     * -{@code true} if the address is valid;
-     * -{@code false} otherwise.
-     */
-    public boolean validateIP(String address) {
-        String zeroTo255 = "([01]?\\d{1,2}|2[0-4]\\d|25[0-5])";
-        String IP_REGEX = "^(" + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + ")$";
-        return address.matches(IP_REGEX);
     }
 
     public void setPlayerID(String playerID) {

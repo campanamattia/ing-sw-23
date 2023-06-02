@@ -1,7 +1,6 @@
 package Messages.Server.View;
 
 import Client.View.View;
-import Enumeration.MessageType;
 import Messages.ServerMessage;
 import Utils.Rank;
 

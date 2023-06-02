@@ -16,17 +16,17 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 
+import static Client.ClientApp.network;
 
 public class Cli extends View {
-    Controller clientController;
-    Scanner scanner = new Scanner(System.in);
-    Thread inputThread;
+    private Controller controller;
+    private final Scanner scanner = new Scanner(System.in);
+    private Thread inputThread;
 
     public Cli() throws RemoteException {
         super();
-        clientController = new Controller(this);
         mockModel = new MockModel();
-        start();
+        showTitle();
     }
 
     @Override
@@ -55,10 +55,9 @@ public class Cli extends View {
     public void start() {
         int port;
         String address;
-        showTitle();
 
         try {
-            this.network = askConnection();
+            network = askConnection();
         } catch (RemoteException e) {
             System.out.println("Error while creating connection object");
             System.exit(-1);
@@ -111,12 +110,26 @@ public class Cli extends View {
 
             if (address.equalsIgnoreCase("localhost") || address.equals("d")) {
                 return DEFAULT_ADDRESS;
-            } else if (clientController.validateIP(address)) {
+            } else if (validateIP(address)) {
                 return address;
             } else {
                 System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
             }
         } while (true);
+    }
+
+    /**
+     * States whether the given address is valid or not.
+     *
+     * @param address the inserted IP address.
+     * @return a boolean whose value is:
+     * -{@code true} if the address is valid;
+     * -{@code false} otherwise.
+     */
+    private boolean validateIP(String address) {
+        String zeroTo255 = "([01]?\\d{1,2}|2[0-4]\\d|25[0-5])";
+        String IP_REGEX = "^(" + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + ")$";
+        return address.matches(IP_REGEX);
     }
 
     public int askServerPort() {
@@ -433,7 +446,6 @@ public class Cli extends View {
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
         System.out.println("You logged into the lobby");
         mockModel.setLocalPlayer(localPlayer);
-        this.clientController.setPlayerID(localPlayer);
         mockModel.setLobbyID(lobbyID);
         network.startPing(localPlayer, lobbyID);
     }
@@ -442,6 +454,7 @@ public class Cli extends View {
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
+        this.controller = new Controller(mockModel.getLocalPlayer());
         if (mockModel.getChat() != null) fixChat();
         newTurn(mockModel.getCurrentPlayer());
         while (true) {
@@ -460,7 +473,7 @@ public class Cli extends View {
             while (true) {
                 String input = this.scanner.nextLine();
                 if (input != null && !input.isEmpty()) {
-                    clientController.doAction(input);
+                    controller.doAction(input);
                 }
             }
         });

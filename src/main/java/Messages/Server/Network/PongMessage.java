@@ -1,10 +1,10 @@
 package Messages.Server.Network;
 
-import Client.Network.Network;
 import Client.View.View;
 import Messages.ServerMessage;
 
 import java.rmi.RemoteException;
+import static Client.ClientApp.network;
 
 public class PongMessage extends ServerMessage {
     private final String playerID;
@@ -17,7 +17,6 @@ public class PongMessage extends ServerMessage {
 
     @Override
     public void execute(View view) {
-        Network network = view.getNetwork();
         try {
             network.pong(playerID, lobbyID);
         } catch (RemoteException e) {

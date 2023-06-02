@@ -15,20 +15,9 @@ import java.util.List;
 
 public abstract class View extends UnicastRemoteObject implements RemoteView {
     protected MockModel mockModel;
-    protected Network network;
 
     public View() throws RemoteException {
         super();
-    }
-
-    public Network getNetwork() {
-        if (network == null) {
-            throw new RuntimeException("Network not set");
-        } else return this.network;
-    }
-
-    public void setNetwork(Network network) {
-        this.network = network;
     }
 
     public abstract void updateBoard(MockBoard mockBoard);
@@ -52,4 +41,6 @@ public abstract class View extends UnicastRemoteObject implements RemoteView {
     public abstract void showGame();
 
     public abstract void showRank(List<Rank> classification);
+
+    public abstract void start();
 }
