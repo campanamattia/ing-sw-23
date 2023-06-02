@@ -107,7 +107,7 @@ public class LightController {
 
         // Check if the column is in the correct format
         int column = checkColumn(data[1]);
-        if (column != -1)
+        if (column == -1)
             return;
 
         // Send the command to the server

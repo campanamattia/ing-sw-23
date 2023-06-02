@@ -28,38 +28,39 @@ import static Server.ServerApp.executorService;
 import static Server.ServerApp.logger;
 
 /**
- The GameController class represents the controller for a game. It manages the game model, players, phases, and turn progression.
- This class implements the GameCommand interface and is Serializable.
+ * The GameController class represents the controller for a game. It manages the game model, players, phases, and turn progression.
+ * This class implements the GameCommand interface and is Serializable.
  */
 public class GameController extends UnicastRemoteObject implements GameCommand, Serializable {
     private final String gameID;
     /**
-     The GameModel class represents the model for a game. It contains the gameModel board, players, and common goals.
+     * The GameModel class represents the model for a game. It contains the gameModel board, players, and common goals.
      */
     private GameModel gameModel;
     /**
-     The players HashMap contains the players of the gameModel.
+     * The players HashMap contains the players of the gameModel.
      */
     private final HashMap<String, ClientHandler> players;
     /**
-     The phaseController attribute represents the current phase of the gameModel.
+     * The phaseController attribute represents the current phase of the gameModel.
      */
     private PhaseController phaseController;
     /**
-     The turnPhase attribute represents the current turn phase of the gameModel.
+     * The turnPhase attribute represents the current turn phase of the gameModel.
      */
     private TurnPhase turnPhase;
     /**
-     The currentPlayer attribute represents the current player of the gameModel.
+     * The currentPlayer attribute represents the current player of the gameModel.
      */
     private final CurrentPlayer currentPlayer;
 
     /**
-     Constructs a new GameController instance with the specified game model and players.
-     @param lobbyID the lobby ID that the gameController is associated with.
-     @param players A HashMap of players participating in the game, where the key is the player ID and the value is the corresponding ClientHandler.
+     * Constructs a new GameController instance with the specified game model and players.
+     *
+     * @param lobbyID the lobby ID that the gameController is associated with.
+     * @param players A HashMap of players participating in the game, where the key is the player ID and the value is the corresponding ClientHandler.
      */
-    public GameController(String lobbyID, HashMap<String, ClientHandler> players) throws RemoteException{
+    public GameController(String lobbyID, HashMap<String, ClientHandler> players) throws RemoteException {
         super();
         this.gameID = lobbyID;
         this.players = players;
@@ -67,7 +68,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             this.gameModel = new GameModel(lobbyID, new ArrayList<>(players.keySet()));
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.toString());
-            for(ClientHandler client : players.values()) {
+            for (ClientHandler client : players.values()) {
                 try {
                     client.remoteView().outcomeException(e);
                 } catch (RemoteException ex) {
@@ -81,9 +82,9 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
     }
 
     /**
-     This method ends the current turn, checks for common goals, advances to the next player, and updates the gameModel status.
-     If the gameModel has entered its last round, it changes the gameModel phase accordingly.
-     If the gameModel has ended, it sets the leaderboard and gameModel phase to ended.
+     * This method ends the current turn, checks for common goals, advances to the next player, and updates the gameModel status.
+     * If the gameModel has entered its last round, it changes the gameModel phase accordingly.
+     * If the gameModel has ended, it sets the leaderboard and gameModel phase to ended.
      */
     public void endTurn() throws IOException {
         phaseController.checkCommonGoals(this.gameModel.getCommonGoals());
@@ -102,20 +103,22 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             this.gameModel.setCurrentPlayer(this.phaseController.getCurrentPlayer());
             this.currentPlayer.reset(this.gameModel.getCurrentPlayer());
             break;
-        }while(true);
-         for (ClientHandler client : players.values()) {
-             executorService.execute(()-> {
-                 try {
-                     client.remoteView().newTurn(this.gameModel.getCurrentPlayer().getPlayerID());
-                 } catch (RemoteException e) {
-                        logger.severe(e.getMessage());                     }
-             });
-         }
+        } while (true);
+        for (ClientHandler client : players.values()) {
+            executorService.execute(() -> {
+                try {
+                    client.remoteView().newTurn(this.gameModel.getCurrentPlayer().getPlayerID());
+                } catch (RemoteException e) {
+                    logger.severe(e.getMessage());
+                }
+            });
+        }
     }
 
     /**
-     Returns the GameModel associated with this GameController.
-     @return the GameModel associated with this GameController
+     * Returns the GameModel associated with this GameController.
+     *
+     * @return the GameModel associated with this GameController
      */
     public GameModel getGameModel() {
         return gameModel;
@@ -136,13 +139,31 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                 try {
                     currentPlayer.setTiles(this.gameModel.selectTiles(coordinates));
                     this.turnPhase = TurnPhase.INSERTING;
-                    this.players.get(playerID).remoteView().outcomeSelectTiles(currentPlayer.getTiles());
+                    executorService.execute(() -> {
+                        try {
+                            this.players.get(playerID).remoteView().outcomeSelectTiles(currentPlayer.getTiles());
+                        } catch (RemoteException e) {
+                            logger.severe(e.getMessage());
+                        }
+                    });
                 } catch (BoardException e) {
-                    players.get(playerID).remoteView().outcomeException(e);
+                    executorService.execute(() -> {
+                        try {
+                            players.get(playerID).remoteView().outcomeException(e);
+                        } catch (RemoteException ex) {
+                            logger.severe(ex.getMessage());
+                        }
+                    });
                 }
             }
         } catch (NotYourTurnException e) {
-            players.get(playerID).remoteView().outcomeException(e);
+            executorService.execute(() -> {
+                try {
+                    players.get(playerID).remoteView().outcomeException(e);
+                } catch (RemoteException ex) {
+                    logger.severe(ex.getMessage());
+                }
+            });
         }
     }
 
@@ -178,6 +199,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
     /**
      * Writes a chat message from a player to another player or the entire game.
      * If the recipient is null, the message is sent to all players in the game.
+     *
      * @param playerID The ID of the player sending the chat message.
      * @param message  The content of the chat message.
      * @param to       The recipient of the chat message. If null, the message is sent to all players in the game.
@@ -213,7 +235,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * @param playerID The ID of the player to be reloaded.
      * @param client   The ClientHandler object associated with the player.
      */
-    public void rejoin(String playerID, ClientHandler client){
+    public void rejoin(String playerID, ClientHandler client) {
         this.players.put(playerID, client);
         try {
             this.gameModel.getPlayer(playerID).setStatus(true);
@@ -282,6 +304,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
 
     /**
      * Returns the ID of the game.
+     *
      * @return The ID of the game.
      */
     public String getGameID() {
@@ -290,9 +313,10 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
 
     /**
      * Returns the list of players in the game.
+     *
      * @return The list of players in the game.
      */
-    public List<ClientHandler> getClients(){
+    public List<ClientHandler> getClients() {
         List<ClientHandler> clients = new ArrayList<>();
         for (ClientHandler client : this.players.values()) {
             if (client != null) clients.add(client);
@@ -302,6 +326,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
 
     /**
      * Returns the map of players in the game.
+     *
      * @return The map of players in the game.
      */
     public HashMap<String, ClientHandler> getPlayers() {
