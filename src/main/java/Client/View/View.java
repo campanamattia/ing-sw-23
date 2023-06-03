@@ -1,6 +1,5 @@
 package Client.View;
 
-import Client.Network.Network;
 import Interface.Client.RemoteView;
 import Utils.ChatMessage;
 import Utils.MockObjects.MockBoard;
@@ -10,47 +9,23 @@ import Utils.MockObjects.MockPlayer;
 import Utils.Rank;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
-public abstract class View implements RemoteView {
-    MockModel mockModel;
-    Network network;
+public abstract class View extends UnicastRemoteObject implements RemoteView {
+    protected MockModel mockModel;
 
-    public MockModel getMockmodel() {
-        return mockModel;
+    public View() throws RemoteException {
+        super();
     }
 
-    public void setMockModel(MockModel mockmodel) {
-        this.mockModel = mockmodel;
-    }
+    public abstract void updateBoard(MockBoard mockBoard);
 
-    public Network getNetwork() {
-        return network;
-    }
+    public abstract void updateCommonGoal(MockCommonGoal mockCommonGoal);
 
-    public void setNetwork(Network network) {
-        this.network = network;
-    }
+    public abstract void updatePlayer(MockPlayer mockPlayer);
 
-    public void updateBoard(MockBoard mockBoard) {
-        mockModel.setMockBoard(mockBoard);
-    }
-
-    public void updateCommonGoal(MockCommonGoal mockCommonGoals) {
-        mockModel.setMockCommonGoal(mockCommonGoals);
-    }
-
-    public void updatePlayer(MockPlayer mockPlayer) {
-        for (int i = 0; i < mockModel.getMockPlayers().size(); i++) {
-            if (mockModel.getMockPlayers().get(i).getPlayerID().equals(mockPlayer.getPlayerID())) {
-                mockModel.getMockPlayers().set(i, mockPlayer);
-            }
-        }
-    }
-
-    public void updateChat(ChatMessage chat) {
-        mockModel.addMessage(chat);
-    }
+    public abstract void updateChat(ChatMessage message);
 
     public abstract void showBoard();
 
@@ -58,17 +33,19 @@ public abstract class View implements RemoteView {
 
     public abstract void showStatus();
 
-    public void showShelves() {
+    public abstract void showShelves();
 
-    }
+    public abstract void showHelp();
 
-    public void showHelp() {
+    public abstract void showRank(List<Rank> classification);
 
-    }
+    public abstract void start();
 
-    public abstract void showGame();
+    public abstract void printError(String error);
 
-    public void showRank(List<Rank> classification) {
+    public abstract void printMessage(String message);
 
+    public MockModel getMockModel(){
+        return mockModel;
     }
 }

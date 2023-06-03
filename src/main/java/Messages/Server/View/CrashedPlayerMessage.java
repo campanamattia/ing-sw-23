@@ -5,17 +5,17 @@ import Messages.ServerMessage;
 
 import java.rmi.RemoteException;
 
-public class ErrorMessage extends ServerMessage {
-    private final Exception error;
+public class CrashedPlayerMessage extends ServerMessage {
+    private final String crashedPlayer;
 
-    public ErrorMessage(Exception error){
-        this.error = error;
+    public CrashedPlayerMessage(String crashedPlayer) {
+        this.crashedPlayer = crashedPlayer;
     }
 
     @Override
     public void execute(View view) {
         try {
-            view.outcomeException(this.error);
+            view.crashedPlayer(crashedPlayer);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

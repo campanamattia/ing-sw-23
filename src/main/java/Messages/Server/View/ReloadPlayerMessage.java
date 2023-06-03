@@ -5,17 +5,17 @@ import Messages.ServerMessage;
 
 import java.rmi.RemoteException;
 
-public class ErrorMessage extends ServerMessage {
-    private final Exception error;
+public class ReloadPlayerMessage extends ServerMessage {
+    private final String reloadPlayer;
 
-    public ErrorMessage(Exception error){
-        this.error = error;
+    public ReloadPlayerMessage(String reloadPlayer) {
+        this.reloadPlayer = reloadPlayer;
     }
 
     @Override
     public void execute(View view) {
         try {
-            view.outcomeException(this.error);
+            view.reloadPlayer(this.reloadPlayer);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

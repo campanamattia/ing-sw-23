@@ -3,12 +3,12 @@ package Server.Network.Client;
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
 import Interface.Scout;
+import Interface.Server.GameCommand;
 import Messages.ClientMessage;
 import Messages.Server.Network.UpdateMessage;
 import Messages.Server.View.*;
 import Messages.Server.Network.PongMessage;
 import Messages.ServerMessage;
-import Server.Controller.GameController;
 import Server.ServerApp;
 import Utils.ChatMessage;
 import Utils.MockObjects.MockBoard;
@@ -19,65 +19,52 @@ import Utils.Rank;
 import Utils.Tile;
 
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
+
+import static Server.ServerApp.executorService;
 
 
 public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout {
     private final Socket socket;
-    private String lobbyID = null;
-    private Scanner input;
-    private final ExecutorService executorService;
-    private GameController controller;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    private GameCommand controller;
 
 
 
     public SocketHandler(Socket socket) {
         this.controller = null;
-        this.executorService = Executors.newCachedThreadPool();
         this.socket = socket;
-        try {
-            this.input = new Scanner(socket.getInputStream());
-        } catch (IOException e) {
-            try {
-                send(new ErrorMessage(new RuntimeException("Server is not ready yet")));
-            } catch (IOException ex) {
-                ServerApp.logger.log(Level.SEVERE, ex.toString());
-            }
-        }
     }
 
     @Override
     public void run() {
-        try {
-            input = new Scanner(socket.getInputStream());
-
-            while (!this.socket.isClosed()) {
-                if(input.hasNextLine()) {
-                    String line = input.nextLine();
-                    this.executorService.submit(() -> deserialize(line));
+        try{
+            this.in = new ObjectInputStream(socket.getInputStream());
+            this.out = new ObjectOutputStream(socket.getOutputStream());
+            executorService.execute(()-> {
+                try {
+                    askPlayerInfo(ServerApp.lobby.getLobbyInfo());
+                } catch (RemoteException e) {
+                    ServerApp.logger.log(Level.SEVERE, e.getMessage());
                 }
+            });
+            while (true) {
+                deserialize(in.readObject());
             }
-        } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage());
-        }
-    }
-
-    private void deserialize(String line) {
-        try {
-            ClientMessage message = (ClientMessage) new ObjectInputStream(new FileInputStream(line)).readObject();
-            message.execute(this);
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void deserialize(Object message) {
+        if(message instanceof ClientMessage clientMessage){
+            clientMessage.execute(this);
+        } else ServerApp.logger.log(Level.SEVERE, "Message not recognized");
     }
     
 
@@ -157,13 +144,6 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         ServerMessage message = new AllGameMessage(mockModel);
         try {
             send(message);
-            this.executorService.submit(()-> {
-                try {
-                    ServerApp.lobby.getGameController(this.lobbyID, this);
-                } catch (RemoteException e) {
-                    ServerApp.logger.log(Level.SEVERE, e.getMessage());
-                }
-            });
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.getMessage());
         }
@@ -181,12 +161,22 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
 
     @Override
     public void crashedPlayer(String crashedPlayer) throws RemoteException {
-        // TODO: 25/05/2023
+        ServerMessage message = new CrashedPlayerMessage(crashedPlayer);
+        try{
+            send(message);
+        } catch (IOException e){
+            ServerApp.logger.severe(e.getMessage());
+        }
     }
 
     @Override
     public void reloadPlayer(String reloadPlayer) throws RemoteException {
-        // TODO: 25/05/2023
+        ServerMessage message = new ReloadPlayerMessage(reloadPlayer);
+        try{
+            send(message);
+        } catch (IOException e){
+            ServerApp.logger.severe(e.getMessage());
+        }
     }
 
     @Override
@@ -199,28 +189,34 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     }
 
     @Override
-    public void setGameController(GameController gameController) throws RemoteException {
+    public void setGameController(GameCommand gameController) throws RemoteException {
+        ServerApp.logger.info("Setting game controller");
         this.controller = gameController;
+        executorService.execute(() ->{
+            try {
+                this.controller.addScout(this);
+            } catch (RemoteException e) {
+                ServerApp.logger.log(Level.SEVERE, e.getMessage());
+            }
+        });
     }
 
-    public GameController getController() {
-        return controller;
-    }
-
-    private void send(ServerMessage output) throws IOException {
-        PrintWriter out = new PrintWriter(socket.getOutputStream());
-        out.println(output);
-        out.flush();
+    private synchronized void send(ServerMessage message) throws IOException {
+        try {
+            this.out.writeObject(message);
+            this.out.flush();
+            this.out.reset();
+        } catch (IOException e) {
+            logOut();
+        }
     }
 
     public void logOut() {
-        this.input.close();
         try {
             socket.close();
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.getMessage());
         }
-        this.executorService.shutdown();
     }
 
     @Override
@@ -238,11 +234,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         }
     }
 
-    public GameController getGameController() {
+    public GameCommand getGameController() {
         return controller;
-    }
-
-    public void setLobbyID(String lobbyID) {
-        this.lobbyID = lobbyID;
     }
 }

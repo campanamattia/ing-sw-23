@@ -11,6 +11,8 @@ import java.util.Map;
 
 public abstract class Gui extends View {
 
+    public Gui() throws RemoteException {
+    }
 
     @Override
     public void showBoard() {
@@ -26,6 +28,7 @@ public abstract class Gui extends View {
     public void showStatus() {
 
     }
+
 
     @Override
     public void newTurn(String currentPlayer) throws RemoteException {

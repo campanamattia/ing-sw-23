@@ -57,4 +57,11 @@ public class MockPlayer implements Serializable, Cloneable {
             throw new AssertionError();
         }
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MockPlayer player)
+            return playerID.equals(player.playerID);
+        return false;
+    }
 }

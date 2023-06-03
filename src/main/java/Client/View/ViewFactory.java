@@ -1,13 +1,18 @@
 package Client.View;
 
 import Client.View.Cli.Cli;
-import Client.View.Gui.Gui;
 
+import java.rmi.RemoteException;
+
+@SuppressWarnings("")
 public class ViewFactory {
-    public static void instanceView(String view) {
+    public static View instanceView(String view) throws RemoteException {
+        // TODO: 26/05/23
         switch (view) {
-            //case "GUI" -> new Gui();
-            case "CLI" -> new Cli();
+            case "CLI" -> {
+                return new Cli();
+            }
+            default -> throw new RemoteException("View not found");
         }
     }
 }

@@ -33,7 +33,6 @@ public class MockCommonGoal implements Serializable, Cloneable{
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public MockCommonGoal clone() {
         try {
             MockCommonGoal mockCommonGoal = (MockCommonGoal) super.clone();
@@ -46,5 +45,13 @@ public class MockCommonGoal implements Serializable, Cloneable{
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MockCommonGoal mockCommonGoal) {
+            return mockCommonGoal.enumeration == enumeration;
+        }
+        return false;
     }
 }

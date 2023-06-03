@@ -18,9 +18,10 @@ public class ServerRMI {
         ServerRMI.registry = LocateRegistry.createRegistry(rmiPort);
         try {
             registry.bind("Lobby", lobby);
+            ServerApp.logger.info("Lobby bound correctly");
         }
         catch (Exception e) {
-            ServerApp.logger.log(Level.SEVERE, e.toString());
+            ServerApp.logger.log(Level.SEVERE, e.getMessage());
             System.exit(-1);
         }
         ServerApp.logger.info("Server RMI ready on port " + rmiPort);

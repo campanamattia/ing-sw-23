@@ -1,8 +1,7 @@
-package Server.Model.CommonGoal;
+package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
 import Enumeration.Color;
-import Server.Model.LivingRoom.CommonGoal.SquareGoal;
 import Server.Model.Player.PersonalGoal;
 import Server.Model.Player.Player;
 import Utils.Tile;
@@ -24,7 +23,7 @@ class SquareGoalTest {
     JsonArray array;
     {
         try {
-            array = decoPersonal("src/main/resources/personalGoal.json");
+            array = decoPersonal();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -175,10 +174,10 @@ class SquareGoalTest {
 
 
 
-    private JsonArray decoPersonal(String filepath) throws FileNotFoundException {
+    private JsonArray decoPersonal() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader(filepath));
+        reader = new JsonReader(new FileReader("src/main/resources/personalGoal.json"));
         return gson.fromJson(reader, JsonArray.class);
     }
 }
