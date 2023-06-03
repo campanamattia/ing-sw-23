@@ -1,6 +1,7 @@
 package Server.Controller;
 
 import Enumeration.TurnPhase;
+import Exception.CommonGoal.NullPlayerException;
 import Exception.GamePhase.EndingStateException;
 import Exception.Player.PlayerNotFoundException;
 import Exception.PlayerException;
@@ -15,8 +16,11 @@ import Server.Controller.Phase.LastRoundState;
 import Server.Controller.Phase.NormalState;
 import Server.Controller.Phase.PhaseController;
 import Server.Model.*;
+import Server.Model.LivingRoom.CommonGoal.CommonGoal;
 import Server.Network.Client.ClientHandler;
+import Server.ServerApp;
 import Utils.Coordinates;
+import Utils.MockObjects.MockFactory;
 
 import java.io.*;
 import java.rmi.RemoteException;
@@ -87,7 +91,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * If the gameModel has ended, it sets the leaderboard and gameModel phase to ended.
      */
     public void endTurn() throws IOException {
-        phaseController.checkCommonGoals(this.gameModel.getCommonGoals());
+        checkCommonGoals(this.gameModel.getCommonGoals());
         do {
             try {
                 phaseController.nextPlayer();
@@ -113,6 +117,17 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                 }
             });
         }
+    }
+
+    private void checkCommonGoals(List<CommonGoal> commonGoals){
+        for(CommonGoal common : commonGoals)
+            if(!common.getAccomplished().contains(this.currentPlayer.getCurrentPlayer().getPlayerID()))
+                try{
+                    common.check(this.currentPlayer.getCurrentPlayer());
+                    this.gameModel.getScouts().onEvent(MockFactory.getMock(common));
+                }catch(NullPlayerException e){
+                    logger.severe(e.getMessage());
+                }
     }
 
     /**
