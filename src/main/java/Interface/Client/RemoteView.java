@@ -4,7 +4,6 @@ import Utils.MockObjects.MockModel;
 import Utils.Rank;
 import Utils.Tile;
 
-import java.util.Collection;
 import java.util.List;
 import java.rmi.Remote;
 import java.rmi.RemoteException;

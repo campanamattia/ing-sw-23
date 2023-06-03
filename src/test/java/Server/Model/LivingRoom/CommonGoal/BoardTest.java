@@ -1,4 +1,4 @@
-package Server.Model;
+package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.Board.CantRefillBoardException;
 import Exception.Board.NoValidMoveException;

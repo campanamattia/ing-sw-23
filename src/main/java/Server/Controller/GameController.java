@@ -1,11 +1,11 @@
 package Server.Controller;
 
 import Enumeration.TurnPhase;
+import Exception.GamePhase.EndingStateException;
 import Exception.Player.PlayerNotFoundException;
 import Exception.PlayerException;
 import Exception.ChatException;
 import Exception.BoardException;
-import Exception.GamePhase.EndGameException;
 import Exception.GamePhaseException;
 import Exception.Player.NotYourTurnException;
 import Interface.Scout;
@@ -16,58 +16,63 @@ import Server.Controller.Phase.NormalState;
 import Server.Controller.Phase.PhaseController;
 import Server.Model.*;
 import Server.Network.Client.ClientHandler;
-import Server.ServerApp;
 import Utils.Coordinates;
-import Utils.Rank;
 
 import java.io.*;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Level;
 
+import static Server.ServerApp.executorService;
+import static Server.ServerApp.logger;
+
 /**
- The GameController class represents the controller for a game. It manages the game model, players, phases, and turn progression.
- This class implements the GameCommand interface and is Serializable.
+ * The GameController class represents the controller for a game. It manages the game model, players, phases, and turn progression.
+ * This class implements the GameCommand interface and is Serializable.
  */
-public class GameController implements GameCommand, Serializable {
+public class GameController extends UnicastRemoteObject implements GameCommand, Serializable {
+    private final String gameID;
     /**
-     The GameModel class represents the model for a game. It contains the gameModel board, players, and common goals.
+     * The GameModel class represents the model for a game. It contains the gameModel board, players, and common goals.
      */
     private GameModel gameModel;
     /**
-     The players HashMap contains the players of the gameModel.
+     * The players HashMap contains the players of the gameModel.
      */
     private final HashMap<String, ClientHandler> players;
     /**
-     The phaseController attribute represents the current phase of the gameModel.
+     * The phaseController attribute represents the current phase of the gameModel.
      */
     private PhaseController phaseController;
     /**
-     The turnPhase attribute represents the current turn phase of the gameModel.
+     * The turnPhase attribute represents the current turn phase of the gameModel.
      */
     private TurnPhase turnPhase;
     /**
-     The currentPlayer attribute represents the current player of the gameModel.
+     * The currentPlayer attribute represents the current player of the gameModel.
      */
     private final CurrentPlayer currentPlayer;
 
     /**
-     Constructs a new GameController instance with the specified game model and players.
-     @param lobbyID the lobby ID that the gameController is associated with.
-     @param players A HashMap of players participating in the game, where the key is the player ID and the value is the corresponding ClientHandler.
+     * Constructs a new GameController instance with the specified game model and players.
+     *
+     * @param lobbyID the lobby ID that the gameController is associated with.
+     * @param players A HashMap of players participating in the game, where the key is the player ID and the value is the corresponding ClientHandler.
      */
-    public GameController(String lobbyID, HashMap<String, ClientHandler> players){
+    public GameController(String lobbyID, HashMap<String, ClientHandler> players) throws RemoteException {
+        super();
+        this.gameID = lobbyID;
         this.players = players;
-        List<String> playersID = new ArrayList<>(players.keySet());
         try {
-            this.gameModel = new GameModel(lobbyID, playersID);
+            this.gameModel = new GameModel(lobbyID, new ArrayList<>(players.keySet()));
         } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.toString());
-            for(ClientHandler client : players.values()) {
+            logger.log(Level.SEVERE, e.toString());
+            for (ClientHandler client : players.values()) {
                 try {
                     client.remoteView().outcomeException(e);
                 } catch (RemoteException ex) {
-                    ServerApp.logger.severe(ex.toString());
+                    logger.severe(ex.toString());
                 }
             }
         }
@@ -77,49 +82,44 @@ public class GameController implements GameCommand, Serializable {
     }
 
     /**
-     This method ends the current turn, checks for common goals, advances to the next player, and updates the gameModel status.
-     If the gameModel has entered its last round, it changes the gameModel phase accordingly.
-     If the gameModel has ended, it sets the leaderboard and gameModel phase to ended.
+     * This method ends the current turn, checks for common goals, advances to the next player, and updates the gameModel status.
+     * If the gameModel has entered its last round, it changes the gameModel phase accordingly.
+     * If the gameModel has ended, it sets the leaderboard and gameModel phase to ended.
      */
     public void endTurn() throws IOException {
         phaseController.checkCommonGoals(this.gameModel.getCommonGoals());
         do {
             try {
                 phaseController.nextPlayer();
-                this.gameModel.setCurrentPlayer(this.phaseController.getCurrentPlayer());
-                this.currentPlayer.reset(this.gameModel.getCurrentPlayer());
-                break;
             } catch (GamePhaseException e) {
-                if (e instanceof EndGameException) {
-                    List<Rank> leaderboard = EndedMatch.doRank(this.gameModel.getPlayers());
-                    for (ClientHandler client : players.values()) {
-                        try {
-                            client.remoteView().endGame(leaderboard);
-                        } catch (RemoteException ex) {
-                            ServerApp.logger.severe(ex.toString());
-                        }
-                    }
-                    break;
-                } else {
+                if (e instanceof EndingStateException) {
                     this.phaseController = new LastRoundState(this.phaseController.getCurrentPlayer(), this.phaseController.getPlayers());
-                    this.gameModel.setPhase(phaseController.getPhase());
+                    continue;
+                } else {
+                    EndedMatch.doRank(this.players.values(), this.gameModel.getPlayers());
+                    return;
                 }
             }
-        }while(true);
-         for (ClientHandler client : players.values()) {
-             try {
-                 client.remoteView().newTurn(this.gameModel.getCurrentPlayer().getPlayerID());
-             } catch (RemoteException ex) {
-                 ServerApp.logger.severe(ex.toString());
-             }
-         }
+            this.gameModel.setCurrentPlayer(this.phaseController.getCurrentPlayer());
+            this.currentPlayer.reset(this.gameModel.getCurrentPlayer());
+            break;
+        } while (true);
+        for (ClientHandler client : players.values()) {
+            executorService.execute(() -> {
+                try {
+                    client.remoteView().newTurn(this.gameModel.getCurrentPlayer().getPlayerID());
+                } catch (RemoteException e) {
+                    logger.severe(e.getMessage());
+                }
+            });
+        }
     }
 
     /**
-     Returns the GameModel associated with this GameController.
-     @return the GameModel associated with this GameController
+     * Returns the GameModel associated with this GameController.
+     *
+     * @return the GameModel associated with this GameController
      */
-    @SuppressWarnings("unused")
     public GameModel getGameModel() {
         return gameModel;
     }
@@ -137,15 +137,33 @@ public class GameController implements GameCommand, Serializable {
         try {
             if (ableTo(playerID) == TurnPhase.PICKING) {
                 try {
-                    currentPlayer.setTiles(this.gameModel.selectedTiles(coordinates));
+                    currentPlayer.setTiles(this.gameModel.selectTiles(coordinates));
                     this.turnPhase = TurnPhase.INSERTING;
-                    this.players.get(playerID).remoteView().outcomeSelectTiles(currentPlayer.getTiles());
+                    executorService.execute(() -> {
+                        try {
+                            this.players.get(playerID).remoteView().outcomeSelectTiles(currentPlayer.getTiles());
+                        } catch (RemoteException e) {
+                            logger.severe(e.getMessage());
+                        }
+                    });
                 } catch (BoardException e) {
-                    players.get(playerID).remoteView().outcomeException(e);
+                    executorService.execute(() -> {
+                        try {
+                            players.get(playerID).remoteView().outcomeException(e);
+                        } catch (RemoteException ex) {
+                            logger.severe(ex.getMessage());
+                        }
+                    });
                 }
             }
         } catch (NotYourTurnException e) {
-            players.get(playerID).remoteView().outcomeException(e);
+            executorService.execute(() -> {
+                try {
+                    players.get(playerID).remoteView().outcomeException(e);
+                } catch (RemoteException ex) {
+                    logger.severe(ex.getMessage());
+                }
+            });
         }
     }
 
@@ -159,8 +177,9 @@ public class GameController implements GameCommand, Serializable {
      */
     @Override
     public synchronized void insertTiles(String playerID, List<Integer> sort, int column) throws RemoteException {
+        logger.info("Player " + playerID + " is inserting tiles");
         try {
-            if (ableTo(playerID) == TurnPhase.PICKING) {
+            if (ableTo(playerID) == TurnPhase.INSERTING) {
                 try {
                     this.gameModel.insertTiles(sort, currentPlayer.getTiles(), column);
                     this.players.get(playerID).remoteView().outcomeInsertTiles(true);
@@ -169,7 +188,7 @@ public class GameController implements GameCommand, Serializable {
                 } catch (PlayerException e) {
                     this.players.get(playerID).remoteView().outcomeException(e);
                 } catch (IOException e) {
-                    ServerApp.logger.severe(e.toString());
+                    logger.severe(e.toString());
                 }
             }
         } catch (NotYourTurnException e) {
@@ -180,6 +199,7 @@ public class GameController implements GameCommand, Serializable {
     /**
      * Writes a chat message from a player to another player or the entire game.
      * If the recipient is null, the message is sent to all players in the game.
+     *
      * @param playerID The ID of the player sending the chat message.
      * @param message  The content of the chat message.
      * @param to       The recipient of the chat message. If null, the message is sent to all players in the game.
@@ -202,11 +222,9 @@ public class GameController implements GameCommand, Serializable {
      * @throws RemoteException If a remote communication error occurs.
      */
     @Override
-    public synchronized void addSubscriber(Scout scout) throws RemoteException {
-        this.gameModel.addBoardScout(scout);
-        this.gameModel.addChatScout(scout);
-        this.gameModel.addPlayerScout(scout);
-        this.gameModel.addCommonGoalScout(scout);
+    public synchronized void addScout(Scout scout) throws RemoteException {
+        logger.info("Scout " + scout + " is subscribing to the game");
+        this.gameModel.addScout(scout);
     }
 
     /**
@@ -214,22 +232,29 @@ public class GameController implements GameCommand, Serializable {
      *
      * @param playerID The ID of the player to be reloaded.
      * @param client   The ClientHandler object associated with the player.
-     * @throws RemoteException If a remote communication error occurs.
      */
-    public void rejoin(String playerID, ClientHandler client) throws RemoteException {
+    public void rejoin(String playerID, ClientHandler client) {
         this.players.put(playerID, client);
         try {
             this.gameModel.getPlayer(playerID).setStatus(true);
         } catch (PlayerNotFoundException e) {
-            ServerApp.logger.severe(e.toString());
-            client.remoteView().outcomeException(e);
+            logger.severe(e.toString());
+            executorService.execute(() -> {
+                try {
+                    client.remoteView().outcomeException(e);
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
         }
         for (ClientHandler clientHandler : players.values()) {
-            try {
-                clientHandler.remoteView().reloadPlayer(playerID);
-            } catch (RemoteException e) {
-                ServerApp.logger.severe(e.toString());
-            }
+            executorService.execute(() -> {
+                try {
+                    clientHandler.remoteView().reloadPlayer(playerID);
+                } catch (RemoteException e) {
+                    logger.severe(e.getMessage());
+                }
+            });
         }
     }
 
@@ -243,21 +268,26 @@ public class GameController implements GameCommand, Serializable {
     public ClientHandler logOut(String playerID) throws RemoteException {
         try {
             this.gameModel.getPlayer(playerID).setStatus(false);
-            if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
-                this.gameModel.completeTurn(this.currentPlayer.getTiles());
-            else {
-                for (ClientHandler client : players.values()) {
-                    try {
-                        client.remoteView().crashedPlayer(playerID);
-                    } catch (RemoteException e) {
-                        ServerApp.logger.severe(e.toString());
-                    }
-                }
-            }
         } catch (PlayerException e) {
-            ServerApp.logger.severe(e + " for logout");
+            logger.severe(e.getMessage() + " during logout");
+            return null;
         }
-        return this.players.remove(playerID);
+        if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
+            this.gameModel.completeTurn(this.currentPlayer.getTiles());
+        ClientHandler crashed = this.players.get(playerID);
+        this.players.put(playerID, null);
+        for (ClientHandler client : players.values()) {
+            if (client == null)
+                continue;
+            executorService.execute(()-> {
+                try {
+                    client.remoteView().crashedPlayer(playerID);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+        return crashed;
     }
 
     /**
@@ -271,5 +301,36 @@ public class GameController implements GameCommand, Serializable {
         if (!playerID.equals(this.currentPlayer.getCurrentPlayer().getPlayerID()))
             throw new NotYourTurnException(this.gameModel.getCurrentPlayer().getPlayerID());
         else return this.turnPhase;
+    }
+
+    /**
+     * Returns the ID of the game.
+     *
+     * @return The ID of the game.
+     */
+    public String getGameID() {
+        return this.gameID;
+    }
+
+    /**
+     * Returns the list of players in the game.
+     *
+     * @return The list of players in the game.
+     */
+    public List<ClientHandler> getClients() {
+        List<ClientHandler> clients = new ArrayList<>();
+        for (ClientHandler client : this.players.values()) {
+            if (client != null) clients.add(client);
+        }
+        return clients;
+    }
+
+    /**
+     * Returns the map of players in the game.
+     *
+     * @return The map of players in the game.
+     */
+    public HashMap<String, ClientHandler> getPlayers() {
+        return players;
     }
 }

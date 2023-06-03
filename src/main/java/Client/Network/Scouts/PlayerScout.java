@@ -1,20 +1,14 @@
-package Utils.Scouts;
+package Client.Network.Scouts;
 
-import Client.View.View;
 import Interface.Scout;
 import Utils.MockObjects.MockPlayer;
+import static Client.ClientApp.view;
 
 import java.rmi.RemoteException;
 
 public class PlayerScout implements Scout<MockPlayer> {
-    View view;
-
-    public PlayerScout(View view) {
-        this.view = view;
-    }
-
     @Override
     public void update(MockPlayer objects) throws RemoteException {
-        this.view.updatePlayer(objects);
+        view.updatePlayer(objects);
     }
 }

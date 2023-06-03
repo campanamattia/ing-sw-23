@@ -17,12 +17,11 @@ public class PersonalGoal {
             personalGoal[cd.x()][cd.y()] = new Tile(tmp);
         }
     }
-    public Coordinates takeCoordinates(JsonArray json) {
+    private Coordinates takeCoordinates(JsonArray json) {
         return new Coordinates(json.get(0).getAsInt(), json.get(1).getAsInt());
     }
     public int check(Tile[][] myshelf){
         int count = 0;
-        int points = 0;
         for(int i=0; i<6; i++){
             for(int j=0;j<5;j++){
                 if(personalGoal[i][j] != null && myshelf[i][j] != null){
@@ -31,16 +30,15 @@ public class PersonalGoal {
             }
         }
 
-        switch(count){
-            case 1: points=1;
-            case 2: points=2;
-            case 3: points=4;
-            case 4: points=6;
-            case 5: points=9;
-            case 6: points=12;
-        }
-
-        return points;
+        return switch (count) {
+            case 1 -> 1;
+            case 2 -> 2;
+            case 3 -> 4;
+            case 4 -> 6;
+            case 5 -> 9;
+            case 6 -> 12;
+            default -> 0;
+        };
     }
 
     public Tile getPgoalTile(int i, int j){

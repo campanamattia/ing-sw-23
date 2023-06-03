@@ -1,5 +1,7 @@
 package Messages.Client.Lobby;
 
+import Interface.Client.RemoteClient;
+import Interface.Client.RemoteView;
 import Messages.ClientMessage;
 import Server.Network.Client.SocketHandler;
 import Server.ServerApp;
@@ -17,7 +19,6 @@ public class AddPlayerMessage extends ClientMessage {
     public void execute(SocketHandler socketHandler){
         try {
             ServerApp.lobby.login(this.playerID,this.lobbyID, socketHandler, socketHandler);
-            socketHandler.setLobbyID(this.lobbyID);
         } catch (RemoteException e) {
             ServerApp.logger.severe(e.toString());
         }

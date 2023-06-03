@@ -1,6 +1,5 @@
 package Server.Controller.Phase;
 
-import Enumeration.*;
 import Exception.GamePhase.EndingStateException;
 import Exception.GamePhaseException;
 import Server.Model.Player.Player;
@@ -10,7 +9,6 @@ import java.util.List;
 public class NormalState extends PhaseController {
     public NormalState(Player currentPlayer, List<Player> players) {
         super(currentPlayer, players);
-        this.phase = GamePhase.ONGOING;
     }
 
     @Override

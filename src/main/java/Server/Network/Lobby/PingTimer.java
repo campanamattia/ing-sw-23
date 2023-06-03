@@ -9,9 +9,9 @@ import Server.ServerApp;
 
 public class PingTimer{
     private Timer timer;
-    private String clientID;
-    private String lobbyID;
-    private RemoteClient client;
+    private final String clientID;
+    private final String lobbyID;
+    private final RemoteClient client;
 
     public PingTimer(String clientID, String lobbyID, RemoteClient client) {
         this.clientID = clientID;
@@ -20,6 +20,10 @@ public class PingTimer{
     }
 
     public void start() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -30,21 +34,20 @@ public class PingTimer{
                     throw new RuntimeException(e);
                 }
             }
-        }, 15000); //15 seconds timeout
+        }, 10000); //10 seconds timeout
     }
 
     public void receivedPing() {
         if (timer != null) {
             timer.cancel();
         }
+        timer = null;
         try {
             this.client.pong(this.clientID, this.lobbyID);
         } catch (RemoteException e) {
             ServerApp.logger.severe(e.getMessage());
         }
-        finally {
-            start();
-        }
+        start();
     }
 
     public void interrupt() {

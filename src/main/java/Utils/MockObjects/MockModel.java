@@ -2,7 +2,6 @@ package Utils.MockObjects;
 
 import Enumeration.TurnPhase;
 import Utils.ChatMessage;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +98,6 @@ public class MockModel implements Serializable, Cloneable {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public MockModel clone() {
         try {
             MockModel mockModel = (MockModel) super.clone();
@@ -121,6 +119,22 @@ public class MockModel implements Serializable, Cloneable {
             return mockModel;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
+        }
+    }
+
+    public void update(MockCommonGoal mockCommonGoal) {
+        for(MockCommonGoal mock : this.mockCommonGoal) {
+            if(mock.equals(mockCommonGoal)) {
+                this.mockCommonGoal.set(this.mockCommonGoal.indexOf(mock), mockCommonGoal);
+            }
+        }
+    }
+
+    public void update(MockPlayer mockPlayer) {
+        for(MockPlayer mock : this.mockPlayers) {
+            if(mock.equals(mockPlayer)) {
+                this.mockPlayers.set(this.mockPlayers.indexOf(mock), mockPlayer);
+            }
         }
     }
 }
