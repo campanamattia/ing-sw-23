@@ -8,4 +8,4 @@ git # Default ignored files
 /dataSources.local.xml
 target/
 AM01.iml
-src/main/resources/game/
+logger.json
