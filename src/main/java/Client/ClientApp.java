@@ -1,20 +1,27 @@
 package Client;
 
+import Client.Network.Network;
 import Client.View.*;
+
+import java.rmi.RemoteException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientApp {
 
-    public static void main (String[] args) {
-        String viewName;
+    public static View view;
+    public static Network network;
+    public static ExecutorService executorService;
 
+    public static void main (String[] args) throws RemoteException {
+        executorService = Executors.newCachedThreadPool();
         if (args.length > 0) {
-            viewName = args[0];
-            if (viewName.equalsIgnoreCase("GUI") || viewName.equalsIgnoreCase("CLI")) {
-                ViewFactory.instanceView(viewName);
-            }
-            else {
-                ViewFactory.instanceView("CLI");
-            }
+            if (args[0].equalsIgnoreCase("GUI"))
+                view = ViewFactory.instanceView(args[0]);
+            else
+                view = ViewFactory.instanceView("CLI");
         }
+        assert view != null;
+        view.start();
     }
 }

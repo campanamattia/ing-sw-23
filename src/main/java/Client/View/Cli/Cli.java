@@ -1,12 +1,13 @@
 package Client.View.Cli;
 
-import Client.Controller.Controller;
 import Client.Network.Network;
 import Client.Network.NetworkFactory;
 import Client.View.View;
 import Utils.*;
+import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
+import Utils.MockObjects.MockPlayer;
 import org.jetbrains.annotations.NotNull;
 import Enumeration.TurnPhase;
 
@@ -14,28 +15,50 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 
+import static Client.ClientApp.network;
 
 public class Cli extends View {
-    Controller clientController;
-    Scanner scanner = new Scanner(System.in);
-    Thread inputThread;
+    private LightController controller;
+    private final Scanner scanner = new Scanner(System.in);
+    private Thread inputThread;
 
     public Cli() throws RemoteException {
         super();
-        clientController = new Controller(this);
         mockModel = new MockModel();
-        start();
+        showTitle();
+    }
+
+    @Override
+    public void updateBoard(MockBoard mockBoard) {
+        this.mockModel.setMockBoard(mockBoard);
+    }
+
+    @Override
+    public void updateCommonGoal(MockCommonGoal mockCommonGoal) {
+        this.mockModel.update(mockCommonGoal);
+    }
+
+    @Override
+    public void updatePlayer(MockPlayer mockPlayer) {
+        this.mockModel.update(mockPlayer);
+    }
+
+    @Override
+    public void updateChat(ChatMessage message) {
+        if (message.to() == null || message.to().equals(mockModel.getLocalPlayer())) {
+            this.mockModel.addMessage(message);
+            System.out.println(CliColor.BOLD + "\rNew Message" + CliColor.RESET);
+        }
     }
 
     public void start() {
         int port;
         String address;
-        showTitle();
 
         try {
-            this.network = askConnection();
+            network = askConnection();
         } catch (RemoteException e) {
-            System.out.println("Error while creating connection object");
+            printError("ERROR: " + e.getMessage());
             System.exit(-1);
         }
         address = askServerAddress();
@@ -51,11 +74,11 @@ public class Cli extends View {
         input = scanner.nextLine();
 
         while (!input.equalsIgnoreCase("SOCKET") && !input.equalsIgnoreCase("RMI")) {
-            System.out.println(CliColor.RED + "ERROR: you type something wrong, please enter 'SOCKET' or 'RMI'" + CliColor.RESET);
+            printError("ERROR: you type something wrong, please enter 'SOCKET' or 'RMI'");
             input = scanner.nextLine();
         }
 
-        System.out.println(CliColor.BOLDGREEN + "Good! You are going to create a " + input.toLowerCase() + " connection." + CliColor.RESET);
+        printMessage("Good! You are going to create a " + input.toLowerCase() + " connection.");
 
         return NetworkFactory.instanceNetwork(input, this);
     }
@@ -79,7 +102,8 @@ public class Cli extends View {
             }
         }
 
-        System.out.println(CliColor.BOLDGREEN + "You are going to create a new Game, wait for the others players" + CliColor.RESET);
+        printMessage("You are going to create a new Game, wait for the others players");
+
         network.setLobbySize(mockModel.getLocalPlayer(), mockModel.getLobbyID(), playerNumber);
     }
 
@@ -93,12 +117,27 @@ public class Cli extends View {
 
             if (address.equalsIgnoreCase("localhost") || address.equals("d")) {
                 return DEFAULT_ADDRESS;
-            } else if (clientController.validateIP(address)) {
+            } else if (validateIP(address)) {
                 return address;
             } else {
-                System.out.println(CliColor.RED + "ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)" + CliColor.RESET + " Try again.");
+                printError("ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)");
+                System.out.println(" Try again.");
             }
         } while (true);
+    }
+
+    /**
+     * States whether the given address is valid or not.
+     *
+     * @param address the inserted IP address.
+     * @return a boolean whose value is:
+     * -{@code true} if the address is valid;
+     * -{@code false} otherwise.
+     */
+    private boolean validateIP(String address) {
+        String zeroTo255 = "([01]?\\d{1,2}|2[0-4]\\d|25[0-5])";
+        String IP_REGEX = "^(" + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + ")$";
+        return address.matches(IP_REGEX);
     }
 
     public int askServerPort() {
@@ -122,10 +161,12 @@ public class Cli extends View {
                     if (MIN_PORT <= port && port <= MAX_PORT) {
                         return port;
                     } else {
-                        System.out.println(CliColor.RED + "ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + "." + CliColor.RESET + " Try again.");
+                        printError("ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + ".");
+                        System.out.println(" Try again.");
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println(CliColor.RED + "ERROR: Please insert only numbers or 'default'." + CliColor.RESET + " Try again.");
+                    printError("ERROR: Please insert only numbers or 'default'.");
+                    System.out.println("Try again.");
                 }
             }
         }
@@ -152,7 +193,7 @@ public class Cli extends View {
                 inputLobby = input;
                 break;
             } else
-                System.out.println(CliColor.RED + "ERROR: you type something wrong, lobby can't be empty" + CliColor.RESET);
+                printError("ERROR: you type something wrong, lobby can't be empty");
         }
 
         while (true) {
@@ -162,7 +203,7 @@ public class Cli extends View {
                 inputName = input;
                 break;
             } else
-                System.out.println(CliColor.RED + "ERROR: you type something wrong, nickname can't be empty" + CliColor.RESET);
+                printError("ERROR: you type something wrong, nickname can't be empty");
         }
 
         network.login(inputName, inputLobby, this, network);
@@ -207,7 +248,7 @@ public class Cli extends View {
         for (int i = 0; i < board.length; i++) {
             System.out.print(i + "\t");
             for (int j = 0; j < board[0].length; j++) {
-                if (board[i][j].getStatus()) {
+                if (board[i][j].getStatus() && board[i][j].getTile() != null) {
                     String colorString = board[i][j].getTile().getColor().getCode();
                     System.out.print(CliColor.BBLACK + "|" + colorString + i + "," + j + CliColor.BBLACK + "|" + CliColor.RESET);
                 } else {
@@ -219,7 +260,7 @@ public class Cli extends View {
             //print CommonGoal
             if (i <= 2) {
                 if (i == 0) {
-                    System.out.print("[" + CliColor.BBLACK + " " + commonGoal1.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
+                    System.out.print("[" + CliColor.BBLACK + " " + commonGoal1.getScoringToken().get(commonGoal1.getScoringToken().size()-1) + " " + CliColor.RESET + "] - ");
                 }
                 if (subString1.get(i) != null) System.out.print(subString1.get(i));
                 else System.out.print("");
@@ -272,9 +313,8 @@ public class Cli extends View {
 
     @Override
     public void showChat() {
-        Stack<ChatMessage> chat = mockModel.getChat();
-        for (int i = 0; i < chat.size(); i++) {
-            System.out.println(chat.pop().from() + ": " + chat.pop().message());
+        for (ChatMessage message : mockModel.getChat()) {
+            System.out.println(message);
         }
     }
 
@@ -386,17 +426,20 @@ public class Cli extends View {
         clearCLI();
         mockModel.setCurrentPlayer(playerID);
         mockModel.setTurnPhase(TurnPhase.PICKING);
+        showAll();
+    }
+
+    private void showAll() {
         showBoard();
         showShelves();
         showStatus();
-
     }
 
     @Override
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
-        System.out.print("\t");
+        this.mockModel.setTurnPhase(TurnPhase.INSERTING);
         showTile(tiles);
-        System.out.print("Indicate how you want to insert the tiles: \t"+CliColor.BOLD+"it-x,y,z/c\n\t-x, y, z are the position of the tiles in the list\n\t-c is the column to insert\n"+CliColor.RESET);
+        showStatus();
     }
 
     @Override
@@ -407,15 +450,22 @@ public class Cli extends View {
 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
-        System.out.println(CliColor.RED + e.getMessage() + CliColor.RESET);
+        printError(e.getMessage());
     }
 
+    public void printError(String error) {
+        System.out.println(CliColor.BOLDRED + error + CliColor.RESET);
+    }
+
+    @Override
+    public void printMessage(String message) {
+        System.out.println(CliColor.BOLDGREEN + message + CliColor.RESET);
+    }
 
     @Override
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
         System.out.println("You logged into the lobby");
         mockModel.setLocalPlayer(localPlayer);
-        this.clientController.setPlayerID(localPlayer);
         mockModel.setLobbyID(lobbyID);
         network.startPing(localPlayer, lobbyID);
     }
@@ -424,6 +474,8 @@ public class Cli extends View {
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
+        this.controller = new LightController(mockModel.getLocalPlayer());
+        if (mockModel.getChat() != null) fixChat();
         newTurn(mockModel.getCurrentPlayer());
         while (true) {
             try {
@@ -441,11 +493,15 @@ public class Cli extends View {
             while (true) {
                 String input = this.scanner.nextLine();
                 if (input != null && !input.isEmpty()) {
-                    clientController.doAction(input);
+                    controller.elaborate(input);
                 }
             }
         });
         this.inputThread.start();
+    }
+
+    private void fixChat() {
+        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(mockModel.getLocalPlayer()));
     }
 
     public void clearCLI() {

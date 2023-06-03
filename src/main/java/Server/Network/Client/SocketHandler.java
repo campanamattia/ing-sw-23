@@ -23,23 +23,21 @@ import java.io.*;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
+
+import static Server.ServerApp.executorService;
 
 
 public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout {
     private final Socket socket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private final ExecutorService executorService;
     private GameCommand controller;
 
 
 
     public SocketHandler(Socket socket) {
         this.controller = null;
-        this.executorService = Executors.newCachedThreadPool();
         this.socket = socket;
     }
 
@@ -48,7 +46,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         try{
             this.in = new ObjectInputStream(socket.getInputStream());
             this.out = new ObjectOutputStream(socket.getOutputStream());
-            this.executorService.execute(()-> {
+            executorService.execute(()-> {
                 try {
                     askPlayerInfo(ServerApp.lobby.getLobbyInfo());
                 } catch (RemoteException e) {
@@ -194,6 +192,13 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     public void setGameController(GameCommand gameController) throws RemoteException {
         ServerApp.logger.info("Setting game controller");
         this.controller = gameController;
+        executorService.execute(() ->{
+            try {
+                this.controller.addScout(this);
+            } catch (RemoteException e) {
+                ServerApp.logger.log(Level.SEVERE, e.getMessage());
+            }
+        });
     }
 
     private synchronized void send(ServerMessage message) throws IOException {
@@ -212,7 +217,6 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         } catch (IOException e) {
             ServerApp.logger.log(Level.SEVERE, e.getMessage());
         }
-        this.executorService.shutdown();
     }
 
     @Override

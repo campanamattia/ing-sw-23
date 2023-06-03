@@ -44,7 +44,7 @@ class GameModelTest {
     @Test
     public void selectedTilesWithNoValidCoordinate(){
         try{
-            gameModel.selectedTiles(Arrays.asList(new Coordinates(2,10), new Coordinates(5,4)));
+            gameModel.selectTiles(Arrays.asList(new Coordinates(2,10), new Coordinates(5,4)));
         }catch (BoardException e){
             System.out.println(e.getMessage());
             assertTrue(true);
@@ -54,7 +54,7 @@ class GameModelTest {
     @Test
     public void selectedTilesWithOutCoordinates(){
         try{
-            gameModel.selectedTiles(List.of());
+            gameModel.selectTiles(List.of());
         }catch (BoardException e){
             System.out.println(e.getMessage());
             assertTrue(true);

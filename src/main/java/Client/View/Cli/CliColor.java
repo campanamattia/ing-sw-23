@@ -1,6 +1,5 @@
 package Client.View.Cli;
 
-// TODO: 16/05/2023  
 public enum CliColor {
 
     //Color string, color reset

@@ -13,6 +13,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,6 +35,10 @@ public class ServerApp {
      */
     public static Lobby lobby;
     /**
+     * The executor service for managing threads.
+     */
+    public static ExecutorService executorService;
+    /**
      * The file path for the server setting JSON file.
      */
     private static final String serverSetting = "/settings/serverSetting.json";
@@ -52,9 +58,10 @@ public class ServerApp {
      */
     public static void main(String[] args) {
         initLogger();
-        setPort(args);
         initLobby();
+        executorService = Executors.newCachedThreadPool();
 
+        setPort(args);
         // Start the RMI server in a new thread.
         Thread rmiThread = new Thread(ServerApp::rmiServer);
         rmiThread.start();
