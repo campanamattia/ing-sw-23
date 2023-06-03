@@ -18,7 +18,6 @@ import Server.Controller.Phase.PhaseController;
 import Server.Model.*;
 import Server.Model.LivingRoom.CommonGoal.CommonGoal;
 import Server.Network.Client.ClientHandler;
-import Server.ServerApp;
 import Utils.Coordinates;
 import Utils.MockObjects.MockFactory;
 
