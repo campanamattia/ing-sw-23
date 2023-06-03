@@ -268,27 +268,26 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
     public ClientHandler logOut(String playerID) throws RemoteException {
         try {
             this.gameModel.getPlayer(playerID).setStatus(false);
-            if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
-                this.gameModel.completeTurn(this.currentPlayer.getTiles());
-            ClientHandler crashed = this.players.get(playerID);
-            this.players.put(playerID, null);
-            for (ClientHandler client : players.values()) {
-                if (client != null) {
-                    Thread thread = new Thread(() -> {
-                        try {
-                            client.remoteView().crashedPlayer(playerID);
-                        } catch (RemoteException e) {
-                            logger.severe(e.toString());
-                        }
-                    });
-                    thread.start();
-                }
-            }
-            return crashed;
         } catch (PlayerException e) {
-            logger.severe(e + " for logout");
+            logger.severe(e.getMessage() + " during logout");
             return null;
         }
+        if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
+            this.gameModel.completeTurn(this.currentPlayer.getTiles());
+        ClientHandler crashed = this.players.get(playerID);
+        this.players.put(playerID, null);
+        for (ClientHandler client : players.values()) {
+            if (client == null)
+                continue;
+            executorService.execute(()-> {
+                try {
+                    client.remoteView().crashedPlayer(playerID);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+        return crashed;
     }
 
     /**

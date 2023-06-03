@@ -359,7 +359,7 @@ public class Cli extends View {
 
     @Override
     public void crashedPlayer(String crashedPlayer) throws RemoteException {
-        System.out.println(crashedPlayer + "is crashed but the game still continue!!");
+        printError(crashedPlayer + "crashed!");
     }
 
     @Override
@@ -450,6 +450,9 @@ public class Cli extends View {
     @Override
     public void outcomeException(Exception e) throws RemoteException {
         printError(e.getMessage());
+        if(e.getMessage().equals("The game was concluded due to insufficient active players.")) {
+            showStatus();
+        }
     }
 
     public void printError(String error) {

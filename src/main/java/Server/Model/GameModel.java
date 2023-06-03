@@ -2,7 +2,6 @@ package Server.Model;
 
 import Exception.BoardException;
 import Exception.ChatException;
-import Exception.Player.ColumnNotValidException;
 import Exception.Player.InvalidInputException;
 import Exception.PlayerException;
 import Exception.Player.PlayerNotFoundException;
@@ -11,7 +10,6 @@ import Server.Model.LivingRoom.CommonGoal.CommonGoal;
 import Server.Model.LivingRoom.CommonGoal.CommonGoalFactory;
 import Server.Model.LivingRoom.Bag;
 import Server.Model.LivingRoom.Board;
-import Server.Model.Player.Shelf;
 import Utils.ChatMessage;
 import Utils.ChatRoom;
 import Server.Model.Player.PersonalGoal;
@@ -183,6 +181,7 @@ public class GameModel {
     public List<Tile> selectTiles(List<Coordinates> coordinates) throws BoardException {
         this.board.convalidateMove(coordinates);
         List<Tile> tiles = this.board.getTiles(coordinates);
+        this.board.checkRefill(this.bag);
         talent.onEvent(MockFactory.getMock(this.board));
         return tiles;
     }
@@ -298,14 +297,13 @@ public class GameModel {
     }
 
     public void completeTurn(List<Tile> tiles) {
-        Shelf shelf = this.currentPlayer.getMyShelf();
-        for (int i = 0; i < shelf.getMyShelf()[0].length; i++) {
-            try {
-                shelf.insert(i, tiles);
+        for(int i = 0; i < 5; i++)
+            try{
+                this.currentPlayer.insert(i, tiles);
                 break;
-            } catch (ColumnNotValidException ignored) {
+            } catch (PlayerException ignored) {
             }
-        }
+        this.talent.onEvent(MockFactory.getMock(this.currentPlayer));
     }
 
     public String getLobbyID() {
