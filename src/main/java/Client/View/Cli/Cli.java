@@ -96,9 +96,9 @@ public class Cli extends View {
                 if (playerNumber >= 2 && playerNumber <= 4) {
                     break;
                 }
-                System.out.println(CliColor.RED + "ERROR: the game can start only with 2, 3 or 4 players." + CliColor.RESET);
+                printError("ERROR: the game can start only with 2, 3 or 4 players.");
             } catch (NumberFormatException exception) {
-                System.out.println(CliColor.RED + "ERROR: don't insert letter, only number" + CliColor.RESET);
+                printError("ERROR: don't insert letter, only number");
             }
         }
 
@@ -269,7 +269,7 @@ public class Cli extends View {
 
             if (i >= 4 && i <= 6) {
                 if (i == 4) {
-                    System.out.print("[" + CliColor.BRED + " " + commonGoal2.getScoringToken().pop() + " " + CliColor.RESET + "] - ");
+                    System.out.print("[" + CliColor.BRED + " " + commonGoal2.getScoringToken().get(commonGoal2.getScoringToken().size()-1) + " " + CliColor.RESET + "] - ");
                 }
 
                 if (subString2.get(i) != null) System.out.print(subString2.get(i));
