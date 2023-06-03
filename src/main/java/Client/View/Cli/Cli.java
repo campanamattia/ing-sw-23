@@ -260,7 +260,7 @@ public class Cli extends View {
             //print CommonGoal
             if (i <= 2) {
                 if (i == 0) {
-                    System.out.print("[" + CliColor.BBLACK + " " + commonGoal1.getScoringToken().get(commonGoal1.getScoringToken().size()-1) + " " + CliColor.RESET + "] - ");
+                    System.out.print("[" + CliColor.BRED + " " + commonGoal1.getScoringToken().get(commonGoal1.getScoringToken().size()-1) + " " + CliColor.RESET + "] - ");
                 }
                 if (subString1.get(i) != null) System.out.print(subString1.get(i));
                 else System.out.print("");
@@ -278,7 +278,7 @@ public class Cli extends View {
 
             System.out.println();
         }
-        System.out.println("\n");
+        System.out.println();
     }
 
     private List<String> subString(String[] words) {
@@ -373,11 +373,16 @@ public class Cli extends View {
         int numRow = 6;
         int numPlayer = mockModel.getMockPlayers().size();
 
+        System.out.print(" \t");
+        for (int k = 0; k < numPlayer; k++) {
+            System.out.print("  A  " + "  B  " + "  C  " + "  D  " + "  E  \t\t" );
+        }
+        System.out.println();
+
         for (int i = 0; i < numRow; i++) {
             System.out.print(" \t");
             for (int k = 0; k < numPlayer; k++) {
                 for (int j = 0; j < numColumn; j++) {
-
                     Tile[][] shelf = mockModel.getMockPlayers().get(k).getShelf();
                     Tile[][] privateGoal = mockModel.getMockPlayers().get(k).getPersonalGoal();
                     String colorString = (shelf[i][j] != null) ? shelf[i][j].getColor().getCode() : CliColor.BBLACK.toString();
@@ -411,15 +416,9 @@ public class Cli extends View {
     }
 
     @Override
-    public void showGame() {
-
-    }
-
-    @Override
     public void showRank(List<Rank> classification) {
 
     }
-
 
     @Override
     public void newTurn(String playerID) throws RemoteException {

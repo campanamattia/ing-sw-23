@@ -29,10 +29,6 @@ public abstract class Gui extends View {
 
     }
 
-    @Override
-    public void showGame() {
-
-    }
 
     @Override
     public void newTurn(String currentPlayer) throws RemoteException {

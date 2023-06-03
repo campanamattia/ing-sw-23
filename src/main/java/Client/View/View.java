@@ -37,8 +37,6 @@ public abstract class View extends UnicastRemoteObject implements RemoteView {
 
     public abstract void showHelp();
 
-    public abstract void showGame();
-
     public abstract void showRank(List<Rank> classification);
 
     public abstract void start();
