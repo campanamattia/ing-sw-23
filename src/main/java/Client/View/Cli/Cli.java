@@ -352,10 +352,19 @@ public class Cli extends View {
         System.out.println();
     }
 
-    // TODO: 16/05/23
     @Override
-    public void endGame(List<Rank> classification) {
-
+    public void endGame(List<Rank> leaderboard) throws RemoteException {
+        clearCLI();
+        Rank first = leaderboard.get(0);
+        System.out.println(CliColor.BOLD + "The game is over!" + CliColor.RESET);
+        System.out.println("The final ranking is: ");
+        for (Rank rank : leaderboard) {
+            if(rank.equals(first)) {
+                System.out.println(CliColor.BOLDGREEN + rank.ID() + " with " + rank.score() + " points" + CliColor.RESET);
+            } else {
+                System.out.println(rank.ID() + " with " + rank.score() + " points");
+            }
+        }
     }
 
     @Override
