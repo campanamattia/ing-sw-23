@@ -23,7 +23,8 @@ public class ConnectionScene extends Scene {
 
         this.app = app;
 
-        Label label = new Label("Chose the type of connection: ");
+        Label label = new Label("Choose the type of connection: ");
+        label.getStyleClass().add("label-title");
 
         Button rmiButton = new Button("RMI");
 
@@ -51,5 +52,6 @@ public class ConnectionScene extends Scene {
 
     private void handleSocketClick() {
         System.out.println("Enabling SOCKET connection...");
+
     }
 }

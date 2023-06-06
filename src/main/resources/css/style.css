@@ -1,5 +1,15 @@
+@font-face {
+    font-family: 'CustomFont';
+    src: url("../font/Poppins-Regular.ttf");
+}
+
+*{
+    -fx-font-family: 'CustomFont';
+    -fx-text-fill: black;
+}
+
 .root {
-    -fx-background-image: url("../img/misc/backgroung_parquet.jpg");
+    -fx-background-image: url("../img/misc/background_light.jpg");
     -fx-background-size: 100% 100%;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
@@ -7,7 +17,11 @@
 
 .label {
     -fx-font-size: 20;
-    -fx-background-color: #D7D7D7B2;
+}
+
+.label-title {
+    -fx-font-size: 50;
+    -fx-font-weight: bold;
 }
 
 .text-field{
@@ -57,14 +71,14 @@
 
 
 .button {
-    -fx-background-color: #7FFFD4;
-    -fx-background-radius: 10px;
+    -fx-background-color: linear-gradient(#FFFFFF, #D7D7D7);
+    -fx-background-radius: 4px;
     -fx-background-size: 100% 100%;
     -fx-background-position: center;
     -fx-background-repeat: no-repeat;
-    -fx-font-size: 30;
+    -fx-font-size: 25;
     -fx-pref-width: 150;
-    -fx-pref-height: 30;
+    -fx-pref-height: 50;
     -fx-alignment: center;
     -fx-cursor: hand;
 }
