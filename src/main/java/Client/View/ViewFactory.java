@@ -1,6 +1,7 @@
 package Client.View;
 
 import Client.View.Cli.Cli;
+import Client.View.Gui.Gui;
 
 import java.rmi.RemoteException;
 
@@ -11,6 +12,9 @@ public class ViewFactory {
         switch (view) {
             case "CLI" -> {
                 return new Cli();
+            }
+            case "GUI" -> {
+                return new Gui();
             }
             default -> throw new RemoteException("View not found");
         }

@@ -26,7 +26,7 @@ public class Cli extends View {
     public Cli() throws RemoteException {
         super();
         mockModel = new MockModel();
-        showTitle();
+        start();
     }
 
     @Override

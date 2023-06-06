@@ -7,7 +7,7 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>test1</name>
+  <name>AM01</name>
   <url>https://maven.apache.org</url>
 
   <properties>
