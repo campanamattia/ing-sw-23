@@ -10,6 +10,7 @@ import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
 import org.jetbrains.annotations.NotNull;
 import Enumeration.TurnPhase;
+import Enumeration.ClientCommand;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -359,7 +360,7 @@ public class Cli extends View {
 
     @Override
     public void crashedPlayer(String crashedPlayer) throws RemoteException {
-        System.out.println(crashedPlayer + "is crashed but the game still continue!!");
+        printError(crashedPlayer + "crashed!");
     }
 
     @Override
@@ -412,7 +413,10 @@ public class Cli extends View {
 
     @Override
     public void showHelp() {
-        System.out.println("Commands: help");
+        System.out.println(CliColor.BOLD + "Commands:" + CliColor.RESET);
+        for (ClientCommand command : ClientCommand.values()) {
+            System.out.println(command);
+        }
     }
 
     @Override
@@ -443,13 +447,19 @@ public class Cli extends View {
 
     @Override
     public void outcomeInsertTiles(boolean success) throws RemoteException {
-        System.out.println("Tile inserted correctly");
+        if (success)
+            this.mockModel.setTurnPhase(TurnPhase.PICKING);
+        else
+            printError("Insertion failed");
     }
 
 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
         printError(e.getMessage());
+        if(e.getMessage().equals("The game was concluded due to insufficient active players.")) {
+            System.exit(666);
+        }
     }
 
     public void printError(String error) {

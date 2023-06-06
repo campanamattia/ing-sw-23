@@ -1,6 +1,7 @@
 package Server.Controller;
 
 import Enumeration.TurnPhase;
+import Exception.CommonGoal.NullPlayerException;
 import Exception.GamePhase.EndingStateException;
 import Exception.Player.PlayerNotFoundException;
 import Exception.PlayerException;
@@ -15,8 +16,10 @@ import Server.Controller.Phase.LastRoundState;
 import Server.Controller.Phase.NormalState;
 import Server.Controller.Phase.PhaseController;
 import Server.Model.*;
+import Server.Model.LivingRoom.CommonGoal.CommonGoal;
 import Server.Network.Client.ClientHandler;
 import Utils.Coordinates;
+import Utils.MockObjects.MockFactory;
 
 import java.io.*;
 import java.rmi.RemoteException;
@@ -87,7 +90,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * If the gameModel has ended, it sets the leaderboard and gameModel phase to ended.
      */
     public void endTurn() throws IOException {
-        phaseController.checkCommonGoals(this.gameModel.getCommonGoals());
+        checkCommonGoals(this.gameModel.getCommonGoals());
         do {
             try {
                 phaseController.nextPlayer();
@@ -113,6 +116,17 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                 }
             });
         }
+    }
+
+    private void checkCommonGoals(List<CommonGoal> commonGoals){
+        for(CommonGoal common : commonGoals)
+            if(!common.getAccomplished().contains(this.currentPlayer.getCurrentPlayer().getPlayerID()))
+                try{
+                    common.check(this.currentPlayer.getCurrentPlayer());
+                    this.gameModel.getScouts().onEvent(MockFactory.getMock(common));
+                }catch(NullPlayerException e){
+                    logger.severe(e.getMessage());
+                }
     }
 
     /**
@@ -268,27 +282,26 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
     public ClientHandler logOut(String playerID) throws RemoteException {
         try {
             this.gameModel.getPlayer(playerID).setStatus(false);
-            if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
-                this.gameModel.completeTurn(this.currentPlayer.getTiles());
-            ClientHandler crashed = this.players.get(playerID);
-            this.players.put(playerID, null);
-            for (ClientHandler client : players.values()) {
-                if (client != null) {
-                    Thread thread = new Thread(() -> {
-                        try {
-                            client.remoteView().crashedPlayer(playerID);
-                        } catch (RemoteException e) {
-                            logger.severe(e.toString());
-                        }
-                    });
-                    thread.start();
-                }
-            }
-            return crashed;
         } catch (PlayerException e) {
-            logger.severe(e + " for logout");
+            logger.severe(e.getMessage() + " during logout");
             return null;
         }
+        if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
+            this.gameModel.completeTurn(this.currentPlayer.getTiles());
+        ClientHandler crashed = this.players.get(playerID);
+        this.players.put(playerID, null);
+        for (ClientHandler client : players.values()) {
+            if (client == null)
+                continue;
+            executorService.execute(()-> {
+                try {
+                    client.remoteView().crashedPlayer(playerID);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+        return crashed;
     }
 
     /**

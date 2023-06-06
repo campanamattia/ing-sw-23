@@ -10,12 +10,14 @@ import Server.ServerApp;
 import Utils.MockObjects.MockFactory;
 import Utils.MockObjects.MockModel;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Level;
 
 import static Server.ServerApp.executorService;
+import static Server.ServerApp.logger;
 
 /**
  * The Lobby class represents the lobby system in the game server.
@@ -123,10 +125,8 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     public synchronized void login(String playerID, String lobbyID, RemoteView client, RemoteClient network) throws RemoteException {
         ServerApp.logger.info(playerID + " is trying to login " + lobbyID);
         GameController game = findGame(lobbyID);
-        if (game != null)
-            rejoinGame(playerID, lobbyID, client, network, game);//if the game exists
-        else
-            logInLobby(playerID, lobbyID, client, network);
+        if (game != null) rejoinGame(playerID, lobbyID, client, network, game);//if the game exists
+        else logInLobby(playerID, lobbyID, client, network);
     }
 
     /**
@@ -150,17 +150,31 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         if (gameController.getPlayers().containsKey(playerID)) {
             if (gameController.getPlayers().get(playerID) == null) {//if the player is not playing
                 executorService.execute(() -> {
-                    try {
-                        gameController.rejoin(playerID, new ClientHandler(playerID, lobbyID, remoteView));
-                        remoteView.outcomeLogin(playerID, lobbyID);
-                        MockModel model = MockFactory.getMock(gameController.getGameModel());
-                        model.setLocalPlayer(playerID);
-                        remoteView.allGame(model);
-                        startTimer(playerID, lobbyID, network);
-                        network.setGameController(gameController);
-                    } catch (RemoteException e) {
-                        ServerApp.logger.severe("Error rejoining player to game");
-                    }
+                    gameController.rejoin(playerID, new ClientHandler(playerID, lobbyID, remoteView));
+                    executorService.execute(() -> {
+                        try {
+                            remoteView.outcomeLogin(playerID, lobbyID);
+                            MockModel model = MockFactory.getMock(gameController.getGameModel());
+                            model.setLocalPlayer(playerID);
+                            executorService.execute(() -> {
+                                try {
+                                    remoteView.allGame(model);
+                                    executorService.execute(() -> {
+                                        startTimer(playerID, lobbyID, network);
+                                        try {
+                                            network.setGameController(gameController);
+                                        } catch (RemoteException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    });
+                                } catch (RemoteException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+                        } catch (RemoteException e) {
+                            logger.severe(e.getMessage());
+                        }
+                    });
                 });
             } else { //if the player is playing
                 executorService.submit(() -> {
@@ -384,8 +398,8 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                         this.games.remove(game);
                         for (ClientHandler handler : game.getClients())
                             handler.remoteView().outcomeException(new Exception("The game was concluded due to insufficient active players."));
-                    }
-                } catch (RemoteException e) {
+                    } else game.endTurn();
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             } else if (this.lobby.containsKey(lobbyID)) {

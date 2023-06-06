@@ -28,7 +28,7 @@ public class ClientSocket extends Network {
     private Socket socket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private final AtomicBoolean clientConnected = new AtomicBoolean(false);
+    private final AtomicBoolean clientConnected = new AtomicBoolean(true);
 
     public ClientSocket(View view) throws RemoteException {
         super(view);
@@ -43,7 +43,7 @@ public class ClientSocket extends Network {
             this.out = new ObjectOutputStream(socket.getOutputStream());
             this.in = new ObjectInputStream(socket.getInputStream());
             System.out.println("Connected to server");
-            while(true){
+            while(clientConnected.get()){
                 Object ob;
                 ob = in.readObject();
                 executorService.execute(()->deserialize(ob));
@@ -60,7 +60,6 @@ public class ClientSocket extends Network {
     }
 
     public synchronized void selectTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
-        view.printMessage("Selecting tiles");
         ClientMessage clientMessage = new SelectedTilesMessage(playerID, coordinates);
         try {
             sendMessage(clientMessage);
@@ -85,7 +84,6 @@ public class ClientSocket extends Network {
 
     @Override
     public synchronized void insertTiles(String playerID, List<Integer> sorting, int column) throws RemoteException {
-        view.printMessage("Inserting tiles");
         ClientMessage clientMessage = new InsertTilesMessage(playerID, sorting, column);
         try {
             sendMessage(clientMessage);
