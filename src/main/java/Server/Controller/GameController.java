@@ -90,6 +90,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * If the gameModel has ended, it sets the leaderboard and gameModel phase to ended.
      */
     public void endTurn() throws IOException {
+        this.turnPhase = TurnPhase.PICKING;
         checkCommonGoals(this.gameModel.getCommonGoals());
         do {
             try {
@@ -191,7 +192,6 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      */
     @Override
     public synchronized void insertTiles(String playerID, List<Integer> sort, int column) throws RemoteException {
-        logger.info("Player " + playerID + " is inserting tiles");
         try {
             if (ableTo(playerID) == TurnPhase.INSERTING) {
                 try {
@@ -237,7 +237,6 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      */
     @Override
     public synchronized void addScout(Scout scout) throws RemoteException {
-        logger.info("Scout " + scout + " is subscribing to the game");
         this.gameModel.addScout(scout);
     }
 
@@ -251,15 +250,17 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         this.players.put(playerID, client);
         try {
             this.gameModel.getPlayer(playerID).setStatus(true);
+            this.players.put(playerID, client);
         } catch (PlayerNotFoundException e) {
             logger.severe(e.toString());
             executorService.execute(() -> {
                 try {
                     client.remoteView().outcomeException(e);
                 } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
+                    logger.severe(ex.getMessage());
                 }
             });
+            return;
         }
         for (ClientHandler clientHandler : players.values()) {
             executorService.execute(() -> {
@@ -279,15 +280,18 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * @return The ClientHandler object associated with the player.
      * @throws RemoteException If a remote communication error occurs.
      */
-    public ClientHandler logOut(String playerID) throws RemoteException {
+    public ClientHandler logOut(String playerID) throws IOException {
         try {
             this.gameModel.getPlayer(playerID).setStatus(false);
         } catch (PlayerException e) {
             logger.severe(e.getMessage() + " during logout");
             return null;
         }
-        if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
-            this.gameModel.completeTurn(this.currentPlayer.getTiles());
+        if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID)){
+            if (this.turnPhase == TurnPhase.INSERTING)
+                this.gameModel.completeTurn(this.currentPlayer.getTiles());
+            endTurn();
+        }
         ClientHandler crashed = this.players.get(playerID);
         this.players.put(playerID, null);
         for (ClientHandler client : players.values()) {
