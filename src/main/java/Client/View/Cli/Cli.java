@@ -353,19 +353,26 @@ public class Cli extends View {
         System.out.println();
     }
 
-    // TODO: 16/05/23
     @Override
     public void endGame(List<Rank> classification) {
-
+        System.out.println(CliColor.BOLD + "Final leaderboard:" + CliColor.RESET);
+        Rank first = classification.get(0);
+        for (Rank rank : classification) {
+            if (rank.score() == first.score()){
+                printMessage(rank.ID() + " " + rank.score() + " points");
+            }
+            else
+                System.out.println(rank.ID() + " " + rank.score() + " points");
+        }
     }
 
     @Override
-    public void crashedPlayer(String crashedPlayer) throws RemoteException {
+    public synchronized void crashedPlayer(String crashedPlayer) throws RemoteException {
         this.mockModel.getPlayer(crashedPlayer).setOnline(false);
     }
 
     @Override
-    public void reloadPlayer(String reloadPlayer) throws RemoteException {
+    public synchronized void reloadPlayer(String reloadPlayer) throws RemoteException {
         this.mockModel.getPlayer(reloadPlayer).setOnline(true);
     }
 
@@ -404,12 +411,15 @@ public class Cli extends View {
         System.out.print("    ");
 
         for (MockPlayer player : this.mockModel.getMockPlayers()) {
-            if (player.isOnline())
+            if (player.isOnline()){
                 System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + player.getScore() + CliColor.RESET );
-            else
-                System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + CliColor.RED + "OFFLINE" + CliColor.RESET );
-            for (int i = 0; i < 32 - player.getPlayerID().length() - countDigit(player.getScore()); i++) {
-                System.out.print(" ");
+                for (int i = 0; i < 32 - player.getPlayerID().length() - countDigit(player.getScore()); i++)
+                    System.out.print(" ");
+            }
+            else {
+                System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + CliColor.RED + "OFFLINE" + CliColor.RESET);
+                for (int i = 0; i < 32 - player.getPlayerID().length() - " OFFLINE ".length(); i++)
+                    System.out.print(" ");
             }
         }
         System.out.println("\n");
@@ -424,20 +434,7 @@ public class Cli extends View {
     }
 
     @Override
-    public void showRank(List<Rank> classification) {
-        System.out.println(CliColor.BOLD + "Final leaderboard:" + CliColor.RESET);
-        Rank first = classification.get(0);
-        for (Rank rank : classification) {
-            if (rank.score() == first.score()){
-                printMessage(rank.ID() + " " + rank.score() + " points");
-            }
-            else
-                System.out.println(rank.ID() + " " + rank.score() + " points");
-        }
-    }
-
-    @Override
-    public void newTurn(String playerID) throws RemoteException {
+    public synchronized void newTurn(String playerID) throws RemoteException {
         clearCLI();
         mockModel.setCurrentPlayer(playerID);
         mockModel.setTurnPhase(TurnPhase.PICKING);
