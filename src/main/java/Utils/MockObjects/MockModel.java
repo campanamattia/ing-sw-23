@@ -45,6 +45,13 @@ public class MockModel implements Serializable, Cloneable {
         return mockPlayers;
     }
 
+    public MockPlayer getPlayer (String playerID){
+        return mockPlayers.stream()
+                .filter(mockPlayer -> mockPlayer.getPlayerID().equals(playerID))
+                .findFirst()
+                .orElse(null);
+    }
+
     public Stack<ChatMessage> getChat() {
         return chat;
     }
