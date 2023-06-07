@@ -90,6 +90,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * If the gameModel has ended, it sets the leaderboard and gameModel phase to ended.
      */
     public void endTurn() throws IOException {
+        this.turnPhase = TurnPhase.PICKING;
         checkCommonGoals(this.gameModel.getCommonGoals());
         do {
             try {
@@ -286,9 +287,9 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             logger.severe(e.getMessage() + " during logout");
             return null;
         }
-        if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING){
-            this.gameModel.completeTurn(this.currentPlayer.getTiles());
-            this.turnPhase = TurnPhase.PICKING;
+        if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID)){
+            if (this.turnPhase == TurnPhase.INSERTING)
+                this.gameModel.completeTurn(this.currentPlayer.getTiles());
             endTurn();
         }
         ClientHandler crashed = this.players.get(playerID);

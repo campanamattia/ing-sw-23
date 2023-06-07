@@ -361,12 +361,12 @@ public class Cli extends View {
 
     @Override
     public void crashedPlayer(String crashedPlayer) throws RemoteException {
-        printError(crashedPlayer + "crashed!");
+        this.mockModel.getPlayer(crashedPlayer).setOnline(false);
     }
 
     @Override
     public void reloadPlayer(String reloadPlayer) throws RemoteException {
-        System.out.println(reloadPlayer + "rejoined the game");
+        this.mockModel.getPlayer(reloadPlayer).setOnline(true);
     }
 
 
@@ -403,9 +403,12 @@ public class Cli extends View {
         }
         System.out.print("    ");
 
-        for (int k = 0; k < numPlayer; k++) {
-            System.out.print(mockModel.getMockPlayers().get(k).getPlayerID() + ": points");
-            for (int i = 0; i < 32 - mockModel.getMockPlayers().get(k).getPlayerID().length() - 8; i++) {
+        for (MockPlayer player : this.mockModel.getMockPlayers()) {
+            if (player.isOnline())
+                System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + player.getScore() + CliColor.RESET );
+            else
+                System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + CliColor.RED + "OFFLINE" + CliColor.RESET );
+            for (int i = 0; i < 32 - player.getPlayerID().length() - 8; i++) {
                 System.out.print(" ");
             }
         }
@@ -422,7 +425,15 @@ public class Cli extends View {
 
     @Override
     public void showRank(List<Rank> classification) {
-
+        System.out.println(CliColor.BOLD + "Final leaderboard:" + CliColor.RESET);
+        Rank first = classification.get(0);
+        for (Rank rank : classification) {
+            if (rank.score() == first.score()){
+                printMessage(rank.ID() + " " + rank.score() + " points");
+            }
+            else
+                System.out.println(rank.ID() + " " + rank.score() + " points");
+        }
     }
 
     @Override
