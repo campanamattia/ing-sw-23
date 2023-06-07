@@ -1,5 +1,6 @@
 package Client.View.Cli;
 
+import Client.ClientApp;
 import Client.Network.Network;
 import Client.Network.NetworkFactory;
 import Client.View.View;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 
-import static Client.ClientApp.network;
+import static Client.ClientApp.*;
 
 public class Cli extends View {
     private LightController controller;
@@ -46,7 +47,7 @@ public class Cli extends View {
 
     @Override
     public void updateChat(ChatMessage message) {
-        if (message.to() == null || message.to().equals(mockModel.getLocalPlayer())) {
+        if (message.to() == null || message.to().equals(localPlayer)) {
             this.mockModel.addMessage(message);
             System.out.println(CliColor.BOLD + "\rNew Message" + CliColor.RESET);
         }
@@ -105,7 +106,7 @@ public class Cli extends View {
 
         printMessage("You are going to create a new Game, wait for the others players");
 
-        network.setLobbySize(mockModel.getLocalPlayer(), mockModel.getLobbyID(), playerNumber);
+        network.setLobbySize(localPlayer, lobbyID, playerNumber);
     }
 
     public String askServerAddress() {
@@ -321,7 +322,7 @@ public class Cli extends View {
 
     @Override
     public void showStatus() {
-        if (mockModel.getCurrentPlayer().equals(mockModel.getLocalPlayer())) {
+        if (mockModel.getCurrentPlayer().equals(localPlayer)) {
             System.out.println(CliColor.BOLD + "It's your turn. " + mockModel.getTurnPhase() + " For more help type 'help'" + CliColor.RESET);
         } else {
             System.out.println(CliColor.BOLD + "It's NOT your turn. Wait for others player. For help type 'help'" + CliColor.RESET);
@@ -389,7 +390,7 @@ public class Cli extends View {
                     String colorString = (shelf[i][j] != null) ? shelf[i][j].getColor().getCode() : CliColor.BBLACK.toString();
                     String colorBar;
 
-                    if (mockModel.getLocalPlayer().equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
+                    if (localPlayer.equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
                         colorBar = (privateGoal[i][j] != null) ? privateGoal[i][j].getColor().getCode() : CliColor.BBLACK.toString();
                     } else {
                         colorBar = CliColor.BBLACK.toString();
@@ -474,8 +475,8 @@ public class Cli extends View {
     @Override
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
         System.out.println("You logged into the lobby");
-        mockModel.setLocalPlayer(localPlayer);
-        mockModel.setLobbyID(lobbyID);
+        ClientApp.localPlayer = localPlayer;
+        ClientApp.lobbyID = lobbyID;
         network.startPing(localPlayer, lobbyID);
     }
 
@@ -510,7 +511,7 @@ public class Cli extends View {
     }
 
     private void fixChat() {
-        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(mockModel.getLocalPlayer()));
+        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer));
     }
 
     public void clearCLI() {

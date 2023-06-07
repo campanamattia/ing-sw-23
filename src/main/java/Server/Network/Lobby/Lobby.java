@@ -155,7 +155,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                         try {
                             remoteView.outcomeLogin(playerID, lobbyID);
                             MockModel model = MockFactory.getMock(gameController.getGameModel());
-                            model.setLocalPlayer(playerID);
                             executorService.execute(() -> {
                                 try {
                                     remoteView.allGame(model);
@@ -443,7 +442,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                     executorService.execute(() -> {
                         MockModel model = MockFactory.getMock(game.getGameModel());
                         for (ClientHandler client : this.lobby.get(lobbyID).values()) {
-                            model.setLocalPlayer(client.playerID());
                             try {
                                 client.remoteView().allGame(model);
                                 this.heartbeat.get(Objects.hash(client.playerID(), lobbyID)).getClient().setGameController(game);

@@ -171,7 +171,7 @@ public class LightController {
         else {
             for (MockPlayer player : view.getMockModel().getMockPlayers())
                 if (player.getPlayerID().equalsIgnoreCase(data[1].trim())){
-                    if (view.getMockModel().getLocalPlayer().equalsIgnoreCase(data[1].trim())){
+                    if (localPlayer.equalsIgnoreCase(data[1].trim())){
                         view.printError("You can't send a message to yourself");
                         return;
                     }

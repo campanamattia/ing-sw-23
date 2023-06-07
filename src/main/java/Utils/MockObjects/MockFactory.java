@@ -46,7 +46,6 @@ public class MockFactory {
         for (Player player : model.getPlayers()) {
             mock.addMockPlayer(getMock(player));
         }
-        mock.setLobbyID(model.getLobbyID());
         mock.setChat((Stack<ChatMessage>) model.getChatRoom().getFlow().clone());
         mock.setCurrentPlayer(model.getCurrentPlayer().getPlayerID());
         return mock;
