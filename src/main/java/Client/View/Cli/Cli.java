@@ -483,7 +483,7 @@ public class Cli extends View {
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
-        this.controller = new LightController(mockModel.getLocalPlayer());
+        this.controller = new LightController();
         if (mockModel.getChat() != null) fixChat();
         newTurn(mockModel.getCurrentPlayer());
         while (true) {

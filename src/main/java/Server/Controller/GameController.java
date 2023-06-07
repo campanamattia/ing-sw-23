@@ -279,15 +279,18 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * @return The ClientHandler object associated with the player.
      * @throws RemoteException If a remote communication error occurs.
      */
-    public ClientHandler logOut(String playerID) throws RemoteException {
+    public ClientHandler logOut(String playerID) throws IOException {
         try {
             this.gameModel.getPlayer(playerID).setStatus(false);
         } catch (PlayerException e) {
             logger.severe(e.getMessage() + " during logout");
             return null;
         }
-        if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING)
+        if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID) && this.turnPhase == TurnPhase.INSERTING){
             this.gameModel.completeTurn(this.currentPlayer.getTiles());
+            this.turnPhase = TurnPhase.PICKING;
+            endTurn();
+        }
         ClientHandler crashed = this.players.get(playerID);
         this.players.put(playerID, null);
         for (ClientHandler client : players.values()) {

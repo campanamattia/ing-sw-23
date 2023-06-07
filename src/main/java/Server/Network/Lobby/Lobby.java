@@ -390,17 +390,18 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         ServerApp.logger.info("Logout for " + playerID + "\tin " + lobbyID);
         executorService.execute(() -> {
             GameController game = findGame(lobbyID);
-            ClientHandler clientHandler;
+            ClientHandler clientHandler = null;
             if (game != null) {
                 try {
                     clientHandler = game.logOut(playerID);
                     if (activePlayers(game) <= 1) {
                         this.games.remove(game);
                         for (ClientHandler handler : game.getClients())
-                            handler.remoteView().outcomeException(new Exception("The game was concluded due to insufficient active players."));
-                    } else game.endTurn();
+                            if (handler != null)
+                                handler.remoteView().outcomeException(new Exception("The game was concluded due to insufficient active players."));
+                    }
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    logger.log(Level.SEVERE, e.getMessage());
                 }
             } else if (this.lobby.containsKey(lobbyID)) {
                 clientHandler = this.lobby.get(lobbyID).remove(playerID);
@@ -461,12 +462,18 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         }
     }
 
-    private void printLobbyStatus() {
-        StringBuilder print = new StringBuilder("LOBBY STATUS: \n");
-        for (String object : this.lobby.keySet())
-            print.append("LobbyID: ").append(object).append("\tWaiting Room: ").append(this.lobby.get(object).size()).append("/").append(this.lobbySize.get(object)).append("\n");
-        for (GameController object : this.games)
-            print.append("GameID: ").append(object.getGameID()).append("\tPlayers Online: ").append(activePlayers(object)).append("/").append(object.getPlayers().size()).append("\t\t").append("GameController: ").append((this.games.contains(object)) ? "on going" : null).append("\n");
-        ServerApp.logger.info(print.toString());
+    public void printLobbyStatus() {
+        if (lobby.isEmpty() && games.isEmpty()) {
+            ServerApp.logger.info("No active lobbies or games");
+        } else {
+            ServerApp.logger.info("Active lobbies:");
+            for (String lobbyID : lobby.keySet()) {
+                ServerApp.logger.info("\t" + lobbyID + " with " + lobby.get(lobbyID).size() + " players");
+            }
+            ServerApp.logger.info("Active games:");
+            for (GameController game : games) {
+                ServerApp.logger.info("\t" + game.getGameID() + " with " + activePlayers(game) + " players");
+            }
+        }
     }
 }
