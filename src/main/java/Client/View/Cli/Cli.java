@@ -408,7 +408,7 @@ public class Cli extends View {
                 System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + player.getScore() + CliColor.RESET );
             else
                 System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + CliColor.RED + "OFFLINE" + CliColor.RESET );
-            for (int i = 0; i < 32 - player.getPlayerID().length() - 8; i++) {
+            for (int i = 0; i < 32 - player.getPlayerID().length() - countDigit(player.getScore()); i++) {
                 System.out.print(" ");
             }
         }
@@ -528,6 +528,18 @@ public class Cli extends View {
     public void clearCLI() {
         System.out.print(CliColor.CLEAR_ALL);
         System.out.flush();
+    }
+
+    public int countDigit(int number) {
+        int count = 2;
+        if (number == 0) {
+            return 3;
+        }
+        while (number != 0) {
+            number = number / 10;
+            count++;
+        }
+        return count;
     }
 
 }
