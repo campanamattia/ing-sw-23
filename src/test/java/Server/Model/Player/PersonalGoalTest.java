@@ -9,11 +9,11 @@ import java.io.FileNotFoundException;
 class PersonalGoalTest {
 
     @Test
-    void check() throws FileNotFoundException {
+    void check() {
 
         //class personal goal with a defined constructor
         class PersonalGoalNoJson {
-            private Tile[][] pGoal;
+            private final Tile[][] pGoal;
 
             public PersonalGoalNoJson() {
                 pGoal = new Tile[6][5];
@@ -31,27 +31,20 @@ class PersonalGoalTest {
                 for(int i=0; i<6; i++){
                     for(int j=0;j<5;j++){
                         if(pGoal[i][j] != null && myshelf[i][j] != null){
-                            if (myshelf[i][j].getTileColor() == pGoal[i][j].getTileColor()) count++;
+                            if (myshelf[i][j].color() == pGoal[i][j].color()) count++;
                         }
                     }
                 }
 
 
-                switch(count){
-                    case 0: points = 0;
-                    break;
-                    case 1: points=1;
-                    break;
-                    case 2: points=2;
-                    break;
-                    case 3: points=4;
-                    break;
-                    case 4: points=6;
-                    break;
-                    case 5: points=9;
-                    break;
-                    case 6: points=12;
-                    break;
+                switch (count) {
+                    case 0 -> points = 0;
+                    case 1 -> points = 1;
+                    case 2 -> points = 2;
+                    case 3 -> points = 4;
+                    case 4 -> points = 6;
+                    case 5 -> points = 9;
+                    case 6 -> points = 12;
                 }
 
                 return points;
@@ -66,7 +59,7 @@ class PersonalGoalTest {
         for (int i=0; i<6; i++){
             for (int j=0; j<5; j++){
                 if (pgoal.getPgoalTile(i,j) != null) {
-                    System.out.println(pgoal.getPgoalTile(i, j).getTileColor() + " ");
+                    System.out.println(pgoal.getPgoalTile(i, j).color() + " ");
                 }
             }
 
@@ -84,7 +77,7 @@ class PersonalGoalTest {
         for(int i=0; i<6; i++){
             for(int j=0;j<5;j++){
                 if((pgoal.getPgoalTile(i,j) != null) && (GoalShelf[i][j] != null)){
-                    if (GoalShelf[i][j].getTileColor() == pgoal.getPgoalTile(i,j).getTileColor()) count++;
+                    if (GoalShelf[i][j].color() == pgoal.getPgoalTile(i,j).color()) count++;
                 }
             }
         }

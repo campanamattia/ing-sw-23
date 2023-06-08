@@ -63,8 +63,8 @@ public class SquareGoal extends CommonGoal {
                 if (shelf.getTile(i,j) == null) {
                     continue;
                 }
-                if(checkSquare(shelf, i, j, dimSquare, shelf.getTile(i,j).getTileColor())) {
-                    if (checkEdgesOfSquare(shelf, i, j, dimSquare, shelf.getTile(i,j).getTileColor())) {
+                if(checkSquare(shelf, i, j, dimSquare, shelf.getTile(i,j).color())) {
+                    if (checkEdgesOfSquare(shelf, i, j, dimSquare, shelf.getTile(i,j).color())) {
                         countGroup++;
                     }
                 }
@@ -91,7 +91,7 @@ public class SquareGoal extends CommonGoal {
         int count = 0;
         for (int i = row; i > row - dimSquare; i--) {
             for (int j = column; j < column + dimSquare; j++) {
-                if (shelf.getTile(i,j) != null && shelf.getTile(i,j).getTileColor() == color) {
+                if (shelf.getTile(i,j) != null && shelf.getTile(i,j).color() == color) {
                     count++;
                 }
             }
@@ -114,7 +114,7 @@ public class SquareGoal extends CommonGoal {
 
         for (int i = row; i >= row - dimSquare + 1; i--) {
             try {
-                if (shelf.getTile(i, column + dimSquare).getTileColor() == color) {
+                if (shelf.getTile(i, column + dimSquare).color() == color) {
                     bool = false;
                 }
             } catch (IndexOutOfBoundsException | NullPointerException ignored){
@@ -125,7 +125,7 @@ public class SquareGoal extends CommonGoal {
             }
 
             try {
-                if (shelf.getTile(i, column - 1).getTileColor() == color) {
+                if (shelf.getTile(i, column - 1).color() == color) {
                     bool = false;
                 }
             } catch (IndexOutOfBoundsException | NullPointerException ignored) {
@@ -137,7 +137,7 @@ public class SquareGoal extends CommonGoal {
 
         for (int j = column; j <= column + dimSquare + 1; j++) {
             try {
-                if (shelf.getTile(row + 1, j).getTileColor() == color) {
+                if (shelf.getTile(row + 1, j).color() == color) {
                     bool = false;
                 }
             } catch (IndexOutOfBoundsException | NullPointerException ignored) {
@@ -148,7 +148,7 @@ public class SquareGoal extends CommonGoal {
             }
 
             try {
-                if (shelf.getTile(row - dimSquare, j).getTileColor() == color) {
+                if (shelf.getTile(row - dimSquare, j).color() == color) {
                     bool = false;
                 }
             } catch (IndexOutOfBoundsException | NullPointerException ignored) {

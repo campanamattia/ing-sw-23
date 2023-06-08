@@ -62,7 +62,7 @@ public class SameNGoal extends CommonGoal {
                     continue;
                 }
 
-                switch (shelf.getTile(i,j).getTileColor()){
+                switch (shelf.getTile(i,j).color()){
                     case PINK -> {
                         countPink++;
                         if (countPink == numEquals) {

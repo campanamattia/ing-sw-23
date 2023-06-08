@@ -76,7 +76,7 @@ public class Shelf {
         for (int i = 0; i < numberRows(); i++) {
             for (int j = 0; j < numberColumns(); j++) {
                 if (this.myShelf[i][j] != null && !visited[i][j]) {
-                    scores.add(getGroupScore(i, j, visited, this.myShelf[i][j].getColor()));
+                    scores.add(getGroupScore(i, j, visited, this.myShelf[i][j].color()));
                 }
             }
         }
@@ -94,7 +94,7 @@ public class Shelf {
             return 0;
         }
 
-        if (myShelf[row][column].getColor() == color) {
+        if (myShelf[row][column].color() == color) {
             visited[row][column] = true;
             return 1
                     + getGroupScore(row + 1, column, visited, color)

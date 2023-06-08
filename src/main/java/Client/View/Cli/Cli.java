@@ -251,7 +251,7 @@ public class Cli extends View {
             System.out.print(i + "\t");
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
-                    String colorString = board[i][j].getTile().getColor().getCode();
+                    String colorString = board[i][j].getTile().color().getCode();
                     System.out.print(CliColor.BBLACK + "|" + colorString + i + "," + j + CliColor.BBLACK + "|" + CliColor.RESET);
                 } else {
                     System.out.print(CliColor.BBLACK + "|   |" + CliColor.RESET); //print empty black space
@@ -347,7 +347,7 @@ public class Cli extends View {
     public void showTile(@NotNull List<Tile> tiles) {
         System.out.print("\t");
         for (int i = 0; i < tiles.size(); i++) {
-            System.out.print(tiles.get(i).getColor().getCode() + "|" + (i + 1) + "|");
+            System.out.print(tiles.get(i).color().getCode() + "|" + (i + 1) + "|");
             System.out.print(CliColor.RESET + "   ");
         }
         System.out.println();
@@ -394,11 +394,11 @@ public class Cli extends View {
                 for (int j = 0; j < numColumn; j++) {
                     Tile[][] shelf = mockModel.getMockPlayers().get(k).getShelf();
                     Tile[][] privateGoal = mockModel.getMockPlayers().get(k).getPersonalGoal();
-                    String colorString = (shelf[i][j] != null) ? shelf[i][j].getColor().getCode() : CliColor.BBLACK.toString();
+                    String colorString = (shelf[i][j] != null) ? shelf[i][j].color().getCode() : CliColor.BBLACK.toString();
                     String colorBar;
 
                     if (localPlayer.equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
-                        colorBar = (privateGoal[i][j] != null) ? privateGoal[i][j].getColor().getCode() : CliColor.BBLACK.toString();
+                        colorBar = (privateGoal[i][j] != null) ? privateGoal[i][j].color().getCode() : CliColor.BBLACK.toString();
                     } else {
                         colorBar = CliColor.BBLACK.toString();
                     }

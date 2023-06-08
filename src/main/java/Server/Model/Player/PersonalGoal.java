@@ -7,7 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class PersonalGoal {
-    private Tile[][] personalGoal;
+    private final Tile[][] personalGoal;
 
     public PersonalGoal(JsonObject json) {
         personalGoal = new Tile[6][5];
@@ -25,7 +25,7 @@ public class PersonalGoal {
         for(int i=0; i<6; i++){
             for(int j=0;j<5;j++){
                 if(personalGoal[i][j] != null && myshelf[i][j] != null){
-                    if (myshelf[i][j].getTileColor() == personalGoal[i][j].getTileColor()) count++;
+                    if (myshelf[i][j].color() == personalGoal[i][j].color()) count++;
                 }
             }
         }
