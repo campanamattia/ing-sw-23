@@ -8,22 +8,12 @@ import java.util.List;
 import java.util.Stack;
 
 public class MockModel implements Serializable, Cloneable {
-    private String lobbyID;
-    private String localPlayer;
     private MockBoard mockBoard;
     private List<MockPlayer> mockPlayers;
     private List<MockCommonGoal> mockCommonGoal;
     private Stack<ChatMessage> chat;
     private String currentPlayer;
     private TurnPhase turnPhase;
-
-    public void setLobbyID(String lobbyID) {
-        this.lobbyID = lobbyID;
-    }
-
-    public String getLobbyID() {
-        return lobbyID;
-    }
 
     public void setMockBoard(MockBoard mockBoard) {
         this.mockBoard = mockBoard;
@@ -55,12 +45,11 @@ public class MockModel implements Serializable, Cloneable {
         return mockPlayers;
     }
 
-    public String getLocalPlayer() {
-        return localPlayer;
-    }
-
-    public void setLocalPlayer(String playerID) {
-        this.localPlayer = playerID;
+    public MockPlayer getPlayer (String playerID){
+        return mockPlayers.stream()
+                .filter(mockPlayer -> mockPlayer.getPlayerID().equals(playerID))
+                .findFirst()
+                .orElse(null);
     }
 
     public Stack<ChatMessage> getChat() {
@@ -102,8 +91,6 @@ public class MockModel implements Serializable, Cloneable {
         try {
             MockModel mockModel = (MockModel) super.clone();
 
-            mockModel.lobbyID = lobbyID;
-            mockModel.localPlayer = localPlayer;
             mockModel.mockBoard = mockBoard.clone();
             mockModel.mockPlayers = new ArrayList<>();
             for (MockPlayer mockPlayer : mockPlayers) {

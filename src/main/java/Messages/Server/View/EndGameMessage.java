@@ -4,6 +4,7 @@ import Client.View.View;
 import Messages.ServerMessage;
 import Utils.Rank;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 public class EndGameMessage extends ServerMessage {
@@ -15,6 +16,10 @@ public class EndGameMessage extends ServerMessage {
 
     @Override
     public void execute(View view) {
-        view.showRank(this.rank);
+        try {
+            view.endGame(this.rank);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

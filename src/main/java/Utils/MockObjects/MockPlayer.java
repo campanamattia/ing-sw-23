@@ -9,6 +9,7 @@ public class MockPlayer implements Serializable, Cloneable {
     private Tile[][] personalGoal;
     private Tile[][] shelf;
     private int score;
+    private boolean isOnline = true;
 
     public String getPlayerID() {
         return playerID;
@@ -63,5 +64,13 @@ public class MockPlayer implements Serializable, Cloneable {
         if (obj instanceof MockPlayer player)
             return playerID.equals(player.playerID);
         return false;
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
     }
 }

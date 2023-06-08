@@ -11,7 +11,7 @@
 | CLIENT GUI          |[⏱️](https://github.com/campanamattia/IS23-AM01/tree/main/src/main/java/Client/View/Gui)|
 | MULTI MATCH         |[✅](https://github.com/campanamattia/IS23-AM01/tree/main/src/main/java/Server/Network/Lobby)|
 | CHAT                |[✅](https://github.com/campanamattia/IS23-AM01/tree/main/src/main/java/Utils)|
-| RESILIENCE          |[⚙️](https://github.com/campanamattia/IS23-AM01/tree/main/src/main/java/Server/Network/Lobby)|
+| RESILIENCE          |[✅](https://github.com/campanamattia/IS23-AM01/tree/main/src/main/java/Server/Network/Lobby)|
 | PERSISTENCE         |⛔|
 #### Legend
-⛔ Not Implemented &nbsp;&nbsp; ✅ Implemented &nbsp;&nbsp; ⏱️ On the Way &nbsp;&nbsp; ⚙️ Testing
+⛔ Won't Implemented &nbsp;&nbsp; ✅ Implemented &nbsp;&nbsp; ⏱️ On the Way &nbsp;&nbsp; ⚙️ Testing

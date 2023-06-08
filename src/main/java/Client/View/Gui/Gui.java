@@ -64,11 +64,6 @@ public class Gui extends View {
     }
 
     @Override
-    public void showRank(List<Rank> classification) {
-
-    }
-
-    @Override
     public void start() {
 
     }
