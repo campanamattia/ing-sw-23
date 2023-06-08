@@ -5,8 +5,8 @@ import Enumeration.Color;
 import java.io.Serializable;
 
 /**
- * The Tile record represents a colored tile used in the game.
- * It is immutable and implements the Cloneable and Serializable interfaces.
+ * The Tile class represents a colored tile used in the game.
+ * It is implemented as record, so it's immutable and implements the Cloneable and Serializable interfaces.
  */
 public record Tile(Color color) implements Cloneable, Serializable {
 

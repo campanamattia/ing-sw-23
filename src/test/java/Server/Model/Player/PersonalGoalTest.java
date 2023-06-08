@@ -4,7 +4,6 @@ import Enumeration.Color;
 import Utils.Tile;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileNotFoundException;
 
 class PersonalGoalTest {
 
