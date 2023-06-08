@@ -11,22 +11,17 @@ import java.util.List;
 import static Client.ClientApp.*;
 
 public class LightController {
-    private final String playerID;
-
-    public LightController(String playerID) {
-        this.playerID = playerID;
-    }
 
     public void elaborate(String input) {
         String[] split = input.split("-");
         String command = split[0];
-        switch (command) {
+        switch (command.trim()) {
             case "chat" -> view.showChat();
             case "help" -> view.showHelp();
-            case "back", "quit" -> view.showStatus();
-            case "st" -> executorService.execute(() -> selectTiles(split));
-            case "it" -> executorService.execute(() -> insertTiles(split));
-            default -> executorService.execute(() -> writeChat(input));
+            case "back" -> view.showStatus();
+            case "st"   -> executorService.execute(() -> selectTiles(split));
+            case "it"   -> executorService.execute(() -> insertTiles(split));
+            default     -> executorService.execute(() -> writeChat(input));
         }
     }
 
@@ -43,7 +38,7 @@ public class LightController {
 
         // Send the command to the server
         try {
-            network.selectTiles(playerID, coordinates);
+            network.selectTiles(localPlayer, coordinates);
         } catch (RemoteException e) {
             view.printError(e.getMessage());
         }
@@ -111,15 +106,16 @@ public class LightController {
 
         // Send the command to the server
         try {
-            network.insertTiles(playerID, tiles, column);
+            network.insertTiles(localPlayer, tiles, column);
         } catch (RemoteException e) {
             view.printError(e.getMessage());
         }
     }
 
     private int checkColumn(String data) {
-        if (data.matches("[A-E]"))
+        if (data.compareTo("A") >= 0 && data.compareTo("E") <= 0)
             return data.charAt(0) - 'A';
+        view.printError("You must insert a valid column (A-E)");
         return -1;
     }
 
@@ -168,19 +164,19 @@ public class LightController {
         }
         if(data[1].trim().equalsIgnoreCase("all"))
             try {
-                network.writeChat(playerID, data[0], null);
+                network.writeChat(localPlayer, data[0], null);
             } catch (RemoteException e) {
                 view.printError(e.getMessage());
             }
         else {
             for (MockPlayer player : view.getMockModel().getMockPlayers())
                 if (player.getPlayerID().equalsIgnoreCase(data[1].trim())){
-                    if (view.getMockModel().getLocalPlayer().equalsIgnoreCase(data[1].trim())){
+                    if (localPlayer.equalsIgnoreCase(data[1].trim())){
                         view.printError("You can't send a message to yourself");
                         return;
                     }
                     try {
-                        network.writeChat(playerID, data[0], player.getPlayerID());
+                        network.writeChat(localPlayer, data[0], player.getPlayerID());
                     } catch (RemoteException e) {
                         view.printError(e.getMessage());
                     }

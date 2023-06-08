@@ -1,5 +1,6 @@
 package Client.View.Cli;
 
+import Client.ClientApp;
 import Client.Network.Network;
 import Client.Network.NetworkFactory;
 import Client.View.View;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 
-import static Client.ClientApp.network;
+import static Client.ClientApp.*;
 
 public class Cli extends View {
     private LightController controller;
@@ -46,7 +47,7 @@ public class Cli extends View {
 
     @Override
     public void updateChat(ChatMessage message) {
-        if (message.to() == null || message.to().equals(mockModel.getLocalPlayer())) {
+        if (message.to() == null || message.to().equals(localPlayer)) {
             this.mockModel.addMessage(message);
             System.out.println(CliColor.BOLD + "\rNew Message" + CliColor.RESET);
         }
@@ -105,7 +106,7 @@ public class Cli extends View {
 
         printMessage("You are going to create a new Game, wait for the others players");
 
-        network.setLobbySize(mockModel.getLocalPlayer(), mockModel.getLobbyID(), playerNumber);
+        network.setLobbySize(localPlayer, lobbyID, playerNumber);
     }
 
     public String askServerAddress() {
@@ -321,7 +322,7 @@ public class Cli extends View {
 
     @Override
     public void showStatus() {
-        if (mockModel.getCurrentPlayer().equals(mockModel.getLocalPlayer())) {
+        if (mockModel.getCurrentPlayer().equals(localPlayer)) {
             System.out.println(CliColor.BOLD + "It's your turn. " + mockModel.getTurnPhase() + " For more help type 'help'" + CliColor.RESET);
         } else {
             System.out.println(CliColor.BOLD + "It's NOT your turn. Wait for others player. For help type 'help'" + CliColor.RESET);
@@ -352,20 +353,27 @@ public class Cli extends View {
         System.out.println();
     }
 
-    // TODO: 16/05/23
     @Override
     public void endGame(List<Rank> classification) {
-
+        System.out.println(CliColor.BOLD + "Final leaderboard:" + CliColor.RESET);
+        Rank first = classification.get(0);
+        for (Rank rank : classification) {
+            if (rank.score() == first.score()){
+                printMessage(rank.ID() + " " + rank.score() + " points");
+            }
+            else
+                System.out.println(rank.ID() + " " + rank.score() + " points");
+        }
     }
 
     @Override
-    public void crashedPlayer(String crashedPlayer) throws RemoteException {
-        printError(crashedPlayer + "crashed!");
+    public synchronized void crashedPlayer(String crashedPlayer) throws RemoteException {
+        this.mockModel.getPlayer(crashedPlayer).setOnline(false);
     }
 
     @Override
-    public void reloadPlayer(String reloadPlayer) throws RemoteException {
-        System.out.println(reloadPlayer + "rejoined the game");
+    public synchronized void reloadPlayer(String reloadPlayer) throws RemoteException {
+        this.mockModel.getPlayer(reloadPlayer).setOnline(true);
     }
 
 
@@ -389,7 +397,7 @@ public class Cli extends View {
                     String colorString = (shelf[i][j] != null) ? shelf[i][j].getColor().getCode() : CliColor.BBLACK.toString();
                     String colorBar;
 
-                    if (mockModel.getLocalPlayer().equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
+                    if (localPlayer.equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
                         colorBar = (privateGoal[i][j] != null) ? privateGoal[i][j].getColor().getCode() : CliColor.BBLACK.toString();
                     } else {
                         colorBar = CliColor.BBLACK.toString();
@@ -402,10 +410,16 @@ public class Cli extends View {
         }
         System.out.print("    ");
 
-        for (int k = 0; k < numPlayer; k++) {
-            System.out.print(mockModel.getMockPlayers().get(k).getPlayerID() + ": points");
-            for (int i = 0; i < 32 - mockModel.getMockPlayers().get(k).getPlayerID().length() - 8; i++) {
-                System.out.print(" ");
+        for (MockPlayer player : this.mockModel.getMockPlayers()) {
+            if (player.isOnline()){
+                System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + player.getScore() + CliColor.RESET );
+                for (int i = 0; i < 32 - player.getPlayerID().length() - countDigit(player.getScore()); i++)
+                    System.out.print(" ");
+            }
+            else {
+                System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + CliColor.RED + "OFFLINE" + CliColor.RESET);
+                for (int i = 0; i < 32 - player.getPlayerID().length() - " OFFLINE ".length(); i++)
+                    System.out.print(" ");
             }
         }
         System.out.println("\n");
@@ -420,12 +434,7 @@ public class Cli extends View {
     }
 
     @Override
-    public void showRank(List<Rank> classification) {
-
-    }
-
-    @Override
-    public void newTurn(String playerID) throws RemoteException {
+    public synchronized void newTurn(String playerID) throws RemoteException {
         clearCLI();
         mockModel.setCurrentPlayer(playerID);
         mockModel.setTurnPhase(TurnPhase.PICKING);
@@ -474,8 +483,8 @@ public class Cli extends View {
     @Override
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
         System.out.println("You logged into the lobby");
-        mockModel.setLocalPlayer(localPlayer);
-        mockModel.setLobbyID(lobbyID);
+        ClientApp.localPlayer = localPlayer;
+        ClientApp.lobbyID = lobbyID;
         network.startPing(localPlayer, lobbyID);
     }
 
@@ -483,7 +492,7 @@ public class Cli extends View {
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
-        this.controller = new LightController(mockModel.getLocalPlayer());
+        this.controller = new LightController();
         if (mockModel.getChat() != null) fixChat();
         newTurn(mockModel.getCurrentPlayer());
         while (true) {
@@ -510,12 +519,24 @@ public class Cli extends View {
     }
 
     private void fixChat() {
-        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(mockModel.getLocalPlayer()));
+        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer));
     }
 
     public void clearCLI() {
         System.out.print(CliColor.CLEAR_ALL);
         System.out.flush();
+    }
+
+    public int countDigit(int number) {
+        int count = 2;
+        if (number == 0) {
+            return 3;
+        }
+        while (number != 0) {
+            number = number / 10;
+            count++;
+        }
+        return count;
     }
 
 }

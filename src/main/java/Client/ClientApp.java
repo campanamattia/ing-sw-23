@@ -9,6 +9,9 @@ import java.util.concurrent.Executors;
 
 public class ClientApp {
 
+    public static String localPlayer;
+    public static String lobbyID;
+
     public static View view;
     public static Network network;
     public static ExecutorService executorService;
