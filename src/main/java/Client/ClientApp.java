@@ -12,6 +12,9 @@ public class ClientApp {
 
     public static final String STYLEPATH = String.valueOf(ClientApp.class.getResource("/css/style.css"));
     public static GuiApplication guiApplication;
+    public static String localPlayer;
+    public static String lobbyID;
+
     public static View view;
     public static Network network;
     public static ExecutorService executorService;

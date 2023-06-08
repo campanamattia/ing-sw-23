@@ -11,7 +11,6 @@ import java.util.Stack;
 
 public class MockFactory {
 
-    @SuppressWarnings("unchecked")
     public static MockCommonGoal getMock(CommonGoal commonGoal) {
         MockCommonGoal mock = new MockCommonGoal();
         mock.setEnumeration(commonGoal.getEnumeration());
@@ -36,7 +35,6 @@ public class MockFactory {
         return mock;
     }
 
-    @SuppressWarnings("unchecked")
     public static MockModel getMock(GameModel model) {
         MockModel mock = new MockModel();
         mock.setMockBoard(getMock(model.getBoard()));
@@ -46,7 +44,6 @@ public class MockFactory {
         for (Player player : model.getPlayers()) {
             mock.addMockPlayer(getMock(player));
         }
-        mock.setLobbyID(model.getLobbyID());
         mock.setChat((Stack<ChatMessage>) model.getChatRoom().getFlow().clone());
         mock.setCurrentPlayer(model.getCurrentPlayer().getPlayerID());
         return mock;
