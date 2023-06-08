@@ -68,7 +68,9 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         this.gameID = lobbyID;
         this.players = players;
         try {
-            this.gameModel = new GameModel(lobbyID, new ArrayList<>(players.keySet()));
+            List<String> playerIDs = new ArrayList<>(players.keySet());
+            Collections.shuffle(playerIDs);
+            this.gameModel = new GameModel(lobbyID, playerIDs);
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.toString());
             for (ClientHandler client : players.values()) {
