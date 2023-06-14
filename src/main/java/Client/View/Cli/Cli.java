@@ -28,6 +28,7 @@ public class Cli extends View {
         super();
         mockModel = new MockModel();
         showTitle();
+        start();
     }
 
     @Override
