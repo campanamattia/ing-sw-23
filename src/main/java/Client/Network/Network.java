@@ -27,7 +27,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
     protected HashMap<Class<?>, Scout> scouts;
     protected Timer timer;
 
-    public Network(View view) throws RemoteException {
+    public Network() throws RemoteException {
         super();
         this.scouts = new HashMap<>();
         scouts.put(MockBoard.class, new BoardScout());

@@ -82,3 +82,11 @@
     -fx-alignment: center;
     -fx-cursor: hand;
 }
+
+.text-field{
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-alignment: center;
+    -fx-font-size: 20;
+    -fx-pref-width: 200;
+}
