@@ -17,7 +17,7 @@ import static Client.ClientApp.network;
 
 public class ConnectionScene extends Scene {
 
-    private final GuiApplication app;
+    private static GuiApplication app;
     private final TextField ipField;
     private final TextField portField;
 
@@ -27,7 +27,7 @@ public class ConnectionScene extends Scene {
 
         setUserAgentStylesheet(STYLEPATH);
 
-        this.app = app;
+        ConnectionScene.app = app;
 
         Label label = new Label("Choose the type of connection: ");
         label.getStyleClass().add("label-title");
@@ -93,8 +93,12 @@ public class ConnectionScene extends Scene {
         //network.init(ipField.getText(), Integer.parseInt(portField.getText()));
         Thread connection = new Thread(() -> network.init(ipField.getText(), Integer.parseInt(portField.getText())));
         connection.start();
-        Scene socketScene = new LoginScene(app);
-        app.switchScene(socketScene);
+        //Scene socketScene = new LoginScene(app);
+        //app.switchScene(socketScene);
+    }
+    public static void toLoginScene(){
+        Scene loginScene = new LoginScene(app);
+        app.switchScene(loginScene);
     }
 
     private boolean checkPort() {

@@ -1,6 +1,7 @@
 package Client.View.Gui;
 
 import Client.ClientApp;
+import Client.View.Gui.Scene.LoginScene;
 import Client.View.View;
 import Utils.ChatMessage;
 import Utils.MockObjects.MockBoard;
@@ -18,16 +19,12 @@ import java.util.Map;
 import static Client.ClientApp.*;
 
 public class Gui extends View {
-    private GuiApplication guiApplication;
+    private final GuiApplication guiApplication;
 
     public Gui() throws RemoteException {
         super();
         mockModel = new MockModel();
-    }
-
-    public void updateGuiApplication(GuiApplication guiApplication){
-        this.guiApplication = guiApplication;
-        guiApplication.updateGui(this);
+        this.guiApplication = new GuiApplication();
     }
 
     @Override
@@ -98,9 +95,9 @@ public class Gui extends View {
 
     @Override
     public void askLobbySize() throws RemoteException {
-        guiApplication.setFirstPlayer(true);
-        Integer playerNumber = guiApplication.getLobbySize();
-        network.setLobbySize(localPlayer,lobbyID,playerNumber);
+        // Integer playerNumber = guiApplication.getLobbySize();
+        // network.setLobbySize(localPlayer,lobbyID,playerNumber);
+        guiApplication.askLobbySize();
     }
 
     @Override
@@ -122,24 +119,21 @@ public class Gui extends View {
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
         ClientApp.localPlayer = localPlayer;
         ClientApp.lobbyID = lobbyID;
-        guiApplication.outcomeLogin("Logged in!");
         network.startPing(localPlayer, lobbyID);
+        guiApplication.outcomeLogin();
+        //LoginScene.toLobbySize();
     }
 
     @Override
     public void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException {
-        if(lobbyInfo != null){
+        if (lobbyInfo != null) {
             List<String> lobbies = new ArrayList<>(lobbyInfo.get(0).keySet());
             guiApplication.setLobbies(lobbies);
-        }else{
+            guiApplication.askPlayerInfo();
+        } else {
             guiApplication.setLobbies(null);
+            guiApplication.askPlayerInfo();
         }
-        List<String> playerInfo;
-        playerInfo = guiApplication.getPlayerInfo();
-        while(playerInfo==null)
-            playerInfo = guiApplication.getPlayerInfo();
-
-        network.login(playerInfo.get(0),playerInfo.get(1),this,network);
     }
 
     @Override

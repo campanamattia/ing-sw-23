@@ -42,7 +42,7 @@ public class LobbyScene extends Scene {
     }
     private void handleJoinGameButton(){
         Integer selectedLobbySize = lobbySize.getValue();
-        guiApplication.setLobbySize(selectedLobbySize);
+        app.setLobbySize(selectedLobbySize);
         Scene livingRoom = new LivingRoom(app);
         app.switchScene(livingRoom);
     }

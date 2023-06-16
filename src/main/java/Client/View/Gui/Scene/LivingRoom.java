@@ -11,7 +11,7 @@ import static Client.ClientApp.STYLEPATH;
 
 
 public class LivingRoom extends Scene {
-    private final GuiApplication app;
+    private static GuiApplication app;
     private final Label livingRoom;
 
 
@@ -19,13 +19,18 @@ public class LivingRoom extends Scene {
         super(new Pane(), 960, 750);
         setUserAgentStylesheet(STYLEPATH);
 
-        this.app = app;
+        LivingRoom.app = app;
 
         livingRoom = new Label("Setting up...");
         livingRoom.setAlignment(Pos.CENTER);
 
         setRoot(livingRoom);
 
+    }
+
+    public static void toLobbySize(){
+        Scene lobbySize = new LobbyScene(app);
+        app.switchScene(lobbySize);
     }
 
 }

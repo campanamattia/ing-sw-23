@@ -13,12 +13,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import javax.swing.*;
+import java.rmi.RemoteException;
 import java.util.List;
 
 import static Client.ClientApp.*;
 
 public class LoginScene extends Scene {
-    private final GuiApplication app;
+    private static GuiApplication app;
     private final TextField playerID;
     private final TextField createLobby;
     private final ComboBox<String> activeLobbies;
@@ -32,7 +33,7 @@ public class LoginScene extends Scene {
 
         setUserAgentStylesheet(STYLEPATH);
 
-        this.app = app;
+        LoginScene.app = app;
 
         Label label = new Label("Login: ");
         label.getStyleClass().add("label-title");
@@ -62,7 +63,13 @@ public class LoginScene extends Scene {
         playerID.setMaxWidth(400);
 
         sendButton = new Button("Send");
-        sendButton.setOnAction(e-> handleSendButton());
+        sendButton.setOnAction(e-> {
+            try {
+                handleSendButton();
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         VBox vBoxGameAndLobbies = new VBox();
         vBoxGameAndLobbies.getChildren().addAll(activeLobbies,createLobby,activeGames);
@@ -83,17 +90,14 @@ public class LoginScene extends Scene {
         setRoot(backgroundBox);
     }
 
-    private void handleSendButton(){
+    private void handleSendButton() throws RemoteException {
         String username = playerID.getText();
         String lobbyName = createLobby.getText();
-        guiApplication.setPlayerInfo(username,lobbyName);
-        if(app.getFirstPlayer()) {
-            app.setFirstPlayer(false);
-            Scene lobbyScene = new LobbyScene(app);
-            app.switchScene(lobbyScene);
-        }else{
-            Scene livingRoom = new LivingRoom(app);
-            app.switchScene(livingRoom);
-        }
+        network.login(username,lobbyName,view,network);
+    }
+
+    public static void toLobbyScene(){
+        Scene livingRoom = new LivingRoom(app);
+        app.switchScene(livingRoom);
     }
 }

@@ -3,6 +3,7 @@ package Client.View.Cli;
 import Client.ClientApp;
 import Client.Network.Network;
 import Client.Network.NetworkFactory;
+import Client.View.Gui.GuiApplication;
 import Client.View.View;
 import Utils.*;
 import Utils.MockObjects.MockBoard;

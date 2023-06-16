@@ -1,27 +1,27 @@
 package Client.View.Gui;
 
 import Client.View.Gui.Scene.ConnectionScene;
+import Client.View.Gui.Scene.LivingRoom;
+import Client.View.Gui.Scene.LobbyScene;
+import Client.View.Gui.Scene.LoginScene;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static Client.ClientApp.network;
+import static Client.ClientApp.view;
 
 public class GuiApplication extends Application {
 
     private Stage primaryStage;
     private List<String> activeLobbies = new ArrayList<>();
 
-    private List<String> playerInfo;
-
     private Integer lobbySize;
-
-    private Gui gui;
-    private String outcomeLogin = "Not logged";
     private Boolean firstPlayer = false;
 
     private static volatile boolean javaFxLaunched = false;
@@ -37,9 +37,8 @@ public class GuiApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.primaryStage = stage;
-
         Scene connectionScene = new ConnectionScene(this);
-        primaryStage.setScene(connectionScene);
+        this.switchScene(connectionScene);
         primaryStage.show();
     }
 
@@ -47,24 +46,11 @@ public class GuiApplication extends Application {
         primaryStage.setScene(scene);
     }
     public List<String> updateLobbies(){
-        List<String> activeLobbies = new ArrayList<>(this.activeLobbies);
-        return activeLobbies;
-    }
-
-    public void setPlayerInfo(String username,String lobby){
-        playerInfo = new ArrayList<>();
-        playerInfo.add(username);
-        playerInfo.add(lobby);
-    }
-    public List<String> getPlayerInfo(){
-        return playerInfo;
+        return new ArrayList<>(this.activeLobbies);
     }
 
     public void setLobbies(List<String> lobbies){
         this.activeLobbies = lobbies;
-    }
-    public void updateGui(Gui gui){
-        this.gui = gui;
     }
 
     public Integer getLobbySize(){
@@ -75,19 +61,15 @@ public class GuiApplication extends Application {
         this.lobbySize = lobbySize;
     }
 
-    public void outcomeLogin(String outcome){
-        this.outcomeLogin = outcome;
+    public void outcomeLogin(){
+        Platform.runLater(LoginScene::toLobbyScene);
     }
 
-    public String printLogin(){
-        return this.outcomeLogin;
+    public void askLobbySize(){
+        Platform.runLater(LivingRoom::toLobbySize);
     }
 
-    public Boolean getFirstPlayer() {
-        return firstPlayer;
-    }
-
-    public void setFirstPlayer(Boolean firstPlayer) {
-        this.firstPlayer = firstPlayer;
+    public void askPlayerInfo(){
+        Platform.runLater(ConnectionScene::toLoginScene);
     }
 }
