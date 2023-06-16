@@ -33,12 +33,14 @@ public class ConnectionScene extends Scene {
         label.getStyleClass().add("label-title");
 
         ipField = new TextField();
-        ipField.setPromptText("Insert the ip: ");
+        ipField.setPromptText("Insert the ip: (default 127.0.0.1) ");
         ipField.getStyleClass().add("text-field");
+        ipField.setMaxWidth(400);
 
         portField = new TextField();
-        portField.setPromptText("Insert the port: ");
+        portField.setPromptText("Insert the port: (between [1024, 65535])");
         portField.getStyleClass().add("text-field");
+        portField.setMaxWidth(400);
 
         Button rmiButton = new Button("RMI");
 
@@ -71,7 +73,9 @@ public class ConnectionScene extends Scene {
             printError("ERROR: " + e.getMessage());
             System.exit(-1);
         }
-        network.init(ipField.getText(), Integer.parseInt(portField.getText()));
+        //network.init(ipField.getText(), Integer.parseInt(portField.getText()));
+        Thread connection = new Thread(() -> network.init(ipField.getText(), Integer.parseInt(portField.getText())));
+        connection.start();
     }
 
     private void handleSocketClick() {
@@ -86,8 +90,11 @@ public class ConnectionScene extends Scene {
             printError("ERROR: " + e.getMessage());
             System.exit(-1);
         }
-        network.init(ipField.getText(), Integer.parseInt(portField.getText()));
-
+        //network.init(ipField.getText(), Integer.parseInt(portField.getText()));
+        Thread connection = new Thread(() -> network.init(ipField.getText(), Integer.parseInt(portField.getText())));
+        connection.start();
+        Scene socketScene = new LoginScene(app);
+        app.switchScene(socketScene);
     }
 
     private boolean checkPort() {

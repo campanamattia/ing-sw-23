@@ -1,5 +1,6 @@
 package Client.View.Gui;
 
+import Client.ClientApp;
 import Client.View.View;
 import Utils.ChatMessage;
 import Utils.MockObjects.MockBoard;
@@ -10,12 +11,23 @@ import Utils.Rank;
 import Utils.Tile;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static Client.ClientApp.*;
+
 public class Gui extends View {
+    private GuiApplication guiApplication;
 
     public Gui() throws RemoteException {
+        super();
+        mockModel = new MockModel();
+    }
+
+    public void updateGuiApplication(GuiApplication guiApplication){
+        this.guiApplication = guiApplication;
+        guiApplication.updateGui(this);
     }
 
     @Override
@@ -86,7 +98,9 @@ public class Gui extends View {
 
     @Override
     public void askLobbySize() throws RemoteException {
-
+        guiApplication.setFirstPlayer(true);
+        Integer playerNumber = guiApplication.getLobbySize();
+        network.setLobbySize(localPlayer,lobbyID,playerNumber);
     }
 
     @Override
@@ -106,12 +120,26 @@ public class Gui extends View {
 
     @Override
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
-
+        ClientApp.localPlayer = localPlayer;
+        ClientApp.lobbyID = lobbyID;
+        guiApplication.outcomeLogin("Logged in!");
+        network.startPing(localPlayer, lobbyID);
     }
 
     @Override
     public void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException {
+        if(lobbyInfo != null){
+            List<String> lobbies = new ArrayList<>(lobbyInfo.get(0).keySet());
+            guiApplication.setLobbies(lobbies);
+        }else{
+            guiApplication.setLobbies(null);
+        }
+        List<String> playerInfo;
+        playerInfo = guiApplication.getPlayerInfo();
+        while(playerInfo==null)
+            playerInfo = guiApplication.getPlayerInfo();
 
+        network.login(playerInfo.get(0),playerInfo.get(1),this,network);
     }
 
     @Override

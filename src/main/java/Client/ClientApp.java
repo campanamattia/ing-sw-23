@@ -25,6 +25,7 @@ public class ClientApp {
             if (args[0].equalsIgnoreCase("GUI")){
                 view = ViewFactory.instanceView(args[0]);
                 guiApplication = new GuiApplication();
+                view.updateGuiApplication(guiApplication);
             }
             else
                 view = ViewFactory.instanceView("CLI");

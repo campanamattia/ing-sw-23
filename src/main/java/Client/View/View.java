@@ -1,5 +1,6 @@
 package Client.View;
 
+import Client.View.Gui.GuiApplication;
 import Interface.Client.RemoteView;
 import Utils.ChatMessage;
 import Utils.MockObjects.MockBoard;
@@ -44,4 +45,6 @@ public abstract class View extends UnicastRemoteObject implements RemoteView {
     public MockModel getMockModel(){
         return mockModel;
     }
+
+    public abstract void updateGuiApplication(GuiApplication guiApplication);
 }
