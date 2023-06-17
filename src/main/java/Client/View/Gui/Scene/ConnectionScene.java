@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 import static Client.ClientApp.STYLEPATH;
 import static Client.ClientApp.network;
@@ -93,11 +94,9 @@ public class ConnectionScene extends Scene {
         //network.init(ipField.getText(), Integer.parseInt(portField.getText()));
         Thread connection = new Thread(() -> network.init(ipField.getText(), Integer.parseInt(portField.getText())));
         connection.start();
-        //Scene socketScene = new LoginScene(app);
-        //app.switchScene(socketScene);
     }
-    public static void toLoginScene(){
-        Scene loginScene = new LoginScene(app);
+    public static void toLoginScene(List<String> activeLobbies){
+        Scene loginScene = new LoginScene(app,activeLobbies);
         app.switchScene(loginScene);
     }
 

@@ -3,29 +3,29 @@
     src: url("../font/Poppins-Regular.ttf");
 }
 
-*{
+* {
     -fx-font-family: 'CustomFont';
     -fx-text-fill: black;
 }
 
 .root {
     -fx-background-image: url("../img/misc/background_light.jpg");
-    -fx-background-size: 100% 100%;
+    -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
-    -fx-background-position: center center;
+    -fx-background-position: center;
 }
 
 .label {
-    -fx-font-size: 20;
+    -fx-font-size: 20px;
 }
 
 .label-title {
-    -fx-font-size: 50;
+    -fx-font-size: 50px;
     -fx-font-weight: bold;
 }
 
-.text-field{
-    -fx-font-size: 20;
+.text-field {
+    -fx-font-size: 20px;
     -fx-background-color: #D7D7D7B2;
 }
 
@@ -37,7 +37,7 @@
     -fx-padding: 4px;
     -fx-pref-width: 400px;
     -fx-pref-height: 40px;
-    -fx-text-alignment: center;
+    -fx-alignment: center;
     -fx-font-family: 'CustomFont';
 }
 
@@ -72,25 +72,23 @@
     -fx-text-fill: white;
 }
 
-
-
 .button {
     -fx-background-color: linear-gradient(#FFFFFF, #D7D7D7);
     -fx-background-radius: 4px;
     -fx-background-size: 100% 100%;
     -fx-background-position: center;
     -fx-background-repeat: no-repeat;
-    -fx-font-size: 25;
-    -fx-pref-width: 150;
-    -fx-pref-height: 50;
+    -fx-font-size: 25px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
     -fx-alignment: center;
     -fx-cursor: hand;
 }
 
-.text-field{
+.text-field {
     -fx-border-radius: 5px;
     -fx-padding: 5px;
     -fx-alignment: center;
-    -fx-font-size: 20;
-    -fx-pref-width: 200;
+    -fx-font-size: 20px;
+    -fx-pref-width: 200px;
 }

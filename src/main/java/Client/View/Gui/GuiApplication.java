@@ -70,6 +70,8 @@ public class GuiApplication extends Application {
     }
 
     public void askPlayerInfo(){
-        Platform.runLater(ConnectionScene::toLoginScene);
+        Platform.runLater(()->{
+            ConnectionScene.toLoginScene(this.activeLobbies);
+        });
     }
 }

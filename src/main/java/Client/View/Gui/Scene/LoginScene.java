@@ -25,15 +25,17 @@ public class LoginScene extends Scene {
     private final ComboBox<String> activeLobbies;
     private final Label activeGames;
     private final Button sendButton;
-    private String outcomeLogin;
+    private List<String> inputLobbies;
 
 
-    public LoginScene(GuiApplication app){
+    public LoginScene(GuiApplication app, List<String> inputLobbies){
         super(new Pane(), 960, 750);
 
         setUserAgentStylesheet(STYLEPATH);
 
         LoginScene.app = app;
+
+        this.inputLobbies = inputLobbies;
 
         Label label = new Label("Login: ");
         label.getStyleClass().add("label-title");
@@ -47,9 +49,8 @@ public class LoginScene extends Scene {
         createLobby.setPromptText("create a new lobby: ");
         createLobby.getStyleClass().add("text.field");
         createLobby.setMaxWidth(400);
-        List<String> lobbies = app.updateLobbies();
-        if(lobbies.size()!=0){
-            for (String lobby : lobbies) {
+        if(inputLobbies != null && inputLobbies.size()!=0){
+            for (String lobby : inputLobbies) {
                 activeLobbies.getItems().add(lobby);
             }
         }else{
@@ -93,7 +94,11 @@ public class LoginScene extends Scene {
     private void handleSendButton() throws RemoteException {
         String username = playerID.getText();
         String lobbyName = createLobby.getText();
-        network.login(username,lobbyName,view,network);
+        String existingLobby = activeLobbies.getValue();
+        if(existingLobby != null)
+            network.login(username,existingLobby,view,network);
+        else
+            network.login(username,lobbyName,view,network);
     }
 
     public static void toLobbyScene(){
