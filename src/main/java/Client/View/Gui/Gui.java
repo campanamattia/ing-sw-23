@@ -1,8 +1,11 @@
 package Client.View.Gui;
 
 import Client.ClientApp;
+import Client.View.Cli.LightController;
 import Client.View.Gui.Scene.LoginScene;
 import Client.View.View;
+import Enumeration.TurnPhase;
+import Utils.Cell;
 import Utils.ChatMessage;
 import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
@@ -20,6 +23,10 @@ import static Client.ClientApp.*;
 
 public class Gui extends View {
     private final GuiApplication guiApplication;
+    private LightController controller;
+    private Thread inputThread;
+
+
 
     public Gui() throws RemoteException {
         super();
@@ -49,7 +56,9 @@ public class Gui extends View {
 
     @Override
     public void showBoard() {
-
+        Cell[][] board = mockModel.getMockBoard().getBoard();
+        // int numberPlayer = mockModel.getMockPlayers().size();
+        guiApplication.showBoard(board);
     }
 
     @Override
@@ -89,14 +98,20 @@ public class Gui extends View {
 
 
     @Override
-    public void newTurn(String currentPlayer) throws RemoteException {
+    public void newTurn(String playerID) throws RemoteException {
+        mockModel.setCurrentPlayer(playerID);
+        mockModel.setTurnPhase(TurnPhase.PICKING);
+        showAll();
+    }
 
+    private void showAll() {
+        showBoard();
+        // showShelves();
+        // showStatus();
     }
 
     @Override
     public void askLobbySize() throws RemoteException {
-        // Integer playerNumber = guiApplication.getLobbySize();
-        // network.setLobbySize(localPlayer,lobbyID,playerNumber);
         guiApplication.askLobbySize();
     }
 
@@ -138,7 +153,13 @@ public class Gui extends View {
 
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
-
+        this.mockModel = mockModel;
+        this.controller = new LightController();
+        if (mockModel.getChat() != null) fixChat();
+        newTurn(mockModel.getCurrentPlayer());
+    }
+    private void fixChat() {
+        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer));
     }
 
     @Override

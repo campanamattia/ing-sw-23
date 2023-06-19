@@ -4,6 +4,7 @@ import Client.View.Gui.Scene.ConnectionScene;
 import Client.View.Gui.Scene.LivingRoom;
 import Client.View.Gui.Scene.LobbyScene;
 import Client.View.Gui.Scene.LoginScene;
+import Utils.Cell;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -23,6 +24,7 @@ public class GuiApplication extends Application {
 
     private Integer lobbySize;
     private Boolean firstPlayer = false;
+    private Cell[][] board;
 
     private static volatile boolean javaFxLaunched = false;
 
@@ -72,6 +74,12 @@ public class GuiApplication extends Application {
     public void askPlayerInfo(){
         Platform.runLater(()->{
             ConnectionScene.toLoginScene(this.activeLobbies);
+        });
+    }
+    public void showBoard(Cell[][] board){
+        this.board = board;
+        Platform.runLater(()->{
+            LivingRoom.showBoard(board);
         });
     }
 
