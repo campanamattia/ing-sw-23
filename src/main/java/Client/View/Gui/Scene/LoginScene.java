@@ -4,17 +4,15 @@ import Client.View.Gui.GuiApplication;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-import javax.swing.*;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Objects;
 
 import static Client.ClientApp.*;
 
@@ -95,6 +93,19 @@ public class LoginScene extends Scene {
         String username = playerID.getText();
         String lobbyName = createLobby.getText();
         String existingLobby = activeLobbies.getValue();
+        if(Objects.equals(username, "")) {
+            printError("Insert a username!");
+            return;
+        }
+        if(Objects.equals(existingLobby, null) && Objects.equals(lobbyName, "")) {
+            printError("Chose a lobby or create a new one!");
+            return;
+        }
+        if(!Objects.equals(existingLobby, null) && !Objects.equals(lobbyName, "")) {
+            printError("You can't both join a lobby and create a new one!");
+            return;
+        }
+
         if(existingLobby != null)
             network.login(username,existingLobby,view,network);
         else
@@ -104,5 +115,23 @@ public class LoginScene extends Scene {
     public static void toLobbyScene(){
         Scene livingRoom = new LivingRoom(app);
         app.switchScene(livingRoom);
+    }
+    private void printError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("ERROR");
+        alert.setHeaderText(null);
+        alert.setContentText(message.toUpperCase());
+
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().clear();
+
+        // Set OK button
+        alert.getButtonTypes().setAll(ButtonType.OK);
+
+        // Set the owner window
+        alert.initOwner(this.getWindow());
+
+        // Show the alert and wait for user response
+        alert.showAndWait();
     }
 }

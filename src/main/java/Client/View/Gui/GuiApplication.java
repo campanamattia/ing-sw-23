@@ -74,4 +74,5 @@ public class GuiApplication extends Application {
             ConnectionScene.toLoginScene(this.activeLobbies);
         });
     }
+
 }

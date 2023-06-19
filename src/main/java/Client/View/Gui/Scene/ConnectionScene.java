@@ -129,7 +129,6 @@ public class ConnectionScene extends Scene {
         else return true;
         return false;
     }
-
     private void printError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("ERROR");
