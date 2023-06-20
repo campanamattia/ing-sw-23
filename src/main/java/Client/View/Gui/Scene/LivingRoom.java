@@ -1,15 +1,14 @@
 package Client.View.Gui.Scene;
 
-import Client.View.Gui.Gui;
 import Client.View.Gui.GuiApplication;
 import Utils.Cell;
+import Utils.MockObjects.MockCommonGoal;
+import Utils.MockObjects.MockModel;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
-import static Client.ClientApp.STYLEPATH;
-import static Client.ClientApp.guiApplication;
+import static Client.ClientApp.*;
 
 
 public class LivingRoom extends Scene {
@@ -17,11 +16,13 @@ public class LivingRoom extends Scene {
 
     private ImageView boardImage;
     private static GridPane gridBoard;
-    private Pane boardPane;
+    private static MockModel mockModel;
+    private static final HBox hBoxMyShelfAndCG = new HBox();
+    private static VBox vBoxShelves;
 
     public LivingRoom(GuiApplication app) {
 
-        super(new Pane(), 1366, 768);
+        super(new Pane(), 1416, 768);
         setUserAgentStylesheet(STYLEPATH);
 
         LivingRoom.app = app;
@@ -30,7 +31,7 @@ public class LivingRoom extends Scene {
         boardImage = new ImageView(boardImg);
         boardStyle(boardImage);
 
-        boardPane = new Pane();
+        Pane boardPane = new Pane();
         gridBoard = new GridPane();
         gridBoard.prefWidthProperty().bind(boardImage.fitWidthProperty());
         gridBoard.prefHeightProperty().bind(boardImage.fitWidthProperty());
@@ -60,8 +61,38 @@ public class LivingRoom extends Scene {
 
         boardPane.getChildren().addAll(boardImage,gridBoard);
 
+        vBoxShelves = new VBox();
+
+        HBox hBoxShelves = new HBox();
+        Pane shelf1 = new Pane();
+        Pane shelf2 = new Pane();
+        Pane shelf3 = new Pane();
+        ImageView shelf1img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
+        ImageView shelf2img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
+        ImageView shelf3img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
+        shelf1img.setFitWidth(200);
+        shelf1img.setFitHeight(250);
+        shelf2img.setFitWidth(200);
+        shelf2img.setFitHeight(250);
+        shelf3img.setFitWidth(200);
+        shelf3img.setFitHeight(250);
+        shelf1.getChildren().add(shelf1img);
+        shelf2.getChildren().add(shelf2img);
+        shelf3.getChildren().add(shelf3img);
+        hBoxShelves.setSpacing(20);
+        shelf1img.setLayoutX(10);
+        shelf1img.setLayoutY(20);
+        shelf2img.setLayoutX(10);
+        shelf2img.setLayoutY(20);
+        shelf3img.setLayoutX(10);
+        shelf3img.setLayoutY(20);
+        hBoxShelves.getChildren().addAll(shelf1,shelf2,shelf3);
+
+        // hBoxMyShelfAndCG built dynamically in the method down in the code.
+        vBoxShelves.getChildren().add(hBoxShelves);
+
         HBox mainHBox = new HBox();
-        mainHBox.getChildren().add(boardPane);
+        mainHBox.getChildren().addAll(boardPane,vBoxShelves);
 
         setRoot(mainHBox);
 
@@ -81,8 +112,13 @@ public class LivingRoom extends Scene {
         boardImage.setLayoutY(20);
     }
 
-    public static void showBoard(Cell[][] board){
+    public static void showBoard(Cell[][] board,MockModel mockModel){
+        LivingRoom.mockModel = mockModel;
+        int numPlayer = mockModel.getMockPlayers().size();
         ImageView image;
+        int tmp = 0;
+        if(numPlayer == 2)
+            tmp = 1;
         for(int i=0;i<board.length;i++){
             for(int j=0;j<board[0].length;j++){
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
@@ -125,10 +161,45 @@ public class LivingRoom extends Scene {
                         }
 
                     }
-                    gridBoard.add(image,i,j);
+                    gridBoard.add(image,j+tmp,i+tmp);
                 }
             }
         }
     }
 
+    public static void updateCommonAndPersonalGoal(){
+        MockCommonGoal mockCommonGoal1 = LivingRoom.mockModel.getMockCommonGoal().get(0);
+        int numberCGoal1 = mockCommonGoal1.getEnumeration();
+        MockCommonGoal mockCommonGoal2 = LivingRoom.mockModel.getMockCommonGoal().get(1);
+        int numberCGoal2 = mockCommonGoal2.getEnumeration();
+
+        // int numPlayer = mockModel.getMockPlayers().size();
+
+        Pane cg1 = new Pane();
+        Pane cg2 = new Pane();
+        ImageView cg1img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/"+numberCGoal1+".jpg")));
+        ImageView cg2img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/"+numberCGoal2+".jpg")));
+        cg1img.setFitHeight(200);
+        cg1img.setFitWidth(250);
+        cg2img.setFitHeight(200);
+        cg2img.setFitWidth(250);
+        cg1.getChildren().add(cg1img);
+        cg2.getChildren().add(cg2img);
+
+        VBox vBoxCommonGoal = new VBox(10,cg1,cg2);
+
+        Pane pGoalPane = new Pane();
+        ImageView pGoalImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
+        pGoalImg.setFitWidth(250);
+        pGoalImg.setFitHeight(300);
+        pGoalPane.getChildren().add(pGoalImg);
+
+        // GridPane pGoalGrid = new GridPane();
+
+        hBoxMyShelfAndCG.setSpacing(50);
+        hBoxMyShelfAndCG.getChildren().addAll(vBoxCommonGoal,pGoalPane);
+
+        vBoxShelves.setSpacing(20);
+        vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
+    }
 }

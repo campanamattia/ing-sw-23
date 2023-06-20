@@ -57,8 +57,7 @@ public class Gui extends View {
     @Override
     public void showBoard() {
         Cell[][] board = mockModel.getMockBoard().getBoard();
-        // int numberPlayer = mockModel.getMockPlayers().size();
-        guiApplication.showBoard(board);
+        guiApplication.showBoard(board,mockModel);
     }
 
     @Override
@@ -73,7 +72,7 @@ public class Gui extends View {
 
     @Override
     public void showShelves() {
-
+        guiApplication.showShelves();
     }
 
     @Override
@@ -106,7 +105,7 @@ public class Gui extends View {
 
     private void showAll() {
         showBoard();
-        // showShelves();
+        showShelves();
         // showStatus();
     }
 
