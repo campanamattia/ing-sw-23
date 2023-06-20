@@ -6,9 +6,15 @@ import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static Client.ClientApp.*;
 
@@ -21,6 +27,7 @@ public class LivingRoom extends Scene {
     private static MockModel mockModel;
     private static final HBox hBoxMyShelfAndCG = new HBox();
     private static VBox vBoxShelves;
+    private final List<ImageView> selectedTiles = new ArrayList<>();
 
 
     public LivingRoom(GuiApplication app) {
@@ -51,6 +58,12 @@ public class LivingRoom extends Scene {
             colConstraints.setPrefWidth(60);
             gridBoard.getColumnConstraints().add(colConstraints);
             gridBoard.addColumn(col);
+        }
+        for(int i=0;i<9;i++){
+            for(int j=0;j<9;j++){
+                Pane paneBase = new Pane();
+                gridBoard.add(paneBase,j,i);
+            }
         }
 
         ImageView test = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Cornici1.1.png")));
@@ -133,7 +146,12 @@ public class LivingRoom extends Scene {
 
             if (colIndex >= 0 && rowIndex >= 0) {
                 System.out.println("x: "+ rowIndex + ", y: "+ colIndex);
-
+                ImageView selectedImageView;
+                selectedImageView = (ImageView) getPane(colIndex+tmp,rowIndex+tmp).getChildren().get(0);
+                if (selectedImageView != null) {
+                    selectedTiles.add(selectedImageView);
+                    printError(selectedTiles);
+                }
             }
         });
         setRoot(mainHBox);
@@ -155,7 +173,6 @@ public class LivingRoom extends Scene {
     }
 
     public static void showBoard(Cell[][] board,MockModel mockModel){
-        Pane imgPane;
         LivingRoom.mockModel = mockModel;
         int numPlayer = mockModel.getMockPlayers().size();
         ImageView image;
@@ -204,11 +221,22 @@ public class LivingRoom extends Scene {
                         }
 
                     }
-                    imgPane = new Pane(image);
-                    gridBoard.add(imgPane,j+tmp,i+tmp);
+                    Pane tmpPane = getPane(j+tmp,i+tmp);
+                    tmpPane.getChildren().add(image);
+                    //gridBoard.add(tmpPane,j+tmp,i+tmp);
                 }
             }
         }
+    }
+
+    private static Pane getPane(int j, int i) {
+        List<Node> kids = gridBoard.getChildren();
+        Pane res = null;
+        for(Node n: kids){
+            if(GridPane.getColumnIndex(n) == j && GridPane.getRowIndex(n) == i)
+                res = (Pane)n;
+        }
+        return res;
     }
 
     public static void updateCommonAndPersonalGoal(){
@@ -245,5 +273,26 @@ public class LivingRoom extends Scene {
 
         vBoxShelves.setSpacing(20);
         vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
+    }
+    private void printError(List<ImageView> selectedTiles) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("SELECTED TILES");
+        alert.setHeaderText(null);
+        alert.setContentText("Selected tiles: \n");
+        for (ImageView selectedTile : selectedTiles) {
+            alert.setGraphic(selectedTile);
+        }
+
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().clear();
+
+        // Set OK button
+        alert.getButtonTypes().setAll(ButtonType.OK);
+
+        // Set the owner window
+        alert.initOwner(this.getWindow());
+
+        // Show the alert and wait for user response
+        alert.showAndWait();
     }
 }
