@@ -99,12 +99,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         } else return null;
     }
 
-    /**
-     * Calculates the number of active players in the specified game.
-     *
-     * @param game the game for which to count the active players
-     * @return the number of active players in the game
-     */
     private int activePlayers(GameController game) {
         int activePlayers = 0;
         for (ClientHandler status : game.getClients()) {
@@ -130,23 +124,10 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             logInLobby(playerID, lobbyID, client, network);
     }
 
-    /**
-     * Finds a game with the specified lobby ID.
-     *
-     * @param gameID the ID of the lobby
-     * @return the GameController object corresponding to the lobby ID, or null if no matching game is found
-     */
     private GameController findGame(String gameID) {
         return this.games.stream().filter(game -> game.getGameID().equals(gameID)).findFirst().orElse(null);
     }
 
-    /**
-     * Attempts to rejoin a disconnected player to the game.
-     *
-     * @param playerID   The ID of the player who wants to rejoin.
-     * @param lobbyID    The ID of the lobby where the player wants to rejoin.
-     * @param remoteView The remote view of the player.
-     */
     private void rejoinGame(String playerID, String lobbyID, RemoteView remoteView, RemoteClient network, GameController gameController) {
         if (gameController.getPlayers().containsKey(playerID)) {
             if (gameController.getPlayers().get(playerID) == null) {
@@ -209,15 +190,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         }
     }
 
-    /**
-     * Handles the creation process for a lobby.
-     *
-     * @param playerID the ID of the player creating the lobby
-     * @param lobbyID  the ID of the lobby the player is creating
-     * @param client   the remote view of the player
-     * @param network  the remote client representing the player's network connection
-     * @throws RemoteException if a communication error occurs during the remote method call
-     */
     private void createLobby(String lobbyID, String playerID, RemoteView client, RemoteClient network) throws RemoteException {
         this.lobby.put(lobbyID, new HashMap<>());
         this.lobby.get(lobbyID).put(playerID, new ClientHandler(playerID, lobbyID, client));
@@ -233,14 +205,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         if (!firstPlayer(lobbyID, client)) startGame(lobbyID);
     }
 
-    /**
-     * Checks if the lobby has no players and prompts the client to provide the lobby size.
-     *
-     * @param lobbyID the ID of the lobby
-     * @param client  the remote view of the client
-     * @return true if the lobby size needs to be set, false otherwise
-     * @throws RemoteException if a communication error occurs during the remote method call
-     */
     private boolean firstPlayer(String lobbyID, RemoteView client) throws RemoteException {
         if (this.lobbySize.get(lobbyID) == null) {
             executorService.submit(() -> {
@@ -255,13 +219,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         return false;
     }
 
-    /**
-     * Starts a ping timer for the specified player in the given lobby.
-     *
-     * @param playerID the ID of the player
-     * @param lobbyID  the ID of the lobby
-     * @param client   the remote client representing the player's network connection
-     */
     private void startTimer(String playerID, String lobbyID, RemoteClient client) {
         int hash = Objects.hash(playerID, lobbyID);
         this.heartbeat.put(hash, new PingTimer(playerID, lobbyID, client));
@@ -317,12 +274,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         } else logger.severe("Can't find the lobby to set it's size");
     }
 
-    /**
-     * Checks if the specified lobby size is valid.
-     *
-     * @param lobbySize the lobby size to validate
-     * @return true if the lobby size is between 2 and 4 (inclusive), false otherwise
-     */
     private boolean sizeValid(int lobbySize) {
         return lobbySize >= 2 && lobbySize <= 4;
     }
@@ -404,23 +355,12 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         deleteTimer(playerID, lobbyID);
     }
 
-    /**
-     * Deletes the ping timer for the specified player in the given lobby.
-     *
-     * @param playerID the ID of the player
-     * @param lobbyID  the ID of the lobby
-     */
     private void deleteTimer(String playerID, String lobbyID) {
         int hash = Objects.hash(playerID, lobbyID);
         PingTimer interrupter = this.heartbeat.remove(hash);
         if (interrupter != null) interrupter.interrupt();
     }
 
-    /**
-     * Initializes a new game for the specified lobby if the lobby is full.
-     *
-     * @param lobbyID the ID of the lobby
-     */
     private void startGame(String lobbyID) {
         if (this.lobby.get(lobbyID).size() == this.lobbySize.get(lobbyID) || this.lobby.get(lobbyID).size() == 4) {
             executorService.execute(() -> {
@@ -448,6 +388,9 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         }
     }
 
+    /**
+     * It can print the status of the lobby
+     */
     public void printLobbyStatus() {
         if (lobby.isEmpty() && games.isEmpty()) {
             logger.info("No active lobbies or games");

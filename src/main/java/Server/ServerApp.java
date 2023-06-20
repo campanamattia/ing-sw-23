@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 /**
  * The ServerApp class represents the main entry point for the server application.
  * It initializes the logger, sets the server ports, initializes the lobby,
- * starts the RMI server and the socket server, and logs the server startup.
+ * starts the RMI server and the socket server, and logs the server status.
  */
 public class ServerApp {
     /**
@@ -73,10 +73,6 @@ public class ServerApp {
         logger.info("ServerApp started");
     }
 
-    /**
-     * Initializes the logger and adds a FileHandler for logging to a file.
-     * The logger is set to log all levels of messages.
-     */
     private static void initLogger() {
         logger = Logger.getLogger(ServerApp.class.getName());
         try {
@@ -88,21 +84,30 @@ public class ServerApp {
         logger.info("Starting ServerApp");
     }
 
-    /**
-     * Sets the socket and RMI ports based on the command-line arguments.
-     * If no arguments are provided, the ports are read from the server setting JSON file.
-     *
-     * @param args the command-line arguments
-     */
     private static void setPort(String[] args) {
         try {
             switch (args.length) {
                 case 2 -> {
-                    socketPort = Integer.parseInt(args[0]);
-                    rmiPort = Integer.parseInt(args[1]);
+                    try {
+                        socketPort = Integer.parseInt(args[0]);
+                    } catch (NumberFormatException e) {
+                        logger.severe("Invalid socket port number");
+                        System.exit(-1);
+                    }
+                    try {
+                        rmiPort = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException e) {
+                        logger.severe("Invalid RMI port number");
+                        System.exit(-1);
+                    }
                 }
                 case 1 -> {
-                    socketPort = Integer.parseInt(args[0]);
+                    try {
+                        socketPort = Integer.parseInt(args[0]);
+                    } catch (NumberFormatException e) {
+                        logger.severe("Invalid socket port number");
+                        System.exit(-1);
+                    }
                     rmiPort = rmiFromJSON();
                 }
                 default -> {
@@ -116,10 +121,6 @@ public class ServerApp {
         }
     }
 
-    /**
-     * Initializes the lobby instance.
-     * It creates a new Lobby object for managing client connections and games.
-     */
     private static void initLobby() {
         try {
             lobby = new Lobby();
@@ -129,12 +130,6 @@ public class ServerApp {
         }
     }
 
-    /**
-     * Reads the socket port number from the server setting JSON file.
-     *
-     * @return the socket port number
-     * @throws RuntimeException if the server setting JSON file is not found
-     */
     @SuppressWarnings("ConstantConditions")
     private static int socketFromJSON() throws RuntimeException {
         Gson gson = new Gson();
@@ -148,12 +143,6 @@ public class ServerApp {
         }
     }
 
-    /**
-     * Reads the RMI port number from the server setting JSON file.
-     *
-     * @return the RMI port number
-     * @throws RuntimeException if the server setting JSON file is not found
-     */
     @SuppressWarnings("ConstantConditions")
     private static int rmiFromJSON() throws RuntimeException {
         Gson gson = new Gson();
@@ -167,22 +156,15 @@ public class ServerApp {
         }
     }
 
-    /**
-     * Starts the RMI server by creating a new ServerRMI instance and binding it to the specified RMI port.
-     * It handles RemoteException and AlreadyBoundException by logging the error and exiting the application.
-     */
     private static void rmiServer() {
         try {
-            new ServerRMI().start(lobby, rmiPort);
+            new ServerRMI().start(rmiPort);
         } catch (RemoteException | AlreadyBoundException e) {
             logger.log(Level.SEVERE, e.toString());
             System.exit(-1);
         }
     }
 
-    /**
-     * Starts the socket server by creating a new SocketServer instance and starting it with the specified socket port.
-     */
     private static void socketServer() {
         new SocketServer().start(socketPort);
     }
