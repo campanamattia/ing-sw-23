@@ -4,9 +4,11 @@ import Client.View.Gui.GuiApplication;
 import Utils.Cell;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+
 
 import static Client.ClientApp.*;
 
@@ -19,6 +21,7 @@ public class LivingRoom extends Scene {
     private static MockModel mockModel;
     private static final HBox hBoxMyShelfAndCG = new HBox();
     private static VBox vBoxShelves;
+
 
     public LivingRoom(GuiApplication app) {
 
@@ -58,6 +61,7 @@ public class LivingRoom extends Scene {
         gridBoard.setLayoutY(55);
         gridBoard.setHgap(10);
         gridBoard.setVgap(10);
+        gridBoard.setDisable(false);
 
         boardPane.getChildren().addAll(boardImage,gridBoard);
 
@@ -94,6 +98,38 @@ public class LivingRoom extends Scene {
         HBox mainHBox = new HBox();
         mainHBox.getChildren().addAll(boardPane,vBoxShelves);
 
+        gridBoard.setOnMouseClicked(event -> {
+            int tmp = 1;
+            if (mockModel.getMockPlayers().size() == 2)
+                tmp = 0;
+            double mouseX = event.getX();
+            double mouseY = event.getY();
+
+            int colIndex = -1;
+            int rowIndex = -1;
+
+            for (int col = 0; col < 9; col++) {
+                double colStartX = 51 + col * 70;
+                double colEndX = colStartX + 60;
+                if (mouseX >= colStartX && mouseX <= colEndX) {
+                    colIndex = col + tmp;
+                    break;
+                }
+            }
+            for (int row = tmp; row < 9 + tmp; row++) {
+                double rowStartY = 55 + (row - tmp) * 70;
+                double rowEndY = rowStartY + 60;
+                if (mouseY >= rowStartY && mouseY <= rowEndY) {
+                    rowIndex = row;
+                    break;
+                }
+            }
+
+            if (colIndex >= 0 && rowIndex >= 0) {
+                System.out.println("Row: " + rowIndex);
+                System.out.println("Column: " + colIndex);
+            }
+        });
         setRoot(mainHBox);
 
     }
@@ -113,6 +149,7 @@ public class LivingRoom extends Scene {
     }
 
     public static void showBoard(Cell[][] board,MockModel mockModel){
+        Pane imgPane;
         LivingRoom.mockModel = mockModel;
         int numPlayer = mockModel.getMockPlayers().size();
         ImageView image;
@@ -161,7 +198,8 @@ public class LivingRoom extends Scene {
                         }
 
                     }
-                    gridBoard.add(image,j+tmp,i+tmp);
+                    imgPane = new Pane(image);
+                    gridBoard.add(imgPane,j+tmp,i+tmp);
                 }
             }
         }
@@ -179,9 +217,9 @@ public class LivingRoom extends Scene {
         Pane cg2 = new Pane();
         ImageView cg1img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/"+numberCGoal1+".jpg")));
         ImageView cg2img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/"+numberCGoal2+".jpg")));
-        cg1img.setFitHeight(200);
+        cg1img.setFitHeight(166);
         cg1img.setFitWidth(250);
-        cg2img.setFitHeight(200);
+        cg2img.setFitHeight(166);
         cg2img.setFitWidth(250);
         cg1.getChildren().add(cg1img);
         cg2.getChildren().add(cg2img);
