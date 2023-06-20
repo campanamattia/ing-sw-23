@@ -406,4 +406,17 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             }
         }
     }
+
+    /**
+     * It removes the ended game from the list of games
+     * @param game the game that has ended
+     */
+    public void endGame(GameController game) {
+        for (ClientHandler handler : game.getClients()) {
+            if (handler.remoteView() instanceof SocketHandler socket) {
+                socket.logOut();
+            }
+        }
+        this.games.remove(game);
+    }
 }

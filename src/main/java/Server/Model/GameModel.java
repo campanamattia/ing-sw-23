@@ -74,7 +74,7 @@ public class GameModel {
      * the current player to the first player in the list.
      *
      * @param lobbyID the unique identifier of the game
-     * @param players the list of names of players to be added to the game
+     * @param players the list of players' name to be added to the game
      * @throws FileNotFoundException if the configuration files are not found
      */
     public GameModel(String lobbyID, List<String> players) throws IOException {
@@ -105,13 +105,6 @@ public class GameModel {
         generateCommonGoal(players.size());
     }
 
-    /**
-     * This method reads a JSON file containing the information for a board and returns the JSON object
-     * corresponding to the board for the specified number of players.
-     *
-     * @return the JSON object representing the board for the specified number of players
-     * @throws FileNotFoundException if the specified file is not found
-     */
     private JsonObject decoBoard(int players) throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
@@ -120,13 +113,6 @@ public class GameModel {
         return json.getAsJsonObject(Integer.toString(players));
     }
 
-    /**
-     * Reads a JSON file containing an array of PersonalGoal objects and returns a JsonArray
-     * representing the array.
-     *
-     * @return a JsonArray containing the PersonalGoal objects read from the file
-     * @throws FileNotFoundException if the file at the given filepath cannot be found
-     */
     private JsonArray decoPersonal() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
@@ -134,13 +120,6 @@ public class GameModel {
         return gson.fromJson(reader, JsonArray.class);
     }
 
-    /**
-     * This method generates two common goals for the game by reading a json file from the specified filepath.
-     * The method gets the common goals and the corresponding scoring tokens from the json file, and selects a random common goal to assign to each of the two goals.
-     * The selected common goals are then added to the game's list of common goals.
-     *
-     * @throws FileNotFoundException if the specified filepath is not found
-     */
     private void generateCommonGoal(int players) throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
@@ -154,14 +133,6 @@ public class GameModel {
             this.commonGoals.add(CommonGoalFactory.getCommonGoal(scoringToken, array.remove(random.nextInt(array.size())).getAsJsonObject()));
     }
 
-    /**
-     * Returns a list of integers (scoringTokens) given a JsonArray.
-     * The integers are added to the list in reverse order because they are saved in ascending
-     * order but are assigned in descending order .
-     *
-     * @param array the JsonArray to be converted to a list of integers.
-     * @return a list of integers in reverse order from the JsonArray.
-     */
     private List<Integer> getAsList(JsonArray array) {
         List<Integer> list = new ArrayList<>();
         for (int i = 1; i <= array.size(); i++)
@@ -170,13 +141,13 @@ public class GameModel {
     }
 
     /**
-     * This method allows to retrieve the tiles at the given coordinates on the board.
+     * This method allows retrieving the tiles at the given coordinates on the board.
      * It first validates that the move is legal by calling the convalidateMove method of the board object.
      * If the move is valid, it returns the tiles at the given coordinates using the getTiles method of the board object.
      *
      * @param coordinates a list of Coordinates objects representing the tiles to retrieve
      * @return a list of Tile objects representing the tiles at the given coordinates
-     * @throws BoardException if the move is not valid according to the rules of the game
+     * @throws BoardException if the move is not valid, according to the rules of the game
      */
     public List<Tile> selectTiles(List<Coordinates> coordinates) throws BoardException {
         this.board.convalidateMove(coordinates);
@@ -296,6 +267,12 @@ public class GameModel {
         return this.chatRoom;
     }
 
+    /**
+     * It's called when the current player crashes the game between the selectTiles and the insertTiles.
+     * It will find the first column where the player can insert the tiles, and it will insert them.
+     *
+     * @param tiles the tiles to insert
+     */
     public void completeTurn(List<Tile> tiles) {
         for(int i = 0; i < 5; i++)
             try{
@@ -306,14 +283,29 @@ public class GameModel {
         this.talent.onEvent(MockFactory.getMock(this.currentPlayer));
     }
 
+    /**
+     * Gets the ID of the lobby.
+     *
+     * @return the lobby ID
+     */
     public String getLobbyID() {
         return this.lobbyID;
     }
 
+    /**
+     * Adds a scout to the list of scouts.
+     *
+     * @param scout the scout to be added
+     */
     public void addScout(Scout scout) {
         this.talent.addScout(scout);
     }
 
+    /**
+     * Returns the Talent object containing the list of scouts.
+     *
+     * @return the Talent object
+     */
     public Talent getScouts() {
         return this.talent;
     }

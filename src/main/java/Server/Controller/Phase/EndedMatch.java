@@ -12,8 +12,15 @@ import java.util.List;
 import static Server.ServerApp.executorService;
 import static Server.ServerApp.logger;
 
+/**
+ * The EndedMatch class represents the phase where the match has ended.
+ */
 public class EndedMatch{
-
+    /**
+     * Ends the match and sends the leaderboard to all the players.
+     * @param values The collection of ClientHandler instances.
+     * @param players The list of players.
+     */
     public static void doRank(Collection<ClientHandler> values, List<Player> players){
         List<Rank> leaderboard = new ArrayList<>();
         for(Player p : players)

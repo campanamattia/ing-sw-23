@@ -1,6 +1,7 @@
 package Server.Controller;
 
 import Enumeration.TurnPhase;
+import Exception.Board.CantRefillBoardException;
 import Exception.CommonGoal.NullPlayerException;
 import Exception.GamePhase.EndingStateException;
 import Exception.Player.PlayerNotFoundException;
@@ -27,8 +28,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Level;
 
-import static Server.ServerApp.executorService;
-import static Server.ServerApp.logger;
+import static Server.ServerApp.*;
 
 /**
  * The GameController class represents the controller for a game. It manages the game model, players, phases, and turn progression.
@@ -103,6 +103,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                     continue;
                 } else {
                     EndedMatch.doRank(this.players.values(), this.gameModel.getPlayers());
+                    lobby.endGame(this);
                     return;
                 }
             }
@@ -164,6 +165,19 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                         }
                     });
                 } catch (BoardException e) {
+                    if (e instanceof CantRefillBoardException){
+                        for (ClientHandler client : players.values()) {
+                            executorService.execute(() -> {
+                                try {
+                                    client.remoteView().outcomeException(new Exception("The game is over!"));
+                                } catch (RemoteException ex) {
+                                    logger.severe(ex.getMessage());
+                                }
+                            });
+                        }
+                        lobby.endGame(this);
+                        return;
+                    }
                     executorService.execute(() -> {
                         try {
                             players.get(playerID).remoteView().outcomeException(e);
@@ -223,6 +237,12 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      */
     @Override
     public synchronized void writeChat(String playerID, String message, String to) throws RemoteException {
+        try {
+            if (ableTo(playerID) == null)
+                return;
+        } catch (NotYourTurnException e) {
+            return;
+        }
         try {
             this.gameModel.writeChat(playerID, message, to);
         } catch (ChatException e) {
@@ -321,6 +341,14 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * @throws NotYourTurnException If it is not the specified player's turn.
      */
     private TurnPhase ableTo(String playerID) throws NotYourTurnException {
+        if (this.phaseController == null) {
+            try {
+                this.players.get(playerID).remoteView().outcomeException(new Exception("The game is not more valid!"));
+            } catch (RemoteException e) {
+                logger.severe(e.getMessage());
+            }
+            return null;
+        }
         if (!playerID.equals(this.currentPlayer.getCurrentPlayer().getPlayerID()))
             throw new NotYourTurnException(this.gameModel.getCurrentPlayer().getPlayerID());
         else return this.turnPhase;
