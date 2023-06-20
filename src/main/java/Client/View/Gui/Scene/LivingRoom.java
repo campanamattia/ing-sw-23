@@ -99,35 +99,41 @@ public class LivingRoom extends Scene {
         mainHBox.getChildren().addAll(boardPane,vBoxShelves);
 
         gridBoard.setOnMouseClicked(event -> {
-            int tmp = 1;
+            int tmp = 0;
             if (mockModel.getMockPlayers().size() == 2)
-                tmp = 0;
+                tmp = 1;
             double mouseX = event.getX();
             double mouseY = event.getY();
+            System.out.println("mouse x: "+ mouseX + ", mouse y: "+ mouseY);
 
             int colIndex = -1;
             int rowIndex = -1;
 
+            double colStartX = 0;
+            double colEndX = 70;
             for (int col = 0; col < 9; col++) {
-                double colStartX = 51 + col * 70;
-                double colEndX = colStartX + 60;
                 if (mouseX >= colStartX && mouseX <= colEndX) {
-                    colIndex = col + tmp;
+                    colIndex = col - tmp;
                     break;
                 }
+                colStartX += 70;
+                colEndX += 70;
             }
-            for (int row = tmp; row < 9 + tmp; row++) {
-                double rowStartY = 55 + (row - tmp) * 70;
-                double rowEndY = rowStartY + 60;
+
+            double rowStartY = 0;
+            double rowEndY = 70;
+            for (int row = 0; row < 9 + tmp; row++) {
                 if (mouseY >= rowStartY && mouseY <= rowEndY) {
-                    rowIndex = row;
+                    rowIndex = row - tmp;
                     break;
                 }
+                rowStartY += 70;
+                rowEndY += 70;
             }
 
             if (colIndex >= 0 && rowIndex >= 0) {
-                System.out.println("Row: " + rowIndex);
-                System.out.println("Column: " + colIndex);
+                System.out.println("x: "+ rowIndex + ", y: "+ colIndex);
+
             }
         });
         setRoot(mainHBox);
