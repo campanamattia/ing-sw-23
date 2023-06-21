@@ -1,7 +1,6 @@
 package Client.View.Gui.Scene;
 
 import Client.View.Gui.GuiApplication;
-import Enumeration.Color;
 import Utils.Cell;
 import Utils.Coordinates;
 import Utils.MockObjects.MockCommonGoal;
@@ -11,7 +10,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -180,7 +178,7 @@ public class LivingRoom extends Scene {
     public static void showBoard(Cell[][] board,MockModel mockModel){
         LivingRoom.mockModel = mockModel;
         int numPlayer = mockModel.getMockPlayers().size();
-        ImageView image = new ImageView();
+        ImageView image;
         int tmp = 0;
         if(numPlayer == 2)
             tmp = 1;
@@ -189,9 +187,9 @@ public class LivingRoom extends Scene {
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
                     String colorString = board[i][j].getTile().getColor().getCode();
                     image = choseImage(colorString);
+                    Pane tmpPane = getPane(j+tmp,i+tmp);
+                    tmpPane.getChildren().add(image);
                 }
-                Pane tmpPane = getPane(j+tmp,i+tmp);
-                tmpPane.getChildren().add(image);
                 //gridBoard.add(tmpPane,j+tmp,i+tmp);
             }
         }
@@ -209,9 +207,9 @@ public class LivingRoom extends Scene {
 
     public static void updateCommonAndPersonalGoal(){
         MockCommonGoal mockCommonGoal1 = LivingRoom.mockModel.getMockCommonGoal().get(0);
-        int numberCGoal1 = mockCommonGoal1.getEnumeration();
+        int numberCGoal1 = mockCommonGoal1.getEnumeration() + 1;
         MockCommonGoal mockCommonGoal2 = LivingRoom.mockModel.getMockCommonGoal().get(1);
-        int numberCGoal2 = mockCommonGoal2.getEnumeration();
+        int numberCGoal2 = mockCommonGoal2.getEnumeration() + 1;
 
         // int numPlayer = mockModel.getMockPlayers().size();
 
@@ -412,45 +410,51 @@ public class LivingRoom extends Scene {
                 image.setFitHeight(60);
                 image.setFitWidth(60);
                 image.setPreserveRatio(true);
+                return image;
             }
             case "\u001b[47;1m" -> {
                 image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Libri1.1.png")));
                 image.setFitHeight(60);
                 image.setFitWidth(60);
                 image.setPreserveRatio(true);
+                return image;
             }
             case "\u001b[43;1m" -> {
                 image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Giochi1.1.png")));
                 image.setFitHeight(60);
                 image.setFitWidth(60);
                 image.setPreserveRatio(true);
+                return image;
             }
             case "\u001b[44;1m" -> {
                 image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Cornici1.1.png")));
                 image.setFitHeight(60);
                 image.setFitWidth(60);
                 image.setPreserveRatio(true);
+                return image;
             }
             case "\u001b[46;1m" -> {
                 image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Trofei1.1.png")));
                 image.setFitHeight(60);
                 image.setFitWidth(60);
                 image.setPreserveRatio(true);
+                return image;
             }
             case "\u001b[45;1m" -> {
                 image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Piante1.1.png")));
                 image.setFitHeight(60);
                 image.setFitWidth(60);
                 image.setPreserveRatio(true);
+                return image;
             }
             default -> {
                 image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Piante1.2.png")));
                 image.setFitHeight(60);
                 image.setFitWidth(60);
                 image.setPreserveRatio(true);
+                return image;
             }
         }
-        return image;
     }
 
 }
