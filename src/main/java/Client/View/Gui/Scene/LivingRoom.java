@@ -1,15 +1,17 @@
 package Client.View.Gui.Scene;
 
 import Client.View.Gui.GuiApplication;
+import Enumeration.Color;
 import Utils.Cell;
 import Utils.Coordinates;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
+import Utils.Tile;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -32,7 +34,6 @@ public class LivingRoom extends Scene {
     private static VBox vBoxShelves;
     private static final List<ImageView> selectedTilesImg = new ArrayList<>();
     private static final List<Coordinates> selectedTiles = new ArrayList<>();
-    private static final TextField insert = new TextField();
 
 
     public LivingRoom(GuiApplication app) {
@@ -179,7 +180,7 @@ public class LivingRoom extends Scene {
     public static void showBoard(Cell[][] board,MockModel mockModel){
         LivingRoom.mockModel = mockModel;
         int numPlayer = mockModel.getMockPlayers().size();
-        ImageView image;
+        ImageView image = new ImageView();
         int tmp = 0;
         if(numPlayer == 2)
             tmp = 1;
@@ -187,55 +188,11 @@ public class LivingRoom extends Scene {
             for(int j=0;j<board[0].length;j++){
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
                     String colorString = board[i][j].getTile().getColor().getCode();
-                    switch (colorString) {
-                        case "\u001b[42;1m" -> {
-                            image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Gatti1.1.png")));
-                            image.setFitHeight(60);
-                            image.setFitWidth(60);
-                            image.setPreserveRatio(true);
-                        }
-                        case "\u001b[47;1m" -> {
-                            image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Libri1.1.png")));
-                            image.setFitHeight(60);
-                            image.setFitWidth(60);
-                            image.setPreserveRatio(true);
-                        }
-                        case "\u001b[43;1m" -> {
-                            image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Giochi1.1.png")));
-                            image.setFitHeight(60);
-                            image.setFitWidth(60);
-                            image.setPreserveRatio(true);
-                        }
-                        case "\u001b[44;1m" -> {
-                            image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Cornici1.1.png")));
-                            image.setFitHeight(60);
-                            image.setFitWidth(60);
-                            image.setPreserveRatio(true);
-                        }
-                        case "\u001b[46;1m" -> {
-                            image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Trofei1.1.png")));
-                            image.setFitHeight(60);
-                            image.setFitWidth(60);
-                            image.setPreserveRatio(true);
-                        }
-                        case "\u001b[45;1m" -> {
-                            image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Piante1.1.png")));
-                            image.setFitHeight(60);
-                            image.setFitWidth(60);
-                            image.setPreserveRatio(true);
-                        }
-                        default -> {
-                            image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Piante1.2.png")));
-                            image.setFitHeight(60);
-                            image.setFitWidth(60);
-                            image.setPreserveRatio(true);
-                        }
-
-                    }
-                    Pane tmpPane = getPane(j+tmp,i+tmp);
-                    tmpPane.getChildren().add(image);
-                    //gridBoard.add(tmpPane,j+tmp,i+tmp);
+                    image = choseImage(colorString);
                 }
+                Pane tmpPane = getPane(j+tmp,i+tmp);
+                tmpPane.getChildren().add(image);
+                //gridBoard.add(tmpPane,j+tmp,i+tmp);
             }
         }
     }
@@ -334,7 +291,7 @@ public class LivingRoom extends Scene {
     private static void printSelectedTiles() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Selected Tiles");
-        alert.setHeaderText("Images contained in the list:");
+        alert.setHeaderText("Selected tiles: ");
 
         HBox hBoxPopUp = new HBox();
         hBoxPopUp.setPrefWidth(400);
@@ -360,12 +317,65 @@ public class LivingRoom extends Scene {
         send.setPrefHeight(40);
         send.setPrefWidth(60);
 
-        insert.setPromptText("x,y,z/A-E");
-        insert.setPrefWidth(200);
-        insert.setPrefHeight(40);
+        ImageView playerShelf = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
+        playerShelf.setPreserveRatio(true);
+        playerShelf.setFitWidth(200);
+        playerShelf.setFitHeight(250);
+
+        GridPane grid = new GridPane();
+        grid.setGridLinesVisible(true);
+        for(int row=0;row<6;row++){
+            RowConstraints rowConstraints = new RowConstraints();
+            rowConstraints.setPrefHeight(30);
+            grid.getRowConstraints().add(rowConstraints);
+            grid.addRow(row);
+        }
+        for(int col=0;col<5;col++){
+            ColumnConstraints colConstraints = new ColumnConstraints();
+            colConstraints.setPrefWidth(30);
+            grid.getColumnConstraints().add(colConstraints);
+            grid.addColumn(col);
+        }
+        for(int i=0;i<6;i++){
+            for(int j=0;j<5;j++){
+                Pane paneBase = new Pane();
+                grid.add(paneBase,j,i);
+            }
+        }
+
+        grid.prefWidthProperty().bind(playerShelf.fitWidthProperty());
+        grid.prefHeightProperty().bind(playerShelf.fitWidthProperty());
+        grid.setLayoutX(20);
+        grid.setLayoutY(10);
+        grid.setHgap(2);
+        grid.setVgap(5);
+
+        Tile[][] pShelf = mockModel.getPlayer(localPlayer).getShelf();
+        for(int i=0;i<pShelf.length;i++){
+            for(int j=0;j<pShelf[0].length;j++){
+               if( pShelf[i][j] != null ){
+                   ImageView img = choseImage(pShelf[i][j].getTileColor().getCode());
+                   getPane(i,j).getChildren().add(img);
+               }
+            }
+        }
+
+        Pane playerShelfPane = new Pane(grid,playerShelf);
+
+        HBox arrows = new HBox();
+        arrows.setPrefHeight(40);
+        arrows.setPrefWidth(100);
+        arrows.setSpacing(10);
+        for(int i=0;i<5;i++){
+            Pane pane = new Pane();
+            pane.setStyle("-fx-border-color: red;");
+            arrows.getChildren().add(pane);
+            pane.setPrefHeight(20);
+            pane.setPrefWidth(20);
+        }
 
         vBoxMain.setSpacing(20);
-        vBoxMain.getChildren().addAll(hBoxPopUp,insert,send);
+        vBoxMain.getChildren().addAll(hBoxPopUp,arrows,playerShelfPane,send);
 
         alert.getDialogPane().setContent(vBoxMain);
 
@@ -392,6 +402,55 @@ public class LivingRoom extends Scene {
         alert.showAndWait();
     }
     public static void insertTiles() throws RemoteException {
-
+        System.out.println("insert tiles");
     }
+    private static ImageView choseImage(String colorString) {
+        ImageView image;
+        switch (colorString) {
+            case "\u001b[42;1m" -> {
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Gatti1.1.png")));
+                image.setFitHeight(60);
+                image.setFitWidth(60);
+                image.setPreserveRatio(true);
+            }
+            case "\u001b[47;1m" -> {
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Libri1.1.png")));
+                image.setFitHeight(60);
+                image.setFitWidth(60);
+                image.setPreserveRatio(true);
+            }
+            case "\u001b[43;1m" -> {
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Giochi1.1.png")));
+                image.setFitHeight(60);
+                image.setFitWidth(60);
+                image.setPreserveRatio(true);
+            }
+            case "\u001b[44;1m" -> {
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Cornici1.1.png")));
+                image.setFitHeight(60);
+                image.setFitWidth(60);
+                image.setPreserveRatio(true);
+            }
+            case "\u001b[46;1m" -> {
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Trofei1.1.png")));
+                image.setFitHeight(60);
+                image.setFitWidth(60);
+                image.setPreserveRatio(true);
+            }
+            case "\u001b[45;1m" -> {
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Piante1.1.png")));
+                image.setFitHeight(60);
+                image.setFitWidth(60);
+                image.setPreserveRatio(true);
+            }
+            default -> {
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Piante1.2.png")));
+                image.setFitHeight(60);
+                image.setFitWidth(60);
+                image.setPreserveRatio(true);
+            }
+        }
+        return image;
+    }
+
 }
