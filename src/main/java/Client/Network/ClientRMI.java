@@ -22,8 +22,8 @@ public class ClientRMI extends Network {
     private GameCommand gc;
     private LobbyInterface lobby;
 
-    public ClientRMI(View view) throws RemoteException {
-        super(view);
+    public ClientRMI() throws RemoteException {
+        super();
     }
 
     @Override

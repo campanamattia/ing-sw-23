@@ -68,7 +68,9 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         this.gameID = lobbyID;
         this.players = players;
         try {
-            this.gameModel = new GameModel(lobbyID, new ArrayList<>(players.keySet()));
+            List<String> playerIDs = new ArrayList<>(players.keySet());
+            Collections.shuffle(playerIDs);
+            this.gameModel = new GameModel(lobbyID, playerIDs);
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.toString());
             for (ClientHandler client : players.values()) {
@@ -247,7 +249,6 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * @param client   The ClientHandler object associated with the player.
      */
     public void rejoin(String playerID, ClientHandler client) {
-        this.players.put(playerID, client);
         try {
             this.gameModel.getPlayer(playerID).setStatus(true);
             this.players.put(playerID, client);
@@ -287,24 +288,28 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             logger.severe(e.getMessage() + " during logout");
             return null;
         }
-        if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID)){
-            if (this.turnPhase == TurnPhase.INSERTING)
-                this.gameModel.completeTurn(this.currentPlayer.getTiles());
-            endTurn();
-        }
         ClientHandler crashed = this.players.get(playerID);
         this.players.put(playerID, null);
-        for (ClientHandler client : players.values()) {
-            if (client == null)
-                continue;
-            executorService.execute(()-> {
+        executorService.execute(()->{
+            for (ClientHandler client : players.values()) {
+                if (client == null)
+                    continue;
                 try {
                     client.remoteView().crashedPlayer(playerID);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
-            });
-        }
+            }
+            if (this.gameModel.getCurrentPlayer().getPlayerID().equals(playerID)){
+                if (this.turnPhase == TurnPhase.INSERTING)
+                    this.gameModel.completeTurn(this.currentPlayer.getTiles());
+                try {
+                    endTurn();
+                } catch (IOException e) {
+                    logger.severe(e.getMessage());
+                }
+            }
+        });
         return crashed;
     }
 

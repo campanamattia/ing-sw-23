@@ -1,0 +1,14 @@
+.dialog-pane{
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: #f4f4f4;
+    -fx-font-color: red;
+}
+
+.dialog-pane .dialog-header .header-panel .header-label{
+    -fx-font-weight: bold;
+    -fx-font-size: 20;
+}
+
+.dialog-pane .dialog-header .header-panel .graphic {
+    -fx-background-color: transparent;
+}

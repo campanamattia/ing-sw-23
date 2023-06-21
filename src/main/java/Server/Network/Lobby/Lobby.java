@@ -169,7 +169,15 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                     }
                 });
             }
-        }
+        } else
+            executorService.submit(() -> {
+                try {
+                    remoteView.outcomeException(new RuntimeException("Player is not in the game"));
+                    remoteView.askPlayerInfo(getLobbyInfo());
+                } catch (RemoteException e) {
+                    logger.log(Level.SEVERE, e.getMessage());
+                }
+            });
     }
 
     private void logInLobby(String playerID, String lobbyID, RemoteView client, RemoteClient network) throws RemoteException {

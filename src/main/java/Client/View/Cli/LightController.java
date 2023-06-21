@@ -15,13 +15,13 @@ public class LightController {
     public void elaborate(String input) {
         String[] split = input.split("-");
         String command = split[0];
-        switch (command) {
+        switch (command.trim()) {
             case "chat" -> view.showChat();
             case "help" -> view.showHelp();
-            case "back", "quit" -> view.showStatus();
-            case "st" -> executorService.execute(() -> selectTiles(split));
-            case "it" -> executorService.execute(() -> insertTiles(split));
-            default -> executorService.execute(() -> writeChat(input));
+            case "back" -> view.showStatus();
+            case "st"   -> executorService.execute(() -> selectTiles(split));
+            case "it"   -> executorService.execute(() -> insertTiles(split));
+            default     -> executorService.execute(() -> writeChat(input));
         }
     }
 

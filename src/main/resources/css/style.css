@@ -1,0 +1,92 @@
+@font-face {
+    font-family: 'CustomFont';
+    src: url("../font/Poppins-Regular.ttf");
+}
+
+*{
+    -fx-font-family: 'CustomFont';
+    -fx-text-fill: black;
+}
+
+.root {
+    -fx-background-image: url("../img/misc/background_light.jpg");
+    -fx-background-size: 100% 100%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.label {
+    -fx-font-size: 20;
+}
+
+.label-title {
+    -fx-font-size: 50;
+    -fx-font-weight: bold;
+}
+
+.text-field{
+    -fx-font-size: 20;
+    -fx-background-color: #D7D7D7B2;
+}
+
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 4px;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 4px;
+}
+
+.combo-box .arrow-button .arrow {
+    -fx-background-color: #555555;
+    -fx-shape: "M 0 0 L 5 5 L 10 0 Z";
+    -fx-padding: 2px;
+}
+
+.combo-box .list-cell {
+    -fx-padding: 4px;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+.combo-box .list-view {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+}
+
+.combo-box .list-view .list-cell:selected {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+}
+
+
+
+.button {
+    -fx-background-color: linear-gradient(#FFFFFF, #D7D7D7);
+    -fx-background-radius: 4px;
+    -fx-background-size: 100% 100%;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-font-size: 25;
+    -fx-pref-width: 150;
+    -fx-pref-height: 50;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+}
+
+.text-field{
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-alignment: center;
+    -fx-font-size: 20;
+    -fx-pref-width: 200;
+}

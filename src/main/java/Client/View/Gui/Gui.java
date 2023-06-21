@@ -1,7 +1,11 @@
 package Client.View.Gui;
 
 import Client.View.View;
+import Utils.ChatMessage;
+import Utils.MockObjects.MockBoard;
+import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
+import Utils.MockObjects.MockPlayer;
 import Utils.Rank;
 import Utils.Tile;
 
@@ -9,9 +13,29 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Gui extends View {
+public class Gui extends View {
 
     public Gui() throws RemoteException {
+    }
+
+    @Override
+    public void updateBoard(MockBoard mockBoard) {
+
+    }
+
+    @Override
+    public void updateCommonGoal(MockCommonGoal mockCommonGoal) {
+
+    }
+
+    @Override
+    public void updatePlayer(MockPlayer mockPlayer) {
+
+    }
+
+    @Override
+    public void updateChat(ChatMessage message) {
+
     }
 
     @Override
@@ -26,6 +50,31 @@ public abstract class Gui extends View {
 
     @Override
     public void showStatus() {
+
+    }
+
+    @Override
+    public void showShelves() {
+
+    }
+
+    @Override
+    public void showHelp() {
+
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void printError(String error) {
+
+    }
+
+    @Override
+    public void printMessage(String message) {
 
     }
 

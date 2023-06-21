@@ -6,11 +6,9 @@ import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
-import Utils.Rank;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
 
 public abstract class View extends UnicastRemoteObject implements RemoteView {
     protected MockModel mockModel;
@@ -36,8 +34,6 @@ public abstract class View extends UnicastRemoteObject implements RemoteView {
     public abstract void showShelves();
 
     public abstract void showHelp();
-
-    public abstract void showRank(List<Rank> classification);
 
     public abstract void start();
 
