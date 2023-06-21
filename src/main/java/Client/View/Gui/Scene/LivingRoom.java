@@ -2,17 +2,20 @@ package Client.View.Gui.Scene;
 
 import Client.View.Gui.GuiApplication;
 import Utils.Cell;
+import Utils.Coordinates;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +30,9 @@ public class LivingRoom extends Scene {
     private static MockModel mockModel;
     private static final HBox hBoxMyShelfAndCG = new HBox();
     private static VBox vBoxShelves;
-    private static final List<ImageView> selectedTiles = new ArrayList<>();
+    private static final List<ImageView> selectedTilesImg = new ArrayList<>();
+    private static final List<Coordinates> selectedTiles = new ArrayList<>();
+    private static final TextField insert = new TextField();
 
 
     public LivingRoom(GuiApplication app) {
@@ -145,10 +150,11 @@ public class LivingRoom extends Scene {
 
             if (colIndex >= 0 && rowIndex >= 0) {
                 System.out.println("x: "+ rowIndex + ", y: "+ colIndex);
+                selectedTiles.add(new Coordinates(rowIndex,colIndex));
                 ImageView selectedImageView;
                 selectedImageView = (ImageView) getPane(colIndex+tmp,rowIndex+tmp).getChildren().get(0);
                 if (selectedImageView != null) {
-                    selectedTiles.add(selectedImageView);
+                    selectedTilesImg.add(selectedImageView);
                 }
             }
         });
@@ -302,15 +308,17 @@ public class LivingRoom extends Scene {
             }
         }
         pGoalGrid.setOnMouseClicked(event -> {
-            System.out.println("test");
-            printError();
+            try {
+                network.selectTiles(localPlayer,selectedTiles);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
         });
 
         ImageView test = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Cornici1.1.png")));
         test.setPreserveRatio(true);
         test.setFitHeight(36);
         test.setFitWidth(27);
-
 
         // pGoalGrid.add(test,0,0);
 
@@ -323,24 +331,67 @@ public class LivingRoom extends Scene {
         vBoxShelves.setSpacing(20);
         vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
     }
-    private static void printError() {
+    private static void printSelectedTiles() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Selected Tiles");
         alert.setHeaderText("Images contained in the list:");
-        VBox vbox = new VBox();
-        vbox.setPrefWidth(400);
-        vbox.setPrefHeight(200);
-        for (ImageView image : selectedTiles) {
+
+        HBox hBoxPopUp = new HBox();
+        hBoxPopUp.setPrefWidth(400);
+        hBoxPopUp.setPrefHeight(200);
+        hBoxPopUp.setSpacing(10);
+        for (ImageView image : selectedTilesImg) {
             ImageView imageView = new ImageView(image.getImage());
             imageView.setFitWidth(80);
             imageView.setFitHeight(80);
-            vbox.getChildren().add(imageView);
+            hBoxPopUp.getChildren().add(imageView);
         }
 
-        alert.getDialogPane().setContent(vbox);
+        VBox vBoxMain = new VBox();
 
-        alert.getButtonTypes().setAll(ButtonType.OK);
+        Button send = new Button("send");
+        send.setOnAction(e-> {
+            try {
+                insertTiles();
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        send.setPrefHeight(40);
+        send.setPrefWidth(60);
+
+        insert.setPromptText("x,y,z/A-E");
+        insert.setPrefWidth(200);
+        insert.setPrefHeight(40);
+
+        vBoxMain.setSpacing(20);
+        vBoxMain.getChildren().addAll(hBoxPopUp,insert,send);
+
+        alert.getDialogPane().setContent(vBoxMain);
 
         alert.showAndWait();
+    }
+
+    public static void outcomeSelectTiles(){
+        printSelectedTiles();
+        selectedTiles.clear();
+        selectedTilesImg.clear();
+    }
+
+    public static void printError(String message) {
+        selectedTilesImg.clear();
+        selectedTiles.clear();
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.show();
+
+        alert.showAndWait();
+    }
+    public static void insertTiles() throws RemoteException {
+
     }
 }

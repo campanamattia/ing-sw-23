@@ -116,17 +116,19 @@ public class Gui extends View {
 
     @Override
     public void outcomeSelectTiles(List<Tile> selectedTiles) throws RemoteException {
-
+        this.mockModel.setTurnPhase(TurnPhase.INSERTING);
+        guiApplication.outcomeSelectTiles(selectedTiles);
     }
 
     @Override
     public void outcomeInsertTiles(boolean success) throws RemoteException {
-
+        if (success)
+            this.mockModel.setTurnPhase(TurnPhase.PICKING);
     }
 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
-
+        guiApplication.outcomeException(e);
     }
 
     @Override

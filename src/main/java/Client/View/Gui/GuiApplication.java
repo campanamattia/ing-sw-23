@@ -1,17 +1,18 @@
 package Client.View.Gui;
 
+import Client.View.Cli.LightController;
 import Client.View.Gui.Scene.ConnectionScene;
 import Client.View.Gui.Scene.LivingRoom;
 import Client.View.Gui.Scene.LoginScene;
 import Utils.Cell;
 import Utils.MockObjects.MockModel;
+import Utils.Tile;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 
@@ -62,5 +63,13 @@ public class GuiApplication extends Application {
     }
     public void showShelves(){
         Platform.runLater(LivingRoom::updateCommonAndPersonalGoal);
+    }
+    public void outcomeSelectTiles(List<Tile> selectedTiles){
+        Platform.runLater(LivingRoom::outcomeSelectTiles);
+    }
+    public void outcomeException(Exception e){
+        Platform.runLater(()->
+            LivingRoom.printError(e.getMessage())
+        );
     }
 }
