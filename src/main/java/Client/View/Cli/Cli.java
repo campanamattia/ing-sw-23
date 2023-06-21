@@ -128,19 +128,6 @@ public class Cli extends View {
         } while (true);
     }
 
-    /**
-     * States whether the given address is valid or not.
-     *
-     * @param address the inserted IP address.
-     * @return a boolean whose value is:
-     * -{@code true} if the address is valid;
-     * -{@code false} otherwise.
-     */
-    private boolean validateIP(String address) {
-        String zeroTo255 = "([01]?\\d{1,2}|2[0-4]\\d|25[0-5])";
-        String IP_REGEX = "^(" + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + ")$";
-        return address.matches(IP_REGEX);
-    }
 
     public int askServerPort() {
         final int DEFAULT_SOCKET_PORT = 50000;
@@ -283,36 +270,6 @@ public class Cli extends View {
         System.out.println();
     }
 
-    private List<String> subString(String[] words) {
-        List<String> subString = new LinkedList<>();
-        StringBuilder sb1 = new StringBuilder();
-        int maxLength = 85;
-
-        for (String word : words) {
-            if (word.length() > maxLength) {
-                if (sb1.length() > 0) {
-                    subString.add(sb1.toString().trim());
-                    sb1.setLength(0);
-                }
-                subString.add(word);
-            } else if (sb1.length() + word.length() <= maxLength) {
-                sb1.append(word).append(" ");
-                if (sb1.length() > maxLength) {
-                    subString.add(sb1.toString().trim());
-                    sb1.setLength(0);
-                }
-            } else {
-                subString.add(sb1.toString().trim());
-                sb1.setLength(0);
-                sb1.append(word).append(" ");
-            }
-        }
-        if (sb1.length() > 0) {
-            subString.add(sb1.toString().trim());
-        }
-        return subString;
-    }
-
     @Override
     public void showChat() {
         for (ChatMessage message : mockModel.getChat()) {
@@ -358,17 +315,6 @@ public class Cli extends View {
     public void endGame(List<Rank> classification) {
 
     }
-
-    @Override
-    public void crashedPlayer(String crashedPlayer) throws RemoteException {
-        this.mockModel.getPlayer(crashedPlayer).setOnline(false);
-    }
-
-    @Override
-    public void reloadPlayer(String reloadPlayer) throws RemoteException {
-        this.mockModel.getPlayer(reloadPlayer).setOnline(true);
-    }
-
 
     public void showShelves() {
         int numColumn = 5;
@@ -436,14 +382,6 @@ public class Cli extends View {
         }
     }
 
-    @Override
-    public void newTurn(String playerID) throws RemoteException {
-        clearCLI();
-        mockModel.setCurrentPlayer(playerID);
-        mockModel.setTurnPhase(TurnPhase.PICKING);
-        showAll();
-    }
-
     private void showAll() {
         showBoard();
         showShelves();
@@ -451,52 +389,11 @@ public class Cli extends View {
     }
 
     @Override
-    public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
-        this.mockModel.setTurnPhase(TurnPhase.INSERTING);
-        showTile(tiles);
-        showStatus();
-    }
-
-    @Override
-    public void outcomeInsertTiles(boolean success) throws RemoteException {
-        if (success)
-            this.mockModel.setTurnPhase(TurnPhase.PICKING);
-        else
-            printError("Insertion failed");
-    }
-
-
-    @Override
-    public void outcomeException(Exception e) throws RemoteException {
-        printError(e.getMessage());
-        if(e.getMessage().equals("The game was concluded due to insufficient active players.")) {
-            System.exit(666);
-        }
-    }
-
-    public void printError(String error) {
-        System.out.println(CliColor.BOLDRED + error + CliColor.RESET);
-    }
-
-    @Override
-    public void printMessage(String message) {
-        System.out.println(CliColor.BOLDGREEN + message + CliColor.RESET);
-    }
-
-    @Override
-    public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
-        System.out.println("You logged into the lobby");
-        ClientApp.localPlayer = localPlayer;
-        ClientApp.lobbyID = lobbyID;
-        network.startPing(localPlayer, lobbyID);
-    }
-
-
-    @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
         this.controller = new LightController();
-        if (mockModel.getChat() != null) fixChat();
+        if (mockModel.getChat() != null)
+            fixChat();
         newTurn(mockModel.getCurrentPlayer());
         while (true) {
             try {
@@ -521,13 +418,58 @@ public class Cli extends View {
         this.inputThread.start();
     }
 
-    private void fixChat() {
-        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer));
+    @Override
+    public void newTurn(String playerID) throws RemoteException {
+        clearCLI();
+        mockModel.setCurrentPlayer(playerID);
+        mockModel.setTurnPhase(TurnPhase.PICKING);
+        showAll();
     }
 
-    public void clearCLI() {
-        System.out.print(CliColor.CLEAR_ALL);
-        System.out.flush();
+    @Override
+    public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
+        this.mockModel.setTurnPhase(TurnPhase.INSERTING);
+        showTile(tiles);
+        showStatus();
+    }
+
+    @Override
+    public void outcomeInsertTiles(boolean success) throws RemoteException {
+        if (success)
+            this.mockModel.setTurnPhase(TurnPhase.PICKING);
+        else
+            printError("Insertion failed");
+    }
+
+    @Override
+    public void outcomeException(Exception e) throws RemoteException {
+        printError(e.getMessage());
+        if(e.getMessage().equals("The game was concluded due to insufficient active players.")) {
+            System.exit(666);
+        }
+    }
+
+    @Override
+    public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
+        System.out.println("You logged into the lobby");
+        ClientApp.localPlayer = localPlayer;
+        ClientApp.lobbyID = lobbyID;
+        network.startPing(localPlayer, lobbyID);
+    }
+
+    @Override
+    public void printMessage(String message) {
+        System.out.println(CliColor.BOLDGREEN + message + CliColor.RESET);
+    }
+
+    @Override
+    public void crashedPlayer(String crashedPlayer) throws RemoteException {
+        this.mockModel.getPlayer(crashedPlayer).setOnline(false);
+    }
+
+    @Override
+    public void reloadPlayer(String reloadPlayer) throws RemoteException {
+        this.mockModel.getPlayer(reloadPlayer).setOnline(true);
     }
 
     public int countDigit(int number) {
@@ -542,4 +484,60 @@ public class Cli extends View {
         return count;
     }
 
+    /**
+     * States whether the given address is valid or not.
+     *
+     * @param address the inserted IP address.
+     * @return a boolean whose value is:
+     * -{@code true} if the address is valid;
+     * -{@code false} otherwise.
+     */
+    private boolean validateIP(String address) {
+        String zeroTo255 = "([01]?\\d{1,2}|2[0-4]\\d|25[0-5])";
+        String IP_REGEX = "^(" + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + ")$";
+        return address.matches(IP_REGEX);
+    }
+
+    private List<String> subString(String[] words) {
+        List<String> subString = new LinkedList<>();
+        StringBuilder sb1 = new StringBuilder();
+        int maxLength = 85;
+
+        for (String word : words) {
+            if (word.length() > maxLength) {
+                if (sb1.length() > 0) {
+                    subString.add(sb1.toString().trim());
+                    sb1.setLength(0);
+                }
+                subString.add(word);
+            } else if (sb1.length() + word.length() <= maxLength) {
+                sb1.append(word).append(" ");
+                if (sb1.length() > maxLength) {
+                    subString.add(sb1.toString().trim());
+                    sb1.setLength(0);
+                }
+            } else {
+                subString.add(sb1.toString().trim());
+                sb1.setLength(0);
+                sb1.append(word).append(" ");
+            }
+        }
+        if (sb1.length() > 0) {
+            subString.add(sb1.toString().trim());
+        }
+        return subString;
+    }
+
+    public void printError(String error) {
+        System.out.println(CliColor.BOLDRED + error + CliColor.RESET);
+    }
+
+    private void fixChat() {
+        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer));
+    }
+
+    public void clearCLI() {
+        System.out.print(CliColor.CLEAR_ALL);
+        System.out.flush();
+    }
 }
