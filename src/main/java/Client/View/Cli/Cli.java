@@ -24,6 +24,8 @@ public class Cli extends View {
     private final Scanner scanner = new Scanner(System.in);
     private Thread inputThread;
 
+    private final int xLenght = 140;
+
     public Cli() throws RemoteException {
         super();
         mockModel = new MockModel();
@@ -238,18 +240,18 @@ public class Cli extends View {
         }
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(" \t");
+        stringBuilder.append("    ");
         if (numberPlayer == 2) for (int i = 0; i <= 6; i++)
             stringBuilder.append("  ").append(i).append("  ");
         else for (int i = 0; i <= 8; i++)
             stringBuilder.append("  ").append(i).append("  ");
-        System.out.print(stringBuilder.append("\t|\t "));
+        System.out.print(stringBuilder.append("   | "));
 
 
         System.out.println(CliColor.BOLD + "COMMON GOAL" + CliColor.RESET);
 
         for (int i = 0; i < board.length; i++) {
-            System.out.print(i + "\t");
+            System.out.print(i + "   ");
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
                     String colorString = board[i][j].getTile().getColor().getCode();
@@ -258,7 +260,7 @@ public class Cli extends View {
                     System.out.print(CliColor.BBLACK + "|   |" + CliColor.RESET); //print empty black space
                 }
             }
-            System.out.print("\t| ");
+            System.out.print("   | ");
 
             //print CommonGoal
             if (i <= 2) {
@@ -332,6 +334,7 @@ public class Cli extends View {
 
 
     public void showTitle() {
+        clearCLI();
         System.out.print(CliColor.BOLDYELLOW);
         System.out.println("""
                  ✹ ｡  .  ･ . ∴ * ███╗   ███╗██╗   ██╗    ██████╗██╗  ██╗███████╗██╗     ███████╗██╗███████╗. 　･ ∴　　｡ 　
@@ -383,14 +386,14 @@ public class Cli extends View {
         int numRow = 6;
         int numPlayer = mockModel.getMockPlayers().size();
 
-        System.out.print(" \t");
+        System.out.print("    ");
         for (int k = 0; k < numPlayer; k++) {
-            System.out.print("  A  " + "  B  " + "  C  " + "  D  " + "  E  \t\t" );
+            System.out.print("  A  " + "  B  " + "  C  " + "  D  " + "  E  " + "      " );
         }
         System.out.println();
 
         for (int i = 0; i < numRow; i++) {
-            System.out.print(" \t");
+            System.out.print("    ");
             for (int k = 0; k < numPlayer; k++) {
                 for (int j = 0; j < numColumn; j++) {
                     Tile[][] shelf = mockModel.getMockPlayers().get(k).getShelf();
@@ -405,7 +408,7 @@ public class Cli extends View {
                     }
                     System.out.print(colorBar + "|" + colorString + "   " + colorBar + "|" + CliColor.RESET);
                 }
-                System.out.print("\t\t");
+                System.out.print("      ");
             }
             System.out.println();
         }
@@ -414,12 +417,12 @@ public class Cli extends View {
         for (MockPlayer player : this.mockModel.getMockPlayers()) {
             if (player.isOnline()){
                 System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + player.getScore() + CliColor.RESET );
-                for (int i = 0; i < 32 - player.getPlayerID().length() - countDigit(player.getScore()); i++)
+                for (int i = 0; i < 31 - player.getPlayerID().length() - countDigit(player.getScore()); i++)
                     System.out.print(" ");
             }
             else {
                 System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + CliColor.RED + "OFFLINE" + CliColor.RESET);
-                for (int i = 0; i < 32 - player.getPlayerID().length() - " OFFLINE ".length(); i++)
+                for (int i = 0; i < 31 - player.getPlayerID().length() - " OFFLINE ".length(); i++)
                     System.out.print(" ");
             }
         }
@@ -444,6 +447,10 @@ public class Cli extends View {
 
     private void showAll() {
         showBoard();
+        for (int i = 0; i <= xLenght; i++) {
+            System.out.print("-");
+        }
+        System.out.println("\n");
         showShelves();
         showStatus();
     }
@@ -524,7 +531,7 @@ public class Cli extends View {
     }
 
     public void clearCLI() {
-        System.out.print(CliColor.CLEAR_ALL);
+        System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 

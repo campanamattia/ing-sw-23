@@ -11,8 +11,10 @@ import com.google.gson.stream.JsonReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
@@ -41,7 +43,7 @@ public class ServerApp {
     /**
      * The file path for the server setting JSON file.
      */
-    private static final String serverSetting = "/settings/serverSetting.json";
+    private static final String serverSetting = "settings/serverSetting.json";
     /**
      * The port number for the socket server.
      */
@@ -139,13 +141,9 @@ public class ServerApp {
     private static int socketFromJSON() throws RuntimeException {
         Gson gson = new Gson();
         JsonReader reader;
-        try {
-            reader = new JsonReader(new FileReader(ServerApp.class.getResource(serverSetting).getFile()));
-            JsonObject json = gson.fromJson(reader, JsonObject.class);
-            return json.get("socketPort").getAsInt();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(serverSetting))));
+        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        return json.get("socketPort").getAsInt();
     }
 
     /**
@@ -158,13 +156,9 @@ public class ServerApp {
     private static int rmiFromJSON() throws RuntimeException {
         Gson gson = new Gson();
         JsonReader reader;
-        try {
-            reader = new JsonReader(new FileReader(ServerApp.class.getResource(serverSetting).getFile()));
-            JsonObject json = gson.fromJson(reader, JsonObject.class);
-            return json.get("rmiPort").getAsInt();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(serverSetting))));
+        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        return json.get("rmiPort").getAsInt();
     }
 
     /**
