@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -32,6 +33,7 @@ public class LivingRoom extends Scene {
     private static VBox vBoxShelves;
     private static final List<ImageView> selectedTilesImg = new ArrayList<>();
     private static final List<Coordinates> selectedTiles = new ArrayList<>();
+    private static VBox leftSide;
 
 
     public LivingRoom(GuiApplication app) {
@@ -111,8 +113,11 @@ public class LivingRoom extends Scene {
         // hBoxMyShelfAndCG built dynamically in the method down in the code.
         vBoxShelves.getChildren().add(hBoxShelves);
 
+        leftSide = new VBox();
+        leftSide.getChildren().add(boardPane);
+
         HBox mainHBox = new HBox();
-        mainHBox.getChildren().addAll(boardPane,vBoxShelves);
+        mainHBox.getChildren().addAll(leftSide,vBoxShelves);
 
         gridBoard.setOnMouseClicked(event -> {
             int tmp = 0;
@@ -176,6 +181,8 @@ public class LivingRoom extends Scene {
     }
 
     public static void showBoard(Cell[][] board,MockModel mockModel){
+        Label currentPlayer = new Label(mockModel.getCurrentPlayer() + "'s turn!");
+        leftSide.getChildren().add(currentPlayer);
         LivingRoom.mockModel = mockModel;
         int numPlayer = mockModel.getMockPlayers().size();
         ImageView image;
@@ -344,7 +351,6 @@ public class LivingRoom extends Scene {
         grid.prefWidthProperty().bind(playerShelf.fitWidthProperty());
         grid.prefHeightProperty().bind(playerShelf.fitWidthProperty());
         grid.setLayoutX(20);
-        grid.setLayoutY(10);
         grid.setHgap(2);
         grid.setVgap(5);
 
@@ -361,15 +367,24 @@ public class LivingRoom extends Scene {
         Pane playerShelfPane = new Pane(grid,playerShelf);
 
         HBox arrows = new HBox();
-        arrows.setPrefHeight(40);
+        arrows.setPrefHeight(20);
         arrows.setPrefWidth(100);
         arrows.setSpacing(10);
+        Pane pane = new Pane();
+        pane.setPrefHeight(20);
+        pane.setPrefWidth(20);
+        arrows.getChildren().add(pane);
         for(int i=0;i<5;i++){
-            Pane pane = new Pane();
-            pane.setStyle("-fx-border-color: red;");
-            arrows.getChildren().add(pane);
+            pane = new Pane();
+            ImageView arrow = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/misc/arrow.png")));
+            arrow.setPreserveRatio(true);
+            arrow.setFitWidth(20);
+            arrow.setFitHeight(20);
+            pane.setStyle("-fx-border-color: black;");
             pane.setPrefHeight(20);
             pane.setPrefWidth(20);
+            pane.getChildren().add(arrow);
+            arrows.getChildren().add(pane);
         }
 
         vBoxMain.setSpacing(20);
