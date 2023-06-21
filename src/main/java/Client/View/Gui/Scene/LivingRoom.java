@@ -27,7 +27,7 @@ public class LivingRoom extends Scene {
     private static MockModel mockModel;
     private static final HBox hBoxMyShelfAndCG = new HBox();
     private static VBox vBoxShelves;
-    private final List<ImageView> selectedTiles = new ArrayList<>();
+    private static final List<ImageView> selectedTiles = new ArrayList<>();
 
 
     public LivingRoom(GuiApplication app) {
@@ -66,10 +66,6 @@ public class LivingRoom extends Scene {
             }
         }
 
-        ImageView test = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Cornici1.1.png")));
-        test.setFitHeight(60);
-        test.setFitWidth(60);
-
         gridBoard.setLayoutX(51);
         gridBoard.setLayoutY(55);
         gridBoard.setHgap(10);
@@ -103,6 +99,9 @@ public class LivingRoom extends Scene {
         shelf2img.setLayoutY(20);
         shelf3img.setLayoutX(10);
         shelf3img.setLayoutY(20);
+        shelf1img.setPreserveRatio(true);
+        shelf2img.setPreserveRatio(true);
+        shelf3img.setPreserveRatio(true);
         hBoxShelves.getChildren().addAll(shelf1,shelf2,shelf3);
 
         // hBoxMyShelfAndCG built dynamically in the method down in the code.
@@ -150,7 +149,6 @@ public class LivingRoom extends Scene {
                 selectedImageView = (ImageView) getPane(colIndex+tmp,rowIndex+tmp).getChildren().get(0);
                 if (selectedImageView != null) {
                     selectedTiles.add(selectedImageView);
-                    printError(selectedTiles);
                 }
             }
         });
@@ -188,36 +186,43 @@ public class LivingRoom extends Scene {
                             image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Gatti1.1.png")));
                             image.setFitHeight(60);
                             image.setFitWidth(60);
+                            image.setPreserveRatio(true);
                         }
                         case "\u001b[47;1m" -> {
                             image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Libri1.1.png")));
                             image.setFitHeight(60);
                             image.setFitWidth(60);
+                            image.setPreserveRatio(true);
                         }
                         case "\u001b[43;1m" -> {
                             image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Giochi1.1.png")));
                             image.setFitHeight(60);
                             image.setFitWidth(60);
+                            image.setPreserveRatio(true);
                         }
                         case "\u001b[44;1m" -> {
                             image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Cornici1.1.png")));
                             image.setFitHeight(60);
                             image.setFitWidth(60);
+                            image.setPreserveRatio(true);
                         }
                         case "\u001b[46;1m" -> {
                             image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Trofei1.1.png")));
                             image.setFitHeight(60);
                             image.setFitWidth(60);
+                            image.setPreserveRatio(true);
                         }
                         case "\u001b[45;1m" -> {
                             image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Piante1.1.png")));
                             image.setFitHeight(60);
                             image.setFitWidth(60);
+                            image.setPreserveRatio(true);
                         }
                         default -> {
                             image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Piante1.2.png")));
                             image.setFitHeight(60);
                             image.setFitWidth(60);
+                            image.setPreserveRatio(true);
                         }
 
                     }
@@ -253,20 +258,64 @@ public class LivingRoom extends Scene {
         ImageView cg2img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/"+numberCGoal2+".jpg")));
         cg1img.setFitHeight(166);
         cg1img.setFitWidth(250);
+        cg1img.setPreserveRatio(true);
         cg2img.setFitHeight(166);
         cg2img.setFitWidth(250);
+        cg2img.setPreserveRatio(true);
         cg1.getChildren().add(cg1img);
         cg2.getChildren().add(cg2img);
 
         VBox vBoxCommonGoal = new VBox(10,cg1,cg2);
 
         Pane pGoalPane = new Pane();
+
         ImageView pGoalImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
+        pGoalImg.setPreserveRatio(true);
         pGoalImg.setFitWidth(250);
         pGoalImg.setFitHeight(300);
-        pGoalPane.getChildren().add(pGoalImg);
 
-        // GridPane pGoalGrid = new GridPane();
+        GridPane pGoalGrid = new GridPane();
+        pGoalGrid.setGridLinesVisible(true);
+        pGoalGrid.setHgap(10);
+        pGoalGrid.setVgap(2);
+        pGoalGrid.setLayoutX(30);
+        pGoalGrid.setLayoutY(20);
+        pGoalGrid.prefWidthProperty().bind(pGoalImg.fitWidthProperty());
+        pGoalGrid.prefHeightProperty().bind(pGoalImg.fitWidthProperty());
+
+        for(int row=0;row<6;row++){
+            RowConstraints rowConstraints = new RowConstraints();
+            rowConstraints.setPrefHeight(30);
+            pGoalGrid.getRowConstraints().add(rowConstraints);
+            pGoalGrid.addRow(row);
+        }
+        for(int col=0;col<5;col++){
+            ColumnConstraints colConstraints = new ColumnConstraints();
+            colConstraints.setPrefWidth(30);
+            pGoalGrid.getColumnConstraints().add(colConstraints);
+            pGoalGrid.addColumn(col);
+        }
+        for(int i=0;i<6;i++){
+            for(int j=0;j<5;j++){
+                Pane paneBase = new Pane();
+                pGoalGrid.add(paneBase,j,i);
+            }
+        }
+        pGoalGrid.setOnMouseClicked(event -> {
+            System.out.println("test");
+            printError();
+        });
+
+        ImageView test = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Cornici1.1.png")));
+        test.setPreserveRatio(true);
+        test.setFitHeight(36);
+        test.setFitWidth(27);
+
+
+        // pGoalGrid.add(test,0,0);
+
+        pGoalPane.getChildren().addAll(pGoalImg,pGoalGrid);
+
 
         hBoxMyShelfAndCG.setSpacing(50);
         hBoxMyShelfAndCG.getChildren().addAll(vBoxCommonGoal,pGoalPane);
@@ -274,25 +323,24 @@ public class LivingRoom extends Scene {
         vBoxShelves.setSpacing(20);
         vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
     }
-    private void printError(List<ImageView> selectedTiles) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("SELECTED TILES");
-        alert.setHeaderText(null);
-        alert.setContentText("Selected tiles: \n");
-        for (ImageView selectedTile : selectedTiles) {
-            alert.setGraphic(selectedTile);
+    private static void printError() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Selected Tiles");
+        alert.setHeaderText("Images contained in the list:");
+        VBox vbox = new VBox();
+        vbox.setPrefWidth(400);
+        vbox.setPrefHeight(200);
+        for (ImageView image : selectedTiles) {
+            ImageView imageView = new ImageView(image.getImage());
+            imageView.setFitWidth(80);
+            imageView.setFitHeight(80);
+            vbox.getChildren().add(imageView);
         }
 
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().clear();
+        alert.getDialogPane().setContent(vbox);
 
-        // Set OK button
         alert.getButtonTypes().setAll(ButtonType.OK);
 
-        // Set the owner window
-        alert.initOwner(this.getWindow());
-
-        // Show the alert and wait for user response
         alert.showAndWait();
     }
 }
