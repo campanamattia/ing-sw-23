@@ -12,6 +12,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -156,7 +157,7 @@ public class LivingRoom extends Scene {
                 System.out.println("x: "+ rowIndex + ", y: "+ colIndex);
                 selectedTiles.add(new Coordinates(rowIndex,colIndex));
                 ImageView selectedImageView;
-                selectedImageView = (ImageView) getPane(colIndex+tmp,rowIndex+tmp).getChildren().get(0);
+                selectedImageView = (ImageView) getPane(gridBoard,colIndex+tmp,rowIndex+tmp).getChildren().get(0);
                 if (selectedImageView != null) {
                     selectedTilesImg.add(selectedImageView);
                 }
@@ -194,7 +195,7 @@ public class LivingRoom extends Scene {
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
                     String colorString = board[i][j].getTile().getColor().getCode();
                     image = choseImage(colorString);
-                    Pane tmpPane = getPane(j+tmp,i+tmp);
+                    Pane tmpPane = getPane(gridBoard,j+tmp,i+tmp);
                     tmpPane.getChildren().add(image);
                 }
                 //gridBoard.add(tmpPane,j+tmp,i+tmp);
@@ -202,8 +203,8 @@ public class LivingRoom extends Scene {
         }
     }
 
-    private static Pane getPane(int j, int i) {
-        List<Node> kids = gridBoard.getChildren();
+    private static Pane getPane(GridPane grid,int j, int i) {
+        List<Node> kids = grid.getChildren();
         Pane res = null;
         for(Node n: kids){
             if(GridPane.getColumnIndex(n) == j && GridPane.getRowIndex(n) == i)
@@ -322,73 +323,8 @@ public class LivingRoom extends Scene {
         send.setPrefHeight(40);
         send.setPrefWidth(60);
 
-        ImageView playerShelf = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
-        playerShelf.setPreserveRatio(true);
-        playerShelf.setFitWidth(200);
-        playerShelf.setFitHeight(250);
-
-        GridPane grid = new GridPane();
-        grid.setGridLinesVisible(true);
-        for(int row=0;row<6;row++){
-            RowConstraints rowConstraints = new RowConstraints();
-            rowConstraints.setPrefHeight(30);
-            grid.getRowConstraints().add(rowConstraints);
-            grid.addRow(row);
-        }
-        for(int col=0;col<5;col++){
-            ColumnConstraints colConstraints = new ColumnConstraints();
-            colConstraints.setPrefWidth(30);
-            grid.getColumnConstraints().add(colConstraints);
-            grid.addColumn(col);
-        }
-        for(int i=0;i<6;i++){
-            for(int j=0;j<5;j++){
-                Pane paneBase = new Pane();
-                grid.add(paneBase,j,i);
-            }
-        }
-
-        grid.prefWidthProperty().bind(playerShelf.fitWidthProperty());
-        grid.prefHeightProperty().bind(playerShelf.fitWidthProperty());
-        grid.setLayoutX(20);
-        grid.setHgap(2);
-        grid.setVgap(5);
-
-        Tile[][] pShelf = mockModel.getPlayer(localPlayer).getShelf();
-        for(int i=0;i<pShelf.length;i++){
-            for(int j=0;j<pShelf[0].length;j++){
-               if( pShelf[i][j] != null ){
-                   ImageView img = choseImage(pShelf[i][j].getTileColor().getCode());
-                   getPane(i,j).getChildren().add(img);
-               }
-            }
-        }
-
-        Pane playerShelfPane = new Pane(grid,playerShelf);
-
-        HBox arrows = new HBox();
-        arrows.setPrefHeight(20);
-        arrows.setPrefWidth(100);
-        arrows.setSpacing(10);
-        Pane pane = new Pane();
-        pane.setPrefHeight(20);
-        pane.setPrefWidth(20);
-        arrows.getChildren().add(pane);
-        for(int i=0;i<5;i++){
-            pane = new Pane();
-            ImageView arrow = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/misc/arrow.png")));
-            arrow.setPreserveRatio(true);
-            arrow.setFitWidth(20);
-            arrow.setFitHeight(20);
-            pane.setStyle("-fx-border-color: black;");
-            pane.setPrefHeight(20);
-            pane.setPrefWidth(20);
-            pane.getChildren().add(arrow);
-            arrows.getChildren().add(pane);
-        }
-
         vBoxMain.setSpacing(20);
-        vBoxMain.getChildren().addAll(hBoxPopUp,arrows,playerShelfPane,send);
+        vBoxMain.getChildren().addAll(hBoxPopUp,send);
 
         alert.getDialogPane().setContent(vBoxMain);
 
@@ -470,6 +406,19 @@ public class LivingRoom extends Scene {
                 return image;
             }
         }
+    }
+
+    private static void handleClick(MouseEvent e){
+        List<Integer> orderTiles = new ArrayList<>();
+        int column;
+
+        double mouseX = e.getX();
+        double mouseY = e.getY();
+        System.out.println("mouse x: "+ mouseX + ", mouse y: "+ mouseY);
+
+        double StartX = 0;
+        double endX = 0;
+
     }
 
 }
