@@ -5,14 +5,13 @@ import Utils.Cell;
 import Utils.Coordinates;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
-import Utils.Tile;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -35,7 +34,8 @@ public class LivingRoom extends Scene {
     private static final List<ImageView> selectedTilesImg = new ArrayList<>();
     private static final List<Coordinates> selectedTiles = new ArrayList<>();
     private static VBox leftSide;
-
+    private static TextField orderTile;
+    private static TextField column;
 
     public LivingRoom(GuiApplication app) {
 
@@ -83,37 +83,6 @@ public class LivingRoom extends Scene {
 
         vBoxShelves = new VBox();
 
-        HBox hBoxShelves = new HBox();
-        Pane shelf1 = new Pane();
-        Pane shelf2 = new Pane();
-        Pane shelf3 = new Pane();
-        ImageView shelf1img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
-        ImageView shelf2img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
-        ImageView shelf3img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
-        shelf1img.setFitWidth(200);
-        shelf1img.setFitHeight(250);
-        shelf2img.setFitWidth(200);
-        shelf2img.setFitHeight(250);
-        shelf3img.setFitWidth(200);
-        shelf3img.setFitHeight(250);
-        shelf1.getChildren().add(shelf1img);
-        shelf2.getChildren().add(shelf2img);
-        shelf3.getChildren().add(shelf3img);
-        hBoxShelves.setSpacing(20);
-        shelf1img.setLayoutX(10);
-        shelf1img.setLayoutY(20);
-        shelf2img.setLayoutX(10);
-        shelf2img.setLayoutY(20);
-        shelf3img.setLayoutX(10);
-        shelf3img.setLayoutY(20);
-        shelf1img.setPreserveRatio(true);
-        shelf2img.setPreserveRatio(true);
-        shelf3img.setPreserveRatio(true);
-        hBoxShelves.getChildren().addAll(shelf1,shelf2,shelf3);
-
-        // hBoxMyShelfAndCG built dynamically in the method down in the code.
-        vBoxShelves.getChildren().add(hBoxShelves);
-
         leftSide = new VBox();
         leftSide.getChildren().add(boardPane);
 
@@ -156,15 +125,16 @@ public class LivingRoom extends Scene {
             if (colIndex >= 0 && rowIndex >= 0) {
                 System.out.println("x: "+ rowIndex + ", y: "+ colIndex);
                 selectedTiles.add(new Coordinates(rowIndex,colIndex));
-                ImageView selectedImageView;
-                selectedImageView = (ImageView) getPane(gridBoard,colIndex+tmp,rowIndex+tmp).getChildren().get(0);
-                if (selectedImageView != null) {
-                    selectedTilesImg.add(selectedImageView);
+                Pane selectedPane = getPane(gridBoard, colIndex + tmp, rowIndex + tmp);
+                if (selectedPane != null) {
+                    ImageView selectedImageView = (ImageView) selectedPane.getChildren().get(0);
+                    if (selectedImageView != null) {
+                        selectedTilesImg.add(selectedImageView);
+                    }
                 }
             }
         });
         setRoot(mainHBox);
-
     }
 
     public static void toLobbySize(){
@@ -213,13 +183,14 @@ public class LivingRoom extends Scene {
         return res;
     }
 
-    public static void updateCommonAndPersonalGoal(){
+    public static void showCommonAndShelves(){
+
+        // common goals
+
         MockCommonGoal mockCommonGoal1 = LivingRoom.mockModel.getMockCommonGoal().get(0);
         int numberCGoal1 = mockCommonGoal1.getEnumeration() + 1;
         MockCommonGoal mockCommonGoal2 = LivingRoom.mockModel.getMockCommonGoal().get(1);
         int numberCGoal2 = mockCommonGoal2.getEnumeration() + 1;
-
-        // int numPlayer = mockModel.getMockPlayers().size();
 
         Pane cg1 = new Pane();
         Pane cg2 = new Pane();
@@ -235,6 +206,8 @@ public class LivingRoom extends Scene {
         cg2.getChildren().add(cg2img);
 
         VBox vBoxCommonGoal = new VBox(10,cg1,cg2);
+
+        // personal goal
 
         Pane pGoalPane = new Pane();
 
@@ -278,15 +251,57 @@ public class LivingRoom extends Scene {
             }
         });
 
-        ImageView test = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Cornici1.1.png")));
-        test.setPreserveRatio(true);
-        test.setFitHeight(36);
-        test.setFitWidth(27);
-
-        // pGoalGrid.add(test,0,0);
-
         pGoalPane.getChildren().addAll(pGoalImg,pGoalGrid);
 
+        // shelves
+        HBox hBoxShelves = new HBox();
+
+        int numPlayer = mockModel.getMockPlayers().size();
+        for(int i=0;i<numPlayer-1;i++){
+
+            // setting pane and image of shelves
+            Pane playerShelfPane = new Pane();
+
+            ImageView shelfImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
+            shelfImg.setFitWidth(200);
+            shelfImg.setFitHeight(250);
+            shelfImg.setLayoutX(10);
+            shelfImg.setLayoutY(20);
+            shelfImg.setPreserveRatio(true);
+
+            // binding the grid pane
+            GridPane grid = new GridPane();
+            grid.setHgap(7);
+            grid.setVgap(2);
+            grid.setLayoutX(30);
+            grid.setLayoutY(30);
+            grid.prefWidthProperty().bind(shelfImg.fitWidthProperty());
+            grid.prefHeightProperty().bind(shelfImg.fitWidthProperty());
+            grid.setGridLinesVisible(true);
+            for(int row=0;row<6;row++){
+                RowConstraints rowConstraints = new RowConstraints();
+                rowConstraints.setPrefHeight(25);
+                grid.getRowConstraints().add(rowConstraints);
+                grid.addRow(row);
+            }
+            for(int col=0;col<5;col++){
+                ColumnConstraints colConstraints = new ColumnConstraints();
+                colConstraints.setPrefWidth(25);
+                grid.getColumnConstraints().add(colConstraints);
+                grid.addColumn(col);
+            }
+            for(int j=0;j<6;j++){
+                for(int k=0;k<5;k++){
+                    Pane paneBase = new Pane();
+                    grid.add(paneBase,j,i);
+                }
+            }
+            playerShelfPane.getChildren().addAll(grid,shelfImg);
+            hBoxShelves.getChildren().add(playerShelfPane);
+        }
+
+
+        vBoxShelves.getChildren().add(hBoxShelves);
 
         hBoxMyShelfAndCG.setSpacing(50);
         hBoxMyShelfAndCG.getChildren().addAll(vBoxCommonGoal,pGoalPane);
@@ -299,6 +314,8 @@ public class LivingRoom extends Scene {
         alert.setTitle("Selected Tiles");
         alert.setHeaderText("Selected tiles: ");
 
+        VBox vBoxMain = new VBox();
+
         HBox hBoxPopUp = new HBox();
         hBoxPopUp.setPrefWidth(400);
         hBoxPopUp.setPrefHeight(200);
@@ -310,9 +327,7 @@ public class LivingRoom extends Scene {
             hBoxPopUp.getChildren().add(imageView);
         }
 
-        VBox vBoxMain = new VBox();
-
-        Button send = new Button("send");
+        Button send = new Button("insert");
         send.setOnAction(e-> {
             try {
                 insertTiles();
@@ -323,8 +338,25 @@ public class LivingRoom extends Scene {
         send.setPrefHeight(40);
         send.setPrefWidth(60);
 
+        HBox input = new HBox();
+        input.setPrefWidth(150);
+        input.setPrefHeight(20);
+
+        orderTile = new TextField();
+        orderTile.setPromptText("Choose order: ");
+        orderTile.setPrefWidth(120);
+        orderTile.setPrefHeight(20);
+
+        column = new TextField();
+        column.setPromptText("Column: ");
+        column.setPrefWidth(50);
+        column.setPrefHeight(20);
+
+        input.setSpacing(10);
+        input.getChildren().addAll(orderTile,column);
+
         vBoxMain.setSpacing(20);
-        vBoxMain.getChildren().addAll(hBoxPopUp,send);
+        vBoxMain.getChildren().addAll(hBoxPopUp,input,send);
 
         alert.getDialogPane().setContent(vBoxMain);
 
@@ -332,6 +364,19 @@ public class LivingRoom extends Scene {
     }
 
     public static void outcomeSelectTiles(){
+        int x;
+        int y;
+        int tmp = 0;
+        if(mockModel.getMockPlayers().size() == 2) {
+            tmp = 1;
+        }
+        for(Coordinates tile:selectedTiles){
+            x = tile.x();
+            y = tile.y();
+            Pane selectedPane;
+            selectedPane = getPane(gridBoard,y+tmp,x+tmp);
+            selectedPane.getChildren().remove(0);
+        }
         printSelectedTiles();
         selectedTiles.clear();
         selectedTilesImg.clear();
@@ -352,6 +397,20 @@ public class LivingRoom extends Scene {
     }
     public static void insertTiles() throws RemoteException {
         System.out.println("insert tiles");
+
+        String tileToInsert = orderTile.getText();
+
+        String[] pos = tileToInsert.split(",");
+        if(pos.length < 1 || pos.length > 3)
+            printError("Wrong order!");
+        List<Integer> orderToSend = new ArrayList<>();
+        for(String p:pos){
+            orderToSend.add(Integer.parseInt(p));
+        }
+
+        int col = Integer.parseInt(column.getText());
+
+        network.insertTiles(localPlayer,orderToSend,col);
     }
     private static ImageView choseImage(String colorString) {
         ImageView image;
@@ -408,17 +467,13 @@ public class LivingRoom extends Scene {
         }
     }
 
-    private static void handleClick(MouseEvent e){
-        List<Integer> orderTiles = new ArrayList<>();
-        int column;
+    public static void updateShelves(){
+        // shelves
 
-        double mouseX = e.getX();
-        double mouseY = e.getY();
-        System.out.println("mouse x: "+ mouseX + ", mouse y: "+ mouseY);
 
-        double StartX = 0;
-        double endX = 0;
-
+        // personal goal
     }
-
+    public static void updateMockModel(MockModel mockmodel){
+        mockModel = mockmodel;
+    }
 }

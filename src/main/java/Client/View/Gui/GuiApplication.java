@@ -58,11 +58,25 @@ public class GuiApplication extends Application {
     public void askPlayerInfo(){
         Platform.runLater(()-> ConnectionScene.toLoginScene(this.activeLobbies));
     }
+
+    private boolean firstBoard = true;
     public void showBoard(Cell[][] board, MockModel mockModel){
-        Platform.runLater(()-> LivingRoom.showBoard(board,mockModel));
+        if(firstBoard) {
+            firstBoard = false;
+            Platform.runLater(() -> LivingRoom.showBoard(board, mockModel));
+        }else{
+            Platform.runLater(() -> LivingRoom.updateMockModel(mockModel));
+        }
     }
+
+    private boolean firstShelves = true;
     public void showShelves(){
-        Platform.runLater(LivingRoom::updateCommonAndPersonalGoal);
+        if(firstShelves) {
+            firstShelves = false;
+            Platform.runLater(LivingRoom::showCommonAndShelves);
+        }else{
+            Platform.runLater(LivingRoom::updateShelves);
+        }
     }
     public void outcomeSelectTiles(List<Tile> selectedTiles){
         Platform.runLater(LivingRoom::outcomeSelectTiles);
