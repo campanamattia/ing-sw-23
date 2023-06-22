@@ -1,10 +1,12 @@
 package Client.View.Gui.Scene;
 
+import Client.View.Cli.CliColor;
 import Client.View.Gui.GuiApplication;
 import Utils.Cell;
 import Utils.Coordinates;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
+import Utils.Tile;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -28,12 +30,14 @@ public class LivingRoom extends Scene {
 
     private ImageView boardImage;
     private static GridPane gridBoard;
+    private static GridPane pGoalGrid;
     private static MockModel mockModel;
     private static final HBox hBoxMyShelfAndCG = new HBox();
     private static VBox vBoxShelves;
     private static final List<ImageView> selectedTilesImg = new ArrayList<>();
     private static final List<Coordinates> selectedTiles = new ArrayList<>();
     private static VBox leftSide;
+    private static VBox notifies;
     private static TextField orderTile;
     private static TextField column;
 
@@ -142,6 +146,10 @@ public class LivingRoom extends Scene {
         app.switchScene(lobbySize);
     }
 
+    public static void updateMockModel(MockModel mockmodel) {
+        mockModel = mockmodel;
+    }
+
     private void boardStyle(ImageView boardImage){
         this.boardImage = boardImage;
         boardImage.setPreserveRatio(true);
@@ -151,10 +159,15 @@ public class LivingRoom extends Scene {
         boardImage.setLayoutY(20);
     }
 
-    public static void showBoard(Cell[][] board,MockModel mockModel){
+    public static void showBoard(Cell[][] board){
         Label currentPlayer = new Label(mockModel.getCurrentPlayer() + "'s turn!");
-        leftSide.getChildren().add(currentPlayer);
-        LivingRoom.mockModel = mockModel;
+        notifies = new VBox();
+        notifies.setVisible(true);
+        notifies.setPrefWidth(150);
+        notifies.setPrefHeight(20);
+        notifies.setLayoutX(20);
+        notifies.getChildren().add(currentPlayer);
+        leftSide.getChildren().add(notifies);
         int numPlayer = mockModel.getMockPlayers().size();
         ImageView image;
         int tmp = 0;
@@ -216,7 +229,7 @@ public class LivingRoom extends Scene {
         pGoalImg.setFitWidth(250);
         pGoalImg.setFitHeight(300);
 
-        GridPane pGoalGrid = new GridPane();
+        pGoalGrid = new GridPane();
         pGoalGrid.setGridLinesVisible(true);
         pGoalGrid.setHgap(10);
         pGoalGrid.setVgap(2);
@@ -225,22 +238,15 @@ public class LivingRoom extends Scene {
         pGoalGrid.prefWidthProperty().bind(pGoalImg.fitWidthProperty());
         pGoalGrid.prefHeightProperty().bind(pGoalImg.fitWidthProperty());
 
-        for(int row=0;row<6;row++){
-            RowConstraints rowConstraints = new RowConstraints();
-            rowConstraints.setPrefHeight(30);
-            pGoalGrid.getRowConstraints().add(rowConstraints);
-            pGoalGrid.addRow(row);
-        }
-        for(int col=0;col<5;col++){
-            ColumnConstraints colConstraints = new ColumnConstraints();
-            colConstraints.setPrefWidth(30);
-            pGoalGrid.getColumnConstraints().add(colConstraints);
-            pGoalGrid.addColumn(col);
-        }
+        pGoalGrid.getChildren().clear();
         for(int i=0;i<6;i++){
             for(int j=0;j<5;j++){
                 Pane paneBase = new Pane();
+                paneBase.setPrefWidth(30);
+                paneBase.setPrefHeight(30);
                 pGoalGrid.add(paneBase,j,i);
+                GridPane.setColumnIndex(paneBase,j);
+                GridPane.setRowIndex(paneBase,i);
             }
         }
         pGoalGrid.setOnMouseClicked(event -> {
@@ -251,7 +257,7 @@ public class LivingRoom extends Scene {
             }
         });
 
-        pGoalPane.getChildren().addAll(pGoalImg,pGoalGrid);
+        pGoalPane.getChildren().addAll(pGoalGrid,pGoalImg);
 
         // shelves
         HBox hBoxShelves = new HBox();
@@ -293,7 +299,7 @@ public class LivingRoom extends Scene {
             for(int j=0;j<6;j++){
                 for(int k=0;k<5;k++){
                     Pane paneBase = new Pane();
-                    grid.add(paneBase,j,i);
+                    grid.add(paneBase,k,j);
                 }
             }
             playerShelfPane.getChildren().addAll(grid,shelfImg);
@@ -364,19 +370,6 @@ public class LivingRoom extends Scene {
     }
 
     public static void outcomeSelectTiles(){
-        int x;
-        int y;
-        int tmp = 0;
-        if(mockModel.getMockPlayers().size() == 2) {
-            tmp = 1;
-        }
-        for(Coordinates tile:selectedTiles){
-            x = tile.x();
-            y = tile.y();
-            Pane selectedPane;
-            selectedPane = getPane(gridBoard,y+tmp,x+tmp);
-            selectedPane.getChildren().remove(0);
-        }
         printSelectedTiles();
         selectedTiles.clear();
         selectedTilesImg.clear();
@@ -468,12 +461,64 @@ public class LivingRoom extends Scene {
     }
 
     public static void updateShelves(){
+
+        ImageView image;
         // shelves
 
 
         // personal goal
+        Tile[][] personalShelf = mockModel.getPlayer(localPlayer).getShelf();
+        // delete the old board
+        for(int i=0;i<personalShelf.length;i++) {
+            for (int j = 0; j < personalShelf[0].length; j++) {
+                Pane tmpPane = getPane(pGoalGrid,j,i);
+                if(tmpPane.getChildren().size() != 0)
+                    tmpPane.getChildren().remove(0);
+            }
+        }
+        // adding tiles updated
+        for(int i=0;i<personalShelf.length;i++) {
+            for (int j = 0; j < personalShelf[0].length; j++) {
+                if (personalShelf[i][j] != null) {
+                    String colorString = personalShelf[i][j].getTileColor().getCode();
+                    image = choseImage(colorString);
+                    image.setPreserveRatio(true);
+                    Pane tmpPane = getPane(pGoalGrid, j, i);
+                    image.fitWidthProperty().bind(tmpPane.widthProperty());
+                    tmpPane.getChildren().add(image);
+                }
+            }
+        }
     }
-    public static void updateMockModel(MockModel mockmodel){
-        mockModel = mockmodel;
+    public static void updateBoard(Cell[][] board){
+        System.out.println("updating the board");
+        int numPlayer = mockModel.getMockPlayers().size();
+        ImageView image;
+        int tmp = 0;
+        if(numPlayer == 2)
+            tmp = 1;
+
+        // currentPlayer
+        // TODO: 22/06/2023 fix current player
+
+        // delete the old board
+        for(int i=0;i<board.length;i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                Pane tmpPane = getPane(gridBoard,j+tmp,i+tmp);
+                if(tmpPane.getChildren().size() != 0)
+                    tmpPane.getChildren().remove(0);
+            }
+        }
+
+        for(int i=0;i<board.length;i++){
+            for(int j=0;j<board[0].length;j++){
+                if (board[i][j].getStatus() && board[i][j].getTile() != null) {
+                    String colorString = board[i][j].getTile().getColor().getCode();
+                    image = choseImage(colorString);
+                    Pane tmpPane = getPane(gridBoard,j+tmp,i+tmp);
+                    tmpPane.getChildren().add(image);
+                }
+            }
+        }
     }
 }

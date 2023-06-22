@@ -540,5 +540,8 @@ public class Cli extends View {
         }
         return count;
     }
+    public static void updateMockModel(MockModel mockModel){
+
+    }
 
 }

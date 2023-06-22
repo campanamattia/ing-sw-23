@@ -5,6 +5,7 @@ import Client.View.Gui.Scene.ConnectionScene;
 import Client.View.Gui.Scene.LivingRoom;
 import Client.View.Gui.Scene.LoginScene;
 import Utils.Cell;
+import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockModel;
 import Utils.Tile;
 import javafx.application.Application;
@@ -60,12 +61,10 @@ public class GuiApplication extends Application {
     }
 
     private boolean firstBoard = true;
-    public void showBoard(Cell[][] board, MockModel mockModel){
+    public void showBoard(Cell[][] board){
         if(firstBoard) {
             firstBoard = false;
-            Platform.runLater(() -> LivingRoom.showBoard(board, mockModel));
-        }else{
-            Platform.runLater(() -> LivingRoom.updateMockModel(mockModel));
+            Platform.runLater(() -> LivingRoom.showBoard(board));
         }
     }
 
@@ -84,6 +83,16 @@ public class GuiApplication extends Application {
     public void outcomeException(Exception e){
         Platform.runLater(()->
             LivingRoom.printError(e.getMessage())
+        );
+    }
+    public void updateBoard(Cell[][] board){
+        Platform.runLater(()->
+                LivingRoom.updateBoard(board)
+        );
+    }
+    public void updateMockModel(MockModel mockModel){
+        Platform.runLater(()->
+                LivingRoom.updateMockModel(mockModel)
         );
     }
 }
