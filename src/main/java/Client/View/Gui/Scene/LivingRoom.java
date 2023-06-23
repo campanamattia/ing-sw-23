@@ -1,6 +1,5 @@
 package Client.View.Gui.Scene;
 
-import Client.View.Cli.CliColor;
 import Client.View.Gui.GuiApplication;
 import Utils.Cell;
 import Utils.Coordinates;
@@ -40,6 +39,7 @@ public class LivingRoom extends Scene {
     private static VBox notifies;
     private static TextField orderTile;
     private static TextField column;
+    private static final List<GridPane> othersShelves = new ArrayList<>();
 
     public LivingRoom(GuiApplication app) {
 
@@ -277,31 +277,25 @@ public class LivingRoom extends Scene {
 
             // binding the grid pane
             GridPane grid = new GridPane();
+            grid.setGridLinesVisible(true);
             grid.setHgap(7);
             grid.setVgap(2);
             grid.setLayoutX(30);
             grid.setLayoutY(30);
             grid.prefWidthProperty().bind(shelfImg.fitWidthProperty());
             grid.prefHeightProperty().bind(shelfImg.fitWidthProperty());
-            grid.setGridLinesVisible(true);
-            for(int row=0;row<6;row++){
-                RowConstraints rowConstraints = new RowConstraints();
-                rowConstraints.setPrefHeight(25);
-                grid.getRowConstraints().add(rowConstraints);
-                grid.addRow(row);
-            }
-            for(int col=0;col<5;col++){
-                ColumnConstraints colConstraints = new ColumnConstraints();
-                colConstraints.setPrefWidth(25);
-                grid.getColumnConstraints().add(colConstraints);
-                grid.addColumn(col);
-            }
-            for(int j=0;j<6;j++){
-                for(int k=0;k<5;k++){
+            grid.getChildren().clear();
+            for(int k=0;k<6;k++){
+                for(int j=0;j<5;j++){
                     Pane paneBase = new Pane();
-                    grid.add(paneBase,k,j);
+                    paneBase.setPrefWidth(25);
+                    paneBase.setPrefHeight(25);
+                    grid.add(paneBase,j,k);
+                    GridPane.setColumnIndex(paneBase,j);
+                    GridPane.setRowIndex(paneBase,k);
                 }
             }
+            othersShelves.add(grid);
             playerShelfPane.getChildren().addAll(grid,shelfImg);
             hBoxShelves.getChildren().add(playerShelfPane);
         }
@@ -463,32 +457,63 @@ public class LivingRoom extends Scene {
     public static void updateShelves(){
 
         ImageView image;
+        int grids = 0;
         // shelves
-
-
-        // personal goal
-        Tile[][] personalShelf = mockModel.getPlayer(localPlayer).getShelf();
-        // delete the old board
-        for(int i=0;i<personalShelf.length;i++) {
-            for (int j = 0; j < personalShelf[0].length; j++) {
-                Pane tmpPane = getPane(pGoalGrid,j,i);
-                if(tmpPane.getChildren().size() != 0)
-                    tmpPane.getChildren().remove(0);
-            }
-        }
-        // adding tiles updated
-        for(int i=0;i<personalShelf.length;i++) {
-            for (int j = 0; j < personalShelf[0].length; j++) {
-                if (personalShelf[i][j] != null) {
-                    String colorString = personalShelf[i][j].getTileColor().getCode();
-                    image = choseImage(colorString);
-                    image.setPreserveRatio(true);
-                    Pane tmpPane = getPane(pGoalGrid, j, i);
-                    image.fitWidthProperty().bind(tmpPane.widthProperty());
-                    tmpPane.getChildren().add(image);
+        for(int k=0;k<mockModel.getMockPlayers().size();k++){
+            if(!localPlayer.equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
+                System.out.println("Update other's shelves!");
+                Tile[][] othersShelf = mockModel.getMockPlayers().get(k).getShelf();
+                GridPane playerGrid = othersShelves.get(grids);
+                grids++;
+                // delete the old board
+                for (int i = 0; i < othersShelf.length; i++) {
+                    for (int j = 0; j < othersShelf[0].length; j++) {
+                        Pane tmpPane = getPane(playerGrid, j, i);
+                        if (tmpPane.getChildren().size() != 0)
+                            tmpPane.getChildren().remove(0);
+                    }
                 }
-            }
+
+                // update
+                for (int i = 0; i < othersShelf.length; i++) {
+                    for (int j = 0; j < othersShelf[0].length; j++) {
+                        if (othersShelf[i][j] != null) {
+                            String colorString = othersShelf[i][j].getTileColor().getCode();
+                            image = choseImage(colorString);
+                            image.setPreserveRatio(true);
+                            Pane tmpPane = getPane(playerGrid, j, i);
+                            image.fitWidthProperty().bind(tmpPane.widthProperty());
+                            tmpPane.getChildren().add(image);
+                        }
+                    }
+                }
+            }else{
+                // personal goal
+                Tile[][] personalShelf = mockModel.getPlayer(localPlayer).getShelf();
+                // delete the old board
+                for(int i=0;i<personalShelf.length;i++) {
+                    for (int j = 0; j < personalShelf[0].length; j++) {
+                        Pane tmpPane = getPane(pGoalGrid,j,i);
+                        if(tmpPane.getChildren().size() != 0)
+                            tmpPane.getChildren().remove(0);
+                    }
+                }
+                // adding tiles updated
+                for(int i=0;i<personalShelf.length;i++) {
+                    for (int j = 0; j < personalShelf[0].length; j++) {
+                        if (personalShelf[i][j] != null) {
+                            String colorString = personalShelf[i][j].getTileColor().getCode();
+                            image = choseImage(colorString);
+                            image.setPreserveRatio(true);
+                            Pane tmpPane = getPane(pGoalGrid, j, i);
+                            image.fitWidthProperty().bind(tmpPane.widthProperty());
+                            tmpPane.getChildren().add(image);
+                        }
+                    }
+                }}
+
         }
+
     }
     public static void updateBoard(Cell[][] board){
         System.out.println("updating the board");

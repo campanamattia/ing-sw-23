@@ -7,6 +7,7 @@ import Client.View.Gui.Scene.LoginScene;
 import Utils.Cell;
 import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockModel;
+import Utils.MockObjects.MockPlayer;
 import Utils.Tile;
 import javafx.application.Application;
 import javafx.application.Platform;
