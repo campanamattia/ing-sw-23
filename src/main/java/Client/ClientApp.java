@@ -24,7 +24,5 @@ public class ClientApp {
             else
                 view = ViewFactory.instanceView("CLI");
         }
-        assert view != null;
-        view.start();
     }
 }

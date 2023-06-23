@@ -18,7 +18,7 @@ import java.util.Stack;
 public class SameNGoal extends CommonGoal {
 
     /**
-     * The number of tiles of the same color required to accomplish the SameNGoal.
+     * The tiles' number the same color required to accomplish the SameNGoal.
      */
     private final int numEquals;
 

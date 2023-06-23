@@ -23,8 +23,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 /**
@@ -105,25 +105,25 @@ public class GameModel {
         generateCommonGoal(players.size());
     }
 
-    private JsonObject decoBoard(int players) throws FileNotFoundException {
+    private JsonObject decoBoard(int players) {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader(Objects.requireNonNull(GameModel.class.getResource("/settings/board.json")).getFile()));
+        reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("settings/board.json"))));
         JsonObject json = gson.fromJson(reader, JsonObject.class);
         return json.getAsJsonObject(Integer.toString(players));
     }
 
-    private JsonArray decoPersonal() throws FileNotFoundException {
+    private JsonArray decoPersonal() {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader(Objects.requireNonNull(GameModel.class.getResource("/settings/personalGoal.json")).getFile()));
+        reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("settings/personalGoal.json"))));
         return gson.fromJson(reader, JsonArray.class);
     }
 
-    private void generateCommonGoal(int players) throws FileNotFoundException {
+    private void generateCommonGoal(int players) {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader(Objects.requireNonNull(GameModel.class.getResource("/settings/commonGoal.json")).getFile()));
+        reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("settings/commonGoal.json"))));
         JsonObject json = gson.fromJson(reader, JsonObject.class);
         JsonArray array = json.get("commonGoal").getAsJsonArray();
         json = json.get("scoringToken").getAsJsonObject();

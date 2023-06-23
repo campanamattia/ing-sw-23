@@ -41,6 +41,8 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      */
     private final HashMap<String, Integer> lobbySize;
 
+    private final HashMap<GameController, Timer> endingTimers;
+
     /**
      * Constructs a new instance of the Lobby class.
      * Initializes the lobby, heartbeat, lobby size, and games.
@@ -53,6 +55,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         this.lobby = new HashMap<>();
         this.lobbySize = new HashMap<>();
         this.games = new ArrayList<>();
+        this.endingTimers = new HashMap<>();
     }
 
     /**
@@ -92,19 +95,11 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
 
             // Retrieve game information
             for (GameController game : this.games) {
-                games.put(game.getGameID(), activePlayers(game) + "/" + game.getPlayers().size());
+                games.put(game.getGameID(), game.activePlayers().size() + "/" + game.getPlayers().size());
             }
 
             return lobbyInfo;
         } else return null;
-    }
-
-    private int activePlayers(GameController game) {
-        int activePlayers = 0;
-        for (ClientHandler status : game.getClients()) {
-            activePlayers += (status != null) ? 1 : 0;
-        }
-        return activePlayers;
     }
 
     /**
@@ -335,11 +330,27 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         if (game != null) {
             try {
                 clientHandler = game.logOut(playerID);
-                if (activePlayers(game) <= 1) {
-                    this.games.remove(game);
-                    for (ClientHandler handler : game.getClients())
-                        if (handler != null)
-                            handler.remoteView().outcomeException(new Exception("The game was concluded due to insufficient active players."));
+                switch (game.activePlayers().size()) {
+                    case 0 -> {
+                        this.games.remove(game);
+                        this.endingTimers.remove(game).cancel();
+                    }
+                    case 1 -> {
+                        endingTimers.put(game, new Timer());
+                        endingTimers.get(game).schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                game.activePlayers().forEach((client->{
+                                    try{
+                                        client.remoteView().outcomeMessage("You won!");
+                                    } catch (RemoteException e) {
+                                        logger.log(Level.SEVERE, e.getMessage());
+                                    }
+                                        }));
+                                games.remove(game);
+                            }
+                        }, 10000);
+                    }
                 }
             } catch (IOException e) {
                 logger.log(Level.SEVERE, e.getMessage());
@@ -351,8 +362,17 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
                 this.lobbySize.remove(lobbyID);
             }
         } else logger.severe("Can't find the lobby to log out");
-        if (clientHandler.remoteView() instanceof SocketHandler) ((SocketHandler) clientHandler.remoteView()).logOut();
+        if (clientHandler.remoteView() instanceof SocketHandler socketHandler)
+            try{
+                socketHandler.logOut();
+            } catch (NullPointerException e) {
+                logger.log(Level.SEVERE, e.getMessage());
+            }
         deleteTimer(playerID, lobbyID);
+    }
+
+    public Timer getEndingTimer(GameController game) {
+        return endingTimers.remove(game);
     }
 
     private void deleteTimer(String playerID, String lobbyID) {
@@ -402,7 +422,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             }
             logger.info("Active games:");
             for (GameController game : games) {
-                logger.info("\t" + game.getGameID() + " with " + activePlayers(game) + " players");
+                logger.info("\t" + game.getGameID() + " with " + game.activePlayers().size() + " players");
             }
         }
     }

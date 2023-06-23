@@ -28,7 +28,7 @@ public class PingTimer {
 
     /**
      * Starts the ping timer.
-     * If a timer is already running, it will be cancelled and a new timer will be created.
+     * If a timer is already running, it will be canceled and a new timer will be created.
      */
     public void start() {
         if (timer != null) {
@@ -51,7 +51,7 @@ public class PingTimer {
 
     /**
      * Receives a ping from the client and resets the timer.
-     * If a timer is running, it will be cancelled and a new timer will be started.
+     * If a timer is running, it will be canceled and a new timer will be started.
      */
     public void receivedPing() {
         if (timer != null) {
@@ -70,7 +70,7 @@ public class PingTimer {
 
     /**
      * Interrupts the timer.
-     * If a timer is running, it will be cancelled.
+     * If a timer is running, it will be canceled.
      */
     public void interrupt() {
         if (timer != null) {

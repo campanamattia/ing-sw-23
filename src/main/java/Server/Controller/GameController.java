@@ -27,11 +27,13 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import static Server.ServerApp.*;
 
 /**
- * The GameController class represents the controller for a game. It manages the game model, players, phases, and turn progression.
+ * The GameController class represents the controller for a game.
+ * It manages the game model, players, phases, and turns progression.
  * This class implements the GameCommand interface and is Serializable.
  */
 public class GameController extends UnicastRemoteObject implements GameCommand, Serializable {
@@ -89,7 +91,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
     /**
      * This method ends the current turn, checks for common goals, advances to the next player, and updates the gameModel status.
      * If the gameModel has entered its last round, it changes the gameModel phase accordingly.
-     * If the gameModel has ended, it sets the leaderboard and gameModel phase to ended.
+     * If the gameModel has ended, it sets the leaderboard and gameModel phase to end.
      */
     public void endTurn() throws IOException {
         this.turnPhase = TurnPhase.PICKING;
@@ -102,6 +104,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                     this.phaseController = new LastRoundState(this.phaseController.getCurrentPlayer(), this.phaseController.getPlayers());
                     continue;
                 } else {
+                    this.phaseController = null;
                     EndedMatch.doRank(this.players.values(), this.gameModel.getPlayers());
                     lobby.endGame(this);
                     return;
@@ -241,6 +244,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             if (ableTo(playerID) == null)
                 return;
         } catch (NotYourTurnException e) {
+            this.players.get(playerID).remoteView().outcomeException(e);
             return;
         }
         try {
@@ -272,6 +276,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         try {
             this.gameModel.getPlayer(playerID).setStatus(true);
             this.players.put(playerID, client);
+            lobby.getEndingTimer(this).cancel();
         } catch (PlayerNotFoundException e) {
             logger.severe(e.toString());
             executorService.execute(() -> {
@@ -383,5 +388,9 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      */
     public HashMap<String, ClientHandler> getPlayers() {
         return players;
+    }
+
+    public List<ClientHandler> activePlayers() {
+        return this.players.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 }

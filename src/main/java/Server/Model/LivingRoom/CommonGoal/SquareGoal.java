@@ -85,7 +85,7 @@ public class SquareGoal extends CommonGoal {
      * @param column The column to start from
      * @param dimSquare The size of the square
      * @param color The color of the tiles
-     * @return true if a square of tiles of the same color is found, false otherwise
+     * @return true if a tiles square the same color is found, false otherwise
      */
     private boolean checkSquare (Shelf shelf, int row, int column, int dimSquare, Color color) {
         int count = 0;
@@ -100,7 +100,7 @@ public class SquareGoal extends CommonGoal {
     }
 
     /**
-     * Checks if the tiles that are located at the edges of the square of tiles of size dimSquare,
+     * Checks if the tiles that are located at the edges of the tiles square of size dimSquare,
      * starting from row and column on the specified shelf, are all of a different color than the square.
      * @param shelf The shelf to check
      * @param row The row to start from

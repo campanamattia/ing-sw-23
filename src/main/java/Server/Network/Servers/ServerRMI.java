@@ -1,5 +1,6 @@
 package Server.Network.Servers;
 
+
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -26,6 +27,7 @@ public class ServerRMI {
      */
     public void start(int rmiPort) throws RemoteException, AlreadyBoundException {
         logger.info("Starting RMI server");
+        //System.setProperty("java.rmi.server.hostname", ServerA);
         ServerRMI.registry = LocateRegistry.createRegistry(rmiPort);
         try {
             registry.bind("Lobby", lobby);
