@@ -1,8 +1,6 @@
 package Client.View.Gui;
 
 import Client.ClientApp;
-import Client.View.Cli.LightController;
-import Client.View.Gui.Scene.LoginScene;
 import Client.View.View;
 import Enumeration.TurnPhase;
 import Utils.Cell;
@@ -23,9 +21,6 @@ import static Client.ClientApp.*;
 
 public class Gui extends View {
     private final GuiApplication guiApplication;
-    private LightController controller;
-    private Thread inputThread;
-
 
     public Gui() throws RemoteException {
         super();
@@ -164,7 +159,6 @@ public class Gui extends View {
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
         guiApplication.updateMockModel(this.mockModel);
-        this.controller = new LightController();
         if (mockModel.getChat() != null) fixChat();
         newTurn(mockModel.getCurrentPlayer());
     }
@@ -174,7 +168,7 @@ public class Gui extends View {
 
     @Override
     public void endGame(List<Rank> leaderboard) throws RemoteException {
-
+        guiApplication.endGame(leaderboard);
     }
 
     @Override
@@ -189,5 +183,3 @@ public class Gui extends View {
         guiApplication.updateMockModel(this.mockModel);
     }
 }
-
-

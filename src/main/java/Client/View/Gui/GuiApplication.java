@@ -1,13 +1,11 @@
 package Client.View.Gui;
 
-import Client.View.Cli.LightController;
 import Client.View.Gui.Scene.ConnectionScene;
 import Client.View.Gui.Scene.LivingRoom;
 import Client.View.Gui.Scene.LoginScene;
 import Utils.Cell;
-import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockModel;
-import Utils.MockObjects.MockPlayer;
+import Utils.Rank;
 import Utils.Tile;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -24,6 +22,7 @@ public class GuiApplication extends Application {
     private List<String> activeLobbies = new ArrayList<>();
 
     private static volatile boolean javaFxLaunched = false;
+    private MockModel mockModel;
 
     public GuiApplication() {
         if (!javaFxLaunched) { // First time
@@ -62,6 +61,7 @@ public class GuiApplication extends Application {
     }
 
     private boolean firstBoard = true;
+
     public void showBoard(Cell[][] board){
         if(firstBoard) {
             firstBoard = false;
@@ -70,12 +70,20 @@ public class GuiApplication extends Application {
     }
 
     private boolean firstShelves = true;
+    private boolean fromChat = false;
+
+    public void setFromChat(boolean firstShelves) {
+        this.firstShelves = firstShelves;
+    }
+
     public void showShelves(){
         if(firstShelves) {
+            System.out.println("first ever print shelves!");
             firstShelves = false;
             Platform.runLater(LivingRoom::showCommonAndShelves);
         }else{
-            Platform.runLater(LivingRoom::updateShelves);
+            Platform.runLater(()->LivingRoom.updateShelves(fromChat));
+            fromChat = false;
         }
     }
     public void outcomeSelectTiles(List<Tile> selectedTiles){
@@ -92,8 +100,15 @@ public class GuiApplication extends Application {
         );
     }
     public void updateMockModel(MockModel mockModel){
+        this.mockModel = mockModel;
         Platform.runLater(()->
                 LivingRoom.updateMockModel(mockModel)
+        );
+    }
+
+    public void endGame(List<Rank> leaderboard) {
+        Platform.runLater(()->
+                LivingRoom.endGame(leaderboard)
         );
     }
 }

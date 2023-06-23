@@ -5,6 +5,7 @@ import Utils.Cell;
 import Utils.Coordinates;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
+import Utils.Rank;
 import Utils.Tile;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -26,7 +27,6 @@ import static Client.ClientApp.*;
 
 public class LivingRoom extends Scene {
     private static GuiApplication app;
-
     private ImageView boardImage;
     private static GridPane gridBoard;
     private static GridPane pGoalGrid;
@@ -36,7 +36,6 @@ public class LivingRoom extends Scene {
     private static final List<ImageView> selectedTilesImg = new ArrayList<>();
     private static final List<Coordinates> selectedTiles = new ArrayList<>();
     private static VBox leftSide;
-    private static VBox notifies;
     private static TextField orderTile;
     private static TextField column;
     private static final List<GridPane> othersShelves = new ArrayList<>();
@@ -161,7 +160,7 @@ public class LivingRoom extends Scene {
 
     public static void showBoard(Cell[][] board){
         Label currentPlayer = new Label(mockModel.getCurrentPlayer() + "'s turn!");
-        notifies = new VBox();
+        VBox notifies = new VBox();
         notifies.setVisible(true);
         notifies.setPrefWidth(150);
         notifies.setPrefHeight(20);
@@ -196,19 +195,18 @@ public class LivingRoom extends Scene {
         return res;
     }
 
-    public static void showCommonAndShelves(){
-
+    public static void showCommonAndShelves() {
         // common goals
 
-        MockCommonGoal mockCommonGoal1 = LivingRoom.mockModel.getMockCommonGoal().get(0);
+        MockCommonGoal mockCommonGoal1 = mockModel.getMockCommonGoal().get(0);
         int numberCGoal1 = mockCommonGoal1.getEnumeration() + 1;
-        MockCommonGoal mockCommonGoal2 = LivingRoom.mockModel.getMockCommonGoal().get(1);
+        MockCommonGoal mockCommonGoal2 = mockModel.getMockCommonGoal().get(1);
         int numberCGoal2 = mockCommonGoal2.getEnumeration() + 1;
 
         Pane cg1 = new Pane();
         Pane cg2 = new Pane();
-        ImageView cg1img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/"+numberCGoal1+".jpg")));
-        ImageView cg2img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/"+numberCGoal2+".jpg")));
+        ImageView cg1img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/" + numberCGoal1 + ".jpg")));
+        ImageView cg2img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/" + numberCGoal2 + ".jpg")));
         cg1img.setFitHeight(166);
         cg1img.setFitWidth(250);
         cg1img.setPreserveRatio(true);
@@ -218,9 +216,15 @@ public class LivingRoom extends Scene {
         cg1.getChildren().add(cg1img);
         cg2.getChildren().add(cg2img);
 
-        VBox vBoxCommonGoal = new VBox(10,cg1,cg2);
+        VBox vBoxCommonGoal = new VBox(10, cg1, cg2);
 
         // personal goal
+
+        Label personalID = new Label(mockModel.getPlayer(localPlayer).getPlayerID() + "'s shelf");
+        personalID.setPrefWidth(150);
+        personalID.setPrefHeight(20);
+        personalID.setLayoutX(50);
+        personalID.setLayoutY(250);
 
         Pane pGoalPane = new Pane();
 
@@ -239,31 +243,70 @@ public class LivingRoom extends Scene {
         pGoalGrid.prefHeightProperty().bind(pGoalImg.fitWidthProperty());
 
         pGoalGrid.getChildren().clear();
-        for(int i=0;i<6;i++){
-            for(int j=0;j<5;j++){
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 5; j++) {
                 Pane paneBase = new Pane();
                 paneBase.setPrefWidth(30);
                 paneBase.setPrefHeight(30);
-                pGoalGrid.add(paneBase,j,i);
-                GridPane.setColumnIndex(paneBase,j);
-                GridPane.setRowIndex(paneBase,i);
+                pGoalGrid.add(paneBase, j, i);
+                GridPane.setColumnIndex(paneBase, j);
+                GridPane.setRowIndex(paneBase, i);
             }
         }
+
+        ImageView image;
+
+        GridPane wallpaper = new GridPane();
+        wallpaper.setGridLinesVisible(true);
+        wallpaper.setHgap(10);
+        wallpaper.setVgap(2);
+        wallpaper.setLayoutX(30);
+        wallpaper.setLayoutY(20);
+        wallpaper.prefWidthProperty().bind(pGoalImg.fitWidthProperty());
+        wallpaper.prefHeightProperty().bind(pGoalImg.fitWidthProperty());
+
+        wallpaper.getChildren().clear();
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 5; j++) {
+                Pane paneBase = new Pane();
+                paneBase.setPrefWidth(30);
+                paneBase.setPrefHeight(30);
+                wallpaper.add(paneBase, j, i);
+                GridPane.setColumnIndex(paneBase, j);
+                GridPane.setRowIndex(paneBase, i);
+            }
+        }
+        Tile[][] personalGoal = mockModel.getPlayer(localPlayer).getPersonalGoal();
+        for (int i = 0; i < personalGoal.length; i++) {
+            for (int j = 0; j < personalGoal[0].length; j++) {
+                if (personalGoal[i][j] != null) {
+                    String colorString = personalGoal[i][j].getTileColor().getCode();
+                    image = choseImage(colorString);
+                    image.setPreserveRatio(true);
+                    image.setOpacity(0.5);
+                    Pane tmpPane = getPane(wallpaper, j, i);
+                    image.fitWidthProperty().bind(tmpPane.widthProperty());
+                    tmpPane.getChildren().add(image);
+                }
+            }
+        }
+
         pGoalGrid.setOnMouseClicked(event -> {
             try {
-                network.selectTiles(localPlayer,selectedTiles);
+                network.selectTiles(localPlayer, selectedTiles);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
         });
 
-        pGoalPane.getChildren().addAll(pGoalGrid,pGoalImg);
+        pGoalPane.getChildren().addAll(wallpaper, pGoalGrid, pGoalImg, personalID);
 
         // shelves
+
         HBox hBoxShelves = new HBox();
 
         int numPlayer = mockModel.getMockPlayers().size();
-        for(int i=0;i<numPlayer-1;i++){
+        for (int i = 0; i < numPlayer - 1; i++) {
 
             // setting pane and image of shelves
             Pane playerShelfPane = new Pane();
@@ -285,18 +328,18 @@ public class LivingRoom extends Scene {
             grid.prefWidthProperty().bind(shelfImg.fitWidthProperty());
             grid.prefHeightProperty().bind(shelfImg.fitWidthProperty());
             grid.getChildren().clear();
-            for(int k=0;k<6;k++){
-                for(int j=0;j<5;j++){
+            for (int k = 0; k < 6; k++) {
+                for (int j = 0; j < 5; j++) {
                     Pane paneBase = new Pane();
                     paneBase.setPrefWidth(25);
                     paneBase.setPrefHeight(25);
-                    grid.add(paneBase,j,k);
-                    GridPane.setColumnIndex(paneBase,j);
-                    GridPane.setRowIndex(paneBase,k);
+                    grid.add(paneBase, j, k);
+                    GridPane.setColumnIndex(paneBase, j);
+                    GridPane.setRowIndex(paneBase, k);
                 }
             }
             othersShelves.add(grid);
-            playerShelfPane.getChildren().addAll(grid,shelfImg);
+            playerShelfPane.getChildren().addAll(grid, shelfImg);
             hBoxShelves.getChildren().add(playerShelfPane);
         }
 
@@ -304,11 +347,23 @@ public class LivingRoom extends Scene {
         vBoxShelves.getChildren().add(hBoxShelves);
 
         hBoxMyShelfAndCG.setSpacing(50);
-        hBoxMyShelfAndCG.getChildren().addAll(vBoxCommonGoal,pGoalPane);
+        hBoxMyShelfAndCG.getChildren().addAll(vBoxCommonGoal, pGoalPane);
 
         vBoxShelves.setSpacing(20);
+        System.out.println("adding common and personal shelf");
         vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
     }
+
+/* Button chat = new Button("Chat");
+chat.setOnMouseClicked(e->showChat());
+vBoxShelves.getChildren().add(chat);
+
+private static void showChat() {
+ChatScene chat = new ChatScene(app);
+ChatScene.updateMockModel(mockModel);
+app.switchScene(chat);
+}*/
+
     private static void printSelectedTiles() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Selected Tiles");
@@ -394,7 +449,6 @@ public class LivingRoom extends Scene {
         for(String p:pos){
             orderToSend.add(Integer.parseInt(p));
         }
-
         int col = Integer.parseInt(column.getText());
 
         network.insertTiles(localPlayer,orderToSend,col);
@@ -454,7 +508,7 @@ public class LivingRoom extends Scene {
         }
     }
 
-    public static void updateShelves(){
+    public static void updateShelves(boolean fromChat){
 
         ImageView image;
         int grids = 0;
@@ -510,8 +564,11 @@ public class LivingRoom extends Scene {
                             tmpPane.getChildren().add(image);
                         }
                     }
-                }}
-
+                }
+            }
+        }
+        if(fromChat){
+            vBoxShelves.setVisible(true);
         }
 
     }
@@ -545,5 +602,11 @@ public class LivingRoom extends Scene {
                 }
             }
         }
+    }
+
+    public static void endGame(List<Rank> leaderboard){
+        EndGameScene endGameScene = new EndGameScene();
+        EndGameScene.setRanks(leaderboard);
+        app.switchScene(endGameScene);
     }
 }
