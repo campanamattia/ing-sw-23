@@ -1,12 +1,10 @@
 package Client.View.Gui.Scene;
 
 import Client.View.Gui.GuiApplication;
+import Utils.*;
 import Utils.Cell;
-import Utils.Coordinates;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
-import Utils.Rank;
-import Utils.Tile;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -36,6 +34,7 @@ public class LivingRoom extends Scene {
     private static TextField orderTile;
     private static TextField column;
     private static final List<GridPane> othersShelves = new ArrayList<>();
+    private static TextArea chatTextArea;
 
     public LivingRoom(GuiApplication app) {
 
@@ -349,6 +348,37 @@ public class LivingRoom extends Scene {
         vBoxShelves.setSpacing(20);
         System.out.println("adding common and personal shelf");
         vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
+
+
+        VBox chatLayout = new VBox();
+        chatLayout.setSpacing(10);
+
+        chatTextArea = new TextArea();
+        TextField messageField = new TextField();
+        Button sendButton = new Button("Send");
+
+        chatLayout.getChildren().addAll(chatTextArea, messageField, sendButton);
+        vBoxShelves.getChildren().add(chatLayout);
+
+        sendButton.setOnAction(event -> {
+            String message = messageField.getText();
+            try {
+                network.writeChat(localPlayer,message,null);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+            messageField.clear();
+        });
+
+        messageField.setOnAction(event -> {
+            String message = messageField.getText();
+            try {
+                network.writeChat(localPlayer,message,null);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+            messageField.clear();
+        });
     }
 
 /* Button chat = new Button("Chat");
@@ -605,5 +635,10 @@ app.switchScene(chat);
         EndGameScene endGameScene = new EndGameScene();
         EndGameScene.setRanks(leaderboard);
         app.switchScene(endGameScene);
+    }
+
+    public static void newMessageChat(ChatMessage message){
+        chatTextArea.appendText(message.message());
+        chatTextArea.appendText("\n");
     }
 }

@@ -53,6 +53,7 @@ public class Gui extends View {
         if (message.to() == null || message.to().equals(localPlayer)) {
             this.mockModel.addMessage(message);
             guiApplication.updateMockModel(this.mockModel);
+            guiApplication.newMessageChat(message);
         }
     }
 

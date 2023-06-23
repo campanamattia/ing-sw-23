@@ -4,6 +4,7 @@ import Client.View.Gui.Scene.ConnectionScene;
 import Client.View.Gui.Scene.LivingRoom;
 import Client.View.Gui.Scene.LoginScene;
 import Utils.Cell;
+import Utils.ChatMessage;
 import Utils.MockObjects.MockModel;
 import Utils.Rank;
 import Utils.Tile;
@@ -109,6 +110,11 @@ public class GuiApplication extends Application {
     public void endGame(List<Rank> leaderboard) {
         Platform.runLater(()->
                 LivingRoom.endGame(leaderboard)
+        );
+    }
+    public void newMessageChat(ChatMessage message){
+        Platform.runLater(()->
+                LivingRoom.newMessageChat(message)
         );
     }
 }
