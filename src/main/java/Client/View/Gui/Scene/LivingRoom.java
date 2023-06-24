@@ -209,10 +209,12 @@ public class LivingRoom extends Scene {
         ImageView cg2img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/" + numberCGoal2 + ".jpg")));
         cg1img.setFitWidth(150);
         cg1img.setPreserveRatio(true);
-        cg1img.setLayoutY(50);
+        cg1img.setLayoutX(30);
+        cg1img.setLayoutY(15);
         cg2img.setFitWidth(150);
-        cg2img.setLayoutY(50);
         cg2img.setPreserveRatio(true);
+        cg2img.setLayoutX(30);
+        cg2img.setLayoutY(15);
         Image copyCg1Image = cg1img.getImage();
         ImageView copyCg1 = new ImageView(copyCg1Image);
         copyCg1.setPreserveRatio(true);
@@ -226,13 +228,14 @@ public class LivingRoom extends Scene {
         cg2.getChildren().add(cg2img);
         cg2.setOnMouseClicked(e->showCommonGoals(copyCg2,e.getScreenX(),e.getScreenY()));
 
+        VBox commonGoal = new VBox();
+        commonGoal.setLayoutY(30);
+        commonGoal.getChildren().addAll(cg1,cg2);
+
         // personal goal
 
         Label personalID = new Label(mockModel.getPlayer(localPlayer).getPlayerID() + "'s shelf");
-        personalID.setPrefWidth(150);
-        personalID.setPrefHeight(20);
-        personalID.setLayoutX(50);
-        personalID.setLayoutY(250);
+        personalID.getStyleClass().add("personal-shelf-label");
 
         Pane pGoalPane = new Pane();
 
@@ -319,6 +322,10 @@ public class LivingRoom extends Scene {
             // setting pane and image of shelves
             Pane playerShelfPane = new Pane();
 
+            Label playerID = new Label(mockModel.getMockPlayers().get(i).getPlayerID() + "'s shelf.");
+            playerID.getStyleClass().add("players-shelf-label");
+            playerShelfPane.getChildren().add(playerID);
+
             ImageView shelfImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
             shelfImg.setFitWidth(200);
             shelfImg.setFitHeight(250);
@@ -355,33 +362,31 @@ public class LivingRoom extends Scene {
         vBoxShelves.getChildren().add(hBoxShelves);
 
         hBoxMyShelfAndCG.setSpacing(20);
-        hBoxMyShelfAndCG.getChildren().addAll(pGoalPane,cg1,cg2);
+        hBoxMyShelfAndCG.getChildren().addAll(pGoalPane,commonGoal);
 
         System.out.println("adding common and personal shelf");
         vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
 
+        // chat
 
         VBox chatLayout = new VBox();
         chatLayout.setSpacing(10);
 
         ComboBox<String> recipient = new ComboBox<>();
+        recipient.getStyleClass().add("combo-box-chat");
         for(int i=0;i<mockModel.getMockPlayers().size();i++){
             if(!localPlayer.equals(mockModel.getMockPlayers().get(i).getPlayerID()))
                 recipient.getItems().add(mockModel.getMockPlayers().get(i).getPlayerID());
         }
-        recipient.setPromptText("Send to: ");
-        recipient.setPrefWidth(150);
-        recipient.setPrefHeight(20);
 
         chatTextArea = new TextArea();
+        chatTextArea.getStyleClass().add("chat-area");
 
         TextField messageField = new TextField();
-        messageField.setPrefWidth(400);
-        messageField.setPrefHeight(20);
+        messageField.getStyleClass().add("text-field-chat");
 
         Button sendButton = new Button("Send");
-        sendButton.setPrefWidth(40);
-        sendButton.setPrefHeight(20);
+        sendButton.getStyleClass().add("button-chat");
 
         HBox hBoxInputMessage = new HBox();
         hBoxInputMessage.setSpacing(10);
@@ -672,7 +677,7 @@ app.switchScene(chat);
         alert.getDialogPane().setPrefWidth(300);
         alert.getDialogPane().setPrefHeight(200);
 
-        alert.setX(mouseX);
+        alert.setX(mouseX - 300.00);
         alert.setY(mouseY);
 
         alert.showAndWait();
