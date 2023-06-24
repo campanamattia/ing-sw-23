@@ -2,7 +2,6 @@ package Client;
 
 import Client.Network.Network;
 import Client.View.*;
-import Client.View.Gui.GuiApplication;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.ExecutorService;
@@ -11,7 +10,6 @@ import java.util.concurrent.Executors;
 public class ClientApp {
 
     public static final String STYLEPATH = String.valueOf(ClientApp.class.getResource("/css/style.css"));
-    public static GuiApplication guiApplication;
     public static String localPlayer;
     public static String lobbyID;
 
@@ -24,7 +22,6 @@ public class ClientApp {
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("GUI")){
                 view = ViewFactory.instanceView(args[0]);
-                guiApplication = new GuiApplication();
             }
             else
                 view = ViewFactory.instanceView("CLI");

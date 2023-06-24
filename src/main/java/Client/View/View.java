@@ -1,5 +1,6 @@
 package Client.View;
 
+import Client.View.Gui.GuiApplication;
 import Interface.Client.RemoteView;
 import Utils.ChatMessage;
 import Utils.MockObjects.MockBoard;
