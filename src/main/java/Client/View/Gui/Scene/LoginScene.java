@@ -38,6 +38,8 @@ public class LoginScene extends Scene {
         backgroundBox.setAlignment(Pos.TOP_CENTER);
 
         activeLobbies = new ComboBox<>();
+        activeLobbies.setPrefWidth(400);
+        activeLobbies.setPrefHeight(20);
         createLobby = new TextField();
         createLobby.setPromptText("create a new lobby: ");
         createLobby.getStyleClass().add("text.field");

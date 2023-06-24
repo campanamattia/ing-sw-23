@@ -8,6 +8,7 @@ import Utils.MockObjects.MockModel;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -38,7 +39,7 @@ public class LivingRoom extends Scene {
 
     public LivingRoom(GuiApplication app) {
 
-        super(new Pane(), 1600, 768);
+        super(new Pane(), 1400, 768);
         setUserAgentStylesheet(STYLEPATH);
 
         LivingRoom.app = app;
@@ -195,8 +196,8 @@ public class LivingRoom extends Scene {
     }
 
     public static void showCommonAndShelves() {
-        // common goals
 
+        // common goals
         MockCommonGoal mockCommonGoal1 = mockModel.getMockCommonGoal().get(0);
         int numberCGoal1 = mockCommonGoal1.getEnumeration() + 1;
         MockCommonGoal mockCommonGoal2 = mockModel.getMockCommonGoal().get(1);
@@ -206,17 +207,24 @@ public class LivingRoom extends Scene {
         Pane cg2 = new Pane();
         ImageView cg1img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/" + numberCGoal1 + ".jpg")));
         ImageView cg2img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/" + numberCGoal2 + ".jpg")));
-        cg1img.setFitWidth(250);
+        cg1img.setFitWidth(150);
         cg1img.setPreserveRatio(true);
         cg1img.setLayoutY(50);
-        cg2img.setFitWidth(250);
+        cg2img.setFitWidth(150);
         cg2img.setLayoutY(50);
         cg2img.setPreserveRatio(true);
+        Image copyCg1Image = cg1img.getImage();
+        ImageView copyCg1 = new ImageView(copyCg1Image);
+        copyCg1.setPreserveRatio(true);
+        copyCg1.setFitWidth(250);
         cg1.getChildren().add(cg1img);
+        cg1.setOnMouseClicked(e->showCommonGoals(copyCg1,e.getScreenX(),e.getScreenY()));
+        Image copyCg2Image = cg2img.getImage();
+        ImageView copyCg2 = new ImageView(copyCg2Image);
+        copyCg2.setPreserveRatio(true);
+        copyCg2.setFitWidth(250);
         cg2.getChildren().add(cg2img);
-
-        hBoxMyShelfAndCG.setSpacing(40);
-        hBoxMyShelfAndCG.getChildren().addAll(cg1,cg2);
+        cg2.setOnMouseClicked(e->showCommonGoals(copyCg2,e.getScreenX(),e.getScreenY()));
 
         // personal goal
 
@@ -346,7 +354,8 @@ public class LivingRoom extends Scene {
 
         vBoxShelves.getChildren().add(hBoxShelves);
 
-        hBoxMyShelfAndCG.getChildren().addAll(pGoalPane);
+        hBoxMyShelfAndCG.setSpacing(20);
+        hBoxMyShelfAndCG.getChildren().addAll(pGoalPane,cg1,cg2);
 
         System.out.println("adding common and personal shelf");
         vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
@@ -378,9 +387,7 @@ public class LivingRoom extends Scene {
         hBoxInputMessage.setSpacing(10);
         hBoxInputMessage.setPrefWidth(600);
         hBoxInputMessage.setPrefHeight(25);
-        HBox.setHgrow(messageField,Priority.ALWAYS);
-        HBox.setHgrow(recipient,Priority.ALWAYS);
-        HBox.setHgrow(sendButton,Priority.ALWAYS);
+
         hBoxInputMessage.getChildren().addAll(messageField,recipient,sendButton);
 
         chatLayout.getChildren().addAll(chatTextArea, hBoxInputMessage);
@@ -652,5 +659,22 @@ app.switchScene(chat);
     public static void newMessageChat(ChatMessage message){
         chatTextArea.appendText(message.message());
         chatTextArea.appendText("\n");
+    }
+
+    private static void showCommonGoals(ImageView commonGoalImg, double mouseX, double mouseY){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("COMMON GOALS");
+        alert.setHeaderText("COMMON GOALS: ");
+
+        commonGoalImg.setFitWidth(250);
+        commonGoalImg.setPreserveRatio(true);
+        alert.getDialogPane().setContent(commonGoalImg);
+        alert.getDialogPane().setPrefWidth(300);
+        alert.getDialogPane().setPrefHeight(200);
+
+        alert.setX(mouseX);
+        alert.setY(mouseY);
+
+        alert.showAndWait();
     }
 }
