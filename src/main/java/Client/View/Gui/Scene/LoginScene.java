@@ -21,9 +21,6 @@ public class LoginScene extends Scene {
     private final TextField playerID;
     private final TextField createLobby;
     private final ComboBox<String> activeLobbies;
-    private final Label activeGames;
-    private final Button sendButton;
-    private List<String> inputLobbies;
 
 
     public LoginScene(GuiApplication app, List<String> inputLobbies){
@@ -32,8 +29,6 @@ public class LoginScene extends Scene {
         setUserAgentStylesheet(STYLEPATH);
 
         LoginScene.app = app;
-
-        this.inputLobbies = inputLobbies;
 
         Label label = new Label("Login: ");
         label.getStyleClass().add("label-title");
@@ -54,14 +49,14 @@ public class LoginScene extends Scene {
         }else{
             activeLobbies.setPromptText("No active lobbies, create a new one");
         }
-        activeGames = new Label("Active games: ");
+        Label activeGames = new Label("Active games: ");
 
         playerID = new TextField();
         playerID.setPromptText("Insert username: ");
         playerID.getStyleClass().add("text-field");
         playerID.setMaxWidth(400);
 
-        sendButton = new Button("Send");
+        Button sendButton = new Button("Send");
         sendButton.setOnAction(e-> {
             try {
                 handleSendButton();
@@ -71,7 +66,7 @@ public class LoginScene extends Scene {
         });
 
         VBox vBoxGameAndLobbies = new VBox();
-        vBoxGameAndLobbies.getChildren().addAll(activeLobbies,createLobby,activeGames);
+        vBoxGameAndLobbies.getChildren().addAll(activeLobbies,createLobby, activeGames);
         vBoxGameAndLobbies.setSpacing(50);
 
         VBox vBoxInput = new VBox();
@@ -82,7 +77,7 @@ public class LoginScene extends Scene {
         hBoxMain.setAlignment(Pos.CENTER);
 
         backgroundBox.setAlignment(Pos.TOP_CENTER);
-        backgroundBox.getChildren().addAll(label,hBoxMain,sendButton);
+        backgroundBox.getChildren().addAll(label,hBoxMain, sendButton);
 
 
 

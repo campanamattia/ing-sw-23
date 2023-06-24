@@ -38,7 +38,7 @@ public class LivingRoom extends Scene {
 
     public LivingRoom(GuiApplication app) {
 
-        super(new Pane(), 1416, 768);
+        super(new Pane(), 1600, 768);
         setUserAgentStylesheet(STYLEPATH);
 
         LivingRoom.app = app;
@@ -72,8 +72,8 @@ public class LivingRoom extends Scene {
             }
         }
 
-        gridBoard.setLayoutX(51);
-        gridBoard.setLayoutY(55);
+        gridBoard.setLayoutX(41);
+        gridBoard.setLayoutY(45);
         gridBoard.setHgap(10);
         gridBoard.setVgap(10);
         gridBoard.setDisable(false);
@@ -81,11 +81,13 @@ public class LivingRoom extends Scene {
         boardPane.getChildren().addAll(boardImage,gridBoard);
 
         vBoxShelves = new VBox();
+        vBoxShelves.setSpacing(10);
 
         leftSide = new VBox();
         leftSide.getChildren().add(boardPane);
 
         HBox mainHBox = new HBox();
+        mainHBox.setSpacing(10);
         mainHBox.getChildren().addAll(leftSide,vBoxShelves);
 
         gridBoard.setOnMouseClicked(event -> {
@@ -150,8 +152,9 @@ public class LivingRoom extends Scene {
         boardImage.setPreserveRatio(true);
         boardImage.setFitWidth(690);
         boardImage.setFitHeight(768);
-        boardImage.setLayoutX(20);
-        boardImage.setLayoutY(20);
+        boardImage.setLayoutX(10);
+        boardImage.setLayoutY(10);
+        boardImage.setLayoutY(10);
     }
 
     public static void showBoard(Cell[][] board){
@@ -203,16 +206,17 @@ public class LivingRoom extends Scene {
         Pane cg2 = new Pane();
         ImageView cg1img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/" + numberCGoal1 + ".jpg")));
         ImageView cg2img = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/common_goal_cards/" + numberCGoal2 + ".jpg")));
-        cg1img.setFitHeight(166);
         cg1img.setFitWidth(250);
         cg1img.setPreserveRatio(true);
-        cg2img.setFitHeight(166);
+        cg1img.setLayoutY(50);
         cg2img.setFitWidth(250);
+        cg2img.setLayoutY(50);
         cg2img.setPreserveRatio(true);
         cg1.getChildren().add(cg1img);
         cg2.getChildren().add(cg2img);
 
-        VBox vBoxCommonGoal = new VBox(10, cg1, cg2);
+        hBoxMyShelfAndCG.setSpacing(40);
+        hBoxMyShelfAndCG.getChildren().addAll(cg1,cg2);
 
         // personal goal
 
@@ -342,10 +346,8 @@ public class LivingRoom extends Scene {
 
         vBoxShelves.getChildren().add(hBoxShelves);
 
-        hBoxMyShelfAndCG.setSpacing(50);
-        hBoxMyShelfAndCG.getChildren().addAll(vBoxCommonGoal, pGoalPane);
+        hBoxMyShelfAndCG.getChildren().addAll(pGoalPane);
 
-        vBoxShelves.setSpacing(20);
         System.out.println("adding common and personal shelf");
         vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
 
@@ -353,17 +355,42 @@ public class LivingRoom extends Scene {
         VBox chatLayout = new VBox();
         chatLayout.setSpacing(10);
 
-        chatTextArea = new TextArea();
-        TextField messageField = new TextField();
-        Button sendButton = new Button("Send");
+        ComboBox<String> recipient = new ComboBox<>();
+        for(int i=0;i<mockModel.getMockPlayers().size();i++){
+            if(!localPlayer.equals(mockModel.getMockPlayers().get(i).getPlayerID()))
+                recipient.getItems().add(mockModel.getMockPlayers().get(i).getPlayerID());
+        }
+        recipient.setPromptText("Send to: ");
+        recipient.setPrefWidth(150);
+        recipient.setPrefHeight(20);
 
-        chatLayout.getChildren().addAll(chatTextArea, messageField, sendButton);
+        chatTextArea = new TextArea();
+
+        TextField messageField = new TextField();
+        messageField.setPrefWidth(400);
+        messageField.setPrefHeight(20);
+
+        Button sendButton = new Button("Send");
+        sendButton.setPrefWidth(40);
+        sendButton.setPrefHeight(20);
+
+        HBox hBoxInputMessage = new HBox();
+        hBoxInputMessage.setSpacing(10);
+        hBoxInputMessage.setPrefWidth(600);
+        hBoxInputMessage.setPrefHeight(25);
+        HBox.setHgrow(messageField,Priority.ALWAYS);
+        HBox.setHgrow(recipient,Priority.ALWAYS);
+        HBox.setHgrow(sendButton,Priority.ALWAYS);
+        hBoxInputMessage.getChildren().addAll(messageField,recipient,sendButton);
+
+        chatLayout.getChildren().addAll(chatTextArea, hBoxInputMessage);
         vBoxShelves.getChildren().add(chatLayout);
 
         sendButton.setOnAction(event -> {
             String message = messageField.getText();
+            String dest = recipient.getValue();
             try {
-                network.writeChat(localPlayer,message,null);
+                network.writeChat(localPlayer,message,dest);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -484,55 +511,40 @@ app.switchScene(chat);
         ImageView image;
         switch (colorString) {
             case "\u001b[42;1m" -> {
-                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Gatti1.1.png")));
-                image.setFitHeight(60);
-                image.setFitWidth(60);
-                image.setPreserveRatio(true);
-                return image;
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Cats1.png")));
+                return cssTile(image);
             }
             case "\u001b[47;1m" -> {
-                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Libri1.1.png")));
-                image.setFitHeight(60);
-                image.setFitWidth(60);
-                image.setPreserveRatio(true);
-                return image;
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Books1.png")));
+                return cssTile(image);
             }
             case "\u001b[43;1m" -> {
-                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Giochi1.1.png")));
-                image.setFitHeight(60);
-                image.setFitWidth(60);
-                image.setPreserveRatio(true);
-                return image;
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Toys1.png")));
+                return cssTile(image);
             }
             case "\u001b[44;1m" -> {
-                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Cornici1.1.png")));
-                image.setFitHeight(60);
-                image.setFitWidth(60);
-                image.setPreserveRatio(true);
-                return image;
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Frames1.png")));
+                return cssTile(image);
             }
             case "\u001b[46;1m" -> {
-                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Trofei1.1.png")));
-                image.setFitHeight(60);
-                image.setFitWidth(60);
-                image.setPreserveRatio(true);
-                return image;
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Trophies1.png")));
+                return cssTile(image);
             }
             case "\u001b[45;1m" -> {
-                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Piante1.1.png")));
-                image.setFitHeight(60);
-                image.setFitWidth(60);
-                image.setPreserveRatio(true);
-                return image;
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Plants1.png")));
+                return cssTile(image);
             }
             default -> {
-                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Piante1.2.png")));
-                image.setFitHeight(60);
-                image.setFitWidth(60);
-                image.setPreserveRatio(true);
-                return image;
+                image = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/item_tiles/Plants2.png")));
+                return cssTile(image);
             }
         }
+    }
+    private static ImageView cssTile(ImageView image){
+        image.setFitHeight(60);
+        image.setFitWidth(60);
+        image.setPreserveRatio(true);
+        return image;
     }
 
     public static void updateShelves(boolean fromChat){
