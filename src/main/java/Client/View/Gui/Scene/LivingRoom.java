@@ -317,45 +317,48 @@ public class LivingRoom extends Scene {
         HBox hBoxShelves = new HBox();
 
         int numPlayer = mockModel.getMockPlayers().size();
-        for (int i = 0; i < numPlayer - 1; i++) {
+        for (int i = 0; i < numPlayer; i++) {
 
             // setting pane and image of shelves
             Pane playerShelfPane = new Pane();
 
-            Label playerID = new Label(mockModel.getMockPlayers().get(i).getPlayerID() + "'s shelf.");
-            playerID.getStyleClass().add("players-shelf-label");
-            playerShelfPane.getChildren().add(playerID);
+            if(!localPlayer.equals(mockModel.getMockPlayers().get(i).getPlayerID())) {
+                Label playerID = new Label(mockModel.getMockPlayers().get(i).getPlayerID() + "'s shelf.");
+                playerID.getStyleClass().add("players-shelf-label");
+                playerShelfPane.getChildren().add(playerID);
 
-            ImageView shelfImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
-            shelfImg.setFitWidth(200);
-            shelfImg.setFitHeight(250);
-            shelfImg.setLayoutX(10);
-            shelfImg.setLayoutY(20);
-            shelfImg.setPreserveRatio(true);
 
-            // binding the grid pane
-            GridPane grid = new GridPane();
-            grid.setGridLinesVisible(true);
-            grid.setHgap(7);
-            grid.setVgap(2);
-            grid.setLayoutX(30);
-            grid.setLayoutY(30);
-            grid.prefWidthProperty().bind(shelfImg.fitWidthProperty());
-            grid.prefHeightProperty().bind(shelfImg.fitWidthProperty());
-            grid.getChildren().clear();
-            for (int k = 0; k < 6; k++) {
-                for (int j = 0; j < 5; j++) {
-                    Pane paneBase = new Pane();
-                    paneBase.setPrefWidth(25);
-                    paneBase.setPrefHeight(25);
-                    grid.add(paneBase, j, k);
-                    GridPane.setColumnIndex(paneBase, j);
-                    GridPane.setRowIndex(paneBase, k);
+                ImageView shelfImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
+                shelfImg.setFitWidth(200);
+                shelfImg.setFitHeight(250);
+                shelfImg.setLayoutX(10);
+                shelfImg.setLayoutY(20);
+                shelfImg.setPreserveRatio(true);
+
+                // binding the grid pane
+                GridPane grid = new GridPane();
+                grid.setGridLinesVisible(true);
+                grid.setHgap(7);
+                grid.setVgap(2);
+                grid.setLayoutX(30);
+                grid.setLayoutY(30);
+                grid.prefWidthProperty().bind(shelfImg.fitWidthProperty());
+                grid.prefHeightProperty().bind(shelfImg.fitWidthProperty());
+                grid.getChildren().clear();
+                for (int k = 0; k < 6; k++) {
+                    for (int j = 0; j < 5; j++) {
+                        Pane paneBase = new Pane();
+                        paneBase.setPrefWidth(25);
+                        paneBase.setPrefHeight(25);
+                        grid.add(paneBase, j, k);
+                        GridPane.setColumnIndex(paneBase, j);
+                        GridPane.setRowIndex(paneBase, k);
+                    }
                 }
+                othersShelves.add(grid);
+                playerShelfPane.getChildren().addAll(grid, shelfImg);
+                hBoxShelves.getChildren().add(playerShelfPane);
             }
-            othersShelves.add(grid);
-            playerShelfPane.getChildren().addAll(grid, shelfImg);
-            hBoxShelves.getChildren().add(playerShelfPane);
         }
 
 
@@ -559,7 +562,7 @@ app.switchScene(chat);
         return image;
     }
 
-    public static void updateShelves(boolean fromChat){
+    public static void updateShelves(){
 
         ImageView image;
         int grids = 0;
@@ -618,10 +621,6 @@ app.switchScene(chat);
                 }
             }
         }
-        if(fromChat){
-            vBoxShelves.setVisible(true);
-        }
-
     }
     public static void updateBoard(Cell[][] board){
         System.out.println("updating the board");

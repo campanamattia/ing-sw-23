@@ -69,7 +69,6 @@ public class GuiApplication extends Application {
     }
 
     private boolean firstShelves = true;
-    private boolean fromChat = false;
 
     public void showShelves(){
         if(firstShelves) {
@@ -77,8 +76,7 @@ public class GuiApplication extends Application {
             firstShelves = false;
             Platform.runLater(LivingRoom::showCommonAndShelves);
         }else{
-            Platform.runLater(()->LivingRoom.updateShelves(fromChat));
-            fromChat = false;
+            Platform.runLater(LivingRoom::updateShelves);
         }
     }
     public void outcomeSelectTiles(){

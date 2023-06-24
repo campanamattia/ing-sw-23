@@ -166,13 +166,11 @@
 
 .players-shelf-label{
     -fx-font-size: 15px;
-    -fx-translate-x: 80px;
     -fx-text-alignment: center;
 }
 
 .personal-shelf-label{
     -fx-font-size: 20px;
-    -fx-translate-x: 80px;
     -fx-translate-y: 250px;
     -fx-text-alignment: center;
 }
