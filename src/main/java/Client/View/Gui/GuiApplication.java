@@ -7,7 +7,6 @@ import Utils.Cell;
 import Utils.ChatMessage;
 import Utils.MockObjects.MockModel;
 import Utils.Rank;
-import Utils.Tile;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -23,7 +22,6 @@ public class GuiApplication extends Application {
     private List<String> activeLobbies = new ArrayList<>();
 
     private static volatile boolean javaFxLaunched = false;
-    private MockModel mockModel;
 
     public GuiApplication() {
         if (!javaFxLaunched) { // First time
@@ -73,10 +71,6 @@ public class GuiApplication extends Application {
     private boolean firstShelves = true;
     private boolean fromChat = false;
 
-    public void setFromChat(boolean firstShelves) {
-        this.firstShelves = firstShelves;
-    }
-
     public void showShelves(){
         if(firstShelves) {
             System.out.println("first ever print shelves!");
@@ -87,7 +81,7 @@ public class GuiApplication extends Application {
             fromChat = false;
         }
     }
-    public void outcomeSelectTiles(List<Tile> selectedTiles){
+    public void outcomeSelectTiles(){
         Platform.runLater(LivingRoom::outcomeSelectTiles);
     }
     public void outcomeException(Exception e){
@@ -101,7 +95,6 @@ public class GuiApplication extends Application {
         );
     }
     public void updateMockModel(MockModel mockModel){
-        this.mockModel = mockModel;
         Platform.runLater(()->
                 LivingRoom.updateMockModel(mockModel)
         );

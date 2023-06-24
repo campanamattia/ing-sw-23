@@ -121,7 +121,7 @@ public class Gui extends View {
     public void outcomeSelectTiles(List<Tile> selectedTiles) throws RemoteException {
         this.mockModel.setTurnPhase(TurnPhase.INSERTING);
         guiApplication.updateMockModel(this.mockModel);
-        guiApplication.outcomeSelectTiles(selectedTiles);
+        guiApplication.outcomeSelectTiles();
     }
 
     @Override
