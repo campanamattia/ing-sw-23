@@ -11,8 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class LivingRoom extends Scene {
     private static TextField column;
     private static final List<GridPane> othersShelves = new ArrayList<>();
     private static TextArea chatTextArea;
+    private static GridPane highlightBoard;
 
     public LivingRoom(GuiApplication app) {
 
@@ -79,7 +81,45 @@ public class LivingRoom extends Scene {
         gridBoard.setVgap(10);
         gridBoard.setDisable(false);
 
-        boardPane.getChildren().addAll(boardImage,gridBoard);
+        highlightBoard = new GridPane();
+        highlightBoard.prefWidthProperty().bind(boardImage.fitWidthProperty());
+        highlightBoard.prefHeightProperty().bind(boardImage.fitWidthProperty());
+
+        for(int row=0;row<9;row++){
+            RowConstraints rowConstraints = new RowConstraints();
+            rowConstraints.setPrefHeight(60);
+            highlightBoard.getRowConstraints().add(rowConstraints);
+            highlightBoard.addRow(row);
+        }
+        for(int col=0;col<9;col++){
+            ColumnConstraints colConstraints = new ColumnConstraints();
+            colConstraints.setPrefWidth(60);
+            highlightBoard.getColumnConstraints().add(colConstraints);
+            highlightBoard.addColumn(col);
+        }
+        for(int i=0;i<9;i++){
+            for(int j=0;j<9;j++){
+                Rectangle rectangle = new Rectangle(60, 60);
+                rectangle.setFill(Color.TRANSPARENT);
+                highlightBoard.add(rectangle,j,i);
+            }
+        }
+
+        highlightBoard.setLayoutX(51);
+        highlightBoard.setLayoutY(55);
+        highlightBoard.setHgap(10);
+        highlightBoard.setVgap(10);
+        highlightBoard.setDisable(false);
+
+        StackPane boards = new StackPane();
+        boards.prefWidthProperty().bind(boardImage.fitWidthProperty());
+        boards.prefHeightProperty().bind(boardImage.fitWidthProperty());
+        boards.setLayoutX(41);
+        boards.setLayoutY(45);
+        boards.setDisable(false);
+        boards.getChildren().addAll(gridBoard, highlightBoard);
+
+        boardPane.getChildren().addAll(boardImage, boards);
 
         vBoxShelves = new VBox();
         vBoxShelves.setSpacing(10);
@@ -91,7 +131,7 @@ public class LivingRoom extends Scene {
         mainHBox.setSpacing(10);
         mainHBox.getChildren().addAll(leftSide,vBoxShelves);
 
-        gridBoard.setOnMouseClicked(event -> {
+        highlightBoard.setOnMouseClicked(event -> {
             int tmp = 0;
             if (mockModel.getMockPlayers().size() == 2)
                 tmp = 1;
@@ -125,18 +165,44 @@ public class LivingRoom extends Scene {
             }
 
             if (colIndex >= 0 && rowIndex >= 0) {
+
+                // rectangle to highlight
+                Rectangle toHighlight = getRectangle(highlightBoard,rowIndex+tmp,colIndex+tmp);
                 System.out.println("x: "+ rowIndex + ", y: "+ colIndex);
-                selectedTiles.add(new Coordinates(rowIndex,colIndex));
+
+                // tile selected
+                Coordinates tile = new Coordinates(rowIndex,colIndex);
+                if(selectedTiles.contains(tile)){
+                    toHighlight.setStroke(Color.TRANSPARENT);
+                    selectedTiles.remove(tile);
+                }else{
+                    toHighlight.setStroke(Color.BLACK);
+                    toHighlight.setStrokeWidth(2);
+                    selectedTiles.add(new Coordinates(rowIndex,colIndex));
+                }
+
+                // image handler
                 Pane selectedPane = getPane(gridBoard, colIndex + tmp, rowIndex + tmp);
                 if (selectedPane != null) {
                     ImageView selectedImageView = (ImageView) selectedPane.getChildren().get(0);
-                    if (selectedImageView != null) {
+                    if (!selectedTilesImg.contains(selectedImageView) && selectedImageView != null) {
                         selectedTilesImg.add(selectedImageView);
-                    }
+                    }else
+                        selectedTilesImg.remove(selectedImageView);
                 }
             }
         });
         setRoot(mainHBox);
+    }
+
+    private Rectangle getRectangle(GridPane grid, int i, int j) {
+        List<Node> kids = grid.getChildren();
+        Rectangle res = null;
+        for(Node n: kids) {
+            if (GridPane.getColumnIndex(n) == j && GridPane.getRowIndex(n) == i)
+                res = (Rectangle) n;
+        }
+        return res;
     }
 
     public static void toLobbySize(){
