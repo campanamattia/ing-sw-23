@@ -1,5 +1,4 @@
 {
-  "ipAddress": "127.0.0.1",
   "socketPort": 50000,
   "rmiPort" : 50001
 }

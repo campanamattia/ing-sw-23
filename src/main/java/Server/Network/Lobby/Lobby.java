@@ -41,8 +41,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      */
     private final HashMap<String, Integer> lobbySize;
 
-    private final HashMap<GameController, Timer> endingTimers;
-
     /**
      * Constructs a new instance of the Lobby class.
      * Initializes the lobby, heartbeat, lobby size, and games.
@@ -55,7 +53,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         this.lobby = new HashMap<>();
         this.lobbySize = new HashMap<>();
         this.games = new ArrayList<>();
-        this.endingTimers = new HashMap<>();
     }
 
     /**
@@ -113,7 +110,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             logInLobby(playerID, lobbyID, client, network);
     }
 
-    private GameController findGame(String gameID) {
+    public GameController findGame(String gameID) {
         return this.games.stream().filter(game -> game.getGameID().equals(gameID)).findFirst().orElse(null);
     }
 
@@ -132,9 +129,10 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         try {
             gameController.rejoin(playerID, new ClientHandler(playerID, lobbyID, client));
             client.outcomeLogin(playerID, lobbyID);
-            client.allGame(MockFactory.getMock(gameController.getGameModel()));
+            client.allGame(MockFactory.getMock(gameController.getGameModel()).clone());
             startTimer(playerID, lobbyID, network);
             network.setGameController(gameController);
+            logger.info(lobbyID + " re-registered player: " + playerID);
         } catch (RemoteException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
@@ -275,51 +273,28 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     @Override
     public synchronized void logOut(String playerID, String lobbyID) throws RemoteException {
         ServerApp.logger.info("Logout for " + playerID + "\tin " + lobbyID);
+
         GameController game = findGame(lobbyID);
-        ClientHandler clientHandler = null;
         if (game != null) {
             try {
-                clientHandler = game.logOut(playerID);
-                switch (game.activePlayers().size()) {
-                    case 0 -> endGame(game);
-                    case 1 -> {
-                        endingTimers.put(game, new Timer());
-                        endingTimers.get(game).schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                game.activePlayers().forEach((client->{
-                                    try{
-                                        client.remoteView().outcomeMessage("You won due to insufficient players!");
-                                    } catch (RemoteException e) {
-                                        logger.log(Level.SEVERE, e.getMessage());
-                                    }
-                                        }));
-                                games.remove(game);
-                            }
-                        }, 20000);
-                    }
-                }
+                game.logOut(playerID);
             } catch (IOException e) {
-                logger.log(Level.SEVERE, e.getMessage());
+                logger.severe(e.getMessage());
             }
-        } else if (this.lobby.containsKey(lobbyID)) {
-            clientHandler = this.lobby.get(lobbyID).remove(playerID);
+            return;
+        }
+
+        if (this.lobby.containsKey(lobbyID)) {
+            this.lobby.get(lobbyID).remove(playerID);
             if (this.lobby.get(lobbyID).isEmpty()) {
                 this.lobby.remove(lobbyID);
                 this.lobbySize.remove(lobbyID);
             }
-        } else logger.severe("Can't find the lobby to log out");
-        if (clientHandler.remoteView() instanceof SocketHandler socketHandler)
-            try{
-                socketHandler.logOut();
-            } catch (NullPointerException e) {
-                logger.log(Level.SEVERE, e.getMessage());
-            }
-        deleteTimer(playerID, lobbyID);
-    }
+            return;
+        }
 
-    public Timer getEndingTimer(GameController game) {
-        return endingTimers.get(game);
+        logger.severe("Can't find the lobby to log out");
+        deleteTimer(playerID, lobbyID);
     }
 
     private void deleteTimer(String playerID, String lobbyID) {
@@ -351,7 +326,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             MockModel model = MockFactory.getMock(game.getGameModel());
             for (ClientHandler client : game.activePlayers()) {
                 try {
-                    client.remoteView().allGame(model);
+                    client.remoteView().allGame(model.clone());
                     this.heartbeat.get(Objects.hash(client.playerID(), game.getGameID())).getClient().setGameController(game);
                 } catch (RemoteException e) {
                     logger.severe("Error sending gameController to player");
@@ -384,13 +359,13 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      * @param game the game that has ended
      */
     public void endGame(GameController game) {
-        for (ClientHandler handler : game.getClients()) {
+        for (ClientHandler handler : game.activePlayers()) {
             if (handler.remoteView() instanceof SocketHandler socket) {
                 socket.logOut();
             }
         }
         this.games.remove(game);
-        this.endingTimers.remove(game).cancel();
+        logger.info("Game " + game.getGameID() + " ended");
     }
 
     private void sendException(RemoteView client, String message) {

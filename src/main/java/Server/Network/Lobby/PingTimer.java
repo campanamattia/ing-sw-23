@@ -46,7 +46,7 @@ public class PingTimer {
                     throw new RuntimeException(e);
                 }
             }
-        }, 10000); // 10 seconds timeout
+        }, 10000); // 10-seconds timeout
     }
 
     /**

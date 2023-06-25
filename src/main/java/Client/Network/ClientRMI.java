@@ -14,8 +14,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
 
-import static Client.ClientApp.executorService;
-import static Client.ClientApp.view;
+import static Client.ClientApp.*;
 
 
 public class ClientRMI extends Network {
@@ -65,10 +64,10 @@ public class ClientRMI extends Network {
     }
 
     @Override
-    public void addScout(Scout scout) throws RemoteException {
+    public void addScout(String playerID, Scout scout) throws RemoteException {
         executorService.execute(() -> {
             try {
-                this.gc.addScout(this);
+                this.gc.addScout(localPlayer, this);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -147,7 +146,7 @@ public class ClientRMI extends Network {
         this.gc = gameController;
         executorService.execute(() -> {
             try {
-                this.gc.addScout(this);
+                this.gc.addScout(localPlayer, this);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }

@@ -14,17 +14,14 @@ public abstract class Gui extends View {
     public Gui() throws RemoteException {
     }
 
-    @Override
     public void showBoard() {
 
     }
 
-    @Override
     public void showChat() {
 
     }
 
-    @Override
     public void showStatus() {
 
     }

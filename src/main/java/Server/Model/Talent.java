@@ -3,8 +3,10 @@ package Server.Model;
 import Interface.Scout;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static Server.ServerApp.executorService;
 import static Server.ServerApp.logger;
@@ -17,13 +19,13 @@ public class Talent {
     /**
      * The list of scouts that are looking to this talent.
      */
-    private final List<Scout> scouts;
+    private final HashMap<String, Scout> scouts;
 
     /**
      * Constructs a new Talent object with an empty list of scouts.
      */
     public Talent(){
-        this.scouts = new ArrayList<>();
+        this.scouts = new HashMap<>();
     }
 
     /**
@@ -31,17 +33,17 @@ public class Talent {
      *
      * @param scout the scout to be added
      */
-    public void addScout(Scout scout){
-        this.scouts.add(scout);
+    public void addScout(String playerID, Scout scout){
+        this.scouts.put(playerID, scout);
     }
 
     /**
      * Removes a scout from the list of scouts.
      *
-     * @param scout the scout to be removed
+     * @param playerID the scout to be removed
      */
-    public void removeScout(Scout scout){
-        this.scouts.remove(scout);
+    public void removeScout(String playerID){
+        this.scouts.put(playerID, null);
     }
 
     /**
@@ -51,8 +53,7 @@ public class Talent {
      * @param O the object representing the event
      */
     public void onEvent(Object O){
-        for(Scout scout : this.scouts) {
-            logger.info("Scout: " + scout.getClass().getSimpleName() + " is updating for " + O.getClass().getSimpleName());
+        for(Scout scout : activeScout()) {
             executorService.execute(()-> {
                 try {
                     scout.update(O);
@@ -66,9 +67,13 @@ public class Talent {
     /**
      * Returns the list of scouts.
      *
-     * @return the list of scouts
+     * @return the HashMap of scouts
      */
-    public List<Scout> getScouts() {
+    public HashMap<String, Scout> getScouts() {
         return scouts;
+    }
+
+    private List<Scout> activeScout(){
+        return this.scouts.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 }

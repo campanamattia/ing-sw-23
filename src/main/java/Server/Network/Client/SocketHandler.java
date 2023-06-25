@@ -26,12 +26,14 @@ import java.util.*;
 import java.util.logging.Level;
 
 import static Server.ServerApp.executorService;
+import static Server.ServerApp.logger;
 
 /**
  * This class represents the handler for each socket connection
  * It implements all the method that the server can call also on an RMI connection
  */
 public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout {
+    private String playerID;
     private final Socket socket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
@@ -68,7 +70,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
                 deserialize(in.readObject());
             }
         } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            logger.severe(e.getMessage());
         }
     }
 
@@ -180,6 +182,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
      */
     @Override
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
+        this.playerID = localPlayer;
         ServerMessage message = new OutcomeLoginMessage(localPlayer, lobbyID);
         try {
             send(message);
@@ -319,7 +322,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         this.controller = gameController;
         executorService.execute(() ->{
             try {
-                this.controller.addScout(this);
+                this.controller.addScout(this.playerID, this);
             } catch (RemoteException e) {
                 ServerApp.logger.log(Level.SEVERE, e.getMessage());
             }

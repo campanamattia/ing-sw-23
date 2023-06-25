@@ -15,5 +15,5 @@ public interface GameCommand extends Remote {
 
     void writeChat(String from, String message, String to) throws RemoteException;
 
-    void addScout(Scout scout) throws RemoteException;
+    void addScout(String playerID, Scout scout) throws RemoteException;
 }
