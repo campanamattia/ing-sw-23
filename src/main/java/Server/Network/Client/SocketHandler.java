@@ -261,8 +261,8 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     }
 
     /**
-     * Notifies the client about the rejoin of a specific player.
-     * Sends a ServerMessage of type ReloadPlayerMessage to the client with the ID of the player that rejoined the  game.
+     * Notifies the client about the rejoining of a specific player.
+     * Sends a ServerMessage of type ReloadPlayerMessage to the client with the ID of the player that rejoined the game.
      * If an IOException occurs while sending the message, it logs the error.
      *
      * @param reloadPlayer the ID of the player that rejoined
@@ -275,6 +275,16 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
             send(message);
         } catch (IOException e){
             ServerApp.logger.severe(e.getMessage());
+        }
+    }
+
+    @Override
+    public void outcomeMessage(String message) throws RemoteException {
+        ServerMessage serverMessage = new OutcomeMessage(message);
+        try {
+            send(serverMessage);
+        } catch (IOException e) {
+            ServerApp.logger.log(Level.SEVERE, e.getMessage());
         }
     }
 
@@ -298,7 +308,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
 
     /**
      * Sets the game controller for the client.
-     * Sets the specified game controller for the client and adds the client as a scout to the game controller.
+     * Sets the specified game controller for the client and add the client as a scout to the game controller.
      * If a RemoteException occurs while adding the client as a scout, it logs the error.
      *
      * @param gameController the game controller to set

@@ -390,6 +390,10 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         return players;
     }
 
+    /**
+     * Return the list of players in the game that are still active.
+     * @return The list of players in the game that are still active.
+     */
     public List<ClientHandler> activePlayers() {
         return this.players.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }

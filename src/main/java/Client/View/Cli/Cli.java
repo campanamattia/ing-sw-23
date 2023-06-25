@@ -373,6 +373,14 @@ public class Cli extends View {
         this.mockModel.getPlayer(reloadPlayer).setOnline(true);
     }
 
+    @Override
+    public void outcomeMessage(String message) throws RemoteException {
+        printMessage(message);
+        if (message.equals("You won due to insufficient players!")) {
+            System.exit(0);
+        }
+    }
+
 
     public void showShelves() {
         int numColumn = 5;

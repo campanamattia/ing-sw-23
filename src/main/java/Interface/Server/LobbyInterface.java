@@ -16,7 +16,5 @@ public interface LobbyInterface extends Remote {
 
     void ping(String playerID, String lobbyID) throws RemoteException;
 
-    void getGameController(String lobbyID, RemoteClient remote) throws Exception;
-
     void logOut(String playerID, String lobbyID) throws RemoteException;
 }
