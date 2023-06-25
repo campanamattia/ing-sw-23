@@ -8,15 +8,9 @@ import java.rmi.RemoteException;
 @SuppressWarnings("")
 public class ViewFactory {
     public static View instanceView(String view) throws RemoteException {
-        // TODO: 26/05/23
-        switch (view) {
-            case "CLI" -> {
-                return new Cli();
-            }
-            case "GUI" -> {
-                return new Gui();
-            }
-            default -> throw new RemoteException("View not found");
+        if (view.equalsIgnoreCase("CLI")) {
+            return new Cli();
         }
+        return new Gui();
     }
 }
