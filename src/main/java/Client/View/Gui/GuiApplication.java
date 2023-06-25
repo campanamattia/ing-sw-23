@@ -108,4 +108,14 @@ public class GuiApplication extends Application {
                 LivingRoom.newMessageChat(message)
         );
     }
+
+    public void writeCurrentPlayer(String playerID) {
+        String info = "It's " + playerID + "'s turn!\n" + playerID + ": Select from 1 to 3 tiles!";
+        Platform.runLater(()->LivingRoom.writeInfos(info));
+    }
+
+    public void updateHelp(String playerID){
+        String info = playerID + ": Insert the tiles taken in a column of your shelf!";
+        Platform.runLater(()->LivingRoom.writeInfos(info));
+    }
 }

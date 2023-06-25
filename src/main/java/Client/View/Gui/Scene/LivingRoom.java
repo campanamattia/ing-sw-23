@@ -750,4 +750,11 @@ public class LivingRoom extends Scene {
 
         alert.showAndWait();
     }
+
+    public static void writeInfos(String info){
+        if(chatTextArea != null) {
+            chatTextArea.appendText(info);
+            chatTextArea.appendText("\n");
+        }
+    }
 }
