@@ -18,9 +18,9 @@ import javafx.stage.Stage;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static Client.ClientApp.*;
-
 
 public class LivingRoom extends Scene {
     private static GuiApplication app;
@@ -32,12 +32,12 @@ public class LivingRoom extends Scene {
     private static VBox vBoxShelves;
     private static final List<ImageView> selectedTilesImg = new ArrayList<>();
     private static final List<Coordinates> selectedTiles = new ArrayList<>();
-    private static VBox leftSide;
     private static TextField orderTile;
     private static TextField column;
     private static final List<GridPane> othersShelves = new ArrayList<>();
     private static TextArea chatTextArea;
     private static GridPane highlightBoard;
+    private static int numPlayers;
 
     public LivingRoom(GuiApplication app) {
 
@@ -124,12 +124,9 @@ public class LivingRoom extends Scene {
         vBoxShelves = new VBox();
         vBoxShelves.setSpacing(10);
 
-        leftSide = new VBox();
-        leftSide.getChildren().add(boardPane);
-
         HBox mainHBox = new HBox();
         mainHBox.setSpacing(10);
-        mainHBox.getChildren().addAll(leftSide,vBoxShelves);
+        mainHBox.getChildren().addAll(boardPane,vBoxShelves);
 
         highlightBoard.setOnMouseClicked(event -> {
             int tmp = 0;
@@ -167,7 +164,7 @@ public class LivingRoom extends Scene {
             if (colIndex >= 0 && rowIndex >= 0) {
 
                 // rectangle to highlight
-                Rectangle toHighlight = getRectangle(highlightBoard,rowIndex+tmp,colIndex+tmp);
+                Rectangle toHighlight = getRectangle(highlightBoard,colIndex+tmp,rowIndex+tmp);
                 System.out.println("x: "+ rowIndex + ", y: "+ colIndex);
 
                 // tile selected
@@ -195,7 +192,7 @@ public class LivingRoom extends Scene {
         setRoot(mainHBox);
     }
 
-    private Rectangle getRectangle(GridPane grid, int i, int j) {
+    private static Rectangle getRectangle(GridPane grid, int j, int i) {
         List<Node> kids = grid.getChildren();
         Rectangle res = null;
         for(Node n: kids) {
@@ -225,18 +222,10 @@ public class LivingRoom extends Scene {
     }
 
     public static void showBoard(Cell[][] board){
-        Label currentPlayer = new Label(mockModel.getCurrentPlayer() + "'s turn!");
-        VBox notifies = new VBox();
-        notifies.setVisible(true);
-        notifies.setPrefWidth(150);
-        notifies.setPrefHeight(20);
-        notifies.setLayoutX(20);
-        notifies.getChildren().add(currentPlayer);
-        leftSide.getChildren().add(notifies);
-        int numPlayer = mockModel.getMockPlayers().size();
+        numPlayers = mockModel.getMockPlayers().size();
         ImageView image;
         int tmp = 0;
-        if(numPlayer == 2)
+        if(numPlayers == 2)
             tmp = 1;
         for(int i=0;i<board.length;i++){
             for(int j=0;j<board[0].length;j++){
@@ -297,6 +286,9 @@ public class LivingRoom extends Scene {
         VBox commonGoal = new VBox();
         commonGoal.setLayoutY(30);
         commonGoal.getChildren().addAll(cg1,cg2);
+
+        // images of common goals points
+
 
         // personal goal
 
@@ -382,8 +374,7 @@ public class LivingRoom extends Scene {
 
         HBox hBoxShelves = new HBox();
 
-        int numPlayer = mockModel.getMockPlayers().size();
-        for (int i = 0; i < numPlayer; i++) {
+        for (int i = 0; i < numPlayers; i++) {
 
             // setting pane and image of shelves
             Pane playerShelfPane = new Pane();
@@ -447,6 +438,7 @@ public class LivingRoom extends Scene {
             if(!localPlayer.equals(mockModel.getMockPlayers().get(i).getPlayerID()))
                 recipient.getItems().add(mockModel.getMockPlayers().get(i).getPlayerID());
         }
+        recipient.getItems().add("all");
 
         chatTextArea = new TextArea();
         chatTextArea.getStyleClass().add("chat-area");
@@ -470,6 +462,8 @@ public class LivingRoom extends Scene {
         sendButton.setOnAction(event -> {
             String message = messageField.getText();
             String dest = recipient.getValue();
+            if(Objects.equals(dest, "all"))
+                dest = null;
             try {
                 network.writeChat(localPlayer,message,dest);
             } catch (RemoteException e) {
@@ -480,24 +474,17 @@ public class LivingRoom extends Scene {
 
         messageField.setOnAction(event -> {
             String message = messageField.getText();
+            String dest = recipient.getValue();
+            if(Objects.equals(dest, "all"))
+                dest = null;
             try {
-                network.writeChat(localPlayer,message,null);
+                network.writeChat(localPlayer,message,dest);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
             messageField.clear();
         });
     }
-
-/* Button chat = new Button("Chat");
-chat.setOnMouseClicked(e->showChat());
-vBoxShelves.getChildren().add(chat);
-
-private static void showChat() {
-ChatScene chat = new ChatScene(app);
-ChatScene.updateMockModel(mockModel);
-app.switchScene(chat);
-}*/
 
     private static void printSelectedTiles() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -517,16 +504,16 @@ app.switchScene(chat);
             hBoxPopUp.getChildren().add(imageView);
         }
 
-        Button send = new Button("insert");
-        send.setOnAction(e-> {
+        Button insert = new Button("insert");
+        insert.setOnAction(e-> {
             try {
                 insertTiles();
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
             }
         });
-        send.setPrefHeight(40);
-        send.setPrefWidth(60);
+        insert.setPrefHeight(40);
+        insert.setPrefWidth(60);
 
         HBox input = new HBox();
         input.setPrefWidth(150);
@@ -546,7 +533,7 @@ app.switchScene(chat);
         input.getChildren().addAll(orderTile,column);
 
         vBoxMain.setSpacing(20);
-        vBoxMain.getChildren().addAll(hBoxPopUp,input,send);
+        vBoxMain.getChildren().addAll(hBoxPopUp,input,insert);
 
         alert.getDialogPane().setContent(vBoxMain);
 
@@ -554,12 +541,23 @@ app.switchScene(chat);
     }
 
     public static void outcomeSelectTiles(){
+        clearBoard();
         printSelectedTiles();
         selectedTiles.clear();
         selectedTilesImg.clear();
     }
 
+    private static void clearBoard() {
+        for(int i=0;i<9;i++){
+            for(int j=0;j<9;j++){
+                Rectangle rt = getRectangle(highlightBoard,j,i);
+                rt.setStroke(Color.TRANSPARENT);
+            }
+        }
+    }
+
     public static void printError(String message) {
+        clearBoard();
         selectedTilesImg.clear();
         selectedTiles.clear();
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -578,15 +576,21 @@ app.switchScene(chat);
         String tileToInsert = orderTile.getText();
 
         String[] pos = tileToInsert.split(",");
-        if(pos.length < 1 || pos.length > 3)
+        if(pos.length < 1 || pos.length > 3) {
             printError("Wrong order!");
+            return;
+        }
         List<Integer> orderToSend = new ArrayList<>();
         for(String p:pos){
             orderToSend.add(Integer.parseInt(p));
         }
         int col = Integer.parseInt(column.getText());
+        if(col < 1 || col > 5) {
+            printError("Column do not exist!");
+            return;
+        }
 
-        network.insertTiles(localPlayer,orderToSend,col);
+        network.insertTiles(localPlayer,orderToSend,col-1);
     }
     private static ImageView choseImage(String colorString) {
         ImageView image;
@@ -690,10 +694,9 @@ app.switchScene(chat);
     }
     public static void updateBoard(Cell[][] board){
         System.out.println("updating the board");
-        int numPlayer = mockModel.getMockPlayers().size();
         ImageView image;
         int tmp = 0;
-        if(numPlayer == 2)
+        if(numPlayers == 2)
             tmp = 1;
 
         // currentPlayer
