@@ -132,17 +132,6 @@ public class ClientRMI extends Network {
     }
 
     @Override
-    public void getGameController(String lobbyID, RemoteClient remote) throws RemoteException {
-        executorService.execute(() -> {
-            try {
-                this.lobby.getGameController(lobbyID, remote);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    @Override
     public void logOut(String playerID, String lobbyID) throws RemoteException {
         executorService.execute(() -> {
             try {

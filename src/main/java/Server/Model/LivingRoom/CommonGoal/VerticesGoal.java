@@ -51,9 +51,9 @@ public class VerticesGoal extends CommonGoal {
         Tile lowLeftTile = shelf.getTile(5,0);
         Tile lowRightTile = shelf.getTile(5,4);
         try {
-            if (topLeftTile.getTileColor() == topRightTile.getTileColor() &&
-                    topLeftTile.getTileColor() == lowLeftTile.getTileColor() &&
-                    topLeftTile.getTileColor() == lowRightTile.getTileColor()) {
+            if (topLeftTile.color() == topRightTile.color() &&
+                    topLeftTile.color() == lowLeftTile.color() &&
+                    topLeftTile.color() == lowRightTile.color()) {
                 accomplished.add(player.getPlayerID());
                 player.updateScore(scoringToken.pop());
             }

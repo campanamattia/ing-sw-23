@@ -34,7 +34,7 @@ class ShelfTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 5; j++) {
                 if (TestShelf.getTile(i, j) != null) {
-                    System.out.println(TestShelf.getTile(i, j).getTileColor() + " ");
+                    System.out.println(TestShelf.getTile(i, j).color() + " ");
                 }
             }
 
@@ -116,7 +116,7 @@ class ShelfTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 5; j++) {
                 if (TestShelf.getTile(i, j) != null) {
-                    System.out.println(TestShelf.getTile(i, j).getTileColor() + " ");
+                    System.out.println(TestShelf.getTile(i, j).color() + " ");
                 }
             }
 

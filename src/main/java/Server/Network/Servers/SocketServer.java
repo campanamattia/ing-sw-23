@@ -9,8 +9,15 @@ import java.util.logging.Level;
 
 import static Server.ServerApp.executorService;
 
+/**
+ * The SocketServer class represents the server that listens for incoming socket connections.
+ */
 public class SocketServer {
-
+    /**
+     * Starts the Socket Server on the specified port.
+     *
+     * @param socketPort the port number to listen on
+     */
     public void start(int socketPort) {
         ServerApp.logger.info("Starting Server Socket");
         try (ServerSocket serverSocket = new ServerSocket(socketPort)) {

@@ -1,7 +1,6 @@
 package Messages.Client.Lobby;
 
-import Interface.Client.RemoteClient;
-import Interface.Client.RemoteView;
+
 import Messages.ClientMessage;
 import Server.Network.Client.SocketHandler;
 import Server.ServerApp;

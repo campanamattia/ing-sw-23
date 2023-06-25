@@ -70,7 +70,7 @@ public class RowColumnGoal extends CommonGoal {
                 List<Color> colorColumn = new ArrayList<>();
                 for (int i = 0; i < shelf.numberRows(); i++) {
                     if (shelf.getTile(i, j) != null) {
-                        colorColumn.add(shelf.getTile(i, j).getTileColor());
+                        colorColumn.add(shelf.getTile(i, j).color());
                     } else {
                         break;
                     }
@@ -98,7 +98,7 @@ public class RowColumnGoal extends CommonGoal {
                 List<Color> colorRow = new ArrayList<>();
                 for (int j = 0; j < shelf.numberColumns(); j++) {
                     if (shelf.getTile(i, j) != null) {
-                        colorRow.add(shelf.getTile(i, j).getTileColor());
+                        colorRow.add(shelf.getTile(i, j).color());
                     } else {
                         break;
                     }

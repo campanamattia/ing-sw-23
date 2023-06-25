@@ -197,8 +197,7 @@ public class Cli extends View {
             if (!input.isBlank()) {
                 inputLobby = input;
                 break;
-            } else
-                printError("ERROR: you type something wrong, lobby can't be empty");
+            } else printError("ERROR: you type something wrong, lobby can't be empty");
         }
 
         while (true) {
@@ -207,8 +206,7 @@ public class Cli extends View {
             if (!input.isBlank()) {
                 inputName = input;
                 break;
-            } else
-                printError("ERROR: you type something wrong, nickname can't be empty");
+            } else printError("ERROR: you type something wrong, nickname can't be empty");
         }
 
         network.login(inputName, inputLobby, this, network);
@@ -240,18 +238,18 @@ public class Cli extends View {
         }
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("    ");
+        stringBuilder.append(" \t");
         if (numberPlayer == 2) for (int i = 0; i <= 6; i++)
             stringBuilder.append("  ").append(i).append("  ");
         else for (int i = 0; i <= 8; i++)
             stringBuilder.append("  ").append(i).append("  ");
-        System.out.print(stringBuilder.append("   | "));
+        System.out.print(stringBuilder.append("\t|\t "));
 
 
         System.out.println(CliColor.BOLD + "COMMON GOAL" + CliColor.RESET);
 
         for (int i = 0; i < board.length; i++) {
-            System.out.print(i + "   ");
+            System.out.print(i + "\t");
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
                     String colorString = board[i][j].getTile().getColor().getCode();
@@ -260,7 +258,7 @@ public class Cli extends View {
                     System.out.print(CliColor.BBLACK + "|   |" + CliColor.RESET); //print empty black space
                 }
             }
-            System.out.print("   | ");
+            System.out.print("\t| ");
 
             //print CommonGoal
             if (i <= 2) {
@@ -334,7 +332,6 @@ public class Cli extends View {
 
 
     public void showTitle() {
-        clearCLI();
         System.out.print(CliColor.BOLDYELLOW);
         System.out.println("""
                  ✹ ｡  .  ･ . ∴ * ███╗   ███╗██╗   ██╗    ██████╗██╗  ██╗███████╗██╗     ███████╗██╗███████╗. 　･ ∴　　｡ 　
@@ -361,12 +358,10 @@ public class Cli extends View {
     public void endGame(List<Rank> classification) {
         System.out.println(CliColor.BOLD + "Final leaderboard:" + CliColor.RESET);
         Rank first = classification.get(0);
-        for (Rank rank : classification) {
-            if (rank.score() == first.score()){
-                printMessage(rank.ID() + " " + rank.score() + " points");
-            }
-            else
-                System.out.println(rank.ID() + " " + rank.score() + " points");
+        for (Rank(String id, int score) : classification) {
+            if (score == first.score()) {
+                printMessage(id + " " + score + " points");
+            } else System.out.println(id + " " + score + " points");
         }
     }
 
@@ -378,6 +373,14 @@ public class Cli extends View {
     @Override
     public synchronized void reloadPlayer(String reloadPlayer) throws RemoteException {
         this.mockModel.getPlayer(reloadPlayer).setOnline(true);
+    }
+
+    @Override
+    public void outcomeMessage(String message) throws RemoteException {
+        printMessage(message);
+        if (message.equals("You won due to insufficient players!")) {
+            System.exit(0);
+        }
     }
 
 
@@ -398,11 +401,11 @@ public class Cli extends View {
                 for (int j = 0; j < numColumn; j++) {
                     Tile[][] shelf = mockModel.getMockPlayers().get(k).getShelf();
                     Tile[][] privateGoal = mockModel.getMockPlayers().get(k).getPersonalGoal();
-                    String colorString = (shelf[i][j] != null) ? shelf[i][j].getColor().getCode() : CliColor.BBLACK.toString();
+                    String colorString = (shelf[i][j] != null) ? shelf[i][j].color().getCode() : CliColor.BBLACK.toString();
                     String colorBar;
 
                     if (localPlayer.equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
-                        colorBar = (privateGoal[i][j] != null) ? privateGoal[i][j].getColor().getCode() : CliColor.BBLACK.toString();
+                        colorBar = (privateGoal[i][j] != null) ? privateGoal[i][j].color().getCode() : CliColor.BBLACK.toString();
                     } else {
                         colorBar = CliColor.BBLACK.toString();
                     }
@@ -419,8 +422,7 @@ public class Cli extends View {
                 System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + player.getScore() + CliColor.RESET );
                 for (int i = 0; i < 31 - player.getPlayerID().length() - countDigit(player.getScore()); i++)
                     System.out.print(" ");
-            }
-            else {
+            } else {
                 System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + CliColor.RED + "OFFLINE" + CliColor.RESET);
                 for (int i = 0; i < 31 - player.getPlayerID().length() - " OFFLINE ".length(); i++)
                     System.out.print(" ");
@@ -464,17 +466,15 @@ public class Cli extends View {
 
     @Override
     public void outcomeInsertTiles(boolean success) throws RemoteException {
-        if (success)
-            this.mockModel.setTurnPhase(TurnPhase.PICKING);
-        else
-            printError("Insertion failed");
+        if (success) this.mockModel.setTurnPhase(TurnPhase.PICKING);
+        else printError("Insertion failed");
     }
 
 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
         printError(e.getMessage());
-        if(e.getMessage().equals("The game was concluded due to insufficient active players.")) {
+        if (e.getMessage().equals("The game was concluded due to insufficient active players.")) {
             System.exit(666);
         }
     }
@@ -545,9 +545,6 @@ public class Cli extends View {
             count++;
         }
         return count;
-    }
-    public static void updateMockModel(MockModel mockModel){
-
     }
 
 }

@@ -6,11 +6,24 @@ import Server.Model.Player.Player;
 
 import java.util.List;
 
+/**
+ * The LastRoundState class represents the phase where the match is in the last round.
+ */
 public class LastRoundState extends PhaseController {
+    /**
+     * Create a new LastRoundState instance.
+     * @param currentPlayer The current player.
+     * @param players The list of players.
+     */
     public LastRoundState(Player currentPlayer, List<Player> players) {
         super(currentPlayer, players);
     }
 
+    /**
+     * Try to find the next player.
+     * It checks if the next player is the first player. And if it is, it throws an EndGameException.
+     * @throws GamePhaseException If the next player is the first player.
+     */
     @Override
     public void nextPlayer() throws GamePhaseException {
         do{
