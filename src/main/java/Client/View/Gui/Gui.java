@@ -40,6 +40,7 @@ public class Gui extends View {
     public void updateCommonGoal(MockCommonGoal mockCommonGoal) {
         this.mockModel.update(mockCommonGoal);
         guiApplication.updateMockModel(this.mockModel);
+        guiApplication.updateCommonGoal(mockCommonGoal);
     }
 
     @Override
@@ -59,8 +60,7 @@ public class Gui extends View {
 
     @Override
     public void showBoard() {
-        Cell[][] board = mockModel.getMockBoard().getBoard();
-        guiApplication.showBoard(board);
+
     }
 
     @Override
@@ -75,7 +75,7 @@ public class Gui extends View {
 
     @Override
     public void showShelves() {
-        guiApplication.showShelves();
+
     }
 
     @Override
@@ -108,8 +108,8 @@ public class Gui extends View {
     }
 
     private void showAll() {
-        showBoard();
-        showShelves();
+        guiApplication.showBoard(mockModel.getMockBoard().getBoard());
+        guiApplication.showShelves();
         // showStatus();
     }
 

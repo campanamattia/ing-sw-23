@@ -1,10 +1,12 @@
 package Client.View.Gui.Scene;
 
 import Client.View.Gui.GuiApplication;
+import Enumeration.TurnPhase;
 import Utils.*;
 import Utils.Cell;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -38,6 +40,10 @@ public class LivingRoom extends Scene {
     private static TextArea chatTextArea;
     private static GridPane highlightBoard;
     private static int numPlayers;
+    private static StackPane cg1StackPane;
+    private static StackPane cg2StackPane;
+    private static int peekCg1;
+    private static int peekCg2;
 
     public LivingRoom(GuiApplication app) {
 
@@ -211,6 +217,22 @@ public class LivingRoom extends Scene {
         mockModel = mockmodel;
     }
 
+    public static void updateCommonGoal(int enumeration, Integer peek) {
+        if(mockModel.getMockCommonGoal().get(0).getEnumeration() == enumeration){
+            if(peek != peekCg1) {
+                ObservableList<Node> children = cg1StackPane.getChildren();
+                if (!children.isEmpty())
+                    children.remove(children.size() - 1);
+            }
+        }else{
+            if(peek != peekCg2) {
+                ObservableList<Node> children = cg2StackPane.getChildren();
+                if (!children.isEmpty())
+                    children.remove(children.size() - 1);
+            }
+        }
+    }
+
     private void boardStyle(ImageView boardImage) {
         this.boardImage = boardImage;
         boardImage.setPreserveRatio(true);
@@ -303,19 +325,34 @@ public class LivingRoom extends Scene {
             case 3 -> commonGoalsImg.remove(0);
         }
 
+        peekCg1 = 8;
+        peekCg2 = 8;
+
         // positioning
         // stackPane -> pane -> img
-        StackPane cg1StackPane = new StackPane();
+        cg1StackPane = new StackPane();
         for (ImageView image : commonGoalsImg) {
-            System.out.println("add image to common goal pane 1");
-            image.setPreserveRatio(true);
-            image.setFitWidth(40);
-            image.setRotate(350);
-            cg1StackPane.getChildren().add(image);
+            ImageView imageView = new ImageView(image.getImage());
+            imageView.setPreserveRatio(true);
+            imageView.setFitWidth(40);
+            imageView.setRotate(350);
+            cg1StackPane.getChildren().add(imageView);
         }
         cg1StackPane.setLayoutX(120);
         cg1StackPane.setLayoutY(40);
         cg1.getChildren().add(cg1StackPane);
+
+        cg2StackPane = new StackPane();
+        for (ImageView image : commonGoalsImg) {
+            ImageView imageView = new ImageView(image.getImage());
+            imageView.setPreserveRatio(true);
+            imageView.setFitWidth(40);
+            imageView.setRotate(350);
+            cg2StackPane.getChildren().add(imageView);
+        }
+        cg2StackPane.setLayoutX(120);
+        cg2StackPane.setLayoutY(40);
+        cg2.getChildren().add(cg2StackPane);
 
         // personal goal
 
@@ -388,10 +425,14 @@ public class LivingRoom extends Scene {
         }
 
         pGoalGrid.setOnMouseClicked(event -> {
-            try {
-                network.selectTiles(localPlayer, selectedTiles);
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
+            if(mockModel.getTurnPhase() == TurnPhase.PICKING) {
+                try {
+                    network.selectTiles(localPlayer, selectedTiles);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if (mockModel.getTurnPhase() == TurnPhase.INSERTING) {
+                printSelectedTiles();
             }
         });
 
@@ -570,8 +611,6 @@ public class LivingRoom extends Scene {
     public static void outcomeSelectTiles() {
         clearBoard();
         printSelectedTiles();
-        selectedTiles.clear();
-        selectedTilesImg.clear();
     }
 
     private static void clearBoard() {
@@ -599,6 +638,8 @@ public class LivingRoom extends Scene {
     }
 
     public static void insertTiles() throws RemoteException {
+        selectedTiles.clear();
+        selectedTilesImg.clear();
         System.out.println("insert tiles");
 
         String tileToInsert = orderTile.getText();

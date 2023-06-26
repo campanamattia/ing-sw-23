@@ -5,6 +5,7 @@ import Client.View.Gui.Scene.LivingRoom;
 import Client.View.Gui.Scene.LoginScene;
 import Utils.Cell;
 import Utils.ChatMessage;
+import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import Utils.Rank;
 import javafx.application.Application;
@@ -117,5 +118,9 @@ public class GuiApplication extends Application {
     public void updateHelp(String playerID){
         String info = playerID + ": Insert the tiles taken in a column of your shelf!";
         Platform.runLater(()->LivingRoom.writeInfos(info));
+    }
+
+    public void updateCommonGoal(MockCommonGoal mockCommonGoal) {
+        Platform.runLater(()->LivingRoom.updateCommonGoal(mockCommonGoal.getEnumeration(),mockCommonGoal.getScoringToken().peek()));
     }
 }
