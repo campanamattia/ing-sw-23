@@ -174,3 +174,9 @@
     -fx-translate-y: 250px;
     -fx-text-alignment: center;
 }
+
+.text-info-chat{
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-text-fill: red;
+}

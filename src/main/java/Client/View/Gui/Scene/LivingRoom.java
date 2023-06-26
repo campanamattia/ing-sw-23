@@ -15,6 +15,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
@@ -365,7 +367,8 @@ public class LivingRoom extends Scene {
 
         // personal goal
 
-        Label personalID = new Label(mockModel.getPlayer(localPlayer).getPlayerID() + "'s shelf");
+        Label personalID = new Label("Your shelf");
+        personalID.setStyle("-fx-font-weight: bold;");
         personalID.getStyleClass().add("personal-shelf-label");
 
         Pane pGoalPane = new Pane();
@@ -841,6 +844,7 @@ public class LivingRoom extends Scene {
     }
 
     public static void writeInfos(String info) {
+        // chatTextArea.getStyleClass().add("text-info-chat");
         if (chatTextArea != null) {
             chatTextArea.appendText(info);
             chatTextArea.appendText("\n");
