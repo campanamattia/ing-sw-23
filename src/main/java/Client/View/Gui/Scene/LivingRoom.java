@@ -37,7 +37,8 @@ public class LivingRoom extends Scene {
     private static TextField orderTile;
     private static TextField column;
     private static final List<GridPane> othersShelves = new ArrayList<>();
-    private static TextArea chatTextArea;
+    private static ScrollPane chatTextArea;
+    private static VBox chatTextAreaVbox = new VBox();
     private static GridPane highlightBoard;
     private static int numPlayers;
     private static StackPane cg1StackPane;
@@ -45,7 +46,6 @@ public class LivingRoom extends Scene {
     private static int peekCg1;
     private static int peekCg2;
     private static Pane boardPane;
-
     public LivingRoom(GuiApplication app) {
 
         super(new Pane(), 1400, 768);
@@ -518,7 +518,8 @@ public class LivingRoom extends Scene {
         }
         recipient.getItems().add("all");
 
-        chatTextArea = new TextArea();
+        chatTextArea = new ScrollPane();
+        chatTextArea.setContent(chatTextAreaVbox);
         chatTextArea.getStyleClass().add("chat-area");
 
         TextField messageField = new TextField();
@@ -820,8 +821,8 @@ public class LivingRoom extends Scene {
             dest = "";
             toShow = from + dest + "'" + message.message() + "'";
         }
-        chatTextArea.appendText(toShow);
-        chatTextArea.appendText("\n");
+        Label tmp = new Label(toShow);
+        chatTextAreaVbox.getChildren().add(tmp);
     }
 
     private static void showCommonGoals(ImageView commonGoalImg, double mouseX, double mouseY) {
@@ -844,8 +845,8 @@ public class LivingRoom extends Scene {
     public static void writeInfos(String info) {
         // chatTextArea.getStyleClass().add("text-info-chat");
         if (chatTextArea != null) {
-            chatTextArea.appendText(info);
-            chatTextArea.appendText("\n");
+            Label tmp = new Label(info);
+            chatTextAreaVbox.getChildren().add(tmp);
         }
     }
 }
