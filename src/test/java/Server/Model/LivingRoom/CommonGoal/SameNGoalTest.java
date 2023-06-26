@@ -83,7 +83,7 @@ class SameNGoalTest {
         sameNGoal.check(player);
 
         assertEquals(4, player.getScore());
-        assertEquals(1,sameNGoal.getAccomplished().size());
+        assertEquals(1, sameNGoal.getAccomplished().size());
     }
 
     @Test
@@ -153,7 +153,7 @@ class SameNGoalTest {
     private JsonArray decoPersonal() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader("src/main/resources/personalGoal.json"));
+        reader = new JsonReader(new FileReader("src/main/resources/settings/personalGoal.json"));
         return gson.fromJson(reader, JsonArray.class);
     }
 }

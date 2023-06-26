@@ -24,8 +24,6 @@ public class Cli extends View {
     private final Scanner scanner = new Scanner(System.in);
     private Thread inputThread;
 
-    private final int xLenght = 140;
-
     public Cli() throws RemoteException {
         super();
         mockModel = new MockModel();
@@ -252,7 +250,7 @@ public class Cli extends View {
             System.out.print(i + "\t");
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
-                    String colorString = board[i][j].getTile().getColor().getCode();
+                    String colorString = board[i][j].getTile().color().getCode();
                     System.out.print(CliColor.BBLACK + "|" + colorString + i + "," + j + CliColor.BBLACK + "|" + CliColor.RESET);
                 } else {
                     System.out.print(CliColor.BBLACK + "|   |" + CliColor.RESET); //print empty black space
@@ -348,7 +346,7 @@ public class Cli extends View {
     public void showTile(@NotNull List<Tile> tiles) {
         System.out.print("\t");
         for (int i = 0; i < tiles.size(); i++) {
-            System.out.print(tiles.get(i).getColor().getCode() + "|" + (i + 1) + "|");
+            System.out.print(tiles.get(i).color().getCode() + "|" + (i + 1) + "|");
             System.out.print(CliColor.RESET + "   ");
         }
         System.out.println();
@@ -449,6 +447,7 @@ public class Cli extends View {
 
     private void showAll() {
         showBoard();
+        int xLenght = 140;
         for (int i = 0; i <= xLenght; i++) {
             System.out.print("-");
         }

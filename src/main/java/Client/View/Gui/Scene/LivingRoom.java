@@ -174,7 +174,7 @@ public class LivingRoom extends Scene {
         for(int i=0;i<board.length;i++){
             for(int j=0;j<board[0].length;j++){
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
-                    String colorString = board[i][j].getTile().getColor().getCode();
+                    String colorString = board[i][j].getTile().color().getCode();
                     image = choseImage(colorString);
                     Pane tmpPane = getPane(gridBoard,j+tmp,i+tmp);
                     tmpPane.getChildren().add(image);
@@ -280,7 +280,7 @@ public class LivingRoom extends Scene {
         for (int i = 0; i < personalGoal.length; i++) {
             for (int j = 0; j < personalGoal[0].length; j++) {
                 if (personalGoal[i][j] != null) {
-                    String colorString = personalGoal[i][j].getTileColor().getCode();
+                    String colorString = personalGoal[i][j].color().getCode();
                     image = choseImage(colorString);
                     image.setPreserveRatio(true);
                     image.setOpacity(0.5);
@@ -571,7 +571,7 @@ app.switchScene(chat);
                 for (int i = 0; i < othersShelf.length; i++) {
                     for (int j = 0; j < othersShelf[0].length; j++) {
                         if (othersShelf[i][j] != null) {
-                            String colorString = othersShelf[i][j].getTileColor().getCode();
+                            String colorString = othersShelf[i][j].color().getCode();
                             image = choseImage(colorString);
                             image.setPreserveRatio(true);
                             Pane tmpPane = getPane(playerGrid, j, i);
@@ -595,7 +595,7 @@ app.switchScene(chat);
                 for(int i=0;i<personalShelf.length;i++) {
                     for (int j = 0; j < personalShelf[0].length; j++) {
                         if (personalShelf[i][j] != null) {
-                            String colorString = personalShelf[i][j].getTileColor().getCode();
+                            String colorString = personalShelf[i][j].color().getCode();
                             image = choseImage(colorString);
                             image.setPreserveRatio(true);
                             Pane tmpPane = getPane(pGoalGrid, j, i);
@@ -634,7 +634,7 @@ app.switchScene(chat);
         for(int i=0;i<board.length;i++){
             for(int j=0;j<board[0].length;j++){
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
-                    String colorString = board[i][j].getTile().getColor().getCode();
+                    String colorString = board[i][j].getTile().color().getCode();
                     image = choseImage(colorString);
                     Pane tmpPane = getPane(gridBoard,j+tmp,i+tmp);
                     tmpPane.getChildren().add(image);

@@ -183,4 +183,9 @@ public class Gui extends View {
         this.mockModel.getPlayer(reloadPlayer).setOnline(true);
         guiApplication.updateMockModel(this.mockModel);
     }
+
+    @Override
+    public void outcomeMessage(String message) throws RemoteException {
+
+    }
 }
