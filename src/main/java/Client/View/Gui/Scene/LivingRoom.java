@@ -56,22 +56,22 @@ public class LivingRoom extends Scene {
         gridBoard.prefHeightProperty().bind(boardImage.fitWidthProperty());
         // gridBoard.setGridLinesVisible(true);
 
-        for(int row=0;row<9;row++){
+        for (int row = 0; row < 9; row++) {
             RowConstraints rowConstraints = new RowConstraints();
             rowConstraints.setPrefHeight(60);
             gridBoard.getRowConstraints().add(rowConstraints);
             gridBoard.addRow(row);
         }
-        for(int col=0;col<9;col++){
+        for (int col = 0; col < 9; col++) {
             ColumnConstraints colConstraints = new ColumnConstraints();
             colConstraints.setPrefWidth(60);
             gridBoard.getColumnConstraints().add(colConstraints);
             gridBoard.addColumn(col);
         }
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
                 Pane paneBase = new Pane();
-                gridBoard.add(paneBase,j,i);
+                gridBoard.add(paneBase, j, i);
             }
         }
 
@@ -85,23 +85,23 @@ public class LivingRoom extends Scene {
         highlightBoard.prefWidthProperty().bind(boardImage.fitWidthProperty());
         highlightBoard.prefHeightProperty().bind(boardImage.fitWidthProperty());
 
-        for(int row=0;row<9;row++){
+        for (int row = 0; row < 9; row++) {
             RowConstraints rowConstraints = new RowConstraints();
             rowConstraints.setPrefHeight(60);
             highlightBoard.getRowConstraints().add(rowConstraints);
             highlightBoard.addRow(row);
         }
-        for(int col=0;col<9;col++){
+        for (int col = 0; col < 9; col++) {
             ColumnConstraints colConstraints = new ColumnConstraints();
             colConstraints.setPrefWidth(60);
             highlightBoard.getColumnConstraints().add(colConstraints);
             highlightBoard.addColumn(col);
         }
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
                 Rectangle rectangle = new Rectangle(60, 60);
                 rectangle.setFill(Color.TRANSPARENT);
-                highlightBoard.add(rectangle,j,i);
+                highlightBoard.add(rectangle, j, i);
             }
         }
 
@@ -126,7 +126,7 @@ public class LivingRoom extends Scene {
 
         HBox mainHBox = new HBox();
         mainHBox.setSpacing(10);
-        mainHBox.getChildren().addAll(boardPane,vBoxShelves);
+        mainHBox.getChildren().addAll(boardPane, vBoxShelves);
 
         highlightBoard.setOnMouseClicked(event -> {
             int tmp = 0;
@@ -134,7 +134,7 @@ public class LivingRoom extends Scene {
                 tmp = 1;
             double mouseX = event.getX();
             double mouseY = event.getY();
-            System.out.println("mouse x: "+ mouseX + ", mouse y: "+ mouseY);
+            System.out.println("mouse x: " + mouseX + ", mouse y: " + mouseY);
 
             int colIndex = -1;
             int rowIndex = -1;
@@ -164,18 +164,18 @@ public class LivingRoom extends Scene {
             if (colIndex >= 0 && rowIndex >= 0) {
 
                 // rectangle to highlight
-                Rectangle toHighlight = getRectangle(highlightBoard,colIndex+tmp,rowIndex+tmp);
-                System.out.println("x: "+ rowIndex + ", y: "+ colIndex);
+                Rectangle toHighlight = getRectangle(highlightBoard, colIndex + tmp, rowIndex + tmp);
+                System.out.println("x: " + rowIndex + ", y: " + colIndex);
 
                 // tile selected
-                Coordinates tile = new Coordinates(rowIndex,colIndex);
-                if(selectedTiles.contains(tile)){
+                Coordinates tile = new Coordinates(rowIndex, colIndex);
+                if (selectedTiles.contains(tile)) {
                     toHighlight.setStroke(Color.TRANSPARENT);
                     selectedTiles.remove(tile);
-                }else{
+                } else {
                     toHighlight.setStroke(Color.BLACK);
                     toHighlight.setStrokeWidth(2);
-                    selectedTiles.add(new Coordinates(rowIndex,colIndex));
+                    selectedTiles.add(new Coordinates(rowIndex, colIndex));
                 }
 
                 // image handler
@@ -184,7 +184,7 @@ public class LivingRoom extends Scene {
                     ImageView selectedImageView = (ImageView) selectedPane.getChildren().get(0);
                     if (!selectedTilesImg.contains(selectedImageView) && selectedImageView != null) {
                         selectedTilesImg.add(selectedImageView);
-                    }else
+                    } else
                         selectedTilesImg.remove(selectedImageView);
                 }
             }
@@ -195,14 +195,14 @@ public class LivingRoom extends Scene {
     private static Rectangle getRectangle(GridPane grid, int j, int i) {
         List<Node> kids = grid.getChildren();
         Rectangle res = null;
-        for(Node n: kids) {
+        for (Node n : kids) {
             if (GridPane.getColumnIndex(n) == j && GridPane.getRowIndex(n) == i)
                 res = (Rectangle) n;
         }
         return res;
     }
 
-    public static void toLobbySize(){
+    public static void toLobbySize() {
         Scene lobbySize = new LobbyScene(app);
         app.switchScene(lobbySize);
     }
@@ -211,7 +211,7 @@ public class LivingRoom extends Scene {
         mockModel = mockmodel;
     }
 
-    private void boardStyle(ImageView boardImage){
+    private void boardStyle(ImageView boardImage) {
         this.boardImage = boardImage;
         boardImage.setPreserveRatio(true);
         boardImage.setFitWidth(690);
@@ -221,18 +221,18 @@ public class LivingRoom extends Scene {
         boardImage.setLayoutY(10);
     }
 
-    public static void showBoard(Cell[][] board){
+    public static void showBoard(Cell[][] board) {
         numPlayers = mockModel.getMockPlayers().size();
         ImageView image;
         int tmp = 0;
-        if(numPlayers == 2)
+        if (numPlayers == 2)
             tmp = 1;
-        for(int i=0;i<board.length;i++){
-            for(int j=0;j<board[0].length;j++){
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
                     String colorString = board[i][j].getTile().getColor().getCode();
                     image = choseImage(colorString);
-                    Pane tmpPane = getPane(gridBoard,j+tmp,i+tmp);
+                    Pane tmpPane = getPane(gridBoard, j + tmp, i + tmp);
                     tmpPane.getChildren().add(image);
                 }
                 //gridBoard.add(tmpPane,j+tmp,i+tmp);
@@ -240,12 +240,12 @@ public class LivingRoom extends Scene {
         }
     }
 
-    private static Pane getPane(GridPane grid,int j, int i) {
+    private static Pane getPane(GridPane grid, int j, int i) {
         List<Node> kids = grid.getChildren();
         Pane res = null;
-        for(Node n: kids){
-            if(GridPane.getColumnIndex(n) == j && GridPane.getRowIndex(n) == i)
-                res = (Pane)n;
+        for (Node n : kids) {
+            if (GridPane.getColumnIndex(n) == j && GridPane.getRowIndex(n) == i)
+                res = (Pane) n;
         }
         return res;
     }
@@ -275,20 +275,47 @@ public class LivingRoom extends Scene {
         copyCg1.setPreserveRatio(true);
         copyCg1.setFitWidth(250);
         cg1.getChildren().add(cg1img);
-        cg1.setOnMouseClicked(e->showCommonGoals(copyCg1,e.getScreenX(),e.getScreenY()));
+        cg1.setOnMouseClicked(e -> showCommonGoals(copyCg1, e.getScreenX(), e.getScreenY()));
         Image copyCg2Image = cg2img.getImage();
         ImageView copyCg2 = new ImageView(copyCg2Image);
         copyCg2.setPreserveRatio(true);
         copyCg2.setFitWidth(250);
         cg2.getChildren().add(cg2img);
-        cg2.setOnMouseClicked(e->showCommonGoals(copyCg2,e.getScreenX(),e.getScreenY()));
+        cg2.setOnMouseClicked(e -> showCommonGoals(copyCg2, e.getScreenX(), e.getScreenY()));
 
         VBox commonGoal = new VBox();
         commonGoal.setLayoutY(30);
-        commonGoal.getChildren().addAll(cg1,cg2);
+        commonGoal.getChildren().addAll(cg1, cg2);
 
         // images of common goals points
+        // list  2-4-6-8
+        // index 0-1-2-3
+        List<ImageView> commonGoalsImg = new ArrayList<>();
+        for (int i = 2; i <= 8; i += 2) {
+            System.out.println("adding image to list");
+            commonGoalsImg.add(new ImageView(String.valueOf(GuiApplication.class.getResource("/img/scoring_tokens/scoring_" + i + ".jpg"))));
+        }
+        switch (numPlayers) {
+            case 2 -> {
+                commonGoalsImg.remove(0);
+                commonGoalsImg.remove(1);
+            }
+            case 3 -> commonGoalsImg.remove(0);
+        }
 
+        // positioning
+        // stackPane -> pane -> img
+        StackPane stackPane = new StackPane();
+        for (ImageView image : commonGoalsImg) {
+            System.out.println("add image to common goal pane");
+            image.setPreserveRatio(true);
+            image.setFitWidth(30);
+            image.setRotate(350);
+            stackPane.getChildren().add(image);
+        }
+        stackPane.setLayoutX(120);
+        stackPane.setLayoutY(50);
+        cg1.getChildren().add(stackPane);
 
         // personal goal
 
@@ -379,7 +406,7 @@ public class LivingRoom extends Scene {
             // setting pane and image of shelves
             Pane playerShelfPane = new Pane();
 
-            if(!localPlayer.equals(mockModel.getMockPlayers().get(i).getPlayerID())) {
+            if (!localPlayer.equals(mockModel.getMockPlayers().get(i).getPlayerID())) {
                 Label playerID = new Label(mockModel.getMockPlayers().get(i).getPlayerID() + "'s shelf.");
                 playerID.getStyleClass().add("players-shelf-label");
                 playerShelfPane.getChildren().add(playerID);
@@ -422,7 +449,7 @@ public class LivingRoom extends Scene {
         vBoxShelves.getChildren().add(hBoxShelves);
 
         hBoxMyShelfAndCG.setSpacing(20);
-        hBoxMyShelfAndCG.getChildren().addAll(pGoalPane,commonGoal);
+        hBoxMyShelfAndCG.getChildren().addAll(pGoalPane, commonGoal);
 
         System.out.println("adding common and personal shelf");
         vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
@@ -434,8 +461,8 @@ public class LivingRoom extends Scene {
 
         ComboBox<String> recipient = new ComboBox<>();
         recipient.getStyleClass().add("combo-box-chat");
-        for(int i=0;i<mockModel.getMockPlayers().size();i++){
-            if(!localPlayer.equals(mockModel.getMockPlayers().get(i).getPlayerID()))
+        for (int i = 0; i < mockModel.getMockPlayers().size(); i++) {
+            if (!localPlayer.equals(mockModel.getMockPlayers().get(i).getPlayerID()))
                 recipient.getItems().add(mockModel.getMockPlayers().get(i).getPlayerID());
         }
         recipient.getItems().add("all");
@@ -454,7 +481,7 @@ public class LivingRoom extends Scene {
         hBoxInputMessage.setPrefWidth(600);
         hBoxInputMessage.setPrefHeight(25);
 
-        hBoxInputMessage.getChildren().addAll(messageField,recipient,sendButton);
+        hBoxInputMessage.getChildren().addAll(messageField, recipient, sendButton);
 
         chatLayout.getChildren().addAll(chatTextArea, hBoxInputMessage);
         vBoxShelves.getChildren().add(chatLayout);
@@ -462,10 +489,10 @@ public class LivingRoom extends Scene {
         sendButton.setOnAction(event -> {
             String message = messageField.getText();
             String dest = recipient.getValue();
-            if(Objects.equals(dest, "all"))
+            if (Objects.equals(dest, "all"))
                 dest = null;
             try {
-                network.writeChat(localPlayer,message,dest);
+                network.writeChat(localPlayer, message, dest);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -475,10 +502,10 @@ public class LivingRoom extends Scene {
         messageField.setOnAction(event -> {
             String message = messageField.getText();
             String dest = recipient.getValue();
-            if(Objects.equals(dest, "all"))
+            if (Objects.equals(dest, "all"))
                 dest = null;
             try {
-                network.writeChat(localPlayer,message,dest);
+                network.writeChat(localPlayer, message, dest);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -505,7 +532,7 @@ public class LivingRoom extends Scene {
         }
 
         Button insert = new Button("insert");
-        insert.setOnAction(e-> {
+        insert.setOnAction(e -> {
             try {
                 insertTiles();
             } catch (RemoteException ex) {
@@ -530,17 +557,17 @@ public class LivingRoom extends Scene {
         column.setPrefHeight(20);
 
         input.setSpacing(10);
-        input.getChildren().addAll(orderTile,column);
+        input.getChildren().addAll(orderTile, column);
 
         vBoxMain.setSpacing(20);
-        vBoxMain.getChildren().addAll(hBoxPopUp,input,insert);
+        vBoxMain.getChildren().addAll(hBoxPopUp, input, insert);
 
         alert.getDialogPane().setContent(vBoxMain);
 
         alert.showAndWait();
     }
 
-    public static void outcomeSelectTiles(){
+    public static void outcomeSelectTiles() {
         clearBoard();
         printSelectedTiles();
         selectedTiles.clear();
@@ -548,9 +575,9 @@ public class LivingRoom extends Scene {
     }
 
     private static void clearBoard() {
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
-                Rectangle rt = getRectangle(highlightBoard,j,i);
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                Rectangle rt = getRectangle(highlightBoard, j, i);
                 rt.setStroke(Color.TRANSPARENT);
             }
         }
@@ -570,28 +597,30 @@ public class LivingRoom extends Scene {
 
         alert.showAndWait();
     }
+
     public static void insertTiles() throws RemoteException {
         System.out.println("insert tiles");
 
         String tileToInsert = orderTile.getText();
 
         String[] pos = tileToInsert.split(",");
-        if(pos.length < 1 || pos.length > 3) {
+        if (pos.length < 1 || pos.length > 3) {
             printError("Wrong order!");
             return;
         }
         List<Integer> orderToSend = new ArrayList<>();
-        for(String p:pos){
+        for (String p : pos) {
             orderToSend.add(Integer.parseInt(p));
         }
         int col = Integer.parseInt(column.getText());
-        if(col < 1 || col > 5) {
+        if (col < 1 || col > 5) {
             printError("Column do not exist!");
             return;
         }
 
-        network.insertTiles(localPlayer,orderToSend,col-1);
+        network.insertTiles(localPlayer, orderToSend, col - 1);
     }
+
     private static ImageView choseImage(String colorString) {
         ImageView image;
         switch (colorString) {
@@ -625,20 +654,21 @@ public class LivingRoom extends Scene {
             }
         }
     }
-    private static ImageView cssTile(ImageView image){
+
+    private static ImageView cssTile(ImageView image) {
         image.setFitHeight(60);
         image.setFitWidth(60);
         image.setPreserveRatio(true);
         return image;
     }
 
-    public static void updateShelves(){
+    public static void updateShelves() {
 
         ImageView image;
         int grids = 0;
         // shelves
-        for(int k=0;k<mockModel.getMockPlayers().size();k++){
-            if(!localPlayer.equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
+        for (int k = 0; k < mockModel.getMockPlayers().size(); k++) {
+            if (!localPlayer.equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
                 System.out.println("Update other's shelves!");
                 Tile[][] othersShelf = mockModel.getMockPlayers().get(k).getShelf();
                 GridPane playerGrid = othersShelves.get(grids);
@@ -665,19 +695,19 @@ public class LivingRoom extends Scene {
                         }
                     }
                 }
-            }else{
+            } else {
                 // personal goal
                 Tile[][] personalShelf = mockModel.getPlayer(localPlayer).getShelf();
                 // delete the old board
-                for(int i=0;i<personalShelf.length;i++) {
+                for (int i = 0; i < personalShelf.length; i++) {
                     for (int j = 0; j < personalShelf[0].length; j++) {
-                        Pane tmpPane = getPane(pGoalGrid,j,i);
-                        if(tmpPane.getChildren().size() != 0)
+                        Pane tmpPane = getPane(pGoalGrid, j, i);
+                        if (tmpPane.getChildren().size() != 0)
                             tmpPane.getChildren().remove(0);
                     }
                 }
                 // adding tiles updated
-                for(int i=0;i<personalShelf.length;i++) {
+                for (int i = 0; i < personalShelf.length; i++) {
                     for (int j = 0; j < personalShelf[0].length; j++) {
                         if (personalShelf[i][j] != null) {
                             String colorString = personalShelf[i][j].getTileColor().getCode();
@@ -692,49 +722,50 @@ public class LivingRoom extends Scene {
             }
         }
     }
-    public static void updateBoard(Cell[][] board){
+
+    public static void updateBoard(Cell[][] board) {
         System.out.println("updating the board");
         ImageView image;
         int tmp = 0;
-        if(numPlayers == 2)
+        if (numPlayers == 2)
             tmp = 1;
 
         // currentPlayer
         // TODO: 22/06/2023 fix current player
 
         // delete the old board
-        for(int i=0;i<board.length;i++) {
+        for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
-                Pane tmpPane = getPane(gridBoard,j+tmp,i+tmp);
-                if(tmpPane.getChildren().size() != 0)
+                Pane tmpPane = getPane(gridBoard, j + tmp, i + tmp);
+                if (tmpPane.getChildren().size() != 0)
                     tmpPane.getChildren().remove(0);
             }
         }
 
-        for(int i=0;i<board.length;i++){
-            for(int j=0;j<board[0].length;j++){
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
                     String colorString = board[i][j].getTile().getColor().getCode();
                     image = choseImage(colorString);
-                    Pane tmpPane = getPane(gridBoard,j+tmp,i+tmp);
+                    Pane tmpPane = getPane(gridBoard, j + tmp, i + tmp);
                     tmpPane.getChildren().add(image);
                 }
             }
         }
     }
 
-    public static void endGame(List<Rank> leaderboard){
+    public static void endGame(List<Rank> leaderboard) {
         EndGameScene endGameScene = new EndGameScene();
         EndGameScene.setRanks(leaderboard);
         app.switchScene(endGameScene);
     }
 
-    public static void newMessageChat(ChatMessage message){
+    public static void newMessageChat(ChatMessage message) {
         chatTextArea.appendText(message.message());
         chatTextArea.appendText("\n");
     }
 
-    private static void showCommonGoals(ImageView commonGoalImg, double mouseX, double mouseY){
+    private static void showCommonGoals(ImageView commonGoalImg, double mouseX, double mouseY) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("COMMON GOALS");
         alert.setHeaderText("COMMON GOALS: ");
@@ -751,8 +782,8 @@ public class LivingRoom extends Scene {
         alert.showAndWait();
     }
 
-    public static void writeInfos(String info){
-        if(chatTextArea != null) {
+    public static void writeInfos(String info) {
+        if (chatTextArea != null) {
             chatTextArea.appendText(info);
             chatTextArea.appendText("\n");
         }
