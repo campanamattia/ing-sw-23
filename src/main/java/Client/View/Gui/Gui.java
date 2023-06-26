@@ -147,6 +147,6 @@ public class Gui extends View {
 
     @Override
     public void outcomeMessage(String message) throws RemoteException {
-
+        guiApplication.outcomeMessage(message);
     }
 }

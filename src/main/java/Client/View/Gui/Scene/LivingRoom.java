@@ -44,6 +44,7 @@ public class LivingRoom extends Scene {
     private static StackPane cg2StackPane;
     private static int peekCg1;
     private static int peekCg2;
+    private static Pane boardPane;
 
     public LivingRoom(GuiApplication app) {
 
@@ -56,7 +57,7 @@ public class LivingRoom extends Scene {
         boardImage = new ImageView(boardImg);
         boardStyle(boardImage);
 
-        Pane boardPane = new Pane();
+        boardPane = new Pane();
         gridBoard = new GridPane();
         gridBoard.prefWidthProperty().bind(boardImage.fitWidthProperty());
         gridBoard.prefHeightProperty().bind(boardImage.fitWidthProperty());
@@ -218,14 +219,14 @@ public class LivingRoom extends Scene {
     }
 
     public static void updateCommonGoal(int enumeration, Integer peek) {
-        if(mockModel.getMockCommonGoal().get(0).getEnumeration() == enumeration){
-            if(peek != peekCg1) {
+        if (mockModel.getMockCommonGoal().get(0).getEnumeration() == enumeration) {
+            if (peek != peekCg1) {
                 ObservableList<Node> children = cg1StackPane.getChildren();
                 if (!children.isEmpty())
                     children.remove(children.size() - 1);
             }
-        }else{
-            if(peek != peekCg2) {
+        } else {
+            if (peek != peekCg2) {
                 ObservableList<Node> children = cg2StackPane.getChildren();
                 if (!children.isEmpty())
                     children.remove(children.size() - 1);
@@ -257,9 +258,17 @@ public class LivingRoom extends Scene {
                     Pane tmpPane = getPane(gridBoard, j + tmp, i + tmp);
                     tmpPane.getChildren().add(image);
                 }
-                //gridBoard.add(tmpPane,j+tmp,i+tmp);
             }
         }
+        Pane finalPointPain = new Pane();
+        ImageView finalPointImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/scoring_tokens/end_game.jpg")));
+        finalPointImg.setPreserveRatio(true);
+        finalPointImg.setRotate(10);
+        finalPointImg.setFitWidth(60);
+        finalPointPain.getChildren().add(finalPointImg);
+        finalPointPain.setLayoutX(575);
+        finalPointPain.setLayoutY(495);
+        boardPane.getChildren().add(finalPointPain);
     }
 
     private static Pane getPane(GridPane grid, int j, int i) {
@@ -425,7 +434,7 @@ public class LivingRoom extends Scene {
         }
 
         pGoalGrid.setOnMouseClicked(event -> {
-            if(mockModel.getTurnPhase() == TurnPhase.PICKING) {
+            if (mockModel.getTurnPhase() == TurnPhase.PICKING) {
                 try {
                     network.selectTiles(localPlayer, selectedTiles);
                 } catch (RemoteException e) {
@@ -802,7 +811,15 @@ public class LivingRoom extends Scene {
     }
 
     public static void newMessageChat(ChatMessage message) {
-        chatTextArea.appendText(message.message());
+        String from = "From " + message.from();
+        String dest = " to " + message.to() + " : ";
+        String toShow = from + dest + "'" + message.message() + "'";
+        if (message.to() == null) {
+            from += ": ";
+            dest = "";
+            toShow = from + dest + "'" + message.message() + "'";
+        }
+        chatTextArea.appendText(toShow);
         chatTextArea.appendText("\n");
     }
 

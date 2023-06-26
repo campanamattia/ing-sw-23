@@ -123,4 +123,8 @@ public class GuiApplication extends Application {
     public void updateCommonGoal(MockCommonGoal mockCommonGoal) {
         Platform.runLater(()->LivingRoom.updateCommonGoal(mockCommonGoal.getEnumeration(),mockCommonGoal.getScoringToken().peek()));
     }
+
+    public void outcomeMessage(String message) {
+        Platform.runLater(()->LivingRoom.writeInfos(message));
+    }
 }
