@@ -17,7 +17,6 @@ public abstract class View extends UnicastRemoteObject implements RemoteView {
     public View() throws RemoteException {
         super();
     }
-
     public abstract void updateBoard(MockBoard mockBoard);
 
     public abstract void updateCommonGoal(MockCommonGoal mockCommonGoal);
@@ -25,16 +24,6 @@ public abstract class View extends UnicastRemoteObject implements RemoteView {
     public abstract void updatePlayer(MockPlayer mockPlayer);
 
     public abstract void updateChat(ChatMessage message);
-
-    public abstract void showBoard();
-
-    public abstract void showChat();
-
-    public abstract void showStatus();
-
-    public abstract void showShelves();
-
-    public abstract void showHelp();
 
     public abstract void start();
 

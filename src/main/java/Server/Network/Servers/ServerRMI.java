@@ -7,8 +7,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.logging.Level;
 
-import static Server.ServerApp.lobby;
-import static Server.ServerApp.logger;
+import static Server.ServerApp.*;
 
 /**
  * The ServerRMI class represents the server that listens for incoming RMI connections.
@@ -25,9 +24,9 @@ public class ServerRMI {
      * @throws RemoteException if the RMI server cannot be started
      * @throws AlreadyBoundException if the RMI server is already bound
      */
-    public void start(int rmiPort) throws RemoteException, AlreadyBoundException {
-        logger.info("Starting RMI server");
-        //System.setProperty("java.rmi.server.hostname", ServerA);
+    public void start(String ipHost, int rmiPort) throws RemoteException, AlreadyBoundException {
+        logger.info("Starting RMI server on " + ipHost + ":\t" + rmiPort + "...");
+        System.setProperty("java.rmi.server.hostname", ipHost);
         ServerRMI.registry = LocateRegistry.createRegistry(rmiPort);
         try {
             registry.bind("Lobby", lobby);

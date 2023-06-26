@@ -1,11 +1,12 @@
 package Server.Model;
 
-import Exception.BoardException;
+import Exception.Board.CantRefillBoardException;
+import Exception.Board.NoValidMoveException;
+import Exception.Board.NullTileException;
 import Exception.ChatException;
 import Exception.Player.InvalidInputException;
 import Exception.PlayerException;
 import Exception.Player.PlayerNotFoundException;
-import Interface.Scout;
 import Server.Model.LivingRoom.CommonGoal.CommonGoal;
 import Server.Model.LivingRoom.CommonGoal.CommonGoalFactory;
 import Server.Model.LivingRoom.Bag;
@@ -147,14 +148,23 @@ public class GameModel {
      *
      * @param coordinates a list of Coordinates objects representing the tiles to retrieve
      * @return a list of Tile objects representing the tiles at the given coordinates
-     * @throws BoardException if the move is not valid, according to the rules of the game
+     * @throws NullTileException   if the tiles at the given coordinates are null
+     * @throws NoValidMoveException if the move is not valid
      */
-    public List<Tile> selectTiles(List<Coordinates> coordinates) throws BoardException {
+    public List<Tile> selectTiles(List<Coordinates> coordinates) throws NullTileException, NoValidMoveException {
         this.board.convalidateMove(coordinates);
         List<Tile> tiles = this.board.getTiles(coordinates);
-        this.board.checkRefill(this.bag);
         talent.onEvent(MockFactory.getMock(this.board));
         return tiles;
+    }
+
+    /**
+     * This method checks if the refill of the board is needed.
+     * @throws CantRefillBoardException when the bag han not enough tiles to refill the board.
+     */
+    public void checkRefill() throws CantRefillBoardException {
+        this.board.checkRefill(this.bag);
+        talent.onEvent(MockFactory.getMock(this.board));
     }
 
     /**
@@ -292,21 +302,15 @@ public class GameModel {
         return this.lobbyID;
     }
 
-    /**
-     * Adds a scout to the list of scouts.
-     *
-     * @param scout the scout to be added
-     */
-    public void addScout(Scout scout) {
-        this.talent.addScout(scout);
-    }
+
 
     /**
      * Returns the Talent object containing the list of scouts.
      *
      * @return the Talent object
      */
-    public Talent getScouts() {
+    public Talent getTalent() {
         return this.talent;
     }
+
 }

@@ -42,6 +42,8 @@ public class ServerApp {
      * The file path for the server setting JSON file.
      */
     private static final String serverSetting = "settings/serverSetting.json";
+
+    private static String ipHost;
     /**
      * The port number for the socket server.
      */
@@ -57,6 +59,10 @@ public class ServerApp {
      * @param args the command-line arguments (optional socket and RMI ports)
      */
     public static void main(String[] args) {
+        if (args.length < 1) System.exit(-1);
+        ipHost = args[0].trim();
+        if (!isValid(ipHost)) System.exit(-2);
+
         initLogger();
         initLobby();
         executorService = Executors.newCachedThreadPool();
@@ -73,37 +79,25 @@ public class ServerApp {
         logger.info("ServerApp started");
     }
 
+    private static boolean isValid(String ipHost) {
+        String[] ip = ipHost.split("\\.");
+        if (ip.length != 4) return false;
+        for (String s : ip) {
+            int i = Integer.parseInt(s);
+            if (i < 0 || i > 255) return false;
+        }
+        return true;
+    }
+
     private static void initLogger() {
         logger = Logger.getLogger(ServerApp.class.getName());
         try {
             logger.addHandler(new FileHandler("logger.json"));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.exit(-3);
         }
         logger.setLevel(Level.ALL);
-        logger.info("Starting ServerApp");
-    }
-
-    private static void setPort(String[] args) {
-        try {
-            switch (args.length) {
-                case 2 -> {
-                    socketPort = Integer.parseInt(args[0]);
-                    rmiPort = Integer.parseInt(args[1]);
-                }
-                case 1 -> {
-                    socketPort = Integer.parseInt(args[0]);
-                    rmiPort = rmiFromJSON();
-                }
-                default -> {
-                    socketPort = socketFromJSON();
-                    rmiPort = rmiFromJSON();
-                }
-            }
-        } catch (RuntimeException e) {
-            logger.log(Level.SEVERE, e.toString());
-            System.exit(-1);
-        }
+        logger.info("Starting ServerApp on " + ipHost);
     }
 
     private static void initLobby() {
@@ -111,9 +105,30 @@ public class ServerApp {
             lobby = new Lobby();
         } catch (RemoteException e) {
             logger.log(Level.SEVERE, e.toString());
-            System.exit(-1);
+            System.exit(-4);
         }
     }
+
+    private static void setPort(String[] args) {
+        if (args.length <= 1) {
+            socketPort = socketFromJSON();
+            rmiPort = rmiFromJSON();
+            return;
+        }
+        for (int i = 1; i < args.length; i++) {
+            try {
+                if (args[i].equals("-s")) {
+                    socketPort = Integer.parseInt(args[i + 1]);
+                } else if (args[i].equals("-r")) {
+                    rmiPort = Integer.parseInt(args[i + 1]);
+                }
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                logger.log(Level.SEVERE, e.toString());
+                System.exit(-5);
+            }
+        }
+    }
+
 
     @SuppressWarnings("ConstantConditions")
     private static int socketFromJSON() throws RuntimeException {
@@ -135,7 +150,7 @@ public class ServerApp {
 
     private static void rmiServer() {
         try {
-            new ServerRMI().start(rmiPort);
+            new ServerRMI().start(ipHost, rmiPort);
         } catch (RemoteException | AlreadyBoundException e) {
             logger.log(Level.SEVERE, e.toString());
             System.exit(-1);

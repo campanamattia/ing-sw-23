@@ -78,7 +78,7 @@ public class ClientSocket extends Network {
     }
 
     @Override
-    public synchronized void addScout(Scout scout) throws RemoteException {
+    public synchronized void addScout(String playerID,  Scout scout) throws RemoteException {
         //never called
     }
 
