@@ -9,7 +9,6 @@ import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
-import org.jetbrains.annotations.NotNull;
 import Enumeration.TurnPhase;
 import Enumeration.ClientCommand;
 
@@ -23,6 +22,8 @@ public class Cli extends View {
     private LightController controller;
     private final Scanner scanner = new Scanner(System.in);
     private Thread inputThread;
+
+    private static final String TAB = "   ";
 
     public Cli() throws RemoteException {
         super();
@@ -51,10 +52,13 @@ public class Cli extends View {
         if (message.to() == null || message.to().equals(localPlayer)) {
             this.mockModel.addMessage(message);
             System.out.println(CliColor.BOLD + "\rNew Message" + CliColor.RESET);
+            return;
         }
+        if (message.from().equals(localPlayer))
+            printMessage("Message sent correctly");
     }
 
-    public void start() {
+    private void start() {
         int port;
         String address;
 
@@ -83,7 +87,7 @@ public class Cli extends View {
 
         printMessage("Good! You are going to create a " + input.toLowerCase() + " connection.");
 
-        return NetworkFactory.instanceNetwork(input);
+        return NetworkFactory.instanceNetwork(input, this);
     }
 
     @Override
@@ -183,9 +187,9 @@ public class Cli extends View {
         if (lobbyInfo != null) {
             System.out.println("Here you can find the lobbies or games with the players logged. Write an ID for the lobby/game; if it doesn't match with others, a new lobby will be instantiated.");
             for (String object : lobbyInfo.get(0).keySet())
-                System.out.println("LobbyID: " + object + "\tWaiting Room: " + lobbyInfo.get(0).get(object));
+                System.out.println("LobbyID: " + object + TAB + "Waiting Room: " + lobbyInfo.get(0).get(object));
             for (String object : lobbyInfo.get(1).keySet())
-                System.out.println("GameID: " + object + "\tPlayers Online: " + lobbyInfo.get(1).get(object));
+                System.out.println("GameID: " + object + TAB + "Players Online: " + lobbyInfo.get(1).get(object));
         } else System.out.println("There are no lobby or games: create a new one");
 
 
@@ -195,8 +199,7 @@ public class Cli extends View {
             if (!input.isBlank()) {
                 inputLobby = input;
                 break;
-            } else
-                printError("ERROR: you type something wrong, lobby can't be empty");
+            } else printError("ERROR: you type something wrong, lobby can't be empty");
         }
 
         while (true) {
@@ -205,15 +208,12 @@ public class Cli extends View {
             if (!input.isBlank()) {
                 inputName = input;
                 break;
-            } else
-                printError("ERROR: you type something wrong, nickname can't be empty");
+            } else printError("ERROR: you type something wrong, nickname can't be empty");
         }
 
         network.login(inputName, inputLobby, this, network);
     }
 
-
-    @Override
     public void showBoard() {
         Cell[][] board = mockModel.getMockBoard().getBoard();
         int numberPlayer = mockModel.getMockPlayers().size();
@@ -238,32 +238,32 @@ public class Cli extends View {
         }
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(" \t");
+        stringBuilder.append(TAB + " ");
         if (numberPlayer == 2) for (int i = 0; i <= 6; i++)
             stringBuilder.append("  ").append(i).append("  ");
         else for (int i = 0; i <= 8; i++)
             stringBuilder.append("  ").append(i).append("  ");
-        System.out.print(stringBuilder.append("\t|\t "));
+        System.out.print(stringBuilder.append(TAB + "| "));
 
 
         System.out.println(CliColor.BOLD + "COMMON GOAL" + CliColor.RESET);
 
         for (int i = 0; i < board.length; i++) {
-            System.out.print(i + "\t");
+            System.out.print(i + "   ");
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
-                    String colorString = board[i][j].getTile().getColor().getCode();
+                    String colorString = board[i][j].getTile().color().getCode();
                     System.out.print(CliColor.BBLACK + "|" + colorString + i + "," + j + CliColor.BBLACK + "|" + CliColor.RESET);
                 } else {
-                    System.out.print(CliColor.BBLACK + "|   |" + CliColor.RESET); //print empty black space
+                    System.out.print(CliColor.BBLACK + "|" + TAB + "|" + CliColor.RESET); //print empty black space
                 }
             }
-            System.out.print("\t| ");
+            System.out.print("   | ");
 
             //print CommonGoal
             if (i <= 2) {
                 if (i == 0) {
-                    System.out.print("[" + CliColor.BRED + " " + commonGoal1.getScoringToken().get(commonGoal1.getScoringToken().size()-1) + " " + CliColor.RESET + "] - ");
+                    System.out.print("[" + CliColor.BRED + " " + (!(commonGoal1.getScoringToken().isEmpty()) ? commonGoal1.getScoringToken().get(commonGoal1.getScoringToken().size() - 1) : 0) + " " + CliColor.RESET + "] - ");
                 }
                 if (subString1.get(i) != null) System.out.print(subString1.get(i));
                 else System.out.print("");
@@ -272,7 +272,7 @@ public class Cli extends View {
 
             if (i >= 4 && i <= 6) {
                 if (i == 4) {
-                    System.out.print("[" + CliColor.BRED + " " + commonGoal2.getScoringToken().get(commonGoal2.getScoringToken().size()-1) + " " + CliColor.RESET + "] - ");
+                    System.out.print("[" + CliColor.BRED + " " + (!(commonGoal2.getScoringToken().isEmpty()) ? commonGoal2.getScoringToken().get(commonGoal2.getScoringToken().size() - 1) : 0) + " " + CliColor.RESET + "] - ");
                 }
 
                 if (subString2.get(i) != null) System.out.print(subString2.get(i));
@@ -314,14 +314,12 @@ public class Cli extends View {
         return subString;
     }
 
-    @Override
     public void showChat() {
         for (ChatMessage message : mockModel.getChat()) {
             System.out.println(message);
         }
     }
 
-    @Override
     public void showStatus() {
         if (mockModel.getCurrentPlayer().equals(localPlayer)) {
             System.out.println(CliColor.BOLD + "It's your turn. " + mockModel.getTurnPhase() + " For more help type 'help'" + CliColor.RESET);
@@ -345,11 +343,11 @@ public class Cli extends View {
     }
 
 
-    public void showTile(@NotNull List<Tile> tiles) {
-        System.out.print("\t");
+    private void showTile(List<Tile> tiles) {
+        System.out.print(TAB);
         for (int i = 0; i < tiles.size(); i++) {
-            System.out.print(tiles.get(i).getColor().getCode() + "|" + (i + 1) + "|");
-            System.out.print(CliColor.RESET + "   ");
+            System.out.print(tiles.get(i).color().getCode() + "|" + (i + 1) + "|");
+            System.out.print(CliColor.RESET + TAB);
         }
         System.out.println();
     }
@@ -358,12 +356,10 @@ public class Cli extends View {
     public void endGame(List<Rank> classification) {
         System.out.println(CliColor.BOLD + "Final leaderboard:" + CliColor.RESET);
         Rank first = classification.get(0);
-        for (Rank rank : classification) {
-            if (rank.score() == first.score()){
-                printMessage(rank.ID() + " " + rank.score() + " points");
-            }
-            else
-                System.out.println(rank.ID() + " " + rank.score() + " points");
+        for (Rank(String id, int score) : classification) {
+            if (score == first.score()) {
+                printMessage(id + " " + score + " points");
+            } else System.out.println(id + " " + score + " points");
         }
     }
 
@@ -377,56 +373,63 @@ public class Cli extends View {
         this.mockModel.getPlayer(reloadPlayer).setOnline(true);
     }
 
+    @Override
+    public synchronized void outcomeMessage(String message) throws RemoteException {
+        printMessage(message);
+        if (message.equals("You won due to insufficient players!")) {
+            System.exit(0);
+        }
+    }
 
-    public void showShelves() {
+
+    private void showShelves() {
         int numColumn = 5;
         int numRow = 6;
         int numPlayer = mockModel.getMockPlayers().size();
 
-        System.out.print(" \t");
+        System.out.print("    ");
         for (int k = 0; k < numPlayer; k++) {
-            System.out.print("  A  " + "  B  " + "  C  " + "  D  " + "  E  \t\t" );
+            System.out.print("  A  " + "  B  " + "  C  " + "  D  " + "  E  " + TAB + TAB );
         }
         System.out.println();
 
         for (int i = 0; i < numRow; i++) {
-            System.out.print(" \t");
+            System.out.print(TAB + " ");
             for (int k = 0; k < numPlayer; k++) {
                 for (int j = 0; j < numColumn; j++) {
                     Tile[][] shelf = mockModel.getMockPlayers().get(k).getShelf();
                     Tile[][] privateGoal = mockModel.getMockPlayers().get(k).getPersonalGoal();
-                    String colorString = (shelf[i][j] != null) ? shelf[i][j].getColor().getCode() : CliColor.BBLACK.toString();
+                    String colorString = (shelf[i][j] != null) ? shelf[i][j].color().getCode() : CliColor.BBLACK.toString();
                     String colorBar;
 
                     if (localPlayer.equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
-                        colorBar = (privateGoal[i][j] != null) ? privateGoal[i][j].getColor().getCode() : CliColor.BBLACK.toString();
+                        colorBar = (privateGoal[i][j] != null) ? privateGoal[i][j].color().getCode() : CliColor.BBLACK.toString();
                     } else {
                         colorBar = CliColor.BBLACK.toString();
                     }
-                    System.out.print(colorBar + "|" + colorString + "   " + colorBar + "|" + CliColor.RESET);
+                    System.out.print(colorBar + "|" + colorString + TAB + colorBar + "|" + CliColor.RESET);
                 }
-                System.out.print("\t\t");
+                System.out.print(TAB + TAB);
             }
             System.out.println();
         }
-        System.out.print("    ");
+        System.out.print(TAB + " ");
 
         for (MockPlayer player : this.mockModel.getMockPlayers()) {
             if (player.isOnline()){
                 System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + player.getScore() + CliColor.RESET );
-                for (int i = 0; i < 32 - player.getPlayerID().length() - countDigit(player.getScore()); i++)
+                for (int i = 0; i < 31 - player.getPlayerID().length() - countDigit(player.getScore()); i++)
                     System.out.print(" ");
             }
             else {
                 System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + CliColor.RED + "OFFLINE" + CliColor.RESET);
-                for (int i = 0; i < 32 - player.getPlayerID().length() - " OFFLINE ".length(); i++)
+                for (int i = 0; i < 31 - player.getPlayerID().length() - " OFFLINE ".length(); i++)
                     System.out.print(" ");
             }
         }
         System.out.println("\n");
     }
 
-    @Override
     public void showHelp() {
         System.out.println(CliColor.BOLD + "Commands:" + CliColor.RESET);
         for (ClientCommand command : ClientCommand.values()) {
@@ -442,7 +445,8 @@ public class Cli extends View {
         showAll();
     }
 
-    private void showAll() {
+    public void showAll() {
+        clearCLI();
         showBoard();
         showShelves();
         showStatus();
@@ -457,26 +461,23 @@ public class Cli extends View {
 
     @Override
     public void outcomeInsertTiles(boolean success) throws RemoteException {
-        if (success)
+        if (success){
             this.mockModel.setTurnPhase(TurnPhase.PICKING);
-        else
-            printError("Insertion failed");
+            printMessage("Insertion successful");
+        }
+        else printError("Insertion failed");
     }
 
 
     @Override
-    public void outcomeException(Exception e) throws RemoteException {
+    public synchronized void outcomeException(Exception e) throws RemoteException {
         printError(e.getMessage());
-        if(e.getMessage().equals("The game was concluded due to insufficient active players.")) {
-            System.exit(666);
-        }
     }
 
     public void printError(String error) {
         System.out.println(CliColor.BOLDRED + error + CliColor.RESET);
     }
 
-    @Override
     public void printMessage(String message) {
         System.out.println(CliColor.BOLDGREEN + message + CliColor.RESET);
     }
@@ -495,6 +496,7 @@ public class Cli extends View {
         this.mockModel = mockModel;
         this.controller = new LightController();
         if (mockModel.getChat() != null) fixChat();
+        setLocalFirst();
         newTurn(mockModel.getCurrentPlayer());
         while (true) {
             try {
@@ -519,8 +521,18 @@ public class Cli extends View {
         this.inputThread.start();
     }
 
+    private void setLocalFirst() {
+        for (MockPlayer player : mockModel.getMockPlayers()) {
+            if (player.getPlayerID().equals(localPlayer)) {
+                mockModel.getMockPlayers().remove(player);
+                mockModel.getMockPlayers().add(0, player);
+                break;
+            }
+        }
+    }
+
     private void fixChat() {
-        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer));
+        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer) && !message.from().equals(localPlayer));
     }
 
     public void clearCLI() {
@@ -539,8 +551,4 @@ public class Cli extends View {
         }
         return count;
     }
-    public static void updateMockModel(MockModel mockModel){
-
-    }
-
 }

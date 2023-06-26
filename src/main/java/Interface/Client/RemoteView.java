@@ -11,8 +11,6 @@ import java.util.Map;
 
 public interface RemoteView extends Remote {
 
-    //void logOpponent(String loggedPlayer) throws RemoteException; // TODO: 16/05/2023 to implement in future time
-
     void newTurn(String currentPlayer) throws RemoteException;
 
     void askLobbySize() throws RemoteException;
@@ -34,4 +32,6 @@ public interface RemoteView extends Remote {
     void crashedPlayer(String crashedPlayer) throws RemoteException;
 
     void reloadPlayer(String reloadPlayer) throws RemoteException;
+
+    void outcomeMessage(String message) throws RemoteException;
 }

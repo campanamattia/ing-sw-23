@@ -68,16 +68,16 @@ public class DiagonalGoal extends CommonGoal {
                 }
 
                 if (i == j) {
-                    lSx1.add(shelf.getTile(i,j).getTileColor());
+                    lSx1.add(shelf.getTile(i,j).color());
                 }
                 if (i == j + 1) {
-                    lSx2.add(shelf.getTile(i,j).getTileColor());
+                    lSx2.add(shelf.getTile(i,j).color());
                 }
                 if (i + j == min - 1) {
-                    lDx1.add(shelf.getTile(i,j).getTileColor());
+                    lDx1.add(shelf.getTile(i,j).color());
                 }
                 if (i + j == min) {
-                    lDx2.add(shelf.getTile(i,j).getTileColor());
+                    lDx2.add(shelf.getTile(i,j).color());
                 }
             }
         }

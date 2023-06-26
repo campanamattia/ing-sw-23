@@ -67,7 +67,7 @@ public class GroupAdjacentGoal extends CommonGoal {
                         visited[i][j] = true;
                         continue;
                     }
-                    Color color = shelf.getTile(i, j).getTileColor();
+                    Color color = shelf.getTile(i, j).color();
                     int count = countSameAdjacent(shelf, visited, i, j, color);
                     if (count >= numAdjacent) {
                         groups ++;
@@ -94,7 +94,7 @@ public class GroupAdjacentGoal extends CommonGoal {
      */
     public static int countSameAdjacent(Shelf shelf, boolean[][] visited, int row, int column, Color color) {
         if (row < 0 || row >= shelf.numberRows() || column >= shelf.numberColumns() || column < 0 || visited[row][column] ||
-                shelf.getTile(row, column) == null || shelf.getTile(row, column).getTileColor() != color ) {
+                shelf.getTile(row, column) == null || shelf.getTile(row, column).color() != color ) {
             return 0;
         }
         visited[row][column] = true;

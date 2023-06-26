@@ -1,7 +1,5 @@
 package Server.Network.Servers;
 
-import Server.Network.Lobby.Lobby;
-import Server.ServerApp;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -9,21 +7,35 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.logging.Level;
 
-public class ServerRMI {
+import static Server.ServerApp.*;
 
+/**
+ * The ServerRMI class represents the server that listens for incoming RMI connections.
+ */
+public class ServerRMI {
+    /**
+     * The registry instance for the RMI server.
+     */
     private static Registry registry;
 
-    public void start(Lobby lobby, int rmiPort) throws RemoteException, AlreadyBoundException {
-        ServerApp.logger.info("Starting RMI server");
+    /**
+     * Starts the RMI server on the specified port.
+     * @param rmiPort the port number to listen on
+     * @throws RemoteException if the RMI server cannot be started
+     * @throws AlreadyBoundException if the RMI server is already bound
+     */
+    public void start(String ipHost, int rmiPort) throws RemoteException, AlreadyBoundException {
+        logger.info("Starting RMI server on " + ipHost + ":\t" + rmiPort + "...");
+        System.setProperty("java.rmi.server.hostname", ipHost);
         ServerRMI.registry = LocateRegistry.createRegistry(rmiPort);
         try {
             registry.bind("Lobby", lobby);
-            ServerApp.logger.info("Lobby bound correctly");
+            logger.info("Lobby bound correctly");
         }
         catch (Exception e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage());
             System.exit(-1);
         }
-        ServerApp.logger.info("Server RMI ready on port " + rmiPort);
+        logger.info("Server RMI ready on port " + rmiPort);
     }
 }

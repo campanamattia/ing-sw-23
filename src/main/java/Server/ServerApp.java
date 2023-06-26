@@ -8,11 +8,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 /**
  * The ServerApp class represents the main entry point for the server application.
  * It initializes the logger, sets the server ports, initializes the lobby,
- * starts the RMI server and the socket server, and logs the server startup.
+ * starts the RMI server and the socket server, and logs the server status.
  */
 public class ServerApp {
     /**
@@ -41,7 +41,9 @@ public class ServerApp {
     /**
      * The file path for the server setting JSON file.
      */
-    private static final String serverSetting = "/settings/serverSetting.json";
+    private static final String serverSetting = "settings/serverSetting.json";
+
+    private static String ipHost;
     /**
      * The port number for the socket server.
      */
@@ -57,6 +59,10 @@ public class ServerApp {
      * @param args the command-line arguments (optional socket and RMI ports)
      */
     public static void main(String[] args) {
+        if (args.length < 1) System.exit(-1);
+        ipHost = args[0].trim();
+        if (!isValid(ipHost)) System.exit(-2);
+
         initLogger();
         initLobby();
         executorService = Executors.newCachedThreadPool();
@@ -73,116 +79,84 @@ public class ServerApp {
         logger.info("ServerApp started");
     }
 
-    /**
-     * Initializes the logger and adds a FileHandler for logging to a file.
-     * The logger is set to log all levels of messages.
-     */
+    private static boolean isValid(String ipHost) {
+        String[] ip = ipHost.split("\\.");
+        if (ip.length != 4) return false;
+        for (String s : ip) {
+            int i = Integer.parseInt(s);
+            if (i < 0 || i > 255) return false;
+        }
+        return true;
+    }
+
     private static void initLogger() {
         logger = Logger.getLogger(ServerApp.class.getName());
         try {
             logger.addHandler(new FileHandler("logger.json"));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.exit(-3);
         }
         logger.setLevel(Level.ALL);
-        logger.info("Starting ServerApp");
+        logger.info("Starting ServerApp on " + ipHost);
     }
 
-    /**
-     * Sets the socket and RMI ports based on the command-line arguments.
-     * If no arguments are provided, the ports are read from the server setting JSON file.
-     *
-     * @param args the command-line arguments
-     */
-    private static void setPort(String[] args) {
-        try {
-            switch (args.length) {
-                case 2 -> {
-                    socketPort = Integer.parseInt(args[0]);
-                    rmiPort = Integer.parseInt(args[1]);
-                }
-                case 1 -> {
-                    socketPort = Integer.parseInt(args[0]);
-                    rmiPort = rmiFromJSON();
-                }
-                default -> {
-                    socketPort = socketFromJSON();
-                    rmiPort = rmiFromJSON();
-                }
-            }
-        } catch (RuntimeException e) {
-            logger.log(Level.SEVERE, e.toString());
-            System.exit(-1);
-        }
-    }
-
-    /**
-     * Initializes the lobby instance.
-     * It creates a new Lobby object for managing client connections and games.
-     */
     private static void initLobby() {
         try {
             lobby = new Lobby();
         } catch (RemoteException e) {
             logger.log(Level.SEVERE, e.toString());
-            System.exit(-1);
+            System.exit(-4);
         }
     }
 
-    /**
-     * Reads the socket port number from the server setting JSON file.
-     *
-     * @return the socket port number
-     * @throws RuntimeException if the server setting JSON file is not found
-     */
+    private static void setPort(String[] args) {
+        if (args.length <= 1) {
+            socketPort = socketFromJSON();
+            rmiPort = rmiFromJSON();
+            return;
+        }
+        for (int i = 1; i < args.length; i++) {
+            try {
+                if (args[i].equals("-s")) {
+                    socketPort = Integer.parseInt(args[i + 1]);
+                } else if (args[i].equals("-r")) {
+                    rmiPort = Integer.parseInt(args[i + 1]);
+                }
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                logger.log(Level.SEVERE, e.toString());
+                System.exit(-5);
+            }
+        }
+    }
+
+
     @SuppressWarnings("ConstantConditions")
     private static int socketFromJSON() throws RuntimeException {
         Gson gson = new Gson();
         JsonReader reader;
-        try {
-            reader = new JsonReader(new FileReader(ServerApp.class.getResource(serverSetting).getFile()));
-            JsonObject json = gson.fromJson(reader, JsonObject.class);
-            return json.get("socketPort").getAsInt();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(serverSetting))));
+        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        return json.get("socketPort").getAsInt();
     }
 
-    /**
-     * Reads the RMI port number from the server setting JSON file.
-     *
-     * @return the RMI port number
-     * @throws RuntimeException if the server setting JSON file is not found
-     */
     @SuppressWarnings("ConstantConditions")
     private static int rmiFromJSON() throws RuntimeException {
         Gson gson = new Gson();
         JsonReader reader;
-        try {
-            reader = new JsonReader(new FileReader(ServerApp.class.getResource(serverSetting).getFile()));
-            JsonObject json = gson.fromJson(reader, JsonObject.class);
-            return json.get("rmiPort").getAsInt();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(serverSetting))));
+        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        return json.get("rmiPort").getAsInt();
     }
 
-    /**
-     * Starts the RMI server by creating a new ServerRMI instance and binding it to the specified RMI port.
-     * It handles RemoteException and AlreadyBoundException by logging the error and exiting the application.
-     */
     private static void rmiServer() {
         try {
-            new ServerRMI().start(lobby, rmiPort);
+            new ServerRMI().start(ipHost, rmiPort);
         } catch (RemoteException | AlreadyBoundException e) {
             logger.log(Level.SEVERE, e.toString());
             System.exit(-1);
         }
     }
 
-    /**
-     * Starts the socket server by creating a new SocketServer instance and starting it with the specified socket port.
-     */
     private static void socketServer() {
         new SocketServer().start(socketPort);
     }

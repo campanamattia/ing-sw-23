@@ -58,17 +58,14 @@ public class Gui extends View {
         }
     }
 
-    @Override
     public void showBoard() {
 
     }
 
-    @Override
     public void showChat() {
 
     }
 
-    @Override
     public void showStatus() {
 
     }

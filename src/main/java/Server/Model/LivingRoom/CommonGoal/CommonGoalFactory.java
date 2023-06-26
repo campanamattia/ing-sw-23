@@ -3,7 +3,17 @@ import com.google.gson.JsonObject;
 
 import java.util.List;
 
+/**
+ * This class is a factory for common goals.
+ * It is used to create a common goal from a json object.
+ */
 public class CommonGoalFactory {
+    /**
+     * This method creates a common goal from a json object.
+     * @param tokenList the list of scoring tokens.
+     * @param jsonObject the json object containing the common goal.
+     * @return the common goal created.
+     */
     public static CommonGoal getCommonGoal(List<Integer> tokenList, JsonObject jsonObject) {
 
         switch (jsonObject.get("enum").getAsInt()) {

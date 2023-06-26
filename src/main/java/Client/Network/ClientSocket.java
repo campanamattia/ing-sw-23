@@ -78,7 +78,7 @@ public class ClientSocket extends Network {
     }
 
     @Override
-    public synchronized void addScout(Scout scout) throws RemoteException {
+    public synchronized void addScout(String playerID,  Scout scout) throws RemoteException {
         //never called
     }
 
@@ -137,15 +137,6 @@ public class ClientSocket extends Network {
         }
     }
 
-    @Override
-    public synchronized void getGameController(String lobbyID, RemoteClient remote) {
-        ClientMessage clientMessage = new GetGameMessage(lobbyID);
-        try {
-            sendMessage(clientMessage);
-        } catch (IOException e) {
-            clientConnected.set(false);
-        }
-    }
 
     @Override
     public synchronized void logOut(String playerID, String lobbyID) throws RemoteException {
