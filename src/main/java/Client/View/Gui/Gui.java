@@ -58,44 +58,6 @@ public class Gui extends View {
         }
     }
 
-    public void showBoard() {
-
-    }
-
-    public void showChat() {
-
-    }
-
-    public void showStatus() {
-
-    }
-
-    @Override
-    public void showShelves() {
-
-    }
-
-    @Override
-    public void showHelp() {
-
-    }
-
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void printError(String error) {
-
-    }
-
-    @Override
-    public void printMessage(String message) {
-
-    }
-
-
     @Override
     public void newTurn(String playerID) throws RemoteException {
         mockModel.setCurrentPlayer(playerID);
@@ -181,5 +143,10 @@ public class Gui extends View {
     public void reloadPlayer(String reloadPlayer) throws RemoteException {
         this.mockModel.getPlayer(reloadPlayer).setOnline(true);
         guiApplication.updateMockModel(this.mockModel);
+    }
+
+    @Override
+    public void outcomeMessage(String message) throws RemoteException {
+
     }
 }

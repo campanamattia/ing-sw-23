@@ -87,7 +87,7 @@ public class Cli extends View {
 
         printMessage("Good! You are going to create a " + input.toLowerCase() + " connection.");
 
-        return NetworkFactory.instanceNetwork(input, this);
+        return NetworkFactory.instanceNetwork(input);
     }
 
     @Override
