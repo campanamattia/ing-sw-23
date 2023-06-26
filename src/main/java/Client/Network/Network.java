@@ -56,7 +56,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
                     throw new RuntimeException(e);
                 }
             }
-        }, 10000); //15 seconds timeout
+        }, 10000); //15-seconds timeout
     }
 
     @Override
@@ -64,7 +64,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
         if (scouts.containsKey(objects.getClass())) {
             scouts.get(objects.getClass()).update(objects);
         } else {
-            view.printError("Scout-handler not found");
+            view.outcomeException(new RuntimeException("Scout-handler not found"));
         }
     }
 

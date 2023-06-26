@@ -9,7 +9,6 @@ import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
-import org.jetbrains.annotations.NotNull;
 import Enumeration.TurnPhase;
 import Enumeration.ClientCommand;
 
@@ -53,10 +52,13 @@ public class Cli extends View {
         if (message.to() == null || message.to().equals(localPlayer)) {
             this.mockModel.addMessage(message);
             System.out.println(CliColor.BOLD + "\rNew Message" + CliColor.RESET);
+            return;
         }
+        if (message.from().equals(localPlayer))
+            printMessage("Message sent correctly");
     }
 
-    public void start() {
+    private void start() {
         int port;
         String address;
 
@@ -341,7 +343,7 @@ public class Cli extends View {
     }
 
 
-    private void showTile(@NotNull List<Tile> tiles) {
+    private void showTile(List<Tile> tiles) {
         System.out.print(TAB);
         for (int i = 0; i < tiles.size(); i++) {
             System.out.print(tiles.get(i).color().getCode() + "|" + (i + 1) + "|");
@@ -530,7 +532,7 @@ public class Cli extends View {
     }
 
     private void fixChat() {
-        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer));
+        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer) && !message.from().equals(localPlayer));
     }
 
     public void clearCLI() {

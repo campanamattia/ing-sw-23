@@ -158,7 +158,7 @@ public class ClientRMI extends Network {
         if (scouts.containsKey(objects.getClass())) {
             scouts.get(objects.getClass()).update(objects);
         } else {
-            view.printError("Scout-Handler not found");
+            view.outcomeException(new RuntimeException("Scout-Handler not found"));
             throw new RemoteException("Scout not found");
         }
     }
