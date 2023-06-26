@@ -305,17 +305,17 @@ public class LivingRoom extends Scene {
 
         // positioning
         // stackPane -> pane -> img
-        StackPane stackPane = new StackPane();
+        StackPane cg1StackPane = new StackPane();
         for (ImageView image : commonGoalsImg) {
-            System.out.println("add image to common goal pane");
+            System.out.println("add image to common goal pane 1");
             image.setPreserveRatio(true);
-            image.setFitWidth(30);
+            image.setFitWidth(40);
             image.setRotate(350);
-            stackPane.getChildren().add(image);
+            cg1StackPane.getChildren().add(image);
         }
-        stackPane.setLayoutX(120);
-        stackPane.setLayoutY(50);
-        cg1.getChildren().add(stackPane);
+        cg1StackPane.setLayoutX(120);
+        cg1StackPane.setLayoutY(40);
+        cg1.getChildren().add(cg1StackPane);
 
         // personal goal
 
