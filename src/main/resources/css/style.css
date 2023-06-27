@@ -180,3 +180,8 @@
     -fx-font-size: 15px;
     -fx-text-fill: red;
 }
+
+.vBox-chat{
+    -fx-pref-width: 550px;
+    -fx-pref-height: 200px;
+}

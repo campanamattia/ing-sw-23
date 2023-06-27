@@ -234,6 +234,7 @@ public class LivingRoom extends Scene {
         }
     }
 
+
     private void boardStyle(ImageView boardImage) {
         this.boardImage = boardImage;
         boardImage.setPreserveRatio(true);
@@ -565,6 +566,9 @@ public class LivingRoom extends Scene {
             }
             messageField.clear();
         });
+
+        // upgrading shelves in case of reconnection
+        updateShelves();
     }
 
     private static void printSelectedTiles() {
@@ -814,19 +818,6 @@ public class LivingRoom extends Scene {
         app.switchScene(endGameScene);
     }
 
-    public static void newMessageChat(ChatMessage message) {
-        String from = "From " + message.from();
-        String dest = " to " + message.to() + " : ";
-        String toShow = from + dest + "'" + message.message() + "'";
-        if (message.to() == null) {
-            from += ": ";
-            dest = "";
-            toShow = from + dest + "'" + message.message() + "'";
-        }
-        Label tmp = new Label(toShow);
-        chatTextAreaVbox.getChildren().add(tmp);
-    }
-
     private static void showCommonGoals(ImageView commonGoalImg, double mouseX, double mouseY) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("COMMON GOALS");
@@ -844,11 +835,37 @@ public class LivingRoom extends Scene {
         alert.showAndWait();
     }
 
+    public static void newMessageChat(ChatMessage message) {
+        String from = "From " + message.from();
+        String dest = " to " + message.to() + " : ";
+        String toShow = from + dest + "'" + message.message() + "'";
+        if (message.to() == null) {
+            from += ": ";
+            dest = "";
+            toShow = from + dest + "'" + message.message() + "'";
+        }
+        Label tmp = new Label(toShow);
+        chatTextAreaVbox.getChildren().add(tmp);
+    }
+
     public static void writeInfos(String info) {
-        // chatTextArea.getStyleClass().add("text-info-chat");
         if (chatTextArea != null) {
             Label tmp = new Label(info);
+            tmp.getStyleClass().add("text-info-chat");
             chatTextAreaVbox.getChildren().add(tmp);
+        }
+    }
+    public static void outcomeMessage(String message) {
+        if (chatTextArea != null) {
+            Label tmp = new Label(message);
+            tmp.getStyleClass().add("text-info-chat");
+            tmp.setTextFill(Color.GREEN);
+            chatTextAreaVbox.getChildren().add(tmp);
+        }
+    }
+    public static void refreshChat(List<ChatMessage> messageList) {
+        for(ChatMessage message:messageList){
+            LivingRoom.newMessageChat(message);
         }
     }
 }

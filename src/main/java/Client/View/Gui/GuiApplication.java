@@ -15,12 +15,16 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
+
+import static Client.ClientApp.localPlayer;
 
 
 public class GuiApplication extends Application {
 
     private Stage primaryStage;
     private List<String> activeLobbies = new ArrayList<>();
+    private List<String> activeGames = new ArrayList<>();
 
     private static volatile boolean javaFxLaunched = false;
 
@@ -48,6 +52,10 @@ public class GuiApplication extends Application {
         this.activeLobbies = lobbies;
     }
 
+    public void setActiveGames(List<String> activeGames) {
+        this.activeGames = activeGames;
+    }
+
     public void outcomeLogin(){
         Platform.runLater(LoginScene::toLobbyScene);
     }
@@ -57,7 +65,7 @@ public class GuiApplication extends Application {
     }
 
     public void askPlayerInfo(){
-        Platform.runLater(()-> ConnectionScene.toLoginScene(this.activeLobbies));
+        Platform.runLater(()-> ConnectionScene.toLoginScene(this.activeLobbies,this.activeGames));
     }
 
     private boolean firstBoard = true;
@@ -111,7 +119,10 @@ public class GuiApplication extends Application {
     }
 
     public void writeCurrentPlayer(String playerID) {
-        String info = "It's " + playerID + "'s turn!\n" + playerID + ": Select from 1 to 3 tiles!";
+        String personalMessage = playerID + ": Select from 1 to 3 tiles!";
+        if(!localPlayer.equals(playerID))
+            personalMessage = "";
+        String info = "It's " + playerID + "'s turn!\n" + personalMessage;
         Platform.runLater(()->LivingRoom.writeInfos(info));
     }
 
@@ -125,6 +136,11 @@ public class GuiApplication extends Application {
     }
 
     public void outcomeMessage(String message) {
-        Platform.runLater(()->LivingRoom.writeInfos(message));
+        Platform.runLater(()->LivingRoom.outcomeMessage(message));
+    }
+
+    public void refreshChat(Stack<ChatMessage> chat) {
+        List<ChatMessage> messageList = new ArrayList<>(chat);
+        Platform.runLater(()->LivingRoom.refreshChat(messageList));
     }
 }

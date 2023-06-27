@@ -95,11 +95,12 @@ public class ConnectionScene extends Scene {
         Thread connection = new Thread(() -> network.init(ipField.getText(), Integer.parseInt(portField.getText())));
         connection.start();
     }
-    public static void toLoginScene(List<String> activeLobbies){
-        Scene loginScene = new LoginScene(app,activeLobbies);
+    public static void toLoginScene(List<String> activeLobbies, List<String> activeGames){
+        Scene loginScene = new LoginScene(app,activeLobbies,activeGames);
         app.switchScene(loginScene);
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean checkPort() {
         final int MIN_PORT = 1024;
         final int MAX_PORT = 65535;
@@ -117,6 +118,7 @@ public class ConnectionScene extends Scene {
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean checkIp() {
         if (ipField.getText().equals("d")){
             ipField.setText("127.0.0.1");

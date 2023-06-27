@@ -51,7 +51,7 @@ public class Gui extends View {
 
     @Override
     public void updateChat(ChatMessage message) {
-        if (message.to() == null || message.to().equals(localPlayer)) {
+        if (message.to() == null || message.to().equals(localPlayer) || message.from().equals(localPlayer)) {
             this.mockModel.addMessage(message);
             guiApplication.updateMockModel(this.mockModel);
             guiApplication.newMessageChat(message);
@@ -109,7 +109,9 @@ public class Gui extends View {
     public void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException {
         if (lobbyInfo != null) {
             List<String> lobbies = new ArrayList<>(lobbyInfo.get(0).keySet());
+            List<String> games = new ArrayList<>(lobbyInfo.get(1).keySet());
             guiApplication.setLobbies(lobbies);
+            guiApplication.setActiveGames(games);
             guiApplication.askPlayerInfo();
         } else {
             guiApplication.setLobbies(null);
@@ -120,12 +122,16 @@ public class Gui extends View {
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
+        if(!mockModel.getChat().isEmpty()) {
+            fixChat();
+            guiApplication.refreshChat(mockModel.getChat());
+        }
         guiApplication.updateMockModel(this.mockModel);
         if (mockModel.getChat() != null) fixChat();
         newTurn(mockModel.getCurrentPlayer());
     }
     private void fixChat() {
-        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer));
+        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer) && !message.from().equals(localPlayer));
     }
 
     @Override

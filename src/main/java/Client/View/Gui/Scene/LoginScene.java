@@ -21,9 +21,10 @@ public class LoginScene extends Scene {
     private final TextField playerID;
     private final TextField createLobby;
     private final ComboBox<String> activeLobbies;
+    private final ComboBox<String> activeGames;
 
 
-    public LoginScene(GuiApplication app, List<String> inputLobbies){
+    public LoginScene(GuiApplication app, List<String> inputLobbies, List<String> activegames){
         super(new Pane(), 960, 750);
 
         setUserAgentStylesheet(STYLEPATH);
@@ -51,7 +52,17 @@ public class LoginScene extends Scene {
         }else{
             activeLobbies.setPromptText("No active lobbies, create a new one");
         }
-        Label activeGames = new Label("Active games: ");
+
+        activeGames = new ComboBox<>();
+        activeGames.setPrefWidth(400);
+        activeGames.setPrefHeight(20);
+        if(activegames != null && activegames.size()!=0){
+            for (String game : activegames) {
+                activeGames.getItems().add(game);
+            }
+        }else{
+            activeGames.setPromptText("No active games, create a new one");
+        }
 
         playerID = new TextField();
         playerID.setPromptText("Insert username: ");
@@ -90,12 +101,14 @@ public class LoginScene extends Scene {
         String username = playerID.getText();
         String lobbyName = createLobby.getText();
         String existingLobby = activeLobbies.getValue();
+        String existingGame = activeGames.getValue();
+
         if(Objects.equals(username, "")) {
             printError("Insert a username!");
             return;
         }
-        if(Objects.equals(existingLobby, null) && Objects.equals(lobbyName, "")) {
-            printError("Chose a lobby or create a new one!");
+        if(Objects.equals(existingLobby, null) && Objects.equals(lobbyName, "") && Objects.equals(existingGame, null)){
+            printError("Chose an active game, a lobby or create a new one!");
             return;
         }
         if(!Objects.equals(existingLobby, null) && !Objects.equals(lobbyName, "")) {
@@ -105,7 +118,9 @@ public class LoginScene extends Scene {
 
         if(existingLobby != null)
             network.login(username,existingLobby,view,network);
-        else
+        else if(existingGame != null)
+            network.login(username,existingGame,view,network);
+        else if(lobbyName != null)
             network.login(username,lobbyName,view,network);
     }
 
