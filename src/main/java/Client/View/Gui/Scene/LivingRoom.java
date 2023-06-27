@@ -247,20 +247,10 @@ public class LivingRoom extends Scene {
 
     public static void showBoard(Cell[][] board) {
         numPlayers = mockModel.getMockPlayers().size();
-        ImageView image;
         int tmp = 0;
         if (numPlayers == 2)
             tmp = 1;
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[0].length; j++) {
-                if (board[i][j].getStatus() && board[i][j].getTile() != null) {
-                    String colorString = board[i][j].getTile().color().getCode();
-                    image = choseImage(colorString);
-                    Pane tmpPane = getPane(gridBoard, j + tmp, i + tmp);
-                    tmpPane.getChildren().add(image);
-                }
-            }
-        }
+        fillBoard(board, tmp);
         Pane finalPointPain = new Pane();
         ImageView finalPointImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/scoring_tokens/end_game.jpg")));
         finalPointImg.setPreserveRatio(true);
@@ -783,13 +773,9 @@ public class LivingRoom extends Scene {
 
     public static void updateBoard(Cell[][] board) {
         System.out.println("updating the board");
-        ImageView image;
         int tmp = 0;
         if (numPlayers == 2)
             tmp = 1;
-
-        // currentPlayer
-        // TODO: 22/06/2023 fix current player
 
         // delete the old board
         for (int i = 0; i < board.length; i++) {
@@ -800,6 +786,11 @@ public class LivingRoom extends Scene {
             }
         }
 
+        fillBoard(board, tmp);
+    }
+
+    private static void fillBoard(Cell[][] board, int tmp) {
+        ImageView image;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j].getStatus() && board[i][j].getTile() != null) {
