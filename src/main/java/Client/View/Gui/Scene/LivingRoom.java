@@ -38,7 +38,7 @@ public class LivingRoom extends Scene {
     private static TextField column;
     private static final List<GridPane> othersShelves = new ArrayList<>();
     private static ScrollPane chatTextArea;
-    private static VBox chatTextAreaVbox = new VBox();
+    private static final VBox chatTextAreaVbox = new VBox();
     private static GridPane highlightBoard;
     private static int numPlayers;
     private static StackPane cg1StackPane;
@@ -519,8 +519,10 @@ public class LivingRoom extends Scene {
         recipient.getItems().add("all");
 
         chatTextArea = new ScrollPane();
-        chatTextArea.setContent(chatTextAreaVbox);
         chatTextArea.getStyleClass().add("chat-area");
+        chatTextArea.setContent(chatTextAreaVbox);
+
+        chatTextAreaVbox.getStyleClass().add("vBox-chat");
 
         TextField messageField = new TextField();
         messageField.getStyleClass().add("text-field-chat");
