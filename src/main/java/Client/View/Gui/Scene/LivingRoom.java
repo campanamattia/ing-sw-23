@@ -44,8 +44,8 @@ public class LivingRoom extends Scene {
     private static int peekCg1;
     private static int peekCg2;
     private static Pane boardPane;
-    private static List<Pane> selectTilesPane = new ArrayList<>();
-    private static List<Integer> orderTiles = new ArrayList<>();
+    private static final List<Pane> selectTilesPane = new ArrayList<>();
+    private static final List<Integer> orderTiles = new ArrayList<>();
 
     public LivingRoom(GuiApplication app) {
 
@@ -550,7 +550,7 @@ public class LivingRoom extends Scene {
             Pane tilePane = new Pane();
             tilePane.setId(String.valueOf(i+1));
             selectTilesPane.add(tilePane);
-            tilePane.setOnMouseClicked(e -> handleClickTileOrder(tilePane, tilePane.getId()));
+            tilePane.setOnMouseClicked(e -> handleClickTileOrder(tilePane.getId()));
 
             ImageView tileImg = selectedTilesImg.get(i);
             tileImg.setFitWidth(60);
@@ -593,8 +593,8 @@ public class LivingRoom extends Scene {
         alert.showAndWait();
     }
 
-    private static void setArrowsForInsert(Pane personalPane) {
-    }
+    // private static void setArrowsForInsert(Pane personalPane) {
+    // }
 
     private static void printNumber(Pane tilePane, String id) {
         if(tilePane.getChildren().size() > 1)
@@ -613,7 +613,7 @@ public class LivingRoom extends Scene {
         tilePane.getChildren().add(toShow);
     }
 
-    private static void handleClickTileOrder(Pane tilePane, String id) {
+    private static void handleClickTileOrder(String id) {
         if (!orderTiles.contains(Integer.parseInt(id))) {
             orderTiles.add(Integer.parseInt(id));
         } else {
