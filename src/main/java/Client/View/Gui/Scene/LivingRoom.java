@@ -7,6 +7,7 @@ import Utils.Cell;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -46,6 +47,7 @@ public class LivingRoom extends Scene {
     private static Pane boardPane;
     private static final List<Pane> selectTilesPane = new ArrayList<>();
     private static final List<Integer> orderTiles = new ArrayList<>();
+    private static int column = -1;
 
     public LivingRoom(GuiApplication app) {
 
@@ -543,12 +545,13 @@ public class LivingRoom extends Scene {
         // vBox -> hBox -> shelf
 
         VBox vBoxMain = new VBox();
+        vBoxMain.setSpacing(10);
 
         HBox selectedTilesHBox = new HBox();
         selectedTilesHBox.setSpacing(10);
         for (int i = 0; i < selectedTilesImg.size(); i++) {
             Pane tilePane = new Pane();
-            tilePane.setId(String.valueOf(i+1));
+            tilePane.setId(String.valueOf(i + 1));
             selectTilesPane.add(tilePane);
             tilePane.setOnMouseClicked(e -> handleClickTileOrder(tilePane.getId()));
 
@@ -561,8 +564,6 @@ public class LivingRoom extends Scene {
         }
 
         Pane personalGoalPane = new Pane();
-
-        //setArrowsForInsert();
 
         ImageView personalGoalImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
         personalGoalImg.setPreserveRatio(true);
@@ -584,8 +585,27 @@ public class LivingRoom extends Scene {
         insert.setPrefHeight(40);
         insert.setPrefWidth(60);
 
-        personalGoalPane.getChildren().addAll(personalGoalGrid,personalGoalImg);
-        vBoxMain.getChildren().addAll(selectedTilesHBox,personalGoalPane,insert);
+        personalGoalPane.getChildren().addAll(personalGoalGrid, personalGoalImg);
+
+        HBox hBoxArrows = new HBox();
+        hBoxArrows.setSpacing(10);
+        for(int i=0;i<5;i++){
+            Pane arrowPane = new Pane();
+            arrowPane.setId(String.valueOf(i));
+
+            ImageView arrowImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/misc/down-filled-triangular-arrow.png")));
+            arrowImg.setPreserveRatio(true);
+            arrowImg.setFitWidth(25);
+
+            arrowPane.setOnMouseClicked(e-> chooseColumn(arrowPane, Integer.parseInt(arrowPane.getId())));
+
+            arrowPane.getChildren().add(arrowImg);
+            hBoxArrows.getChildren().add(arrowPane);
+        }
+        Pane firstPane = (Pane) hBoxArrows.getChildren().get(0);
+        HBox.setMargin(firstPane, new Insets(0, 0, 0, 40));
+
+        vBoxMain.getChildren().addAll(selectedTilesHBox,hBoxArrows, personalGoalPane, insert);
 
 
         alert.getDialogPane().setContent(vBoxMain);
@@ -593,11 +613,21 @@ public class LivingRoom extends Scene {
         alert.showAndWait();
     }
 
-    // private static void setArrowsForInsert(Pane personalPane) {
-    // }
+    private static void chooseColumn(Pane arrowPane, int col) {
+        ImageView imagePane = new ImageView();
+        if(arrowPane.getChildren().size() > 0)
+            imagePane = (ImageView) arrowPane.getChildren().get(0);
+        if (col != column) {
+            column = col;
+            imagePane.setOpacity(0.5);
+        } else {
+            column = -1;
+            imagePane.setOpacity(1);
+        }
+    }
 
     private static void printNumber(Pane tilePane, String id) {
-        if(tilePane.getChildren().size() > 1)
+        if (tilePane.getChildren().size() > 1)
             tilePane.getChildren().remove(1);
 
         if (!orderTiles.contains(Integer.parseInt(id))) {
@@ -647,9 +677,7 @@ public class LivingRoom extends Scene {
         alert.setContentText(message);
 
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.show();
-
-        alert.showAndWait();
+        stage.showAndWait();
     }
 
     public static void insertTiles() throws RemoteException {
@@ -657,7 +685,7 @@ public class LivingRoom extends Scene {
         selectedTilesImg.clear();
         System.out.println("insert tiles");
 
-        network.insertTiles(localPlayer, orderTiles, 1);
+        network.insertTiles(localPlayer, orderTiles, column);
     }
 
     private static ImageView choseImage(String colorString) {
@@ -739,7 +767,8 @@ public class LivingRoom extends Scene {
             }
         }
     }
-    private static void updatePersonalGoal(GridPane grid){
+
+    private static void updatePersonalGoal(GridPane grid) {
         ImageView image;
         Tile[][] personalShelf = mockModel.getPlayer(localPlayer).getShelf();
         // delete the old board
