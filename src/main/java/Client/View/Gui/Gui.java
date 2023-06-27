@@ -2,6 +2,7 @@ package Client.View.Gui;
 
 import Client.ClientApp;
 import Client.View.View;
+import Enumeration.GameWarning;
 import Enumeration.TurnPhase;
 import Utils.Cell;
 import Utils.ChatMessage;
@@ -152,7 +153,15 @@ public class Gui extends View {
     }
 
     @Override
-    public void outcomeMessage(String message) throws RemoteException {
-        guiApplication.outcomeMessage(message);
+    public void outcomeMessage(GameWarning warning) throws RemoteException {
+        guiApplication.outcomeMessage(warning.toString());
+        if (warning == GameWarning.WON) {
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            System.exit(666);
+        }
     }
 }

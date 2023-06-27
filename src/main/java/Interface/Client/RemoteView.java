@@ -1,5 +1,6 @@
 package Interface.Client;
 
+import Enumeration.GameWarning;
 import Utils.MockObjects.MockModel;
 import Utils.Rank;
 import Utils.Tile;
@@ -33,5 +34,5 @@ public interface RemoteView extends Remote {
 
     void reloadPlayer(String reloadPlayer) throws RemoteException;
 
-    void outcomeMessage(String message) throws RemoteException;
+    void outcomeMessage(GameWarning warning) throws RemoteException;
 }
