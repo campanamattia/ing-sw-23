@@ -65,10 +65,10 @@ public class ServerApp {
     public static void main(String[] args) {
         if (args.length < 1) {
             System.out.println("Insert the ip address of the server");
-            ipHost = String.valueOf(new Scanner(System.in));
+            ipHost = String.valueOf(new Scanner(System.in).next());
         } else
             ipHost = args[0].trim();
-        if (!isValid(ipHost)) System.exit(-2);
+        if (!isValid()) System.exit(-2);
 
         initLogger();
         initLobby();
@@ -86,14 +86,34 @@ public class ServerApp {
         logger.info("ServerApp started");
     }
 
-    private static boolean isValid(String ipHost) {
-        String[] ip = ipHost.split("\\.");
-        if (ip.length != 4) return false;
-        for (String s : ip) {
-            int i = Integer.parseInt(s);
-            if (i < 0 || i > 255) return false;
+    private static boolean isValid() {
+        switch (ipHost) {
+            case "localhost" -> {
+                ipHost = "127.0.0.1";
+                return true;
+            }
+            case "d", "default" -> {
+                ipHost = ipHostFromJSON();
+                return true;
+            }
+            default -> {
+                String[] ip = ipHost.split("\\.");
+                if (ip.length != 4) return false;
+                for (String s : ip) {
+                    int i = Integer.parseInt(s);
+                    if (i < 0 || i > 255) return false;
+                }
+                return true;
+            }
         }
-        return true;
+    }
+
+    private static String ipHostFromJSON() {
+        Gson gson = new Gson();
+        JsonReader reader;
+        reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(serverSetting))));
+        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        return json.get("ipHost").getAsString();
     }
 
     private static void initLogger() {
@@ -136,6 +156,11 @@ public class ServerApp {
                 System.exit(-5);
             }
         }
+        if (socketPort == 0)
+            socketPort = socketFromJSON();
+
+        if (rmiPort == 0)
+            rmiPort = rmiFromJSON();
     }
 
 
