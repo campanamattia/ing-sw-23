@@ -82,4 +82,10 @@ public class Cell implements Serializable, Cloneable {
             throw new AssertionError();
         }
     }
+
+    public Tile removeTile() {
+        Tile tile = this.tile;
+        this.tile = null;
+        return tile;
+    }
 }

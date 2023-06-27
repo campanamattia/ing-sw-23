@@ -124,6 +124,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             } catch (GamePhaseException e) {
                 if (e instanceof EndingStateException) {
                     this.phaseController = new LastRoundState(this.phaseController.getCurrentPlayer(), this.phaseController.getPlayers());
+                    ((LastRoundState) this.phaseController).setFirstPlayer(this.gameModel.getFirstPlayer());
                     sendMessage(GameWarning.LAST_ROUND);
                     continue;
                 } else throw (EndGameException) e;

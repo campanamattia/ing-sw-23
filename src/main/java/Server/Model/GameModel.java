@@ -251,15 +251,6 @@ public class GameModel {
     }
 
     /**
-     * Returns the bag of tile.
-     *
-     * @return the bag of tile
-     */
-    public Bag getBag() {
-        return this.bag;
-    }
-
-    /**
      * Returns the board.
      *
      * @return the board
@@ -302,7 +293,9 @@ public class GameModel {
         return this.lobbyID;
     }
 
-
+    public String getFirstPlayer() {
+        return this.firstPlayer;
+    }
 
     /**
      * Returns the Talent object containing the list of scouts.
