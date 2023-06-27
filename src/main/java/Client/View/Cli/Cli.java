@@ -11,6 +11,7 @@ import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
 import Enumeration.TurnPhase;
 import Enumeration.ClientCommand;
+import Enumeration.GameWarning;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -382,9 +383,14 @@ public class Cli extends View {
     }
 
     @Override
-    public synchronized void outcomeMessage(String message) throws RemoteException {
-        printMessage(message);
-        if (message.equals("You won due to insufficient players!")) {
+    public synchronized void outcomeMessage(GameWarning message) throws RemoteException {
+        printMessage(message.getMs());
+        if(message == GameWarning.WON){
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             System.exit(0);
         }
     }

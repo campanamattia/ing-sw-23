@@ -156,6 +156,7 @@ public class ClientSocket extends Network {
             this.out.reset();
         } catch (IOException e) {
             clientConnected.set(false);
+            System.exit(404);
         }
     }
 }
