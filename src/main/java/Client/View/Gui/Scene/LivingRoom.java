@@ -34,8 +34,6 @@ public class LivingRoom extends Scene {
     private static VBox vBoxShelves;
     private static final List<ImageView> selectedTilesImg = new ArrayList<>();
     private static final List<Coordinates> selectedTiles = new ArrayList<>();
-    private static TextField orderTile;
-    private static TextField column;
     private static final List<GridPane> othersShelves = new ArrayList<>();
     private static ScrollPane chatTextArea;
     private static final VBox chatTextAreaVbox = new VBox();
@@ -46,6 +44,9 @@ public class LivingRoom extends Scene {
     private static int peekCg1;
     private static int peekCg2;
     private static Pane boardPane;
+    private static List<Pane> selectTilesPane = new ArrayList<>();
+    private static List<Integer> orderTiles = new ArrayList<>();
+
     public LivingRoom(GuiApplication app) {
 
         super(new Pane(), 1400, 768);
@@ -53,7 +54,7 @@ public class LivingRoom extends Scene {
 
         LivingRoom.app = app;
 
-        String boardImg = String.valueOf(GuiApplication.class.getResource("/img/boards/livingroom.png"));
+        String boardImg = String.valueOf(GuiApplication.class.getResource("/img/boards/living-room.png"));
         boardImage = new ImageView(boardImg);
         boardStyle(boardImage);
 
@@ -137,8 +138,7 @@ public class LivingRoom extends Scene {
 
         highlightBoard.setOnMouseClicked(event -> {
             int tmp = 0;
-            if (mockModel.getMockPlayers().size() == 2)
-                tmp = 1;
+            if (mockModel.getMockPlayers().size() == 2) tmp = 1;
             double mouseX = event.getX();
             double mouseY = event.getY();
             System.out.println("mouse x: " + mouseX + ", mouse y: " + mouseY);
@@ -191,8 +191,7 @@ public class LivingRoom extends Scene {
                     ImageView selectedImageView = (ImageView) selectedPane.getChildren().get(0);
                     if (!selectedTilesImg.contains(selectedImageView) && selectedImageView != null) {
                         selectedTilesImg.add(selectedImageView);
-                    } else
-                        selectedTilesImg.remove(selectedImageView);
+                    } else selectedTilesImg.remove(selectedImageView);
                 }
             }
         });
@@ -203,8 +202,7 @@ public class LivingRoom extends Scene {
         List<Node> kids = grid.getChildren();
         Rectangle res = null;
         for (Node n : kids) {
-            if (GridPane.getColumnIndex(n) == j && GridPane.getRowIndex(n) == i)
-                res = (Rectangle) n;
+            if (GridPane.getColumnIndex(n) == j && GridPane.getRowIndex(n) == i) res = (Rectangle) n;
         }
         return res;
     }
@@ -222,14 +220,12 @@ public class LivingRoom extends Scene {
         if (mockModel.getMockCommonGoal().get(0).getEnumeration() == enumeration) {
             if (peek != peekCg1) {
                 ObservableList<Node> children = cg1StackPane.getChildren();
-                if (!children.isEmpty())
-                    children.remove(children.size() - 1);
+                if (!children.isEmpty()) children.remove(children.size() - 1);
             }
         } else {
             if (peek != peekCg2) {
                 ObservableList<Node> children = cg2StackPane.getChildren();
-                if (!children.isEmpty())
-                    children.remove(children.size() - 1);
+                if (!children.isEmpty()) children.remove(children.size() - 1);
             }
         }
     }
@@ -248,8 +244,7 @@ public class LivingRoom extends Scene {
     public static void showBoard(Cell[][] board) {
         numPlayers = mockModel.getMockPlayers().size();
         int tmp = 0;
-        if (numPlayers == 2)
-            tmp = 1;
+        if (numPlayers == 2) tmp = 1;
         fillBoard(board, tmp);
         Pane finalPointPain = new Pane();
         ImageView finalPointImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/scoring_tokens/end_game.jpg")));
@@ -266,8 +261,7 @@ public class LivingRoom extends Scene {
         List<Node> kids = grid.getChildren();
         Pane res = null;
         for (Node n : kids) {
-            if (GridPane.getColumnIndex(n) == j && GridPane.getRowIndex(n) == i)
-                res = (Pane) n;
+            if (GridPane.getColumnIndex(n) == j && GridPane.getRowIndex(n) == i) res = (Pane) n;
         }
         return res;
     }
@@ -292,18 +286,8 @@ public class LivingRoom extends Scene {
         cg2img.setPreserveRatio(true);
         cg2img.setLayoutX(30);
         cg2img.setLayoutY(15);
-        Image copyCg1Image = cg1img.getImage();
-        ImageView copyCg1 = new ImageView(copyCg1Image);
-        copyCg1.setPreserveRatio(true);
-        copyCg1.setFitWidth(250);
-        cg1.getChildren().add(cg1img);
-        cg1.setOnMouseClicked(e -> showCommonGoals(copyCg1, e.getScreenX(), e.getScreenY()));
-        Image copyCg2Image = cg2img.getImage();
-        ImageView copyCg2 = new ImageView(copyCg2Image);
-        copyCg2.setPreserveRatio(true);
-        copyCg2.setFitWidth(250);
-        cg2.getChildren().add(cg2img);
-        cg2.setOnMouseClicked(e -> showCommonGoals(copyCg2, e.getScreenX(), e.getScreenY()));
+        copyImageGenerator(cg1, cg1img);
+        copyImageGenerator(cg2, cg2img);
 
         VBox commonGoal = new VBox();
         commonGoal.setLayoutY(30);
@@ -330,28 +314,11 @@ public class LivingRoom extends Scene {
 
         // positioning
         // stackPane -> pane -> img
-        cg1StackPane = new StackPane();
-        for (ImageView image : commonGoalsImg) {
-            ImageView imageView = new ImageView(image.getImage());
-            imageView.setPreserveRatio(true);
-            imageView.setFitWidth(40);
-            imageView.setRotate(350);
-            cg1StackPane.getChildren().add(imageView);
-        }
-        cg1StackPane.setLayoutX(120);
-        cg1StackPane.setLayoutY(40);
+
+        cg1StackPane = createStackPaneWithImages(commonGoalsImg);
         cg1.getChildren().add(cg1StackPane);
 
-        cg2StackPane = new StackPane();
-        for (ImageView image : commonGoalsImg) {
-            ImageView imageView = new ImageView(image.getImage());
-            imageView.setPreserveRatio(true);
-            imageView.setFitWidth(40);
-            imageView.setRotate(350);
-            cg2StackPane.getChildren().add(imageView);
-        }
-        cg2StackPane.setLayoutX(120);
-        cg2StackPane.setLayoutY(40);
+        cg2StackPane = createStackPaneWithImages(commonGoalsImg);
         cg2.getChildren().add(cg2StackPane);
 
         // personal goal
@@ -368,48 +335,12 @@ public class LivingRoom extends Scene {
         pGoalImg.setFitHeight(300);
 
         pGoalGrid = new GridPane();
-        pGoalGrid.setGridLinesVisible(true);
-        pGoalGrid.setHgap(10);
-        pGoalGrid.setVgap(2);
-        pGoalGrid.setLayoutX(30);
-        pGoalGrid.setLayoutY(20);
-        pGoalGrid.prefWidthProperty().bind(pGoalImg.fitWidthProperty());
-        pGoalGrid.prefHeightProperty().bind(pGoalImg.fitWidthProperty());
-
-        pGoalGrid.getChildren().clear();
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 5; j++) {
-                Pane paneBase = new Pane();
-                paneBase.setPrefWidth(30);
-                paneBase.setPrefHeight(30);
-                pGoalGrid.add(paneBase, j, i);
-                GridPane.setColumnIndex(paneBase, j);
-                GridPane.setRowIndex(paneBase, i);
-            }
-        }
+        personalGoalGrid(pGoalImg, pGoalGrid);
 
         ImageView image;
 
         GridPane wallpaper = new GridPane();
-        wallpaper.setGridLinesVisible(true);
-        wallpaper.setHgap(10);
-        wallpaper.setVgap(2);
-        wallpaper.setLayoutX(30);
-        wallpaper.setLayoutY(20);
-        wallpaper.prefWidthProperty().bind(pGoalImg.fitWidthProperty());
-        wallpaper.prefHeightProperty().bind(pGoalImg.fitWidthProperty());
-
-        wallpaper.getChildren().clear();
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 5; j++) {
-                Pane paneBase = new Pane();
-                paneBase.setPrefWidth(30);
-                paneBase.setPrefHeight(30);
-                wallpaper.add(paneBase, j, i);
-                GridPane.setColumnIndex(paneBase, j);
-                GridPane.setRowIndex(paneBase, i);
-            }
-        }
+        personalGoalGrid(pGoalImg, wallpaper);
         Tile[][] personalGoal = mockModel.getPlayer(localPlayer).getPersonalGoal();
         for (int i = 0; i < personalGoal.length; i++) {
             for (int j = 0; j < personalGoal[0].length; j++) {
@@ -534,8 +465,7 @@ public class LivingRoom extends Scene {
         sendButton.setOnAction(event -> {
             String message = messageField.getText();
             String dest = recipient.getValue();
-            if (Objects.equals(dest, "all"))
-                dest = null;
+            if (Objects.equals(dest, "all")) dest = null;
             try {
                 network.writeChat(localPlayer, message, dest);
             } catch (RemoteException e) {
@@ -547,8 +477,7 @@ public class LivingRoom extends Scene {
         messageField.setOnAction(event -> {
             String message = messageField.getText();
             String dest = recipient.getValue();
-            if (Objects.equals(dest, "all"))
-                dest = null;
+            if (Objects.equals(dest, "all")) dest = null;
             try {
                 network.writeChat(localPlayer, message, dest);
             } catch (RemoteException e) {
@@ -561,23 +490,88 @@ public class LivingRoom extends Scene {
         updateShelves();
     }
 
+    private static void personalGoalGrid(ImageView pGoalImg, GridPane pGoalGrid) {
+        pGoalGrid.setGridLinesVisible(true);
+        pGoalGrid.setHgap(10);
+        pGoalGrid.setVgap(2);
+        pGoalGrid.setLayoutX(30);
+        pGoalGrid.setLayoutY(20);
+        pGoalGrid.prefWidthProperty().bind(pGoalImg.fitWidthProperty());
+        pGoalGrid.prefHeightProperty().bind(pGoalImg.fitWidthProperty());
+
+        pGoalGrid.getChildren().clear();
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 5; j++) {
+                Pane paneBase = new Pane();
+                paneBase.setPrefWidth(30);
+                paneBase.setPrefHeight(30);
+                pGoalGrid.add(paneBase, j, i);
+                GridPane.setColumnIndex(paneBase, j);
+                GridPane.setRowIndex(paneBase, i);
+            }
+        }
+    }
+
+    private static StackPane createStackPaneWithImages(List<ImageView> images) {
+        StackPane stackPane = new StackPane();
+        for (ImageView image : images) {
+            ImageView imageView = new ImageView(image.getImage());
+            imageView.setPreserveRatio(true);
+            imageView.setFitWidth(40);
+            imageView.setRotate(350);
+            stackPane.getChildren().add(imageView);
+        }
+        stackPane.setLayoutX(120);
+        stackPane.setLayoutY(40);
+        return stackPane;
+    }
+
+    private static void copyImageGenerator(Pane cg1, ImageView cg1img) {
+        Image copyCg1Image = cg1img.getImage();
+        ImageView copyCg1 = new ImageView(copyCg1Image);
+        copyCg1.setPreserveRatio(true);
+        copyCg1.setFitWidth(250);
+        cg1.getChildren().add(cg1img);
+        cg1.setOnMouseClicked(e -> showCommonGoals(copyCg1, e.getScreenX(), e.getScreenY()));
+    }
+
     private static void printSelectedTiles() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Selected Tiles");
         alert.setHeaderText("Selected tiles: ");
 
+        // vBox -> hBox -> shelf
+
         VBox vBoxMain = new VBox();
 
-        HBox hBoxPopUp = new HBox();
-        hBoxPopUp.setPrefWidth(400);
-        hBoxPopUp.setPrefHeight(200);
-        hBoxPopUp.setSpacing(10);
-        for (ImageView image : selectedTilesImg) {
-            ImageView imageView = new ImageView(image.getImage());
-            imageView.setFitWidth(80);
-            imageView.setFitHeight(80);
-            hBoxPopUp.getChildren().add(imageView);
+        HBox selectedTilesHBox = new HBox();
+        selectedTilesHBox.setSpacing(10);
+        for (int i = 0; i < selectedTilesImg.size(); i++) {
+            Pane tilePane = new Pane();
+            tilePane.setId(String.valueOf(i+1));
+            selectTilesPane.add(tilePane);
+            tilePane.setOnMouseClicked(e -> handleClickTileOrder(tilePane, tilePane.getId()));
+
+            ImageView tileImg = selectedTilesImg.get(i);
+            tileImg.setFitWidth(60);
+            tileImg.setFitHeight(60);
+
+            tilePane.getChildren().add(tileImg);
+            selectedTilesHBox.getChildren().add(tilePane);
         }
+
+        Pane personalGoalPane = new Pane();
+
+        //setArrowsForInsert();
+
+        ImageView personalGoalImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
+        personalGoalImg.setPreserveRatio(true);
+        personalGoalImg.setFitWidth(250);
+        personalGoalImg.setFitHeight(300);
+
+        GridPane personalGoalGrid = new GridPane();
+        personalGoalGrid(personalGoalImg, personalGoalGrid);
+        updatePersonalGoal(personalGoalGrid);
 
         Button insert = new Button("insert");
         insert.setOnAction(e -> {
@@ -590,29 +584,43 @@ public class LivingRoom extends Scene {
         insert.setPrefHeight(40);
         insert.setPrefWidth(60);
 
-        HBox input = new HBox();
-        input.setPrefWidth(150);
-        input.setPrefHeight(20);
+        personalGoalPane.getChildren().addAll(personalGoalGrid,personalGoalImg);
+        vBoxMain.getChildren().addAll(selectedTilesHBox,personalGoalPane,insert);
 
-        orderTile = new TextField();
-        orderTile.setPromptText("Choose order: ");
-        orderTile.setPrefWidth(120);
-        orderTile.setPrefHeight(20);
-
-        column = new TextField();
-        column.setPromptText("Column: ");
-        column.setPrefWidth(50);
-        column.setPrefHeight(20);
-
-        input.setSpacing(10);
-        input.getChildren().addAll(orderTile, column);
-
-        vBoxMain.setSpacing(20);
-        vBoxMain.getChildren().addAll(hBoxPopUp, input, insert);
 
         alert.getDialogPane().setContent(vBoxMain);
 
         alert.showAndWait();
+    }
+
+    private static void setArrowsForInsert(Pane personalPane) {
+    }
+
+    private static void printNumber(Pane tilePane, String id) {
+        if(tilePane.getChildren().size() > 1)
+            tilePane.getChildren().remove(1);
+
+        if (!orderTiles.contains(Integer.parseInt(id))) {
+            return;
+        }
+
+        int currentPos = orderTiles.indexOf(Integer.parseInt(id)) + 1;
+        String currPosStr = String.valueOf(currentPos);
+        Label toShow = new Label(currPosStr);
+        toShow.setStyle("-fx-text-fill: red; -fx-font-weight: bold; -fx-font-size: 30px");
+        toShow.setLayoutX(25);
+        toShow.setLayoutY(25);
+        tilePane.getChildren().add(toShow);
+    }
+
+    private static void handleClickTileOrder(Pane tilePane, String id) {
+        if (!orderTiles.contains(Integer.parseInt(id))) {
+            orderTiles.add(Integer.parseInt(id));
+        } else {
+            orderTiles.remove(Integer.valueOf(Integer.parseInt(id)));
+        }
+        for (Pane pane : selectTilesPane)
+            printNumber(pane, pane.getId());
     }
 
     public static void outcomeSelectTiles() {
@@ -649,24 +657,7 @@ public class LivingRoom extends Scene {
         selectedTilesImg.clear();
         System.out.println("insert tiles");
 
-        String tileToInsert = orderTile.getText();
-
-        String[] pos = tileToInsert.split(",");
-        if (pos.length < 1 || pos.length > 3) {
-            printError("Wrong order!");
-            return;
-        }
-        List<Integer> orderToSend = new ArrayList<>();
-        for (String p : pos) {
-            orderToSend.add(Integer.parseInt(p));
-        }
-        int col = Integer.parseInt(column.getText());
-        if (col < 1 || col > 5) {
-            printError("Column do not exist!");
-            return;
-        }
-
-        network.insertTiles(localPlayer, orderToSend, col - 1);
+        network.insertTiles(localPlayer, orderTiles, 1);
     }
 
     private static ImageView choseImage(String colorString) {
@@ -725,8 +716,7 @@ public class LivingRoom extends Scene {
                 for (int i = 0; i < othersShelf.length; i++) {
                     for (int j = 0; j < othersShelf[0].length; j++) {
                         Pane tmpPane = getPane(playerGrid, j, i);
-                        if (tmpPane.getChildren().size() != 0)
-                            tmpPane.getChildren().remove(0);
+                        if (tmpPane.getChildren().size() != 0) tmpPane.getChildren().remove(0);
                     }
                 }
 
@@ -745,27 +735,30 @@ public class LivingRoom extends Scene {
                 }
             } else {
                 // personal goal
-                Tile[][] personalShelf = mockModel.getPlayer(localPlayer).getShelf();
-                // delete the old board
-                for (int i = 0; i < personalShelf.length; i++) {
-                    for (int j = 0; j < personalShelf[0].length; j++) {
-                        Pane tmpPane = getPane(pGoalGrid, j, i);
-                        if (tmpPane.getChildren().size() != 0)
-                            tmpPane.getChildren().remove(0);
-                    }
-                }
-                // adding tiles updated
-                for (int i = 0; i < personalShelf.length; i++) {
-                    for (int j = 0; j < personalShelf[0].length; j++) {
-                        if (personalShelf[i][j] != null) {
-                            String colorString = personalShelf[i][j].color().getCode();
-                            image = choseImage(colorString);
-                            image.setPreserveRatio(true);
-                            Pane tmpPane = getPane(pGoalGrid, j, i);
-                            image.fitWidthProperty().bind(tmpPane.widthProperty());
-                            tmpPane.getChildren().add(image);
-                        }
-                    }
+                updatePersonalGoal(pGoalGrid);
+            }
+        }
+    }
+    private static void updatePersonalGoal(GridPane grid){
+        ImageView image;
+        Tile[][] personalShelf = mockModel.getPlayer(localPlayer).getShelf();
+        // delete the old board
+        for (int i = 0; i < personalShelf.length; i++) {
+            for (int j = 0; j < personalShelf[0].length; j++) {
+                Pane tmpPane = getPane(grid, j, i);
+                if (tmpPane.getChildren().size() != 0) tmpPane.getChildren().remove(0);
+            }
+        }
+        // adding tiles updated
+        for (int i = 0; i < personalShelf.length; i++) {
+            for (int j = 0; j < personalShelf[0].length; j++) {
+                if (personalShelf[i][j] != null) {
+                    String colorString = personalShelf[i][j].color().getCode();
+                    image = choseImage(colorString);
+                    image.setPreserveRatio(true);
+                    Pane tmpPane = getPane(grid, j, i);
+                    image.fitWidthProperty().bind(tmpPane.widthProperty());
+                    tmpPane.getChildren().add(image);
                 }
             }
         }
@@ -774,15 +767,13 @@ public class LivingRoom extends Scene {
     public static void updateBoard(Cell[][] board) {
         System.out.println("updating the board");
         int tmp = 0;
-        if (numPlayers == 2)
-            tmp = 1;
+        if (numPlayers == 2) tmp = 1;
 
         // delete the old board
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
                 Pane tmpPane = getPane(gridBoard, j + tmp, i + tmp);
-                if (tmpPane.getChildren().size() != 0)
-                    tmpPane.getChildren().remove(0);
+                if (tmpPane.getChildren().size() != 0) tmpPane.getChildren().remove(0);
             }
         }
 
@@ -846,6 +837,7 @@ public class LivingRoom extends Scene {
             chatTextAreaVbox.getChildren().add(tmp);
         }
     }
+
     public static void outcomeMessage(String message) {
         if (chatTextArea != null) {
             Label tmp = new Label(message);
@@ -854,8 +846,9 @@ public class LivingRoom extends Scene {
             chatTextAreaVbox.getChildren().add(tmp);
         }
     }
+
     public static void refreshChat(List<ChatMessage> messageList) {
-        for(ChatMessage message:messageList){
+        for (ChatMessage message : messageList) {
             LivingRoom.newMessageChat(message);
         }
     }
