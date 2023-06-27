@@ -13,8 +13,7 @@ import javafx.stage.Stage;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import static Client.ClientApp.STYLEPATH;
-import static Client.ClientApp.network;
+import static Client.ClientApp.*;
 
 public class ConnectionScene extends Scene {
 
@@ -34,12 +33,12 @@ public class ConnectionScene extends Scene {
         label.getStyleClass().add("label-title");
 
         ipField = new TextField();
-        ipField.setPromptText("Insert the ip: (default 127.0.0.1) ");
+        ipField.setPromptText("IP: (default " + IP_SERVER + ") ");
         ipField.getStyleClass().add("text-field");
         ipField.setMaxWidth(400);
 
         portField = new TextField();
-        portField.setPromptText("Insert the port: (between [1024, 65535])");
+        portField.setPromptText("PORT: default SOCKET(" + SOCKET_PORT + ") RMI(" + RMI_PORT + ")");
         portField.getStyleClass().add("text-field");
         portField.setMaxWidth(400);
 
@@ -64,10 +63,8 @@ public class ConnectionScene extends Scene {
 
     private void handleRMIClick() {
         System.out.println("Enabling RMI connection...");
-        if (!checkIp())
-            return;
-        if (!checkPort())
-            return;
+        if (!checkIp()) return;
+        if (!checkPort()) return;
         try {
             network = NetworkFactory.instanceNetwork("RMI");
         } catch (RemoteException e) {
@@ -75,16 +72,14 @@ public class ConnectionScene extends Scene {
             System.exit(-1);
         }
         //network.init(ipField.getText(), Integer.parseInt(portField.getText()));
-        Thread connection = new Thread(() -> network.init(ipField.getText(), Integer.parseInt(portField.getText())));
+        Thread connection = new Thread(() -> network.init());
         connection.start();
     }
 
     private void handleSocketClick() {
         System.out.println("Enabling SOCKET connection...");
-        if (!checkIp())
-            return;
-        if (!checkPort())
-            return;
+        if (!checkIp()) return;
+        if (!checkPort()) return;
         try {
             network = NetworkFactory.instanceNetwork("SOCKET");
         } catch (RemoteException e) {
@@ -92,11 +87,12 @@ public class ConnectionScene extends Scene {
             System.exit(-1);
         }
         //network.init(ipField.getText(), Integer.parseInt(portField.getText()));
-        Thread connection = new Thread(() -> network.init(ipField.getText(), Integer.parseInt(portField.getText())));
+        Thread connection = new Thread(() -> network.init());
         connection.start();
     }
-    public static void toLoginScene(List<String> activeLobbies, List<String> activeGames){
-        Scene loginScene = new LoginScene(app,activeLobbies,activeGames);
+
+    public static void toLoginScene(List<String> activeLobbies, List<String> activeGames) {
+        Scene loginScene = new LoginScene(app, activeLobbies, activeGames);
         app.switchScene(loginScene);
     }
 
@@ -104,33 +100,55 @@ public class ConnectionScene extends Scene {
     private boolean checkPort() {
         final int MIN_PORT = 1024;
         final int MAX_PORT = 65535;
-        try {
-            int port = Integer.parseInt(portField.getText());
-            if (MIN_PORT <= port && port <= MAX_PORT) {
+
+        switch (portField.getText()) {
+            case "d", "default" -> {
                 return true;
-            } else {
-                printError("ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + ".");
-                return false;
             }
-        } catch (NumberFormatException e) {
-            printError("ERROR: Please insert only numbers or 'default'.");
-            return false;
+            default -> {
+                try {
+                    int port = Integer.parseInt(portField.getText());
+                    if (MIN_PORT <= port && port <= MAX_PORT) {
+                        SOCKET_PORT = port;
+                        RMI_PORT = port;
+                        return true;
+                    } else {
+                        printError("ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + ".");
+                        return false;
+                    }
+                } catch (NumberFormatException e) {
+                    printError("ERROR: Please insert only numbers or 'default'.");
+                    return false;
+                }
+            }
         }
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean checkIp() {
-        if (ipField.getText().equals("d")){
-            ipField.setText("127.0.0.1");
-            return true;
+
+        switch (ipField.getText()) {
+            case "d", "default" -> {
+                return true;
+            }
+            case "l", "localhost" -> {
+                IP_SERVER = "127.0.0.1";
+                return true;
+            }
+            default -> {
+                String zeroTo255 = "([01]?\\d{1,2}|2[0-4]\\d|25[0-5])";
+                String IP_REGEX = "^(" + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + ")$";
+                if (!portField.getText().matches(IP_REGEX)) printError("Invalid IP address");
+                else {
+                    IP_SERVER = ipField.getText();
+                    return true;
+                }
+            }
         }
-        String zeroTo255 = "([01]?\\d{1,2}|2[0-4]\\d|25[0-5])";
-        String IP_REGEX = "^(" + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + ")$";
-        if (!portField.getText().matches(IP_REGEX))
-            printError("Invalid IP address");
-        else return true;
         return false;
     }
+
+    @SuppressWarnings("DuplicatedCode")
     private void printError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("ERROR");

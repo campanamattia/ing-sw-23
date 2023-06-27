@@ -1,6 +1,5 @@
 package Client.Network;
 
-import Client.View.View;
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
 import Interface.Scout;
@@ -26,10 +25,9 @@ public class ClientRMI extends Network {
     }
 
     @Override
-    public void init(String ip, int port) {
-        port = (port == -1) ? 50001 : port;
+    public void init() {
         try {
-            Registry registry = LocateRegistry.getRegistry(ip, port);
+            Registry registry = LocateRegistry.getRegistry(IP_SERVER, RMI_PORT);
             this.lobby = (LobbyInterface) registry.lookup("Lobby");
             this.lobby.getLobbyInfo(view);
         } catch (Exception e) {
@@ -63,6 +61,7 @@ public class ClientRMI extends Network {
         });
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void addScout(String playerID, Scout scout) throws RemoteException {
         executorService.execute(() -> {
@@ -153,6 +152,7 @@ public class ClientRMI extends Network {
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void update(Object objects) throws RemoteException {
         if (scouts.containsKey(objects.getClass())) {
