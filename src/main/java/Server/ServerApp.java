@@ -7,12 +7,16 @@ import Server.Network.Servers.SocketServer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.util.Objects;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
@@ -59,8 +63,11 @@ public class ServerApp {
      * @param args the command-line arguments (optional socket and RMI ports)
      */
     public static void main(String[] args) {
-        if (args.length < 1) System.exit(-1);
-        ipHost = args[0].trim();
+        if (args.length < 1) {
+            System.out.println("Insert the ip address of the server");
+            ipHost = String.valueOf(new Scanner(System.in));
+        } else
+            ipHost = args[0].trim();
         if (!isValid(ipHost)) System.exit(-2);
 
         initLogger();
@@ -92,7 +99,9 @@ public class ServerApp {
     private static void initLogger() {
         logger = Logger.getLogger(ServerApp.class.getName());
         try {
-            logger.addHandler(new FileHandler("logger.json"));
+            FileHandler fileHandler = new FileHandler("log.txt");
+            fileHandler.setFormatter(new TXTFormatter());
+            logger.addHandler(fileHandler);
         } catch (IOException e) {
             System.exit(-3);
         }
@@ -163,3 +172,19 @@ public class ServerApp {
 }
 
 
+/**
+ * The TXTFormatter class represents a custom formatter for the logger.
+ */
+class TXTFormatter extends Formatter {
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    @Override
+    public String format(LogRecord record) {
+
+        return dateFormatter.format(LocalDateTime.now()) + " " +
+
+                "[" + record.getLevel().toString() + "] " +
+
+                record.getMessage() + "\n";
+    }
+}
