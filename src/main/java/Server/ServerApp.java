@@ -57,15 +57,28 @@ public class ServerApp {
      * @param args the command-line arguments (optional socket and RMI ports)
      */
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
         if (args.length < 1) {
             System.out.println("Insert the ip address of the server");
-            ipHost = String.valueOf(new Scanner(System.in).next());
+            ipHost = String.valueOf(scanner.nextLine());
         } else ipHost = args[0].trim();
         if (!isValid()) System.exit(-2);
 
         initLogger();
         initLobby();
+
         executorService = Executors.newCachedThreadPool();
+        executorService.execute(() -> {
+            while (true) {
+                String input = scanner.nextLine();
+                switch (input) {
+                    case "exit" -> System.exit(0);
+                    case "status" -> lobby.printLobbyStatus();
+                    default -> logger.fine("Unknown command");
+                }
+            }
+        });
 
         setPort(args);
         // Start the RMI server in a new thread.

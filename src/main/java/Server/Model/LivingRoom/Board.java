@@ -9,12 +9,16 @@ import Utils.Tile;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static java.lang.Math.abs;
 
 
 /**
@@ -82,36 +86,34 @@ public class Board {
      * @throws NullTileException    exception thrown if the player wants to take a tile from an empty cell.
      */
     public void convalidateMove(@NotNull List<Coordinates> coordinates) throws NoValidMoveException, NullTileException {
-        if (coordinates.isEmpty() || coordinates.size() > 3)
-            throw new NoValidMoveException();
+        if (coordinates.isEmpty() || coordinates.size() > 3) throw new NoValidMoveException();
 
         for (Coordinates(int x, int y) : coordinates) {
-            if (!areValidCoordinates(new Coordinates(x, y)))
-                throw new NoValidMoveException();
+            if (!areValidCoordinates(new Coordinates(x, y))) throw new NoValidMoveException();
 
             if (board[x][y].getTile() == null || !board[x][y].getStatus())
                 throw new NullTileException(new Coordinates(x, y));
 
-            if (!oneSideFree(x, y))
-                throw new NoValidMoveException();
+            if (!oneSideFree(x, y)) throw new NoValidMoveException();
         }
 
-        if (!areAligned(coordinates))
-            throw new NoValidMoveException();
+        if (!areAligned(coordinates)) throw new NoValidMoveException();
     }
 
     private boolean areAligned(List<Coordinates> coordinates) {
-        if (coordinates.size() == 1)
-            return true;
+        if (coordinates.size() == 1) return true;
 
         boolean isHorizontal = coordinates.get(0).x() == coordinates.get(1).x();
 
+        if (isHorizontal) coordinates.sort(Comparator.comparingInt(Coordinates::y));
+        else coordinates.sort(Comparator.comparingInt(Coordinates::x));
+
         return IntStream.range(1, coordinates.size())
                 .allMatch(i -> {
-                    Coordinates prev = coordinates.get(i - 1);
-                    Coordinates current = coordinates.get(i);
-                    return isHorizontal ?  prev.x()  == current.x() : prev.y()  == current.y();
-                });
+            Coordinates prev = coordinates.get(i - 1);
+            Coordinates current = coordinates.get(i);
+            return isHorizontal ? prev.x() == prev.x() && abs(prev.y() - current.y()) == 1 : prev.y() == current.y() && abs(prev.x() - current.x()) == 1;
+        });
     }
 
     private boolean areValidCoordinates(Coordinates coordinates) {
@@ -122,8 +124,7 @@ public class Board {
         if (x - 1 < 0 || x + 1 >= matrix_size || y - 1 < 0 || y + 1 >= matrix_size) {
             return true;
         }
-        return Stream.of(board[x - 1][y].getTile(), board[x + 1][y].getTile(), board[x][y - 1].getTile(), board[x][y + 1].getTile())
-                .anyMatch(Objects::isNull);
+        return Stream.of(board[x - 1][y].getTile(), board[x + 1][y].getTile(), board[x][y - 1].getTile(), board[x][y + 1].getTile()).anyMatch(Objects::isNull);
     }
 
     /**
@@ -163,31 +164,20 @@ public class Board {
     public void checkRefill(Bag bag) throws CantRefillBoardException {
         for (int i = 0; i < matrix_size; i++) {
             for (int j = 0; j < matrix_size; j++) {
-                if (!board[i][j].getStatus())
-                    continue;
-                if (board[i][j].getTile() == null)
-                    continue;
-                if (!allSideFree(new Coordinates(i, j)))
-                    return;
+                if (!board[i][j].getStatus()) continue;
+                if (board[i][j].getTile() == null) continue;
+                if (!allSideFree(new Coordinates(i, j))) return;
             }
         }
 
-        if (tilesTaken.size() > bag.getLastTiles())
-            throw new CantRefillBoardException();
+        if (tilesTaken.size() > bag.getLastTiles()) throw new CantRefillBoardException();
 
         refill(bag);
         tilesTaken.clear();
     }
 
     private boolean allSideFree(Coordinates coordinates) {
-        return IntStream.rangeClosed(coordinates.x() - 1, coordinates.x() + 1)
-                .boxed()
-                .flatMap(x -> IntStream.rangeClosed(coordinates.y() - 1, coordinates.y() + 1)
-                        .mapToObj(y -> new Coordinates(x, y))
-                )
-                .filter(coord -> !coord.equals(coordinates))
-                .filter(this::areValidCoordinates)
-                .allMatch(coord -> !board[coord.x()][coord.y()].getStatus() || board[coord.x()][coord.y()].getTile() == null);
+        return IntStream.rangeClosed(coordinates.x() - 1, coordinates.x() + 1).boxed().flatMap(x -> IntStream.rangeClosed(coordinates.y() - 1, coordinates.y() + 1).mapToObj(y -> new Coordinates(x, y))).filter(coord -> !coord.equals(coordinates)).filter(this::areValidCoordinates).allMatch(coord -> !board[coord.x()][coord.y()].getStatus() || board[coord.x()][coord.y()].getTile() == null);
     }
 
     /**
@@ -195,5 +185,12 @@ public class Board {
      */
     public Cell[][] getBoard() {
         return board;
+    }
+
+    @TestOnly
+    public void setTilesTaken(int i) {
+        for (int j = 0; j < i; j++) {
+            tilesTaken.add(new Coordinates(j, j));
+        }
     }
 }

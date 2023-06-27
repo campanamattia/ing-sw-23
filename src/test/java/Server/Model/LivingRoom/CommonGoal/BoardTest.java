@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Arrays;
+import java.util.List;
 
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,61 +36,47 @@ class BoardTest {
     @Test
     public void convalidateMoveTest() {
         // cell not usable
-        NoValidMoveException noValidMoveException = assertThrows(NoValidMoveException.class, () -> {
-            this.board.convalidateMove(Arrays.asList(
-                    new Coordinates(0, 0)
-            ));
-        });
+        assertThrows(NoValidMoveException.class, () -> this.board.convalidateMove(List.of(
+                new Coordinates(0, 0)
+        )));
         // usable cell
-        assertDoesNotThrow(() -> {
-            this.board.convalidateMove(Arrays.asList(
-                    new Coordinates(5, 4)
-            ));
-        });
+        assertDoesNotThrow(() -> this.board.convalidateMove(List.of(
+                new Coordinates(5, 4)
+        )));
         // usable cells
-        assertDoesNotThrow(() -> {
-            this.board.convalidateMove(Arrays.asList(
-                    new Coordinates(3, 0),
-                    new Coordinates(4, 0)
-            ));
-        });
+        assertDoesNotThrow(() -> this.board.convalidateMove(Arrays.asList(
+                new Coordinates(3, 0),
+                new Coordinates(4, 0)
+        )));
         // cells not adjacent
-        assertThrows(NoValidMoveException.class, () -> {
-            this.board.convalidateMove(Arrays.asList(
-                    new Coordinates(0, 0),
-                    new Coordinates(2, 0)
-            ));
-        });
+        assertThrows(NoValidMoveException.class, () -> this.board.convalidateMove(Arrays.asList(
+                new Coordinates(0, 0),
+                new Coordinates(2, 0)
+        )));
     }
     @Test
-    public void getTilesTest(){
+    public void getTileTest(){
         // getting a tile with success
         assertDoesNotThrow(() -> {
-            board.getTiles(Arrays.asList(
+            board.getTiles(List.of(
                     new Coordinates(0, 2)
             ));
         });
 
         // getting the same tile again
-        assertThrows(NullTileException.class, () -> {
-            board.getTiles(Arrays.asList(
-                    new Coordinates(0, 2)
-            ));
-        });
+        assertThrows(NullTileException.class, () -> board.getTiles(List.of(
+                new Coordinates(0, 2)
+        )));
 
         // getting a tile from a cell that doesn't contain one
-        assertThrows(NullTileException.class, () -> {
-            board.getTiles(Arrays.asList(
-                    new Coordinates(0, 1)
-            ));
-        });
+        assertThrows(NullTileException.class, () -> board.getTiles(List.of(
+                new Coordinates(0, 1)
+        )));
     }
     @Test
-    public void checkRefillTest() throws CantRefillBoardException {
+    public void checkRefillTest() {
         // don't need a refill
-        assertDoesNotThrow(() -> {
-            board.checkRefill(bag);
-        });
+        assertDoesNotThrow(() -> board.checkRefill(bag));
 
         // need a refill but haven't enough tiles in the bag
         assertThrows(CantRefillBoardException.class, () -> {

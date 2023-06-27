@@ -5,7 +5,6 @@ import Interface.Server.LobbyInterface;
 import Interface.Client.RemoteView;
 import Server.Controller.GameController;
 import Server.Network.Client.ClientHandler;
-import Server.Network.Client.SocketHandler;
 import Server.ServerApp;
 import Utils.MockObjects.MockFactory;
 import Utils.MockObjects.MockModel;
@@ -15,6 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import static Server.ServerApp.executorService;
 import static Server.ServerApp.logger;
@@ -319,6 +319,9 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         sendGame(game);
         this.lobby.remove(lobbyID);
         this.lobbySize.remove(lobbyID);
+        logger.info("Game started for lobby " + lobbyID + " with [" + game.activePlayers().stream()
+                .map(ClientHandler::playerID)
+                .collect(Collectors.joining(", ")) + "]");
     }
 
     private void sendGame(GameController game){
@@ -338,19 +341,29 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     /**
      * It can print the status of the lobby
      */
-    private void printLobbyStatus() {
+    public void printLobbyStatus() {
+        logger.log(Level.CONFIG, "------------------------------------------Lobby status------------------------------------------");
         if (lobby.isEmpty() && games.isEmpty()) {
             logger.info("No active lobbies or games");
-        } else {
-            logger.info("Active lobbies:");
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        if (!lobby.isEmpty()){
+            sb.append("Active lobbies:\n");
             for (String lobbyID : lobby.keySet()) {
-                logger.info("\t" + lobbyID + " with " + lobby.get(lobbyID).size() + " players");
-                logger.info(this.lobby.get(lobbyID).keySet().toString());
+                sb.append("\t-\t").append(lobbyID).append(" with ").append(lobby.get(lobbyID).size()).append(" players\n\t\t[");
+                sb.append(this.lobby.get(lobbyID).keySet()).append("]\n");
             }
-            logger.info("Active games:");
+            logger.info(sb.toString());
+        }
+        if (!games.isEmpty()){
+            sb = new StringBuilder();
+            sb.append("Active games:\n");
             for (GameController game : games) {
-                logger.info("\t" + game.getGameID() + " with " + game.activePlayers().size() + " players");
+                sb.append("\t-\t").append(game.getGameID()).append(" with ").append(game.activePlayers().size()).append(" players\n\t\t[");
+                sb.append(game.activePlayers().stream().map(ClientHandler::playerID).collect(Collectors.joining(", "))).append("]\n");
             }
+            logger.info(sb.toString());
         }
     }
 
@@ -359,13 +372,23 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      * @param game the game that has ended
      */
     public void endGame(GameController game) {
-        for (ClientHandler handler : game.activePlayers()) {
-            if (handler.remoteView() instanceof SocketHandler socket) {
-                socket.logOut();
-            }
-        }
-        this.games.remove(game);
         logger.info("Game " + game.getGameID() + " ended");
+        try {
+            Thread.sleep(30001);
+        } catch (InterruptedException e) {
+            logger.severe(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        executorService.execute(() ->{
+            for (ClientHandler handler : game.activePlayers()) {
+                try {
+                    logOut(handler.playerID(), game.getGameID());
+                } catch (RemoteException e) {
+                    logger.severe(e.getMessage());
+                }
+            }
+        });
+        this.games.remove(game);
     }
 
     private void sendException(RemoteView client, String message) {
