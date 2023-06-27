@@ -119,15 +119,15 @@ public class GuiApplication extends Application {
     }
 
     public void writeCurrentPlayer(String playerID) {
-        String personalMessage = playerID + ": Select from 1 to 3 tiles!";
+        String personalMessage = "System: Select from 1 to 3 tiles!".toUpperCase();
         if(!localPlayer.equals(playerID))
             personalMessage = "";
-        String info = "It's " + playerID + "'s turn!\n" + personalMessage;
+        String info = (!playerID.equals(localPlayer)) ? ("System: " + playerID + "'s turn!\n" + personalMessage).toUpperCase() : "System: YOUR TURN".toUpperCase();
         Platform.runLater(()->LivingRoom.writeInfos(info));
     }
 
     public void updateHelp(String playerID){
-        String info = playerID + ": Insert the tiles taken in a column of your shelf!";
+        String info = "System: Insert the tiles taken in a column of your shelf!".toUpperCase();
         Platform.runLater(()->LivingRoom.writeInfos(info));
     }
 
