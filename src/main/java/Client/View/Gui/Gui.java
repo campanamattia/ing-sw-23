@@ -161,7 +161,7 @@ public class Gui extends View {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            System.exit(666);
         }
-        System.exit(0);
     }
 }

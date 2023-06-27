@@ -188,9 +188,11 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         try {
             if (ableTo(playerID) != TurnPhase.PICKING) {
                 sendException(new RuntimeException(this.turnPhase.toString()), this.players.get(playerID));
+                return;
             }
         } catch (NotYourTurnException e) {
             sendException(e, this.players.get(playerID));
+            return;
         }
 
         try {
@@ -221,6 +223,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         try {
             if (ableTo(playerID) != TurnPhase.INSERTING) {
                 sendException(new RuntimeException(this.turnPhase.toString()), this.players.get(playerID));
+                return;
             }
         } catch (NotYourTurnException e) {
             sendException(e, this.players.get(playerID));
@@ -233,8 +236,10 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             endTurn();
         } catch (PlayerException e) {
             sendException(e, this.players.get(playerID));
+            return;
         } catch (IOException e) {
             logger.severe(e.toString());
+            return;
         }
 
         if (this.turnPhase == TurnPhase.ENDED)
@@ -388,12 +393,12 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
 
 
     private TurnPhase ableTo(String playerID) throws NotYourTurnException {
-        if (this.turnPhase == TurnPhase.ENDED) {
+        if (this.turnPhase == TurnPhase.ENDED)
             return null;
-        }
-        if (!playerID.equals(this.currentPlayer.getCurrentPlayer().getPlayerID()))
-            throw new NotYourTurnException(this.gameModel.getCurrentPlayer().getPlayerID());
-        else return this.turnPhase;
+
+        if (playerID.equals(this.currentPlayer.getCurrentPlayer().getPlayerID()))
+            return this.turnPhase;
+        throw new NotYourTurnException(this.gameModel.getCurrentPlayer().getPlayerID());
     }
 
     /**
