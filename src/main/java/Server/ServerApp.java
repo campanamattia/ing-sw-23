@@ -4,18 +4,14 @@ package Server;
 import Server.Network.Lobby.Lobby;
 import Server.Network.Servers.ServerRMI;
 import Server.Network.Servers.SocketServer;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
+import Utils.NetworkSettings;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
-import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,10 +39,8 @@ public class ServerApp {
      */
     public static ExecutorService executorService;
     /**
-     * The file path for the server setting JSON file.
+     * The ip address of the server.
      */
-    private static final String serverSetting = "settings/serverSetting.json";
-
     private static String ipHost;
     /**
      * The port number for the socket server.
@@ -66,8 +60,7 @@ public class ServerApp {
         if (args.length < 1) {
             System.out.println("Insert the ip address of the server");
             ipHost = String.valueOf(new Scanner(System.in).next());
-        } else
-            ipHost = args[0].trim();
+        } else ipHost = args[0].trim();
         if (!isValid()) System.exit(-2);
 
         initLogger();
@@ -88,12 +81,12 @@ public class ServerApp {
 
     private static boolean isValid() {
         switch (ipHost) {
-            case "localhost" -> {
+            case "l", "localhost" -> {
                 ipHost = "127.0.0.1";
                 return true;
             }
             case "d", "default" -> {
-                ipHost = ipHostFromJSON();
+                ipHost = NetworkSettings.ipHostFromJSON();
                 return true;
             }
             default -> {
@@ -106,14 +99,6 @@ public class ServerApp {
                 return true;
             }
         }
-    }
-
-    private static String ipHostFromJSON() {
-        Gson gson = new Gson();
-        JsonReader reader;
-        reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(serverSetting))));
-        JsonObject json = gson.fromJson(reader, JsonObject.class);
-        return json.get("ipHost").getAsString();
     }
 
     private static void initLogger() {
@@ -139,47 +124,23 @@ public class ServerApp {
     }
 
     private static void setPort(String[] args) {
-        if (args.length <= 1) {
-            socketPort = socketFromJSON();
-            rmiPort = rmiFromJSON();
-            return;
-        }
-        for (int i = 1; i < args.length; i++) {
+        for (int i = 0; i < args.length; i++) {
             try {
                 if (args[i].equals("-s")) {
-                    socketPort = Integer.parseInt(args[i + 1]);
+                    i++;
+                    socketPort = ((Integer.parseInt(args[i]) >= 1024) && (Integer.parseInt(args[i]) <= 65535)) ? Integer.parseInt(args[i]) : 0;
                 } else if (args[i].equals("-r")) {
-                    rmiPort = Integer.parseInt(args[i + 1]);
+                    i++;
+                    rmiPort = ((Integer.parseInt(args[i]) >= 1024) && (Integer.parseInt(args[i]) <= 65535)) ? Integer.parseInt(args[i]) : 0;
                 }
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                logger.log(Level.SEVERE, e.toString());
+                logger.log(Level.SEVERE, e.getMessage());
                 System.exit(-5);
             }
         }
-        if (socketPort == 0)
-            socketPort = socketFromJSON();
 
-        if (rmiPort == 0)
-            rmiPort = rmiFromJSON();
-    }
-
-
-    @SuppressWarnings("ConstantConditions")
-    private static int socketFromJSON() throws RuntimeException {
-        Gson gson = new Gson();
-        JsonReader reader;
-        reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(serverSetting))));
-        JsonObject json = gson.fromJson(reader, JsonObject.class);
-        return json.get("socketPort").getAsInt();
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private static int rmiFromJSON() throws RuntimeException {
-        Gson gson = new Gson();
-        JsonReader reader;
-        reader = new JsonReader(new InputStreamReader(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(serverSetting))));
-        JsonObject json = gson.fromJson(reader, JsonObject.class);
-        return json.get("rmiPort").getAsInt();
+        if (socketPort == 0) socketPort = NetworkSettings.socketFromJSON();
+        if (rmiPort == 0) rmiPort = NetworkSettings.rmiFromJSON();
     }
 
     private static void rmiServer() {
