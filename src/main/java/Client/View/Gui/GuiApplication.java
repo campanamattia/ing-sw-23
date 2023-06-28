@@ -49,6 +49,7 @@ public class GuiApplication extends Application {
         this.primaryStage = stage;
         Scene connectionScene = new ConnectionScene(this);
         this.switchScene(connectionScene);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
@@ -80,14 +81,14 @@ public class GuiApplication extends Application {
     }
 
     /**
-     * Call the method toLobbyScene which brings the player to Lobby Scene.
+     * Call the method toLobbyScene which brings the player to the Lobby Scene.
      */
     public void outcomeLogin() {
         Platform.runLater(LoginScene::toLobbyScene);
     }
 
     /**
-     * If you are the first player you'll be redirected from Lobby Scene to the scene in which you'll choose the
+     * If you are the first player, you'll be redirected from Lobby Scene to the scene in which you'll choose the
      * number of the players that will join the game.
      */
     public void askLobbySize() {
@@ -118,7 +119,7 @@ public class GuiApplication extends Application {
     private boolean firstShelves = true;
 
     /**
-     * This method call other showCommonAndShelves and updateShelves that will update and show the boards and
+     * This method calls other showCommonAndShelves and updateShelves that will update and show the boards and
      * common goals.
      */
     public void showShelves() {
@@ -156,7 +157,7 @@ public class GuiApplication extends Application {
 
     /**
      * Calls updateMockModel that will update the mock model.
-     * @param mockModel most recent version of mock model.
+     * @param mockModel most recent version of the mock model.
      */
     public void updateMockModel(MockModel mockModel) {
         Platform.runLater(() -> LivingRoom.updateMockModel(mockModel));
