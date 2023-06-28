@@ -224,6 +224,7 @@ public class Gui extends View {
      * Message to be print in case of a warning, like a player crashed.
      * @param warning warning to be printed.
      */
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
     @Override
     public void outcomeMessage(GameWarning warning) throws RemoteException {
         guiApplication.outcomeMessage(warning.getMs().toUpperCase());

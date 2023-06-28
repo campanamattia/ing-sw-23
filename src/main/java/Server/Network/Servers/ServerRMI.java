@@ -11,6 +11,7 @@ import static Server.ServerApp.*;
 /**
  * The ServerRMI class represents the server that listens for incoming RMI connections.
  */
+@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class ServerRMI {
     /**
      * The registry instance for the RMI server.
@@ -24,7 +25,7 @@ public class ServerRMI {
      * @throws RemoteException       if the RMI server cannot be started
      * @throws AlreadyBoundException if the RMI server is already bound
      */
-    public void start(String ipHost, int rmiPort) throws RemoteException, AlreadyBoundException {
+    public void start(String ipHost, int rmiPort) throws RemoteException{
         lock.lock();
         logger.info("Starting RMI server on " + rmiPort);
         System.setProperty("java.rmi.server.hostname", ipHost);

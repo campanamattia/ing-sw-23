@@ -15,7 +15,7 @@ public abstract class PhaseController {
     /**
      * The list of players.
      */
-    protected List<Player> players;
+    protected final List<Player> players;
 
     /**
      * Create a new PhaseController instance.

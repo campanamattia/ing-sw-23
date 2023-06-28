@@ -76,9 +76,8 @@ public class GameModel {
      *
      * @param lobbyID the unique identifier of the game
      * @param players the list of players' name to be added to the game
-     * @throws FileNotFoundException if the configuration files are not found
      */
-    public GameModel(String lobbyID, List<String> players) throws IOException {
+    public GameModel(String lobbyID, List<String> players) {
         this.lobbyID = lobbyID;
         this.firstPlayer = players.get(0);
 

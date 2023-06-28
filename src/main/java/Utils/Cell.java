@@ -20,17 +20,6 @@ public class Cell implements Serializable, Cloneable {
     }
 
     /**
-     * Constructs a new Cell object with the specified Tile and status.
-     *
-     * @param tile   The Tile object to be associated with the cell.
-     * @param status The status of the cell.
-     */
-    public Cell(Tile tile, boolean status) {
-        this.tile = tile;
-        this.status = status;
-    }
-
-    /**
      * Returns the Tile associated with the cell.
      *
      * @return The Tile object associated with the cell.

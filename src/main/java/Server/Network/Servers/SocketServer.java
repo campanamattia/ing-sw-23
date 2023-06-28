@@ -27,7 +27,7 @@ public class SocketServer {
             lock.unlock();
             while (true) {
                 try {
-                    Socket socket = serverSocket.accept();
+                    @SuppressWarnings("BlockingMethodInNonBlockingContext") Socket socket = serverSocket.accept();
                     executorService.execute(new SocketHandler(socket));
                 } catch (IOException e) {
                     ServerApp.logger.log(Level.SEVERE, e.toString());

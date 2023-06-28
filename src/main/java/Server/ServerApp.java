@@ -65,7 +65,7 @@ public class ServerApp {
         initLogger();
 
         if (args.length < 1) {
-            logger.severe("USAGE: java -jar --enable-preview MSH-SERVER-v1.01.jar <ipHost> [<socketPort> <rmiPort>]");
+            logger.severe("USAGE: java -jar --enable-preview MSH-SERVER-v1.01.jar <ipHost> [<-s socketPort> <-r rmiPort>]");
             System.exit(-1);
         }
         ipHost = args[0];
@@ -74,7 +74,17 @@ public class ServerApp {
             System.exit(-2);
         }
         logger.info("SERVER STARTED ON: " + ipHost );
+
         initLobby();
+        setPort(args);
+
+        Thread rmiThread = new Thread(ServerApp::rmiServer);
+        rmiThread.start();
+
+        Thread socketThread = new Thread(ServerApp::socketServer);
+        socketThread.start();
+
+        logger.info("SERVER STARTED ON:\n\t" + ipHost + ":" + socketPort + " (socket)\n\t" + ipHost + ":" + rmiPort + " (RMI)");
 
         Scanner scanner = new Scanner(System.in);
         executorService = Executors.newCachedThreadPool();
@@ -88,16 +98,6 @@ public class ServerApp {
                 }
             }
         });
-
-        setPort(args);
-
-        Thread rmiThread = new Thread(ServerApp::rmiServer);
-        rmiThread.start();
-
-        Thread socketThread = new Thread(ServerApp::socketServer);
-        socketThread.start();
-
-        logger.info("ServerApp started");
     }
 
     private static boolean isValid() {
@@ -198,6 +198,6 @@ class TXTFormatter extends Formatter {
 
                 "[" + record.getLevel().toString() + "] " +
 
-                record.getMessage() ;
+                record.getMessage() + "\n" ;
     }
 }

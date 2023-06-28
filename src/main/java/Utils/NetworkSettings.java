@@ -21,7 +21,6 @@ public class NetworkSettings {
         return json.get("ipHost").getAsString();
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static int rmiFromJSON() throws RuntimeException {
         Gson gson = new Gson();
         JsonReader reader;
@@ -30,7 +29,6 @@ public class NetworkSettings {
         return json.get("rmiPort").getAsInt();
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static int socketFromJSON() throws RuntimeException {
         Gson gson = new Gson();
         JsonReader reader;

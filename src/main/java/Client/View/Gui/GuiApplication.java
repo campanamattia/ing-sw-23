@@ -45,7 +45,7 @@ public class GuiApplication extends Application {
      * @param stage stage to be printed.
      */
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         this.primaryStage = stage;
         Scene connectionScene = new ConnectionScene(this);
         this.switchScene(connectionScene);

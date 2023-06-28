@@ -32,7 +32,7 @@ import static Server.ServerApp.logger;
  * This class represents the handler for each socket connection
  * It implements all the method that the server can call also on an RMI connection
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "BlockingMethodInNonBlockingContext"})
 public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout {
     private String playerID;
     private final Socket socket;
@@ -332,7 +332,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
         });
     }
 
-    private synchronized void send(ServerMessage message) throws IOException {
+    private synchronized void send(ServerMessage message) {
         try {
             this.out.writeObject(message);
             this.out.flush();

@@ -120,6 +120,7 @@ public class Board {
         return coordinates.x() >= 0 && coordinates.x() < matrix_size && coordinates.y() >= 0 && coordinates.y() < matrix_size;
     }
 
+    @SuppressWarnings("unused")
     private boolean oneSideFree(int x, int y) {
         if (x - 1 < 0 || x + 1 >= matrix_size || y - 1 < 0 || y + 1 >= matrix_size) {
             return true;
@@ -133,7 +134,7 @@ public class Board {
      * @param coordinates coordinate of the tiles that
      * @return list of the taken tiles.
      */
-    public List<Tile> getTiles(List<Coordinates> coordinates) {
+    public List<Tile> getTiles(@SuppressWarnings("unused") List<Coordinates> coordinates) {
         List<Tile> tiles = new ArrayList<>();
         for (Coordinates(int x, int y) : coordinates) {
             tiles.add(board[x][y].removeTile());

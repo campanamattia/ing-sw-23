@@ -24,6 +24,7 @@ public class ClientRMI extends Network {
         super();
     }
 
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
     @Override
     public void init() {
         try {

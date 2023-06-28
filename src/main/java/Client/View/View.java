@@ -14,6 +14,7 @@ import java.rmi.server.UnicastRemoteObject;
 public abstract class View extends UnicastRemoteObject implements RemoteView {
     protected MockModel mockModel;
 
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
     public View() throws RemoteException {
         super();
     }

@@ -47,6 +47,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      *
      * @throws RemoteException if a communication error occurs during the remote method call
      */
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
     public Lobby() throws RemoteException {
         super();
         this.heartbeat = new HashMap<>();
@@ -276,11 +277,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
 
         GameController game = findGame(lobbyID);
         if (game != null) {
-            try {
-                game.logOut(playerID);
-            } catch (IOException e) {
-                logger.severe(e.getMessage());
-            }
+            game.logOut(playerID);
             return;
         }
 
@@ -371,10 +368,11 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      * It removes the ended game from the list of games
      * @param game the game that has ended
      */
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
     public void endGame(GameController game) {
         logger.info("Game " + game.getGameID() + " ended");
         try {
-            Thread.sleep(30001);
+            Thread.sleep(30010);
         } catch (InterruptedException e) {
             logger.severe(e.getMessage());
             Thread.currentThread().interrupt();

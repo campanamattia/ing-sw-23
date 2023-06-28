@@ -19,6 +19,7 @@ import java.util.*;
 
 import static Client.ClientApp.*;
 
+@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class Cli extends View {
     private LightController controller;
     private List<Tile> selectedTiles;

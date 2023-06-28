@@ -86,11 +86,4 @@ public class Bag {
         }
     }
 
-    /**
-     * Standard getter method.
-     * @return the bag of tiles.
-     */
-    public ArrayBlockingQueue<Tile> getBag() {
-        return bag;
-    }
 }

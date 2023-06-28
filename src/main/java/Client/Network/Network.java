@@ -26,6 +26,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
     protected HashMap<Class<?>, Scout> scouts;
     protected Timer timer;
 
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
     public Network() throws RemoteException {
         super();
         this.scouts = new HashMap<>();
@@ -68,6 +69,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
         }
     }
 
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
     @Override
     public void pong(String playerID, String lobbyID) throws RemoteException {
         if (timer != null) timer.cancel();

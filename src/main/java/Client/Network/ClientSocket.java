@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static Client.ClientApp.*;
 
 
+@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class ClientSocket extends Network {
     private Socket socket;
     @SuppressWarnings("FieldCanBeLocal")
@@ -60,20 +61,12 @@ public class ClientSocket extends Network {
 
     public synchronized void selectTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
         ClientMessage clientMessage = new SelectedTilesMessage(playerID, coordinates);
-        try {
-            sendMessage(clientMessage);
-        } catch (IOException e) {
-            clientConnected.set(false);
-        }
+        sendMessage(clientMessage);
     }
 
     public synchronized void writeChat(String from, String message, String to) throws RemoteException {
         ClientMessage clientMessage = new WriteChatMessage(from, message, to);
-        try {
-            sendMessage(clientMessage);
-        } catch (IOException e) {
-            clientConnected.set(false);
-        }
+        sendMessage(clientMessage);
     }
 
     @SuppressWarnings("rawtypes")
@@ -85,11 +78,7 @@ public class ClientSocket extends Network {
     @Override
     public synchronized void insertTiles(String playerID, List<Integer> sorting, int column) throws RemoteException {
         ClientMessage clientMessage = new InsertTilesMessage(playerID, sorting, column);
-        try {
-            sendMessage(clientMessage);
-        } catch (IOException e) {
-            clientConnected.set(false);
-        }
+        sendMessage(clientMessage);
     }
 
     @Override
@@ -100,56 +89,36 @@ public class ClientSocket extends Network {
     @Override
     public synchronized void getLobbyInfo(RemoteView remote) throws RemoteException {
         ClientMessage clientMessage = new GetLobbiesInfoMessage();
-        try {
-            sendMessage(clientMessage);
-        } catch (IOException e) {
-            clientConnected.set(false);
-        }
+        sendMessage(clientMessage);
     }
 
     @Override
     public synchronized void setLobbySize(String playerID, String lobbyID, int lobbySize) throws RemoteException {
         ClientMessage clientMessage = new LobbySizeMessage(playerID, lobbyID, lobbySize);
-        try {
-            sendMessage(clientMessage);
-        } catch (IOException e) {
-            clientConnected.set(false);
-        }
+        sendMessage(clientMessage);
     }
 
     @Override
     public synchronized void login(String playerID, String lobbyID, RemoteView remoteView, RemoteClient network) throws RemoteException {
-        ClientMessage addedPlayerMessage = new AddPlayerMessage(playerID, lobbyID);
-        try {
-            sendMessage(addedPlayerMessage);
-        } catch (IOException e) {
-            clientConnected.set(false);
-        }
+        ClientMessage clientMessage = new AddPlayerMessage(playerID, lobbyID);
+        sendMessage(clientMessage);
     }
 
     @Override
     public synchronized void ping(String playerID, String lobbyID) throws RemoteException {
         ClientMessage clientMessage = new PingMessage(playerID, lobbyID);
-        try {
-            sendMessage(clientMessage);
-        } catch (IOException e) {
-            clientConnected.set(false);
-        }
+        sendMessage(clientMessage);
     }
 
 
     @Override
     public synchronized void logOut(String playerID, String lobbyID) throws RemoteException {
         ClientMessage clientMessage = new LogOutMessage(playerID, lobbyID);
-        try {
-            sendMessage(clientMessage);
-        } catch (IOException e) {
-            clientConnected.set(false);
-        }
+        sendMessage(clientMessage);
         System.exit(-1);
     }
 
-    private synchronized void sendMessage(ClientMessage clientMessage) throws IOException {
+    private synchronized void sendMessage(ClientMessage clientMessage) {
         try {
             this.out.writeObject(clientMessage);
             this.out.flush();
