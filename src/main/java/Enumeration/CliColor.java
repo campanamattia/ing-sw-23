@@ -1,5 +1,8 @@
-package Client.View.Cli;
+package Enumeration;
 
+/**
+ * An enumeration representing different ANSI color codes for CLI output styling.
+ */
 public enum CliColor {
 
     //Color string, color reset

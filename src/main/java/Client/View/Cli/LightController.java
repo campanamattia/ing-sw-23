@@ -10,14 +10,26 @@ import java.util.List;
 
 import static Client.ClientApp.*;
 
+/**
+ * The LightController class handles the input commands and delegates the execution to the corresponding methods.
+ * It interacts with the Cli view to display output messages and handle user input.
+ */
 public class LightController {
 
     private final Cli cli;
 
+    /**
+     * Constructs a new LightController instance.
+     */
     public LightController(){
         this.cli = (Cli) view;
     }
 
+    /**
+     * Processes the input command and delegates the execution to the corresponding method.
+     *
+     * @param input The input command to be processed.
+     */
     public void elaborate(String input) {
         String[] split = input.split("-");
         String command = split[0];
@@ -31,6 +43,11 @@ public class LightController {
         }
     }
 
+    /**
+     * Executes the selectTiles command.
+     *
+     * @param split The array of split command parts.
+     */
     private void selectTiles(String[] split) {
         if (split.length != 2){
             this.cli.printError("You must follow the correct format: st-coordinates");
@@ -50,6 +67,12 @@ public class LightController {
         }
     }
 
+    /**
+     * Checks if the select tiles data is in the correct format.
+     *
+     * @param data The data string to be checked.
+     * @return The list of parsed coordinates if the format is correct, null otherwise.
+     */
     private List<Coordinates> checkSelectFormat(String data) {
         List<Coordinates> coordinates = new ArrayList<>();
 
@@ -91,6 +114,11 @@ public class LightController {
         return coordinates;
     }
 
+    /**
+     * Executes the insert tiles command.
+     *
+     * @param split The array of split command parts.
+     */
     private void insertTiles(String[] split) {
         if (split.length != 2){
             this.cli.printError("You must follow the correct format: it-tiles/column");
@@ -118,6 +146,12 @@ public class LightController {
         }
     }
 
+    /**
+     * Checks if the column data is in the correct format and converts it to the corresponding numeric value.
+     *
+     * @param data The column data to be checked.
+     * @return The numeric value of the column if it is valid (between A and E), -1 otherwise.
+     */
     private int checkColumn(String data) {
         if (data.compareTo("A") >= 0 && data.compareTo("E") <= 0)
             return data.charAt(0) - 'A';
@@ -125,8 +159,13 @@ public class LightController {
         return -1;
     }
 
+    /**
+     * Checks if the insert tiles data is in the correct format.
+     *
+     * @param data The data string to be checked.
+     * @return The list of parsed tiles if the format is correct, null otherwise.
+     */
     private List<Integer> checkInsertFormat(String data) {
-
         List<Integer> tiles = new ArrayList<>();
 
         // Check if the data is in the correct format
@@ -161,6 +200,11 @@ public class LightController {
         return tiles;
     }
 
+    /**
+     * Executes the write chat command.
+     *
+     * @param input The input command to be processed.
+     */
     private void writeChat(String input) {
         String[] data = input.split("/to");
         data = Arrays.stream(data).map(String::trim).toArray(String[]::new);
@@ -194,8 +238,6 @@ public class LightController {
                 return;
             }
         }
-
         this.cli.printError("Player not found");
     }
-
 }

@@ -1,7 +1,8 @@
 package Enumeration;
 
-import Client.View.Cli.CliColor;
-
+/**
+ * An enumeration representing client commands with their associated formats.
+ */
 public enum ClientCommand {
     CHAT("chat", "Open the chat"),
     HELP("help", "Display the list of available commands"),
@@ -14,11 +15,24 @@ public enum ClientCommand {
     private final String command;
     private final String format;
 
+    /**
+     * Constructs a client command with the specified command and format.
+     *
+     * @param command the command string.
+     * @param format  the format description of the command.
+     */
     ClientCommand(String command, String format) {
         this.command = command;
         this.format = format;
     }
 
+    /**
+     * Returns a string representation of the client command.
+     * If the command is null, it returns the format description.
+     * Otherwise, it returns the command followed by its format description.
+     *
+     * @return the string representation of the client command.
+     */
     public String toString() {
         return (command == null) ? format : "• " + CliColor.BOLDCYAN + command + ": " + CliColor.RESET + format;
     }
