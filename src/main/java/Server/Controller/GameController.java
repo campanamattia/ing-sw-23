@@ -25,6 +25,7 @@ import Server.Model.Player.Player;
 import Server.Network.Client.ClientHandler;
 import Utils.Coordinates;
 import Utils.MockObjects.MockFactory;
+import Utils.Rank;
 
 import java.io.*;
 import java.rmi.RemoteException;
@@ -82,6 +83,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * @param lobbyID the lobby ID that the gameController is associated with.
      * @param players A HashMap of players participating in the game, where the key is the player ID and the value is the corresponding ClientHandler.
      */
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
     public GameController(String lobbyID, HashMap<String, ClientHandler> players) throws RemoteException {
         super();
         this.gameID = lobbyID;
@@ -100,14 +102,14 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         }
     }
 
-    private void endTurn() throws IOException {
+    private void endTurn() {
         checkCommonGoals(this.gameModel.getCommonGoals());
         this.gameModel.getTalent().onEvent(MockFactory.getMock(this.currentPlayer.getCurrentPlayer()));
         try {
             this.gameModel.checkRefill();
         } catch (CantRefillBoardException e) {
             lobby.endGame(this);
-            EndedMatch.doRank(activePlayers(), this.gameModel.getPlayers());
+            sendLeaderBoard(EndedMatch.doRank(this.gameModel.getPlayers()));
             this.turnPhase = TurnPhase.ENDED;
         }
 
@@ -141,7 +143,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             nextPlayer();
         } catch (EndGameException e) {
             this.phaseController = null;
-            EndedMatch.doRank(this.players.values(), this.gameModel.getPlayers());
+            sendLeaderBoard(EndedMatch.doRank(this.gameModel.getPlayers()));
             lobby.endGame(this);
             this.turnPhase = TurnPhase.ENDED;
             return;
@@ -336,7 +338,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * @param playerID The ID of the player to be logged out.
      * @throws RemoteException If a remote communication error occurs.
      */
-    public void logOut(String playerID) throws IOException {
+    public void logOut(String playerID) {
         // Set the player's status to logged out
         try {
             Player player = this.gameModel.getPlayer(playerID);
@@ -460,5 +462,18 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                     logger.severe(e.getMessage());
                 }
             });
+    }
+
+    private void sendLeaderBoard(List<Rank> leaderBoard){
+        for (ClientHandler client : activePlayers()) {
+            List<Rank> leaderBoardCopy = new ArrayList<>(leaderBoard);
+            executorService.execute(() -> {
+                try {
+                    client.remoteView().endGame(leaderBoardCopy);
+                } catch (RemoteException e) {
+                    logger.severe(e.getMessage());
+                }
+            });
+        }
     }
 }
