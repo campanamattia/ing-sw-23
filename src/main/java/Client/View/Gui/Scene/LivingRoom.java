@@ -226,7 +226,7 @@ public class LivingRoom extends Scene {
     /**
      * Update mockModel which contains all the upgrades.
      *
-     * @param mock_model most recent version of mock model.
+     * @param mock_model most recent version of a mock model.
      */
     public static void updateMockModel(MockModel mock_model) {
         mockModel = mock_model;
@@ -235,7 +235,7 @@ public class LivingRoom extends Scene {
     /**
      * Update common goals and fix the graphics on screen.
      *
-     * @param enumeration common goals that is accomplished by a player.
+     * @param enumeration common goals that are accomplished by a player.
      * @param peek        points to be assigned.
      */
     public static void updateCommonGoal(int enumeration, Integer peek) {
@@ -329,7 +329,7 @@ public class LivingRoom extends Scene {
         commonGoal.getChildren().addAll(cg1, cg2);
 
         // images of common goals points
-        // list  2-4-6-8
+        // list 2-4-6-8
         // index 0-1-2-3
         List<ImageView> commonGoalsImg = new ArrayList<>();
         for (int i = 2; i <= 8; i += 2) {
@@ -865,7 +865,7 @@ public class LivingRoom extends Scene {
     }
 
     /**
-     * Switch scene to End Game Scene.
+     * Switch a scene to End Game Scene.
      *
      * @param leaderboard rank of the player.
      */
