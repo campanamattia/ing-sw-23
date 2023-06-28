@@ -51,7 +51,6 @@ public class LivingRoom extends Scene {
 
     /**
      * Class constructor.
-     * @param app
      */
     public LivingRoom(GuiApplication app) {
 
@@ -223,13 +222,18 @@ public class LivingRoom extends Scene {
     }
 
     /**
-     * Update mockModel which contains
-     * @param mockmodel
+     * Update mockModel which contains all the upgrades.
+     * @param mockmodel most recent version of mock model.
      */
     public static void updateMockModel(MockModel mockmodel) {
         mockModel = mockmodel;
     }
 
+    /**
+     * Update common goals and fix the graphics on screen.
+     * @param enumeration common goals that is accomplished by a player.
+     * @param peek points to be assigned.
+     */
     public static void updateCommonGoal(int enumeration, Integer peek) {
         if (mockModel.getMockCommonGoal().get(0).getEnumeration() == enumeration) {
             if (peek != peekCg1) {
@@ -255,6 +259,10 @@ public class LivingRoom extends Scene {
         boardImage.setLayoutY(10);
     }
 
+    /**
+     * show board at the beginning of the match.
+     * @param board Initial board.
+     */
     public static void showBoard(Cell[][] board) {
         numPlayers = mockModel.getMockPlayers().size();
         int tmp = 0;
@@ -280,6 +288,9 @@ public class LivingRoom extends Scene {
         return res;
     }
 
+    /**
+     * Show common goals anc shelves at the beginning of the game.
+     */
     public static void showCommonAndShelves() {
 
         // common goals
@@ -665,6 +676,9 @@ public class LivingRoom extends Scene {
             printNumber(pane, pane.getId());
     }
 
+    /**
+     *
+     */
     public static void outcomeSelectTiles() {
         clearBoard();
         printSelectedTiles();
@@ -679,6 +693,10 @@ public class LivingRoom extends Scene {
         }
     }
 
+    /**
+     * Print the error message on screen.
+     * @param message message to show.
+     */
     public static void printError(String message) {
         clearBoard();
         selectedTilesImg.clear();
@@ -692,6 +710,9 @@ public class LivingRoom extends Scene {
         stage.showAndWait();
     }
 
+    /**
+     * Insert the tile in the shelf.
+     */
     public static void insertTiles() throws RemoteException {
         selectedTiles.clear();
         selectedTilesImg.clear();
@@ -741,6 +762,9 @@ public class LivingRoom extends Scene {
         return image;
     }
 
+    /**
+     *
+     */
     public static void updateShelves() {
 
         ImageView image;
@@ -805,6 +829,10 @@ public class LivingRoom extends Scene {
         }
     }
 
+    /**
+     * Update the board with the update received by the server.
+     * @param board most recent update of the board.
+     */
     public static void updateBoard(Cell[][] board) {
         System.out.println("updating the board");
         int tmp = 0;
@@ -835,6 +863,10 @@ public class LivingRoom extends Scene {
         }
     }
 
+    /**
+     * Switch scene to End Game Scene.
+     * @param leaderboard rank of the player.
+     */
     public static void endGame(List<Rank> leaderboard) {
         EndGameScene endGameScene = new EndGameScene();
         EndGameScene.setRanks(leaderboard);
@@ -858,6 +890,10 @@ public class LivingRoom extends Scene {
         alert.showAndWait();
     }
 
+    /**
+     * Show in chat the new message.
+     * @param message message to show in chat.
+     */
     public static void newMessageChat(ChatMessage message) {
         String from = "From " + message.from();
         String dest = " to " + message.to() + " : ";
@@ -871,6 +907,10 @@ public class LivingRoom extends Scene {
         chatTextAreaVbox.getChildren().add(tmp);
     }
 
+    /**
+     * Show in chat the information.
+     * @param info message to print.
+     */
     public static void writeInfos(String info) {
         if (chatTextArea != null) {
             Label tmp = new Label(info);
@@ -879,6 +919,10 @@ public class LivingRoom extends Scene {
         }
     }
 
+    /**
+     * Show in chat the warning.
+     * @param message warning to show in chat.
+     */
     public static void outcomeMessage(String message) {
         if (chatTextArea != null) {
             Label tmp = new Label(message);
@@ -888,6 +932,10 @@ public class LivingRoom extends Scene {
         }
     }
 
+    /**
+     * Reset of the chat for a player that has been disconnected.
+     * @param messageList list of old messages to show in chat.
+     */
     public static void refreshChat(List<ChatMessage> messageList) {
         for (ChatMessage message : messageList) {
             LivingRoom.newMessageChat(message);
