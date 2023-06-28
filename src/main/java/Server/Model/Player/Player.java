@@ -62,7 +62,7 @@ public class Player {
      * @param score the score to be added
      */
     public void updateScore(int score) {
-        this.score += score;
+        this.score = this.score + score;
     }
 
     /**

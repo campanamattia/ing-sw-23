@@ -44,6 +44,7 @@ public class LivingRoom extends Scene {
     private static StackPane cg2StackPane;
     private static int peekCg1;
     private static int peekCg2;
+    private static Pane finalPointPain;
     private static Pane boardPane;
     private static final List<Pane> selectTilesPane = new ArrayList<>();
     private static final List<Integer> orderTiles = new ArrayList<>();
@@ -278,7 +279,7 @@ public class LivingRoom extends Scene {
         int tmp = 0;
         if (numPlayers == 2) tmp = 1;
         fillBoard(board, tmp);
-        Pane finalPointPain = new Pane();
+        finalPointPain = new Pane();
         ImageView finalPointImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/scoring_tokens/end_game.jpg")));
         finalPointImg.setPreserveRatio(true);
         finalPointImg.setRotate(10);
@@ -666,7 +667,7 @@ public class LivingRoom extends Scene {
         }
     }
 
-    private static void printNumber(Pane tilePane, String id) {
+    private synchronized static void printNumber(Pane tilePane, String id) {
         if (tilePane.getChildren().size() > 1) tilePane.getChildren().remove(1);
 
         if (!orderTiles.contains(Integer.parseInt(id))) {
@@ -951,5 +952,11 @@ public class LivingRoom extends Scene {
         for (ChatMessage message : messageList) {
             LivingRoom.newMessageChat(message);
         }
+    }
+
+    public static void lastRound() {
+        if (finalPointPain.getChildren().size() == 0)
+            return;
+        finalPointPain.getChildren().clear();
     }
 }

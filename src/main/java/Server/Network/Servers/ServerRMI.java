@@ -1,6 +1,5 @@
 package Server.Network.Servers;
 
-
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -26,16 +25,17 @@ public class ServerRMI {
      * @throws AlreadyBoundException if the RMI server is already bound
      */
     public void start(String ipHost, int rmiPort) throws RemoteException, AlreadyBoundException {
+        lock.lock();
         logger.info("Starting RMI server on " + rmiPort);
         System.setProperty("java.rmi.server.hostname", ipHost);
         ServerRMI.registry = LocateRegistry.createRegistry(rmiPort);
         try {
             registry.bind("Lobby", lobby);
-            logger.info("Lobby bound correctly");
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage());
-            System.exit(-1);
+            System.exit(-6);
         }
         logger.info("RMI server listening " + rmiPort + " port");
+        lock.unlock();
     }
 }

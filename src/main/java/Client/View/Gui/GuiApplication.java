@@ -228,4 +228,8 @@ public class GuiApplication extends Application {
     public void setUp() {
         Platform.runLater(LivingRoom::setUp);
     }
+
+    public void lastRound() {
+        Platform.runLater(LivingRoom::lastRound);
+    }
 }

@@ -198,7 +198,11 @@ public class GameModel {
         if (message.equals("")) throw new ChatException();
         ChatMessage chatMessage = new ChatMessage(from, message, to);
         this.chatRoom.addMessage(chatMessage);
-        talent.onEvent(chatMessage);
+        if (to == null){
+            talent.onEvent(chatMessage);
+            return;
+        }
+        talent.onEvent(new ArrayList<>(Arrays.asList(from, to)), chatMessage);
     }
 
     /**
