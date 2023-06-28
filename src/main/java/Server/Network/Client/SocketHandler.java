@@ -94,11 +94,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void newTurn(String playerID) throws RemoteException {
         ServerMessage message = new NewTurnMessage(playerID);
-        try {
-            send(message);
-        } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage());
-        }
+        send(message);
     }
 
     /**
@@ -111,11 +107,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void askLobbySize() throws RemoteException {
         ServerMessage message = new AskLobbySizeMessage();
-        try {
-            send(message);
-        } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage());
-        }
+        send(message);
     }
 
     /**
@@ -129,11 +121,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
         ServerMessage message = new OutcomeSelectTilesMessage(tiles);
-        try {
-            send(message);
-        } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage());
-        }
+        send(message);
     }
 
     /**
@@ -148,11 +136,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void outcomeInsertTiles(boolean success) throws RemoteException {
         ServerMessage message = new OutcomeInsertTilesMessage(success);
-        try {
-            send(message);
-        } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage());
-        }
+        send(message);
     }
 
     /**
@@ -166,11 +150,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void outcomeException(Exception e) throws RemoteException {
         ServerMessage message = new ErrorMessage(e);
-        try {
-            send(message);
-        } catch (IOException ex) {
-            ServerApp.logger.log(Level.SEVERE, ex.getMessage());
-        }
+        send(message);
     }
 
     /**
@@ -187,11 +167,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     public void outcomeLogin(String localPlayer, String lobbyID) throws RemoteException {
         this.playerID = localPlayer;
         ServerMessage message = new OutcomeLoginMessage(localPlayer, lobbyID);
-        try {
-            send(message);
-        } catch (IOException ex) {
-            ServerApp.logger.log(Level.SEVERE, ex.getMessage());
-        }
+        send(message);
     }
 
     /**
@@ -205,11 +181,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException {
         ServerMessage message = new AskPlayerInfoMessage(lobbyInfo);
-        try {
-            send(message);
-        } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage());
-        }
+        send(message);
     }
 
     /**
@@ -223,11 +195,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         ServerMessage message = new AllGameMessage(mockModel);
-        try {
-            send(message);
-        } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage());
-        }
+        send(message);
     }
 
     /**
@@ -241,11 +209,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void endGame(List<Rank> leaderboard) throws RemoteException {
         ServerMessage message = new EndGameMessage(leaderboard);
-        try {
-            send(message);
-        } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage());
-        }
+        send(message);
     }
 
     /**
@@ -259,11 +223,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void crashedPlayer(String crashedPlayer) throws RemoteException {
         ServerMessage message = new CrashedPlayerMessage(crashedPlayer);
-        try{
-            send(message);
-        } catch (IOException e){
-            ServerApp.logger.severe(e.getMessage());
-        }
+        send(message);
     }
 
     /**
@@ -277,21 +237,13 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     @Override
     public void reloadPlayer(String reloadPlayer) throws RemoteException {
         ServerMessage message = new ReloadPlayerMessage(reloadPlayer);
-        try{
-            send(message);
-        } catch (IOException e){
-            ServerApp.logger.severe(e.getMessage());
-        }
+        send(message);
     }
 
     @Override
     public void outcomeMessage(GameWarning message) throws RemoteException {
         ServerMessage serverMessage = new OutcomeMessage(message);
-        try {
-            send(serverMessage);
-        } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage());
-        }
+        send(serverMessage);
     }
 
     /**
@@ -305,11 +257,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
      */
     @Override
     public void pong(String playerID, String lobbyID) throws RemoteException {
-        try {
-            send(new PongMessage(playerID, lobbyID));
-        } catch (IOException e) {
-            ServerApp.logger.log(Level.SEVERE, e.getMessage());
-        }
+        send(new PongMessage(playerID, lobbyID));
     }
 
     /**

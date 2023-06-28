@@ -167,7 +167,7 @@ public class ServerApp {
     private static void rmiServer() {
         try {
             new ServerRMI().start(ipHost, rmiPort);
-        } catch (RemoteException | AlreadyBoundException e) {
+        } catch (RemoteException e) {
             logger.log(Level.SEVERE, e.toString());
             System.exit(-6);
         }

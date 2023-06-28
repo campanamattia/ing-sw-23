@@ -88,18 +88,12 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         super();
         this.gameID = lobbyID;
         this.players = players;
-        try {
-            List<String> playerIDs = new ArrayList<>(players.keySet());
-            Collections.shuffle(playerIDs);
-            this.gameModel = new GameModel(lobbyID, playerIDs);
-            this.currentPlayer = new CurrentPlayer(this.gameModel.getCurrentPlayer());
-            this.turnPhase = TurnPhase.PICKING;
-            this.phaseController = new NormalState(this.gameModel.getCurrentPlayer(), this.gameModel.getPlayers());
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, e.toString());
-            sendException(e);
-            lobby.endGame(this);
-        }
+        List<String> playerIDs = new ArrayList<>(players.keySet());
+        Collections.shuffle(playerIDs);
+        this.gameModel = new GameModel(lobbyID, playerIDs);
+        this.currentPlayer = new CurrentPlayer(this.gameModel.getCurrentPlayer());
+        this.turnPhase = TurnPhase.PICKING;
+        this.phaseController = new NormalState(this.gameModel.getCurrentPlayer(), this.gameModel.getPlayers());
     }
 
     private void endTurn() {
