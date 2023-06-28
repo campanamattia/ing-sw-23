@@ -81,7 +81,7 @@ public class Gui extends View {
     @Override
     public void outcomeSelectTiles(List<Tile> selectedTiles) throws RemoteException {
         this.mockModel.setTurnPhase(TurnPhase.INSERTING);
-        guiApplication.updateHelp(mockModel.getCurrentPlayer());
+        guiApplication.updateHelp();
         guiApplication.updateMockModel(this.mockModel);
         guiApplication.outcomeSelectTiles();
     }
@@ -154,14 +154,18 @@ public class Gui extends View {
 
     @Override
     public void outcomeMessage(GameWarning warning) throws RemoteException {
-        guiApplication.outcomeMessage(warning.toString());
-        if (warning == GameWarning.WON) {
-            try {
-                Thread.sleep(30000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        guiApplication.outcomeMessage(warning.getMs().toUpperCase());
+
+        switch(warning){
+            case WON -> {
+                try {
+                    Thread.sleep(30000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                System.exit(0);
             }
-            System.exit(666);
+            case LAST_ROUND -> guiApplication.lastRound();
         }
     }
 }

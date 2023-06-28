@@ -24,12 +24,19 @@ public class ClientApp {
     public static void main (String[] args) throws RemoteException {
         executorService = Executors.newCachedThreadPool();
         setDefault();
-        if (args.length > 0) {
-            if (args[0].equalsIgnoreCase("GUI")){
-                view = ViewFactory.instanceView(args[0]);
+
+        if (args.length != 1){
+            System.out.println("Usage: java -jar --enable-preview MyShelfie.jar <GUI/CLI>");
+            System.exit(-1);
+        }
+
+        switch(args[0]){
+            case "GUI", "gui" -> view = ViewFactory.instanceView("GUI");
+            case "CLI", "cli" -> view = ViewFactory.instanceView("CLI");
+            default -> {
+                System.out.println("Usage: java -jar --enable-preview MyShelfie.jar <GUI/CLI>");
+                System.exit(-1);
             }
-            else
-                view = ViewFactory.instanceView("CLI");
         }
     }
 

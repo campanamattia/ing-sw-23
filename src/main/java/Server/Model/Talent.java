@@ -1,6 +1,7 @@
 package Server.Model;
 
 import Interface.Scout;
+import Utils.ChatMessage;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import static Server.ServerApp.logger;
 
 /**
  * The Talent class represents a collection of scouts that can receive updates.
- * It allows adding and removing scouts, and notifying them of events by invoking the update method.
+ * It allows adding and removing scouts and notifying them of events by invoking the update method.
  */
 public class Talent {
     /**
@@ -64,16 +65,25 @@ public class Talent {
         }
     }
 
-    /**
-     * Returns the list of scouts.
-     *
-     * @return the HashMap of scouts
-     */
-    public HashMap<String, Scout> getScouts() {
-        return scouts;
-    }
-
     private List<Scout> activeScout(){
         return this.scouts.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    /**
+     * Notifies all scouts in the list when there is a direct message to them.
+     * @param toUpdate the list of scouts to be notified
+     * @param chatMessage the message to be sent
+     */
+    public void onEvent(List<String> toUpdate, ChatMessage chatMessage) {
+        for(String scout : toUpdate) {
+            if (this.scouts.get(scout) == null) continue;
+            executorService.execute(()-> {
+                try {
+                    this.scouts.get(scout).update(chatMessage);
+                } catch (RemoteException e) {
+                    logger.severe(e.getMessage());
+                }
+            });
+        }
     }
 }

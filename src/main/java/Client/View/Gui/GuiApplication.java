@@ -126,7 +126,7 @@ public class GuiApplication extends Application {
         Platform.runLater(()->LivingRoom.writeInfos(info));
     }
 
-    public void updateHelp(String playerID){
+    public void updateHelp(){
         String info = "System: Insert the tiles taken in a column of your shelf!".toUpperCase();
         Platform.runLater(()->LivingRoom.writeInfos(info));
     }
@@ -142,5 +142,9 @@ public class GuiApplication extends Application {
     public void refreshChat(Stack<ChatMessage> chat) {
         List<ChatMessage> messageList = new ArrayList<>(chat);
         Platform.runLater(()->LivingRoom.refreshChat(messageList));
+    }
+
+    public void lastRound() {
+        Platform.runLater(LivingRoom::lastRound);
     }
 }

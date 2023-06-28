@@ -232,6 +232,10 @@ public class LivingRoom extends Scene {
         }
     }
 
+    public static void lastRound() {
+
+    }
+
 
     private void boardStyle(ImageView boardImage) {
         this.boardImage = boardImage;
@@ -296,7 +300,7 @@ public class LivingRoom extends Scene {
         commonGoal.getChildren().addAll(cg1, cg2);
 
         // images of common goals points
-        // list  2-4-6-8
+        // list 2-4-6-8
         // index 0-1-2-3
         List<ImageView> commonGoalsImg = new ArrayList<>();
         for (int i = 2; i <= 8; i += 2) {
@@ -626,7 +630,7 @@ public class LivingRoom extends Scene {
         }
     }
 
-    private static void printNumber(Pane tilePane, String id) {
+    private synchronized static void printNumber(Pane tilePane, String id) {
         if (tilePane.getChildren().size() > 1)
             tilePane.getChildren().remove(1);
 
