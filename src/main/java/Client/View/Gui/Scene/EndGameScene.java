@@ -13,6 +13,9 @@ import static Client.ClientApp.STYLEPATH;
 public class EndGameScene extends Scene {
     private static List<Rank> ranks;
 
+    /**
+     * Class constructor.
+     */
     public EndGameScene() {
         super(new Pane(), 960, 750);
         setUserAgentStylesheet(STYLEPATH);
@@ -27,6 +30,10 @@ public class EndGameScene extends Scene {
         setRoot(rank);
     }
 
+    /**
+     * Setter of ranks of the player.
+     * @param ranks ranks of the players.
+     */
     public static void setRanks(List<Rank> ranks) {
         EndGameScene.ranks = ranks;
     }
