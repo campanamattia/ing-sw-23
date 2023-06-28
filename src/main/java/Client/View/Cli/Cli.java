@@ -34,22 +34,22 @@ public class Cli extends View {
     }
 
     @Override
-    public void updateBoard(MockBoard mockBoard) {
+    public synchronized void updateBoard(MockBoard mockBoard) {
         this.mockModel.setMockBoard(mockBoard);
     }
 
     @Override
-    public void updateCommonGoal(MockCommonGoal mockCommonGoal) {
+    public synchronized void updateCommonGoal(MockCommonGoal mockCommonGoal) {
         this.mockModel.update(mockCommonGoal);
     }
 
     @Override
-    public void updatePlayer(MockPlayer mockPlayer) {
+    public synchronized void updatePlayer(MockPlayer mockPlayer) {
         this.mockModel.update(mockPlayer);
     }
 
     @Override
-    public void updateChat(ChatMessage message) {
+    public synchronized void updateChat(ChatMessage message) {
         if (message.to() == null || message.to().equals(localPlayer)) {
             this.mockModel.addMessage(message);
             System.out.println(CliColor.BOLD + "\rNew Message" + CliColor.RESET);
@@ -362,7 +362,7 @@ public class Cli extends View {
     }
 
     @Override
-    public void endGame(List<Rank> classification) {
+    public synchronized void endGame(List<Rank> classification) {
         System.out.println(CliColor.BOLD + "Final leaderboard:" + CliColor.RESET);
         Rank first = classification.get(0);
         for (Rank(String id, int score) : classification) {
@@ -469,7 +469,7 @@ public class Cli extends View {
     }
 
     @Override
-    public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
+    public synchronized void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
         this.mockModel.setTurnPhase(TurnPhase.INSERTING);
         this.selectedTiles = tiles;
         showTile(tiles);
@@ -477,7 +477,7 @@ public class Cli extends View {
     }
 
     @Override
-    public void outcomeInsertTiles(boolean success) throws RemoteException {
+    public synchronized void outcomeInsertTiles(boolean success) throws RemoteException {
         if (success) {
             this.mockModel.setTurnPhase(TurnPhase.PICKING);
         } else printError("Insertion failed");
