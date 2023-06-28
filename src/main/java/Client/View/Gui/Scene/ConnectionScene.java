@@ -21,6 +21,9 @@ public class ConnectionScene extends Scene {
     private final TextField ipField;
     private final TextField portField;
 
+    /**
+     * Class constructor.
+     */
     public ConnectionScene(GuiApplication app) {
 
         super(new Pane(), 960, 750);
@@ -91,6 +94,11 @@ public class ConnectionScene extends Scene {
         connection.start();
     }
 
+    /**
+     * Calls switchScene and set as current scene the LoginScene.
+     * @param activeLobbies active lobbies to join.
+     * @param activeGames active games to join.
+     */
     public static void toLoginScene(List<String> activeLobbies, List<String> activeGames) {
         Scene loginScene = new LoginScene(app, activeLobbies, activeGames);
         app.switchScene(loginScene);
