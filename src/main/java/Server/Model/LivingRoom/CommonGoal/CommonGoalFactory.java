@@ -42,7 +42,7 @@ public class CommonGoalFactory {
             case 8, 9, 10, 11 -> {
                 return new RowColumnGoal(tokenList, jsonObject);
             }
-            default -> throw new IllegalStateException("Unexpected value: " + jsonObject.get("enum").getAsInt());
+            default -> throw new IndexOutOfBoundsException("Unexpected value: " + jsonObject.get("enum").getAsInt());
         }
     }
 }

@@ -2,7 +2,6 @@ package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
 import Enumeration.Color;
-import Server.Model.LivingRoom.CommonGoal.GroupAdjacentGoal;
 import Server.Model.Player.PersonalGoal;
 import Server.Model.Player.Player;
 import Server.Model.Player.Shelf;
@@ -27,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class GroupAdjacentGoalTest {
 
     private Player player;
-    private PersonalGoal pGoal;
     private GroupAdjacentGoal groupAdjacentGoal;
     private Shelf shelf;
     private JsonObject jsonObject;
@@ -44,7 +42,7 @@ class GroupAdjacentGoalTest {
             }
         }
         Random random = new Random();
-        pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
+        PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
         player = new Player("ale", pGoal);
         shelf = player.getMyShelf();
 
@@ -255,7 +253,7 @@ class GroupAdjacentGoalTest {
     private JsonArray decoPersonal() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader("src/main/resources/personalGoal.json"));
+        reader = new JsonReader(new FileReader("src/test/resources/personalGoal.json"));
         return gson.fromJson(reader, JsonArray.class);
     }
 }

@@ -57,7 +57,7 @@ public class RowColumnGoal extends CommonGoal {
      @throws NullPlayerException if the player parameter is null.
      */
     public void check (Player player) throws NullPlayerException {
-        if (player == null) {
+        if (player == null || this.accomplished.contains(player.getPlayerID())) {
             throw new NullPlayerException();
         }
 

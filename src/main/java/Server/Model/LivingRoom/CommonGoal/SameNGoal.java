@@ -49,7 +49,7 @@ public class SameNGoal extends CommonGoal {
      */
     @Override
     public void check(Player player) throws NullPlayerException {
-        if (player == null){
+        if (player == null || this.accomplished.contains(player.getPlayerID())){
             throw new NullPlayerException();
         }
 
@@ -68,6 +68,7 @@ public class SameNGoal extends CommonGoal {
                         if (countPink == numEquals) {
                             accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
+                            return;
                         }
                     }
                     case CYAN -> {
@@ -75,6 +76,7 @@ public class SameNGoal extends CommonGoal {
                         if (countCyan == numEquals) {
                             accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
+                            return;
                         }
                     }
                     case BLUE -> {
@@ -82,6 +84,7 @@ public class SameNGoal extends CommonGoal {
                         if (countBlue == numEquals) {
                             accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
+                            return;
                         }
                     }
                     case GREEN -> {
@@ -89,6 +92,7 @@ public class SameNGoal extends CommonGoal {
                         if (countGreen == numEquals) {
                             accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
+                            return;
                         }
                     }
                     case WHITE -> {
@@ -96,6 +100,7 @@ public class SameNGoal extends CommonGoal {
                         if (countWhite == numEquals) {
                             accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
+                            return;
                         }
                     }
                     case YELLOW -> {
@@ -103,6 +108,7 @@ public class SameNGoal extends CommonGoal {
                         if (countYellow == numEquals) {
                             accomplished.add(player.getPlayerID());
                             player.updateScore(scoringToken.pop());
+                            return;
                         }
                     }
                 }

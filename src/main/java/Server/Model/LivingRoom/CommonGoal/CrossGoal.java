@@ -47,7 +47,7 @@ public class CrossGoal extends CommonGoal {
      */
     @Override
     public void check(Player player) throws NullPlayerException {
-        if (player == null) {
+        if (player == null || this.accomplished.contains(player.getPlayerID())) {
             throw new NullPlayerException();
         }
         Shelf shelf = player.getMyShelf();

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import Exception.*;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,13 +17,9 @@ class GameModelTest {
     static GameModel gameModel;
     @BeforeAll
     public static void setUp() {
-        try{
-            gameModel = new GameModel("test",
-                    Arrays.asList("Alice", "Bob", "Carlos")
-            );
-        }catch (IOException e) {
-            fail();
-        }
+        gameModel = new GameModel("test",
+                Arrays.asList("Alice", "Bob", "Carlos")
+        );
     }
 
     @Test

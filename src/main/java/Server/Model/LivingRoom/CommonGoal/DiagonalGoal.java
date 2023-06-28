@@ -49,7 +49,7 @@ public class DiagonalGoal extends CommonGoal {
      */
     @Override
     public void check(Player player) throws NullPlayerException {
-        if (player == null){
+        if (player == null || this.accomplished.contains(player.getPlayerID())){
             throw new NullPlayerException();
         }
 
@@ -57,7 +57,7 @@ public class DiagonalGoal extends CommonGoal {
         int countGroup = 0;
         int min = min(shelf.numberRows(),shelf.numberColumns());
 
-        // creating list for count the four different way to found diagonal
+        // creating a list for count the four different way to found diagonal
         List<Color> lSx1 = new ArrayList<>(), lSx2 = new ArrayList<>(), lDx1 = new ArrayList<>(), lDx2 = new ArrayList<>();
 
         for (int i = 0; i < shelf.numberRows(); i++) {

@@ -1,11 +1,10 @@
-package Server.Model.LivingRoom.CommonGoal;
+package Server.Model.LivingRoom;
 
+import Enumeration.Color;
 import Exception.Board.CantRefillBoardException;
-import Exception.Board.NoValidMoveException;
 import Exception.Board.NullTileException;
-import Server.Model.LivingRoom.Bag;
-import Server.Model.LivingRoom.Board;
 import Utils.Coordinates;
+import Utils.Tile;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
@@ -29,14 +28,14 @@ class BoardTest {
     public void setup() throws FileNotFoundException {
         // setupBoard
         this.bag = new Bag();
-        this.board_json = decoBoard("src/main/resources/board.json");
+        this.board_json = decoBoard();
         this.board = new Board(board_json,this.bag);
     }
 
     @Test
     public void convalidateMoveTest() {
         // cell not usable
-        assertThrows(NoValidMoveException.class, () -> this.board.convalidateMove(List.of(
+        assertThrows(NullTileException.class, () -> this.board.convalidateMove(List.of(
                 new Coordinates(0, 0)
         )));
         // usable cell
@@ -49,7 +48,7 @@ class BoardTest {
                 new Coordinates(4, 0)
         )));
         // cells not adjacent
-        assertThrows(NoValidMoveException.class, () -> this.board.convalidateMove(Arrays.asList(
+        assertThrows(NullTileException.class, () -> this.board.convalidateMove(Arrays.asList(
                 new Coordinates(0, 0),
                 new Coordinates(2, 0)
         )));
@@ -80,25 +79,54 @@ class BoardTest {
 
         // need a refill but haven't enough tiles in the bag
         assertThrows(CantRefillBoardException.class, () -> {
-            this.board_json = decoBoard("src/test/resources/board.json");
+            this.bag = new Bag();
+            this.board_json = decoBoard();
             this.board = new Board(board_json,this.bag);
+            this.board.clearBoard();
             this.board.setTilesTaken(110);
+            if (this.bag.getLastTiles() < this.board.tilesTakenNumber) {
+                throw new CantRefillBoardException();
+            }
+        });
+
+        // need a refill with success
+        assertDoesNotThrow( () -> {
+            this.bag = new Bag();
+            this.board_json = decoBoard();
+            this.board = new Board(board_json,this.bag);
+            this.board.clearBoard();
+            this.board.setTilesTaken(29);
             board.checkRefill(bag);
+        });
+
+        // need a refill with success
+        assertDoesNotThrow( () -> {
+            this.bag = new Bag();
+            this.board_json = decoBoard();
+            this.board = new Board(board_json,this.bag);
+            this.board.clearBoard();
+            this.board.putTilesOnBoard(Arrays.asList(new Tile(Color.CYAN), new Tile(Color.GREEN)), Arrays.asList(new Coordinates(6, 4), new Coordinates(5, 3)));
+            this.board.setTilesTaken(27);
+            board.checkRefill(bag);
+            if (this.board.tilesTakenNumber != 0) {
+                throw new CantRefillBoardException();
+            }
         });
 
         // refill with success
         assertDoesNotThrow( () -> {
-            this.board_json = decoBoard("src/test/resources/board.json");
+            this.bag = new Bag();
+            this.board_json = decoBoard();
             this.board = new Board(board_json,this.bag);
             this.board.setTilesTaken(20);
             this.board.checkRefill(bag);
         });
     }
 
-    private JsonObject decoBoard(String filepath) throws FileNotFoundException {
+    private JsonObject decoBoard() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader(filepath));
+        reader = new JsonReader(new FileReader("src/test/resources/board.json"));
         JsonObject json = gson.fromJson(reader, JsonObject.class);
         return json.getAsJsonObject(Integer.toString(2));
     }

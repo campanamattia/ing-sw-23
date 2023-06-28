@@ -33,6 +33,9 @@ public class Board {
      * The number of tiles taken from the board.
      */
     private final List<Coordinates> tilesTaken;
+
+    @TestOnly
+    public int tilesTakenNumber;
     /**
      * The size of the board.
      */
@@ -86,15 +89,18 @@ public class Board {
      * @throws NullTileException    exception thrown if the player wants to take a tile from an empty cell.
      */
     public void convalidateMove(@NotNull List<Coordinates> coordinates) throws NoValidMoveException, NullTileException {
-        if (coordinates.isEmpty() || coordinates.size() > 3) throw new NoValidMoveException("The number of tiles is not valid.");
+        if (coordinates.isEmpty() || coordinates.size() > 3)
+            throw new NoValidMoveException("The number of tiles is not valid.");
 
         for (Coordinates(int x, int y) : coordinates) {
-            if (!areValidCoordinates(new Coordinates(x, y))) throw new NoValidMoveException("The coordinates [" + x + "][" + y + "] are not valid.");
+            if (!areValidCoordinates(new Coordinates(x, y)))
+                throw new NoValidMoveException("The coordinates [" + x + "][" + y + "] are not valid.");
 
             if (board[x][y].getTile() == null || !board[x][y].getStatus())
                 throw new NullTileException(new Coordinates(x, y));
 
-            if (!oneSideFree(x, y)) throw new NoValidMoveException("The tile [" + x + "][" + y + "] has not at least one side free.");
+            if (!oneSideFree(x, y))
+                throw new NoValidMoveException("The tile [" + x + "][" + y + "] has not at least one side free.");
         }
 
         if (!areAligned(coordinates)) throw new NoValidMoveException("The tiles are not aligned.");
@@ -108,12 +114,11 @@ public class Board {
         if (isHorizontal) coordinates.sort(Comparator.comparingInt(Coordinates::y));
         else coordinates.sort(Comparator.comparingInt(Coordinates::x));
 
-        return IntStream.range(1, coordinates.size())
-                .allMatch(i -> {
-                    Coordinates prev = coordinates.get(i - 1);
-                    Coordinates current = coordinates.get(i);
-                    return isHorizontal ? prev.x() == prev.x() && abs(prev.y() - current.y()) == 1 : prev.y() == current.y() && abs(prev.x() - current.x()) == 1;
-                });
+        return IntStream.range(1, coordinates.size()).allMatch(i -> {
+            Coordinates prev = coordinates.get(i - 1);
+            Coordinates current = coordinates.get(i);
+            return isHorizontal ? prev.x() == prev.x() && abs(prev.y() - current.y()) == 1 : prev.y() == current.y() && abs(prev.x() - current.x()) == 1;
+        });
     }
 
     private boolean areValidCoordinates(Coordinates coordinates) {
@@ -121,10 +126,12 @@ public class Board {
     }
 
     private boolean oneSideFree(int x, int y) {
-        if (x - 1 < 0 || x + 1 >= matrix_size || y - 1 < 0 || y + 1 >= matrix_size) {
-            return true;
-        }
+        if (onEdge(x, y)) return true;
         return Stream.of(board[x - 1][y].getTile(), board[x + 1][y].getTile(), board[x][y - 1].getTile(), board[x][y + 1].getTile()).anyMatch(Objects::isNull);
+    }
+
+    private boolean onEdge(int x, int y) {
+        return x - 1 < 0 || x + 1 >= matrix_size || y - 1 < 0 || y + 1 >= matrix_size;
     }
 
     /**
@@ -133,9 +140,10 @@ public class Board {
      * @param coordinates coordinate of the tiles that
      * @return list of the taken tiles.
      */
-    public List<Tile> getTiles(@SuppressWarnings("unused") List<Coordinates> coordinates) {
+    public List<Tile> getTiles(@SuppressWarnings("unused") List<Coordinates> coordinates) throws NullTileException {
         List<Tile> tiles = new ArrayList<>();
         for (Coordinates(int x, int y) : coordinates) {
+            if (board[x][y].getTile() == null) throw new NullTileException(new Coordinates(x, y));
             tiles.add(board[x][y].removeTile());
             tilesTaken.add(new Coordinates(x, y));
         }
@@ -174,10 +182,27 @@ public class Board {
 
         refill(bag);
         tilesTaken.clear();
+        this.tilesTakenNumber = 0;
     }
 
     private boolean allSideFree(Coordinates coordinates) {
-        return IntStream.rangeClosed(coordinates.x() - 1, coordinates.x() + 1).boxed().flatMap(x -> IntStream.rangeClosed(coordinates.y() - 1, coordinates.y() + 1).mapToObj(y -> new Coordinates(x, y))).filter(coord -> !coord.equals(coordinates)).filter(this::areValidCoordinates).allMatch(coord -> !board[coord.x()][coord.y()].getStatus() || board[coord.x()][coord.y()].getTile() == null);
+
+        return IntStream.of(coordinates.x() - 1, coordinates.x() + 1, coordinates.y() - 1, coordinates.y() + 1)
+                .mapToObj(coord -> new Coordinates(coord / matrix_size, coord % matrix_size))
+                .filter(this::areValidCoordinates)
+                .allMatch(coord -> board[coord.x()][coord.y()].getTile() == null);
+
+        /*
+         * if (areValidCoordinates(new Coordinates(coordinates.x() - 1, coordinates.y())) && board[coordinates.x() - 1][coordinates.y()].getTile() != null)
+         *             return false;
+         *         if (areValidCoordinates(new Coordinates(coordinates.x() + 1, coordinates.y())) && board[coordinates.x() + 1][coordinates.y()].getTile() != null)
+         *             return false;
+         *         if (areValidCoordinates(new Coordinates(coordinates.x(), coordinates.y() - 1)) && board[coordinates.x()][coordinates.y() - 1].getTile() != null)
+         *             return false;
+         *         if (areValidCoordinates(new Coordinates(coordinates.x(), coordinates.y() + 1)) && board[coordinates.x()][coordinates.y() + 1].getTile() != null)
+         *             return false;
+         *         return true;
+         */
     }
 
     /**
@@ -188,9 +213,36 @@ public class Board {
     }
 
     @TestOnly
-    public void setTilesTaken(int i) {
-        for (int j = 0; j < i; j++) {
-            tilesTaken.add(new Coordinates(j, j));
+    public void setTilesTaken(int n) {
+        tilesTakenNumber = n;
+        for (int i = 0; i < matrix_size; i++) {
+            for (int j = 0; j < matrix_size; j++)
+                if (board[i][j].getStatus() && board[i][j].getTile() == null) {
+                    tilesTaken.add(new Coordinates(i, j));
+                    n--;
+                    if (n == 0) return;
+                }
         }
+    }
+
+    @TestOnly
+    public void clearBoard() {
+        for (int i = 0; i < matrix_size; i++) {
+            for (int j = 0; j < matrix_size; j++) {
+                board[i][j].setTile(null);
+            }
+        }
+    }
+
+    @TestOnly
+    public void putTilesOnBoard(List<Tile> tiles, List<Coordinates> coordinates) {
+        for (int i = 0; i < tiles.size(); i++) {
+            board[coordinates.get(i).x()][coordinates.get(i).y()].setTile(tiles.get(i));
+        }
+    }
+
+    @TestOnly
+    public void enough(Bag bag) throws CantRefillBoardException {
+        if (tilesTaken.size() > bag.getLastTiles()) throw new CantRefillBoardException();
     }
 }
