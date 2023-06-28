@@ -1,6 +1,5 @@
 package Client.Network;
 
-import Client.View.View;
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
 import Interface.Scout;
@@ -26,17 +25,16 @@ public class ClientRMI extends Network {
     }
 
     @Override
-    public void init(String ip, int port) {
-        port = (port == -1) ? 50001 : port;
+    public void init() {
         try {
-            Registry registry = LocateRegistry.getRegistry(ip, port);
+            Registry registry = LocateRegistry.getRegistry(IP_SERVER, RMI_PORT);
             this.lobby = (LobbyInterface) registry.lookup("Lobby");
             this.lobby.getLobbyInfo(view);
         } catch (Exception e) {
             try {
                 view.outcomeException(e);
             } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
+                System.exit(404);
             }
         }
     }
@@ -47,7 +45,7 @@ public class ClientRMI extends Network {
             try {
                 this.gc.selectTiles(playerID, coordinates);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                System.exit(404);
             }
         });
     }
@@ -58,18 +56,19 @@ public class ClientRMI extends Network {
             try {
                 this.gc.writeChat(from, message, to);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                System.exit(404);
             }
         });
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void addScout(String playerID, Scout scout) throws RemoteException {
         executorService.execute(() -> {
             try {
                 this.gc.addScout(localPlayer, this);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                System.exit(404);
             }
         });
     }
@@ -80,7 +79,7 @@ public class ClientRMI extends Network {
             try {
                 this.gc.insertTiles(playerID, sorted, column);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                System.exit(404);
             }
         });
     }
@@ -92,7 +91,7 @@ public class ClientRMI extends Network {
             try {
                 this.lobby.getLobbyInfo(remote);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                System.exit(404);
             }
         });
     }
@@ -103,7 +102,7 @@ public class ClientRMI extends Network {
             try {
                 this.lobby.setLobbySize(playerID, lobbyID, lobbySize);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                System.exit(404);
             }
         });
     }
@@ -114,7 +113,7 @@ public class ClientRMI extends Network {
             try {
                 this.lobby.login(playerID, lobbyID, remoteView, client);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                System.exit(404);
             }
         });
     }
@@ -125,7 +124,7 @@ public class ClientRMI extends Network {
             try {
                 this.lobby.ping(playerID, lobbyID);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                System.exit(404);
             }
         });
     }
@@ -136,7 +135,7 @@ public class ClientRMI extends Network {
             try {
                 this.lobby.logOut(playerID, lobbyID);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                System.exit(404);
             }
         });
     }
@@ -148,17 +147,18 @@ public class ClientRMI extends Network {
             try {
                 this.gc.addScout(localPlayer, this);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                System.exit(404);
             }
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void update(Object objects) throws RemoteException {
         if (scouts.containsKey(objects.getClass())) {
             scouts.get(objects.getClass()).update(objects);
         } else {
-            view.printError("Scout-Handler not found");
+            view.outcomeException(new RuntimeException("Scout-Handler not found"));
             throw new RemoteException("Scout not found");
         }
     }

@@ -20,22 +20,22 @@ public class ServerRMI {
 
     /**
      * Starts the RMI server on the specified port.
+     *
      * @param rmiPort the port number to listen on
-     * @throws RemoteException if the RMI server cannot be started
+     * @throws RemoteException       if the RMI server cannot be started
      * @throws AlreadyBoundException if the RMI server is already bound
      */
     public void start(String ipHost, int rmiPort) throws RemoteException, AlreadyBoundException {
-        logger.info("Starting RMI server on " + ipHost + ":\t" + rmiPort + "...");
+        logger.info("Starting RMI server on " + rmiPort);
         System.setProperty("java.rmi.server.hostname", ipHost);
         ServerRMI.registry = LocateRegistry.createRegistry(rmiPort);
         try {
             registry.bind("Lobby", lobby);
             logger.info("Lobby bound correctly");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage());
             System.exit(-1);
         }
-        logger.info("Server RMI ready on port " + rmiPort);
+        logger.info("RMI server listening " + rmiPort + " port");
     }
 }

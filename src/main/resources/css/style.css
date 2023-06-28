@@ -35,8 +35,7 @@
     -fx-border-width: 1px;
     -fx-border-radius: 4px;
     -fx-padding: 4px;
-    -fx-pref-width: 400px;
-    -fx-pref-height: 40px;
+    -fx-pref-height: 20px;
     -fx-alignment: center;
     -fx-font-family: 'CustomFont';
 }
@@ -91,4 +90,98 @@
     -fx-alignment: center;
     -fx-font-size: 20px;
     -fx-pref-width: 200px;
+}
+
+.chat-area {
+    -fx-background-color: #D3D3D3;
+}
+
+
+.combo-box-chat {
+    -fx-background-color: white;
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 4px;
+    -fx-pref-width: 100px;
+    -fx-pref-height: 20px;
+    -fx-alignment: center;
+    -fx-font-family: 'CustomFont';
+    -fx-prompt-text-fill: "Send to: ";
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 4px;
+}
+
+.combo-box .arrow-button .arrow {
+    -fx-background-color: #555555;
+    -fx-shape: "M 0 0 L 5 5 L 10 0 Z";
+    -fx-padding: 2px;
+}
+
+.combo-box .list-cell {
+    -fx-padding: 4px;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+.combo-box .list-view {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+}
+
+.combo-box .list-view .list-cell:selected {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+}
+
+.button-chat {
+    -fx-border-color: black;
+    -fx-background-color: linear-gradient(#FFFFFF, #D7D7D7);
+    -fx-background-radius: 4px;
+    -fx-background-size: 100% 100%;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-font-size: 15px;
+    -fx-pref-width: 60px;
+    -fx-pref-height: 20px;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+}
+
+.text-field-chat {
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-alignment: center;
+    -fx-font-size: 20px;
+    -fx-pref-width: 400px;
+
+}
+
+.players-shelf-label{
+    -fx-font-size: 15px;
+    -fx-text-alignment: center;
+}
+
+.personal-shelf-label{
+    -fx-font-size: 20px;
+    -fx-translate-y: 250px;
+    -fx-text-alignment: center;
+}
+
+.text-info-chat{
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-text-fill: red;
+}
+
+.vBox-chat{
+    -fx-pref-width: 550px;
+    -fx-pref-height: 200px;
 }

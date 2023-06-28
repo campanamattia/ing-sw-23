@@ -24,7 +24,7 @@ public class LightController {
         switch (command.trim()) {
             case "chat" -> this.cli.showChat();
             case "help" -> this.cli.showHelp();
-            case "back" -> this.cli.showAll();
+            case "back", "refresh" -> this.cli.showAll();
             case "st"   -> executorService.execute(() -> selectTiles(split));
             case "it"   -> executorService.execute(() -> insertTiles(split));
             default     -> executorService.execute(() -> writeChat(input));

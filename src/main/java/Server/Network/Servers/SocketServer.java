@@ -19,9 +19,9 @@ public class SocketServer {
      * @param socketPort the port number to listen on
      */
     public void start(int socketPort) {
-        ServerApp.logger.info("Starting Server Socket");
+        ServerApp.logger.info("Starting SCK server on " + socketPort);
         try (ServerSocket serverSocket = new ServerSocket(socketPort)) {
-            ServerApp.logger.info("Server Socket ready on port " + socketPort);
+            ServerApp.logger.info("SCK server listening " + socketPort + " port");
             while (true) {
                 try {
                     Socket socket = serverSocket.accept();

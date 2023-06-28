@@ -9,9 +9,9 @@ import Utils.MockObjects.MockBoard;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
-import org.jetbrains.annotations.NotNull;
 import Enumeration.TurnPhase;
 import Enumeration.ClientCommand;
+import Enumeration.GameWarning;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -21,8 +21,8 @@ import static Client.ClientApp.*;
 
 public class Cli extends View {
     private LightController controller;
+    private List<Tile> selectedTiles;
     private final Scanner scanner = new Scanner(System.in);
-    private Thread inputThread;
 
     private static final String TAB = "   ";
 
@@ -34,41 +34,40 @@ public class Cli extends View {
     }
 
     @Override
-    public void updateBoard(MockBoard mockBoard) {
+    public synchronized void updateBoard(MockBoard mockBoard) {
         this.mockModel.setMockBoard(mockBoard);
     }
 
     @Override
-    public void updateCommonGoal(MockCommonGoal mockCommonGoal) {
+    public synchronized void updateCommonGoal(MockCommonGoal mockCommonGoal) {
         this.mockModel.update(mockCommonGoal);
     }
 
     @Override
-    public void updatePlayer(MockPlayer mockPlayer) {
+    public synchronized void updatePlayer(MockPlayer mockPlayer) {
         this.mockModel.update(mockPlayer);
     }
 
     @Override
-    public void updateChat(ChatMessage message) {
+    public synchronized void updateChat(ChatMessage message) {
         if (message.to() == null || message.to().equals(localPlayer)) {
             this.mockModel.addMessage(message);
             System.out.println(CliColor.BOLD + "\rNew Message" + CliColor.RESET);
+            return;
         }
+        if (message.from().equals(localPlayer)) printMessage("Message sent correctly");
     }
 
-    public void start() {
-        int port;
-        String address;
-
+    private void start() {
         try {
             network = askConnection();
         } catch (RemoteException e) {
             printError("ERROR: " + e.getMessage());
             System.exit(-1);
         }
-        address = askServerAddress();
-        port = askServerPort();
-        Thread connection = new Thread(() -> network.init(address, port));
+        askServerAddress();
+        askServerPort();
+        Thread connection = new Thread(() -> network.init());
         connection.start();
     }
 
@@ -112,21 +111,30 @@ public class Cli extends View {
         network.setLobbySize(localPlayer, lobbyID, playerNumber);
     }
 
-    public String askServerAddress() {
-        final String DEFAULT_ADDRESS = "127.0.0.1";
+    private void askServerAddress() {
 
         System.out.print(CliColor.BOLD + "Please enter the server address. " + CliColor.RESET);
         do {
-            System.out.print(CliColor.BOLD + "\nInsert 'localhost' for the default value (" + DEFAULT_ADDRESS + "): " + CliColor.RESET);
+            System.out.print(CliColor.BOLD + "\nInsert 'default' for the default value (" + IP_SERVER + ") or 'localhost': " + CliColor.RESET);
             String address = scanner.nextLine();
 
-            if (address.equalsIgnoreCase("localhost") || address.equals("d")) {
-                return DEFAULT_ADDRESS;
-            } else if (validateIP(address)) {
-                return address;
-            } else {
-                printError("ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)");
-                System.out.println(" Try again.");
+            switch (address) {
+                case "l", "localhost" -> {
+                    IP_SERVER = "localhost";
+                    return;
+                }
+                case "d", "default" -> {
+                    return;
+                }
+                default -> {
+                    if (validateIP(address)) {
+                        IP_SERVER = address;
+                        return;
+                    } else {
+                        printError("ERROR: Invalid address! (remember the syntax xxx.xxx.xxx.xxx)");
+                        System.out.println(" Try again.");
+                    }
+                }
             }
         } while (true);
     }
@@ -145,33 +153,36 @@ public class Cli extends View {
         return address.matches(IP_REGEX);
     }
 
-    public int askServerPort() {
-        final int DEFAULT_SOCKET_PORT = 50000;
-        final int DEFAULT_RMI_PORT = 50001;
+    public void askServerPort() {
         final int MIN_PORT = 1024;
         final int MAX_PORT = 65535;
 
 
         while (true) {
             System.out.print(CliColor.BOLD + "Select a valid port between [" + MIN_PORT + ", " + MAX_PORT + "]. ");
-            System.out.print("\nInsert 'default' for the default value [for SOCKET (" + DEFAULT_SOCKET_PORT + "); for RMI (" + DEFAULT_RMI_PORT + ")]: " + CliColor.RESET);
+            System.out.print("\nInsert 'default' for the default value [for SOCKET (" + SOCKET_PORT + "); for RMI (" + RMI_PORT + ")]: " + CliColor.RESET);
 
             String input = scanner.nextLine();
 
-            if (input.equalsIgnoreCase("default") || input.equals("d")) {
-                return -1;
-            } else {
-                try {
-                    int port = Integer.parseInt(input);
-                    if (MIN_PORT <= port && port <= MAX_PORT) {
-                        return port;
-                    } else {
-                        printError("ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + ".");
-                        System.out.println(" Try again.");
+            switch(input){
+                case "d", "default" -> {
+                    return;
+                }
+                default -> {
+                    try {
+                        int port = Integer.parseInt(input);
+                        if (MIN_PORT <= port && port <= MAX_PORT) {
+                            SOCKET_PORT = port;
+                            RMI_PORT = port;
+                            return;
+                        } else {
+                            printError("ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + ".");
+                            System.out.println(" Try again.");
+                        }
+                    } catch (NumberFormatException e) {
+                        printError("ERROR: Please insert only numbers or 'default'.");
+                        System.out.println("Try again.");
                     }
-                } catch (NumberFormatException e) {
-                    printError("ERROR: Please insert only numbers or 'default'.");
-                    System.out.println("Try again.");
                 }
             }
         }
@@ -341,7 +352,7 @@ public class Cli extends View {
     }
 
 
-    private void showTile(@NotNull List<Tile> tiles) {
+    private void showTile(List<Tile> tiles) {
         System.out.print(TAB);
         for (int i = 0; i < tiles.size(); i++) {
             System.out.print(tiles.get(i).color().getCode() + "|" + (i + 1) + "|");
@@ -351,7 +362,7 @@ public class Cli extends View {
     }
 
     @Override
-    public void endGame(List<Rank> classification) {
+    public synchronized void endGame(List<Rank> classification) {
         System.out.println(CliColor.BOLD + "Final leaderboard:" + CliColor.RESET);
         Rank first = classification.get(0);
         for (Rank(String id, int score) : classification) {
@@ -372,9 +383,14 @@ public class Cli extends View {
     }
 
     @Override
-    public synchronized void outcomeMessage(String message) throws RemoteException {
-        printMessage(message);
-        if (message.equals("You won due to insufficient players!")) {
+    public synchronized void outcomeMessage(GameWarning message) throws RemoteException {
+        printMessage(message.getMs());
+        if(message == GameWarning.WON){
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             System.exit(0);
         }
     }
@@ -387,7 +403,7 @@ public class Cli extends View {
 
         System.out.print("    ");
         for (int k = 0; k < numPlayer; k++) {
-            System.out.print("  A  " + "  B  " + "  C  " + "  D  " + "  E  " + TAB + TAB );
+            System.out.print("  A  " + "  B  " + "  C  " + "  D  " + "  E  " + TAB + TAB);
         }
         System.out.println();
 
@@ -414,12 +430,11 @@ public class Cli extends View {
         System.out.print(TAB + " ");
 
         for (MockPlayer player : this.mockModel.getMockPlayers()) {
-            if (player.isOnline()){
-                System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + player.getScore() + CliColor.RESET );
+            if (player.isOnline()) {
+                System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + player.getScore() + CliColor.RESET);
                 for (int i = 0; i < 31 - player.getPlayerID().length() - countDigit(player.getScore()); i++)
                     System.out.print(" ");
-            }
-            else {
+            } else {
                 System.out.print(CliColor.BOLD + player.getPlayerID() + ": " + CliColor.RED + "OFFLINE" + CliColor.RESET);
                 for (int i = 0; i < 31 - player.getPlayerID().length() - " OFFLINE ".length(); i++)
                     System.out.print(" ");
@@ -447,23 +462,25 @@ public class Cli extends View {
         clearCLI();
         showBoard();
         showShelves();
+        if (this.mockModel.getTurnPhase() == TurnPhase.INSERTING) {
+            showTile(this.selectedTiles);
+        }
         showStatus();
     }
 
     @Override
-    public void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
+    public synchronized void outcomeSelectTiles(List<Tile> tiles) throws RemoteException {
         this.mockModel.setTurnPhase(TurnPhase.INSERTING);
+        this.selectedTiles = tiles;
         showTile(tiles);
         showStatus();
     }
 
     @Override
-    public void outcomeInsertTiles(boolean success) throws RemoteException {
-        if (success){
+    public synchronized void outcomeInsertTiles(boolean success) throws RemoteException {
+        if (success) {
             this.mockModel.setTurnPhase(TurnPhase.PICKING);
-            printMessage("Insertion successful");
-        }
-        else printError("Insertion failed");
+        } else printError("Insertion failed");
     }
 
 
@@ -488,7 +505,6 @@ public class Cli extends View {
         network.startPing(localPlayer, lobbyID);
     }
 
-
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {
         this.mockModel = mockModel;
@@ -503,12 +519,13 @@ public class Cli extends View {
                 throw new RuntimeException(e);
             }
             try {
+                //noinspection ResultOfMethodCallIgnored
                 System.in.read();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        this.inputThread = new Thread(() -> {
+        Thread inputThread = new Thread(() -> {
             while (true) {
                 String input = this.scanner.nextLine();
                 if (input != null && !input.isEmpty()) {
@@ -516,7 +533,7 @@ public class Cli extends View {
                 }
             }
         });
-        this.inputThread.start();
+        inputThread.start();
     }
 
     private void setLocalFirst() {
@@ -530,7 +547,7 @@ public class Cli extends View {
     }
 
     private void fixChat() {
-        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer));
+        mockModel.getChat().removeIf(message -> message.to() != null && !message.to().equals(localPlayer) && !message.from().equals(localPlayer));
     }
 
     public void clearCLI() {

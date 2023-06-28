@@ -16,6 +16,9 @@ public class LobbyScene extends Scene {
     private final GuiApplication app;
     private final ComboBox<Integer> lobbySize;
 
+    /**
+     * Class constructor.
+     */
     public LobbyScene(GuiApplication app) {
         super(new Pane(), 960, 750);
         setUserAgentStylesheet(STYLEPATH);
@@ -26,6 +29,8 @@ public class LobbyScene extends Scene {
         label.getStyleClass().add("label-title");
 
         lobbySize = new ComboBox<>();
+        lobbySize.setPrefWidth(300);
+        lobbySize.setPrefHeight(20);
         lobbySize.setPromptText("Insert the number of players: ");
         lobbySize.getItems().addAll(2,3,4);
 

@@ -3,7 +3,6 @@ package Client.Network;
 import Interface.Client.RemoteClient;
 import Interface.Server.GameCommand;
 import Interface.Server.LobbyInterface;
-import Client.View.View;
 import Interface.Scout;
 import Utils.ChatMessage;
 import Utils.MockObjects.MockBoard;
@@ -21,7 +20,7 @@ import java.util.*;
 import static Client.ClientApp.executorService;
 import static Client.ClientApp.view;
 
-
+@SuppressWarnings("rawtypes")
 public abstract class Network extends UnicastRemoteObject implements GameCommand, LobbyInterface, RemoteClient, Scout {
 
     protected HashMap<Class<?>, Scout> scouts;
@@ -37,7 +36,7 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
         this.timer = new Timer();
     }
 
-    public abstract void init(String ipAddress, int ip);
+    public abstract void init();
 
     public void startPing(String playerID, String lobbyID) {
         try {
@@ -56,15 +55,16 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
                     throw new RuntimeException(e);
                 }
             }
-        }, 10000); //15 seconds timeout
+        }, 10000); //15-seconds timeout
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void update(Object objects) throws RemoteException {
         if (scouts.containsKey(objects.getClass())) {
             scouts.get(objects.getClass()).update(objects);
         } else {
-            view.printError("Scout-handler not found");
+            view.outcomeException(new RuntimeException("Scout-handler not found"));
         }
     }
 

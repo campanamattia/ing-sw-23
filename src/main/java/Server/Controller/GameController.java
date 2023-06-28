@@ -1,6 +1,7 @@
 package Server.Controller;
 
 import Enumeration.TurnPhase;
+import Enumeration.GameWarning;
 import Exception.Board.CantRefillBoardException;
 import Exception.Board.NoValidMoveException;
 import Exception.Board.NullTileException;
@@ -123,6 +124,8 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             } catch (GamePhaseException e) {
                 if (e instanceof EndingStateException) {
                     this.phaseController = new LastRoundState(this.phaseController.getCurrentPlayer(), this.phaseController.getPlayers());
+                    ((LastRoundState) this.phaseController).setFirstPlayer(this.gameModel.getFirstPlayer());
+                    sendMessage(GameWarning.LAST_ROUND);
                     continue;
                 } else throw (EndGameException) e;
             }
@@ -186,9 +189,11 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         try {
             if (ableTo(playerID) != TurnPhase.PICKING) {
                 sendException(new RuntimeException(this.turnPhase.toString()), this.players.get(playerID));
+                return;
             }
         } catch (NotYourTurnException e) {
             sendException(e, this.players.get(playerID));
+            return;
         }
 
         try {
@@ -219,6 +224,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         try {
             if (ableTo(playerID) != TurnPhase.INSERTING) {
                 sendException(new RuntimeException(this.turnPhase.toString()), this.players.get(playerID));
+                return;
             }
         } catch (NotYourTurnException e) {
             sendException(e, this.players.get(playerID));
@@ -231,8 +237,10 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             endTurn();
         } catch (PlayerException e) {
             sendException(e, this.players.get(playerID));
+            return;
         } catch (IOException e) {
             logger.severe(e.toString());
+            return;
         }
 
         if (this.turnPhase == TurnPhase.ENDED)
@@ -273,6 +281,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * @param scout The Scout object to be added as a subscriber.
      * @throws RemoteException If a remote communication error occurs.
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public synchronized void addScout(String playerID, Scout scout) throws RemoteException {
         Talent talent = gameModel.getTalent();
@@ -304,6 +313,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                 }
             });
         }
+        sendMessage(GameWarning.STOP_TIMER);
 
         this.players.put(playerID, client);
 
@@ -370,24 +380,12 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
 
         // Only one active player remaining, start a timer to declare them the winner
         if (numActivePlayers == 1) {
-            for (ClientHandler client : activePlayers()) {
-                try {
-                    client.remoteView().outcomeMessage("You're the only player left, start now a 60 seconds timer!");
-                } catch (RemoteException e) {
-                    logger.severe(e.getMessage());
-                }
-            }
+            sendMessage(GameWarning.START_TIMER);
             this.wait = new Timer();
             this.wait.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    for (ClientHandler client : activePlayers()) {
-                        try {
-                            client.remoteView().outcomeMessage("You won due to insufficient players!");
-                        } catch (RemoteException e) {
-                            logger.severe(e.getMessage());
-                        }
-                    }
+                    sendMessage(GameWarning.WON);
                     lobby.endGame(GameController.this);
                 }
             }, 60000); // 60 seconds
@@ -396,12 +394,12 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
 
 
     private TurnPhase ableTo(String playerID) throws NotYourTurnException {
-        if (this.turnPhase == TurnPhase.ENDED) {
+        if (this.turnPhase == TurnPhase.ENDED)
             return null;
-        }
-        if (!playerID.equals(this.currentPlayer.getCurrentPlayer().getPlayerID()))
-            throw new NotYourTurnException(this.gameModel.getCurrentPlayer().getPlayerID());
-        else return this.turnPhase;
+
+        if (playerID.equals(this.currentPlayer.getCurrentPlayer().getPlayerID()))
+            return this.turnPhase;
+        throw new NotYourTurnException(this.gameModel.getCurrentPlayer().getPlayerID());
     }
 
     /**
@@ -451,5 +449,16 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
                 logger.severe(ex.getMessage());
             }
         });
+    }
+
+    private void sendMessage(GameWarning warning){
+        for (ClientHandler client : activePlayers())
+            executorService.execute(()->{
+                try{
+                    client.remoteView().outcomeMessage(warning);
+                } catch (RemoteException e){
+                    logger.severe(e.getMessage());
+                }
+            });
     }
 }

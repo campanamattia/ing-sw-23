@@ -17,7 +17,7 @@ import Utils.MockObjects.MockModel;
 import Utils.MockObjects.MockPlayer;
 import Utils.Rank;
 import Utils.Tile;
-
+import Enumeration.GameWarning;
 
 import java.io.*;
 import java.net.Socket;
@@ -32,9 +32,11 @@ import static Server.ServerApp.logger;
  * This class represents the handler for each socket connection
  * It implements all the method that the server can call also on an RMI connection
  */
+@SuppressWarnings("rawtypes")
 public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout {
     private String playerID;
     private final Socket socket;
+    @SuppressWarnings("FieldCanBeLocal")
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private GameCommand controller;
@@ -66,6 +68,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
                     ServerApp.logger.log(Level.SEVERE, e.getMessage());
                 }
             });
+            //noinspection InfiniteLoopStatement
             while (true) {
                 deserialize(in.readObject());
             }
@@ -77,7 +80,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     private void deserialize(Object message) {
         if(message instanceof ClientMessage clientMessage){
             clientMessage.execute(this);
-        } else ServerApp.logger.log(Level.SEVERE, "Message not recognized");
+        } else logger.log(Level.SEVERE, "Message not recognized");
     }
 
     /**
@@ -282,7 +285,7 @@ public class SocketHandler implements Runnable, RemoteView, RemoteClient, Scout 
     }
 
     @Override
-    public void outcomeMessage(String message) throws RemoteException {
+    public void outcomeMessage(GameWarning message) throws RemoteException {
         ServerMessage serverMessage = new OutcomeMessage(message);
         try {
             send(serverMessage);

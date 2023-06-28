@@ -1,6 +1,5 @@
 package Client.Network;
 
-import Client.View.View;
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
 import Interface.Scout;
@@ -19,13 +18,14 @@ import java.io.*;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.List;
-import static Client.ClientApp.executorService;
-import static Client.ClientApp.view;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static Client.ClientApp.*;
 
 
 public class ClientSocket extends Network {
     private Socket socket;
+    @SuppressWarnings("FieldCanBeLocal")
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private final AtomicBoolean clientConnected = new AtomicBoolean(true);
@@ -36,10 +36,9 @@ public class ClientSocket extends Network {
     }
 
     @Override
-    public void init(String ipAddress, int port) {
-        port = (port == -1) ? 50000 : port;
+    public void init() {
         try {
-            this.socket = new Socket(ipAddress, port);
+            this.socket = new Socket(IP_SERVER, SOCKET_PORT);
             this.out = new ObjectOutputStream(socket.getOutputStream());
             this.in = new ObjectInputStream(socket.getInputStream());
             System.out.println("Connected to server");
@@ -77,6 +76,7 @@ public class ClientSocket extends Network {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public synchronized void addScout(String playerID,  Scout scout) throws RemoteException {
         //never called
@@ -156,6 +156,7 @@ public class ClientSocket extends Network {
             this.out.reset();
         } catch (IOException e) {
             clientConnected.set(false);
+            System.exit(404);
         }
     }
 }

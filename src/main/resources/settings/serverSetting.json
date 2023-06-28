@@ -1,4 +1,5 @@
 {
-  "socketPort": 50000,
-  "rmiPort" : 50001
+  "ipHost": "172.20.10.2",
+  "socketPort": 2000,
+  "rmiPort" : 3000
 }
