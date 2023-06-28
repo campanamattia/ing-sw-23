@@ -47,7 +47,7 @@ public class LivingRoom extends Scene {
     private static Pane boardPane;
     private static final List<Pane> selectTilesPane = new ArrayList<>();
     private static final List<Integer> orderTiles = new ArrayList<>();
-    private static int column = -1;
+    private static List<Pane> arrowsPaneList = new ArrayList<>();
 
     /**
      * Class constructor.
@@ -202,6 +202,7 @@ public class LivingRoom extends Scene {
         });
         setRoot(mainHBox);
     }
+    private static int column = -1;
 
     private static Rectangle getRectangle(GridPane grid, int j, int i) {
         List<Node> kids = grid.getChildren();
@@ -599,7 +600,7 @@ public class LivingRoom extends Scene {
                 insertTiles();
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
-            }finally {
+            } finally {
                 alert.close();
             }
         });
@@ -621,6 +622,7 @@ public class LivingRoom extends Scene {
             arrowPane.setOnMouseClicked(e -> chooseColumn(arrowPane, Integer.parseInt(arrowPane.getId())));
 
             arrowPane.getChildren().add(arrowImg);
+            arrowsPaneList.add(arrowPane);
             hBoxArrows.getChildren().add(arrowPane);
         }
         Pane firstPane = (Pane) hBoxArrows.getChildren().get(0);
@@ -640,6 +642,10 @@ public class LivingRoom extends Scene {
     }
 
     private static void chooseColumn(Pane arrowPane, int col) {
+        for(Pane pane:arrowsPaneList){
+            ImageView img = (ImageView) pane.getChildren().get(0);
+            img.setOpacity(1);
+        }
         ImageView imagePane = new ImageView();
         if (arrowPane.getChildren().size() > 0) imagePane = (ImageView) arrowPane.getChildren().get(0);
         if (col != column) {
@@ -647,7 +653,6 @@ public class LivingRoom extends Scene {
             imagePane.setOpacity(0.5);
         } else {
             column = -1;
-            imagePane.setOpacity(1);
         }
     }
 
