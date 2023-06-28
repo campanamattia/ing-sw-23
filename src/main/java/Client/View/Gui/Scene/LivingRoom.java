@@ -202,6 +202,7 @@ public class LivingRoom extends Scene {
         });
         setRoot(mainHBox);
     }
+
     private static int column = -1;
 
     private static Rectangle getRectangle(GridPane grid, int j, int i) {
@@ -249,6 +250,11 @@ public class LivingRoom extends Scene {
                 if (!children.isEmpty()) children.remove(children.size() - 1);
             }
         }
+    }
+
+    public static void outcomeInsertTiles() {
+        selectedTiles.clear();
+        selectedTilesImg.clear();
     }
 
 
@@ -582,7 +588,9 @@ public class LivingRoom extends Scene {
             tilePane.getChildren().add(tileImg);
             selectedTilesHBox.getChildren().add(tilePane);
         }
-
+        for (Pane pane : selectTilesPane) {
+            printNumber(pane, pane.getId());
+        }
         Pane personalGoalPane = new Pane();
 
         ImageView personalGoalImg = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/boards/bookshelf.png")));
@@ -596,11 +604,13 @@ public class LivingRoom extends Scene {
 
         Button insert = new Button("insert");
         insert.setOnAction(e -> {
+            System.out.println(orderTiles);
+            System.out.println(column);
             try {
                 insertTiles();
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
-            } finally {
+            }finally {
                 alert.close();
             }
         });
@@ -642,7 +652,7 @@ public class LivingRoom extends Scene {
     }
 
     private static void chooseColumn(Pane arrowPane, int col) {
-        for(Pane pane:arrowsPaneList){
+        for (Pane pane : arrowsPaneList) {
             ImageView img = (ImageView) pane.getChildren().get(0);
             img.setOpacity(1);
         }
@@ -721,11 +731,10 @@ public class LivingRoom extends Scene {
      * Insert the tile in the shelf.
      */
     public static void insertTiles() throws RemoteException {
-        selectedTiles.clear();
-        selectedTilesImg.clear();
         System.out.println("insert tiles");
 
         network.insertTiles(localPlayer, orderTiles, column);
+        orderTiles.clear();
     }
 
     private static ImageView choseImage(String colorString) {
@@ -899,6 +908,11 @@ public class LivingRoom extends Scene {
         }
         Label tmp = new Label(toShow);
         chatTextAreaVbox.getChildren().add(tmp);
+    }
+
+    public static void setUp(){
+        selectedTiles.clear();
+        selectedTilesImg.clear();
     }
 
     /**

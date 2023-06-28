@@ -220,4 +220,12 @@ public class GuiApplication extends Application {
         List<ChatMessage> messageList = new ArrayList<>(chat);
         Platform.runLater(() -> LivingRoom.refreshChat(messageList));
     }
+
+    public void outcomeInsertTiles() {
+        Platform.runLater(LivingRoom::outcomeInsertTiles);
+    }
+
+    public void setUp() {
+        Platform.runLater(LivingRoom::setUp);
+    }
 }

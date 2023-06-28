@@ -89,6 +89,7 @@ public class Gui extends View {
         mockModel.setTurnPhase(TurnPhase.PICKING);
         showAll();
         guiApplication.writeCurrentPlayer(playerID);
+        guiApplication.setUp();
     }
 
     private void showAll() {
@@ -124,8 +125,10 @@ public class Gui extends View {
      */
     @Override
     public void outcomeInsertTiles(boolean success) throws RemoteException {
-        if (success)
+        if (success) {
+            guiApplication.outcomeInsertTiles();
             this.mockModel.setTurnPhase(TurnPhase.PICKING);
+        }
     }
 
     /**
