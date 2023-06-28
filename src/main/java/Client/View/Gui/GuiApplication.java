@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import static Client.ClientApp.localPlayer;
@@ -23,8 +24,6 @@ import static Client.ClientApp.localPlayer;
 public class GuiApplication extends Application {
 
     private Stage primaryStage;
-    private List<String> activeLobbies = new ArrayList<>();
-    private List<String> activeGames = new ArrayList<>();
 
     private static volatile boolean javaFxLaunched = false;
 
@@ -63,24 +62,6 @@ public class GuiApplication extends Application {
     }
 
     /**
-     * Setter of lobbies.
-     *
-     * @param lobbies lobby to set.
-     */
-    public void setLobbies(List<String> lobbies) {
-        this.activeLobbies = lobbies;
-    }
-
-    /**
-     * Setter of active games.
-     *
-     * @param activeGames active game to set.
-     */
-    public void setActiveGames(List<String> activeGames) {
-        this.activeGames = activeGames;
-    }
-
-    /**
      * Call the method toLobbyScene which brings the player to the Lobby Scene.
      */
     public void outcomeLogin() {
@@ -98,8 +79,8 @@ public class GuiApplication extends Application {
     /**
      * This method will call toLoginScene that will redirect the player to the Login Scene.
      */
-    public void askPlayerInfo() {
-        Platform.runLater(() -> ConnectionScene.toLoginScene(this.activeLobbies, this.activeGames));
+    public void askPlayerInfo(List<Map<String, String>> lobbyInfo) {
+        Platform.runLater(() -> ConnectionScene.toLoginScene(lobbyInfo));
     }
 
     private boolean firstBoard = true;

@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 
 import static Client.ClientApp.*;
 
@@ -95,12 +96,10 @@ public class ConnectionScene extends Scene {
     }
 
     /**
-     * Calls switchScene and set as current scene the LoginScene.
-     * @param activeLobbies active lobbies to join.
-     * @param activeGames active games to join.
+     * Calls switchScene and set as the current scene the LoginScene.
      */
-    public static void toLoginScene(List<String> activeLobbies, List<String> activeGames) {
-        Scene loginScene = new LoginScene(app, activeLobbies, activeGames);
+    public static void toLoginScene(List<Map<String, String>> lobbyInfo) {
+        Scene loginScene = new LoginScene(app, lobbyInfo);
         app.switchScene(loginScene);
     }
 
