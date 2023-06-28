@@ -223,6 +223,7 @@ public class LivingRoom extends Scene {
 
     /**
      * Update mockModel which contains all the upgrades.
+     *
      * @param mock_model most recent version of mock model.
      */
     public static void updateMockModel(MockModel mock_model) {
@@ -231,8 +232,9 @@ public class LivingRoom extends Scene {
 
     /**
      * Update common goals and fix the graphics on screen.
+     *
      * @param enumeration common goals that is accomplished by a player.
-     * @param peek points to be assigned.
+     * @param peek        points to be assigned.
      */
     public static void updateCommonGoal(int enumeration, Integer peek) {
         if (mockModel.getMockCommonGoal().get(0).getEnumeration() == enumeration) {
@@ -261,6 +263,7 @@ public class LivingRoom extends Scene {
 
     /**
      * show board at the beginning of the match.
+     *
      * @param board Initial board.
      */
     public static void showBoard(Cell[][] board) {
@@ -430,8 +433,8 @@ public class LivingRoom extends Scene {
                 for (int k = 0; k < 6; k++) {
                     for (int j = 0; j < 5; j++) {
                         Pane paneBase = new Pane();
-                        paneBase.setPrefWidth(27);
-                        paneBase.setPrefHeight(27);
+                        paneBase.setPrefWidth(25);
+                        paneBase.setPrefHeight(25);
                         grid.add(paneBase, j, k);
                         GridPane.setColumnIndex(paneBase, j);
                         GridPane.setRowIndex(paneBase, k);
@@ -487,9 +490,9 @@ public class LivingRoom extends Scene {
         chatLayout.getChildren().addAll(chatTextArea, hBoxInputMessage);
         vBoxShelves.getChildren().add(chatLayout);
 
-        sendButton.setOnAction(event -> sendMessage(messageField,recipient));
+        sendButton.setOnAction(event -> sendMessage(messageField, recipient));
 
-        messageField.setOnAction(event -> sendMessage(messageField,recipient));
+        messageField.setOnAction(event -> sendMessage(messageField, recipient));
 
         // upgrading shelves in case of reconnection
         updateShelves();
@@ -595,6 +598,8 @@ public class LivingRoom extends Scene {
                 insertTiles();
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
+            }finally {
+                alert.close();
             }
         });
         insert.setPrefHeight(40);
@@ -604,7 +609,7 @@ public class LivingRoom extends Scene {
 
         HBox hBoxArrows = new HBox();
         hBoxArrows.setSpacing(10);
-        for(int i=0;i<5;i++){
+        for (int i = 0; i < 5; i++) {
             Pane arrowPane = new Pane();
             arrowPane.setId(String.valueOf(i));
 
@@ -612,7 +617,7 @@ public class LivingRoom extends Scene {
             arrowImg.setPreserveRatio(true);
             arrowImg.setFitWidth(25);
 
-            arrowPane.setOnMouseClicked(e-> chooseColumn(arrowPane, Integer.parseInt(arrowPane.getId())));
+            arrowPane.setOnMouseClicked(e -> chooseColumn(arrowPane, Integer.parseInt(arrowPane.getId())));
 
             arrowPane.getChildren().add(arrowImg);
             hBoxArrows.getChildren().add(arrowPane);
@@ -620,7 +625,7 @@ public class LivingRoom extends Scene {
         Pane firstPane = (Pane) hBoxArrows.getChildren().get(0);
         HBox.setMargin(firstPane, new Insets(0, 0, 0, 40));
 
-        vBoxMain.getChildren().addAll(selectedTilesHBox,hBoxArrows, personalGoalPane, insert);
+        vBoxMain.getChildren().addAll(selectedTilesHBox, hBoxArrows, personalGoalPane, insert);
 
 
         alert.getDialogPane().setContent(vBoxMain);
@@ -630,8 +635,7 @@ public class LivingRoom extends Scene {
 
     private static void chooseColumn(Pane arrowPane, int col) {
         ImageView imagePane = new ImageView();
-        if(arrowPane.getChildren().size() > 0)
-            imagePane = (ImageView) arrowPane.getChildren().get(0);
+        if (arrowPane.getChildren().size() > 0) imagePane = (ImageView) arrowPane.getChildren().get(0);
         if (col != column) {
             column = col;
             imagePane.setOpacity(0.5);
@@ -642,8 +646,7 @@ public class LivingRoom extends Scene {
     }
 
     private static void printNumber(Pane tilePane, String id) {
-        if (tilePane.getChildren().size() > 1)
-            tilePane.getChildren().remove(1);
+        if (tilePane.getChildren().size() > 1) tilePane.getChildren().remove(1);
 
         if (!orderTiles.contains(Integer.parseInt(id))) {
             return;
@@ -687,6 +690,7 @@ public class LivingRoom extends Scene {
 
     /**
      * Print the error message on screen.
+     *
      * @param message message to show.
      */
     public static void printError(String message) {
@@ -766,7 +770,7 @@ public class LivingRoom extends Scene {
                 Tile[][] othersShelf = mockModel.getMockPlayers().get(k).getShelf();
                 GridPane playerGrid = othersShelves.get(grids);
                 grids++;
-                updateShelvesOrPersonalGoal(othersShelf,playerGrid);
+                updateShelvesOrPersonalGoal(othersShelf, playerGrid);
             } else {
                 // personal goal
                 updatePersonalGoal(pGoalGrid);
@@ -802,11 +806,12 @@ public class LivingRoom extends Scene {
     private static void updatePersonalGoal(GridPane grid) {
         Tile[][] personalShelf = mockModel.getPlayer(localPlayer).getShelf();
         // delete the old board
-        updateShelvesOrPersonalGoal(personalShelf,grid);
+        updateShelvesOrPersonalGoal(personalShelf, grid);
     }
 
     /**
      * Update the board with the update received by the server.
+     *
      * @param board most recent update of the board.
      */
     public static void updateBoard(Cell[][] board) {
@@ -841,6 +846,7 @@ public class LivingRoom extends Scene {
 
     /**
      * Switch scene to End Game Scene.
+     *
      * @param leaderboard rank of the player.
      */
     public static void endGame(List<Rank> leaderboard) {
@@ -868,6 +874,7 @@ public class LivingRoom extends Scene {
 
     /**
      * Show in chat the new message.
+     *
      * @param message message to show in chat.
      */
     public static void newMessageChat(ChatMessage message) {
@@ -885,6 +892,7 @@ public class LivingRoom extends Scene {
 
     /**
      * Show in chat the information.
+     *
      * @param info message to print.
      */
     public static void writeInfos(String info) {
@@ -897,6 +905,7 @@ public class LivingRoom extends Scene {
 
     /**
      * Show in chat the warning.
+     *
      * @param message warning to show in chat.
      */
     public static void outcomeMessage(String message) {
@@ -910,6 +919,7 @@ public class LivingRoom extends Scene {
 
     /**
      * Reset of the chat for a player that has been disconnected.
+     *
      * @param messageList list of old messages to show in chat.
      */
     public static void refreshChat(List<ChatMessage> messageList) {
