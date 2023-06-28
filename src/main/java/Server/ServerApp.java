@@ -7,6 +7,7 @@ import Server.Network.Servers.SocketServer;
 import Utils.NetworkSettings;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 import java.io.IOException;
@@ -18,6 +19,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static Server.TXTFormatter.dateFormatter;
 
 
 /**
@@ -51,23 +54,29 @@ public class ServerApp {
      */
     private static int rmiPort = 0;
 
+    public static final ReentrantLock lock = new ReentrantLock();
+
     /**
      * The main method that starts the server application.
      *
      * @param args the command-line arguments (optional socket and RMI ports)
      */
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        initLogger();
 
         if (args.length < 1) {
-            System.out.println("Insert the ip address of the server");
-            ipHost = String.valueOf(scanner.nextLine());
-        } else ipHost = args[0].trim();
-        if (!isValid()) System.exit(-2);
-
-        initLogger();
+            logger.severe("USAGE: java -jar --enable-preview MSH-SERVER-v1.01.jar <ipHost> [<socketPort> <rmiPort>]");
+            System.exit(-1);
+        }
+        ipHost = args[0];
+        if (!isValid()) {
+            logger.severe("Invalid ipHost");
+            System.exit(-2);
+        }
+        logger.info("SERVER STARTED ON: " + ipHost );
         initLobby();
 
+        Scanner scanner = new Scanner(System.in);
         executorService = Executors.newCachedThreadPool();
         executorService.execute(() -> {
             while (true) {
@@ -81,11 +90,10 @@ public class ServerApp {
         });
 
         setPort(args);
-        // Start the RMI server in a new thread.
+
         Thread rmiThread = new Thread(ServerApp::rmiServer);
         rmiThread.start();
 
-        // Start the socket server in a new thread.
         Thread socketThread = new Thread(ServerApp::socketServer);
         socketThread.start();
 
@@ -124,7 +132,7 @@ public class ServerApp {
             System.exit(-3);
         }
         logger.setLevel(Level.ALL);
-        logger.info("Starting ServerApp on " + ipHost);
+        logger.info("MY SHELFIE SERVER LOG " + LocalDateTime.now().format(dateFormatter) + "\n");
     }
 
     private static void initLobby() {
@@ -161,7 +169,7 @@ public class ServerApp {
             new ServerRMI().start(ipHost, rmiPort);
         } catch (RemoteException | AlreadyBoundException e) {
             logger.log(Level.SEVERE, e.toString());
-            System.exit(-1);
+            System.exit(-6);
         }
     }
 
@@ -175,8 +183,14 @@ public class ServerApp {
  * The TXTFormatter class represents a custom formatter for the logger.
  */
 class TXTFormatter extends Formatter {
-    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    /**
+     * Formats the log record.
+     *
+     * @param record the log record to format
+     * @return the formatted log record
+     */
     @Override
     public String format(LogRecord record) {
 
@@ -184,6 +198,6 @@ class TXTFormatter extends Formatter {
 
                 "[" + record.getLevel().toString() + "] " +
 
-                record.getMessage() + "\n";
+                record.getMessage() ;
     }
 }
