@@ -53,7 +53,7 @@ public class GuiApplication extends Application {
     }
 
     /**
-     * Method to switch from a scene to an other.
+     * Method to switch from a scene to another.
      *
      * @param scene scene to show.
      */

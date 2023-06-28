@@ -424,19 +424,7 @@ public class LivingRoom extends Scene {
                 grid.setVgap(2);
                 grid.setLayoutX(30);
                 grid.setLayoutY(30);
-                grid.prefWidthProperty().bind(shelfImg.fitWidthProperty());
-                grid.prefHeightProperty().bind(shelfImg.fitWidthProperty());
-                grid.getChildren().clear();
-                for (int k = 0; k < 6; k++) {
-                    for (int j = 0; j < 5; j++) {
-                        Pane paneBase = new Pane();
-                        paneBase.setPrefWidth(25);
-                        paneBase.setPrefHeight(25);
-                        grid.add(paneBase, j, k);
-                        GridPane.setColumnIndex(paneBase, j);
-                        GridPane.setRowIndex(paneBase, k);
-                    }
-                }
+                fillShelf(shelfImg, grid);
                 othersShelves.add(grid);
                 playerShelfPane.getChildren().addAll(grid, shelfImg);
                 hBoxShelves.getChildren().add(playerShelfPane);
@@ -495,6 +483,22 @@ public class LivingRoom extends Scene {
         updateShelves();
     }
 
+    private static void fillShelf(ImageView shelfImg, GridPane grid) {
+        grid.prefWidthProperty().bind(shelfImg.fitWidthProperty());
+        grid.prefHeightProperty().bind(shelfImg.fitWidthProperty());
+        grid.getChildren().clear();
+        for (int k = 0; k < 6; k++) {
+            for (int j = 0; j < 5; j++) {
+                Pane paneBase = new Pane();
+                paneBase.setPrefWidth(35);
+                paneBase.setPrefHeight(35);
+                grid.add(paneBase, j, k);
+                GridPane.setColumnIndex(paneBase, j);
+                GridPane.setRowIndex(paneBase, k);
+            }
+        }
+    }
+
     private static void sendMessage(TextField messageField, ComboBox<String> recipient) {
         String message = messageField.getText();
         String dest = recipient.getValue();
@@ -513,20 +517,7 @@ public class LivingRoom extends Scene {
         pGoalGrid.setVgap(2);
         pGoalGrid.setLayoutX(30);
         pGoalGrid.setLayoutY(20);
-        pGoalGrid.prefWidthProperty().bind(pGoalImg.fitWidthProperty());
-        pGoalGrid.prefHeightProperty().bind(pGoalImg.fitWidthProperty());
-
-        pGoalGrid.getChildren().clear();
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 5; j++) {
-                Pane paneBase = new Pane();
-                paneBase.setPrefWidth(30);
-                paneBase.setPrefHeight(30);
-                pGoalGrid.add(paneBase, j, i);
-                GridPane.setColumnIndex(paneBase, j);
-                GridPane.setRowIndex(paneBase, i);
-            }
-        }
+        fillShelf(pGoalImg, pGoalGrid);
     }
 
     private static StackPane createStackPaneWithImages(List<ImageView> images) {
