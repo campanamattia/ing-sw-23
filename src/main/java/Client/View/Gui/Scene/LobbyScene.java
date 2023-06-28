@@ -16,6 +16,9 @@ public class LobbyScene extends Scene {
     private final GuiApplication app;
     private final ComboBox<Integer> lobbySize;
 
+    /**
+     * Class constructor.
+     */
     public LobbyScene(GuiApplication app) {
         super(new Pane(), 960, 750);
         setUserAgentStylesheet(STYLEPATH);

@@ -24,6 +24,9 @@ public class LoginScene extends Scene {
     private final ComboBox<String> activeGames;
 
 
+    /**
+     * Class constructor.
+     */
     public LoginScene(GuiApplication app, List<String> inputLobbies, List<String> activegames){
         super(new Pane(), 960, 750);
 
@@ -124,6 +127,9 @@ public class LoginScene extends Scene {
             network.login(username,lobbyName,view,network);
     }
 
+    /**
+     * Calls switchScene and set as active scene the Living room Scene.
+     */
     public static void toLobbyScene(){
         Scene livingRoom = new LivingRoom(app);
         app.switchScene(livingRoom);
