@@ -164,24 +164,24 @@
 
 }
 
-.players-shelf-label{
+.players-shelf-label {
     -fx-font-size: 15px;
     -fx-text-alignment: center;
 }
 
-.personal-shelf-label{
+.personal-shelf-label {
     -fx-font-size: 20px;
     -fx-translate-y: 250px;
     -fx-text-alignment: center;
 }
 
-.text-info-chat{
+.text-info-chat {
     -fx-font-weight: bold;
     -fx-font-size: 15px;
     -fx-text-fill: red;
 }
 
-.vBox-chat{
+.vBox-chat {
     -fx-pref-width: 550px;
     -fx-pref-height: 200px;
 }

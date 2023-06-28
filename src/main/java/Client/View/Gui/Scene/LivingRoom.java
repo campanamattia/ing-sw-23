@@ -16,6 +16,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
@@ -307,8 +310,10 @@ public class LivingRoom extends Scene {
         // common goals
         MockCommonGoal mockCommonGoal1 = mockModel.getMockCommonGoal().get(0);
         int numberCGoal1 = mockCommonGoal1.getEnumeration() + 1;
+        String commonGoal1Description = mockCommonGoal1.getDescription();
         MockCommonGoal mockCommonGoal2 = mockModel.getMockCommonGoal().get(1);
         int numberCGoal2 = mockCommonGoal2.getEnumeration() + 1;
+        String commonGoal2Description = mockCommonGoal2.getDescription();
 
         Pane cg1 = new Pane();
         Pane cg2 = new Pane();
@@ -322,8 +327,8 @@ public class LivingRoom extends Scene {
         cg2img.setPreserveRatio(true);
         cg2img.setLayoutX(30);
         cg2img.setLayoutY(15);
-        copyImageGenerator(cg1, cg1img);
-        copyImageGenerator(cg2, cg2img);
+        copyImageGenerator(cg1, cg1img, commonGoal1Description);
+        copyImageGenerator(cg2, cg2img, commonGoal2Description);
 
         VBox commonGoal = new VBox();
         commonGoal.setLayoutY(30);
@@ -554,13 +559,13 @@ public class LivingRoom extends Scene {
         return stackPane;
     }
 
-    private static void copyImageGenerator(Pane cg1, ImageView cg1img) {
+    private static void copyImageGenerator(Pane cg1, ImageView cg1img, String commonGoalXDescription) {
         Image copyCg1Image = cg1img.getImage();
         ImageView copyCg1 = new ImageView(copyCg1Image);
         copyCg1.setPreserveRatio(true);
         copyCg1.setFitWidth(250);
         cg1.getChildren().add(cg1img);
-        cg1.setOnMouseClicked(e -> showCommonGoals(copyCg1, e.getScreenX(), e.getScreenY()));
+        cg1.setOnMouseClicked(e -> showCommonGoals(copyCg1, commonGoalXDescription, e.getScreenX(), e.getScreenY()));
     }
 
     private static void printSelectedTiles() {
@@ -611,7 +616,7 @@ public class LivingRoom extends Scene {
                 insertTiles();
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
-            }finally {
+            } finally {
                 alert.close();
             }
         });
@@ -876,16 +881,30 @@ public class LivingRoom extends Scene {
         app.switchScene(endGameScene);
     }
 
-    private static void showCommonGoals(ImageView commonGoalImg, double mouseX, double mouseY) {
+    private static void showCommonGoals(ImageView commonGoalImg, String commonGoalXDescription, double mouseX, double mouseY) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("COMMON GOALS");
         alert.setHeaderText("COMMON GOALS: ");
 
+        VBox toShow = new VBox();
+        toShow.setSpacing(20);
+
         commonGoalImg.setFitWidth(250);
         commonGoalImg.setPreserveRatio(true);
-        alert.getDialogPane().setContent(commonGoalImg);
-        alert.getDialogPane().setPrefWidth(300);
-        alert.getDialogPane().setPrefHeight(200);
+
+        TextFlow textFlow = new TextFlow();
+
+        Text commonGoalDescription = new Text(commonGoalXDescription);
+        commonGoalDescription.wrappingWidthProperty().bind(alert.widthProperty());
+        Font customFont = Font.loadFont(String.valueOf(GuiApplication.class.getResource("/font/Poppins-Regular.ttf")),15);
+        commonGoalDescription.setFont(customFont);
+        textFlow.getChildren().add(commonGoalDescription);
+
+        toShow.getChildren().addAll(commonGoalImg, textFlow);
+
+        alert.getDialogPane().setContent(toShow);
+        alert.getDialogPane().setPrefWidth(400);
+        alert.getDialogPane().setPrefHeight(400);
 
         alert.setX(mouseX - 300.00);
         alert.setY(mouseY);
@@ -911,7 +930,7 @@ public class LivingRoom extends Scene {
         chatTextAreaVbox.getChildren().add(tmp);
     }
 
-    public static void setUp(){
+    public static void setUp() {
         selectedTiles.clear();
         selectedTilesImg.clear();
     }
@@ -955,8 +974,7 @@ public class LivingRoom extends Scene {
     }
 
     public static void lastRound() {
-        if (finalPointPain.getChildren().size() == 0)
-            return;
+        if (finalPointPain.getChildren().size() == 0) return;
         finalPointPain.getChildren().clear();
     }
 }
