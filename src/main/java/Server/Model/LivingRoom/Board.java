@@ -86,18 +86,18 @@ public class Board {
      * @throws NullTileException    exception thrown if the player wants to take a tile from an empty cell.
      */
     public void convalidateMove(@NotNull List<Coordinates> coordinates) throws NoValidMoveException, NullTileException {
-        if (coordinates.isEmpty() || coordinates.size() > 3) throw new NoValidMoveException();
+        if (coordinates.isEmpty() || coordinates.size() > 3) throw new NoValidMoveException("The number of tiles is not valid.");
 
         for (Coordinates(int x, int y) : coordinates) {
-            if (!areValidCoordinates(new Coordinates(x, y))) throw new NoValidMoveException();
+            if (!areValidCoordinates(new Coordinates(x, y))) throw new NoValidMoveException("The coordinates [" + x + "][" + y + "] are not valid.");
 
             if (board[x][y].getTile() == null || !board[x][y].getStatus())
                 throw new NullTileException(new Coordinates(x, y));
 
-            if (!oneSideFree(x, y)) throw new NoValidMoveException();
+            if (!oneSideFree(x, y)) throw new NoValidMoveException("The tile [" + x + "][" + y + "] has not at least one side free.");
         }
 
-        if (!areAligned(coordinates)) throw new NoValidMoveException();
+        if (!areAligned(coordinates)) throw new NoValidMoveException("The tiles are not aligned.");
     }
 
     private boolean areAligned(List<Coordinates> coordinates) {
@@ -110,17 +110,16 @@ public class Board {
 
         return IntStream.range(1, coordinates.size())
                 .allMatch(i -> {
-            Coordinates prev = coordinates.get(i - 1);
-            Coordinates current = coordinates.get(i);
-            return isHorizontal ? prev.x() == prev.x() && abs(prev.y() - current.y()) == 1 : prev.y() == current.y() && abs(prev.x() - current.x()) == 1;
-        });
+                    Coordinates prev = coordinates.get(i - 1);
+                    Coordinates current = coordinates.get(i);
+                    return isHorizontal ? prev.x() == prev.x() && abs(prev.y() - current.y()) == 1 : prev.y() == current.y() && abs(prev.x() - current.x()) == 1;
+                });
     }
 
     private boolean areValidCoordinates(Coordinates coordinates) {
         return coordinates.x() >= 0 && coordinates.x() < matrix_size && coordinates.y() >= 0 && coordinates.y() < matrix_size;
     }
 
-    @SuppressWarnings("unused")
     private boolean oneSideFree(int x, int y) {
         if (x - 1 < 0 || x + 1 >= matrix_size || y - 1 < 0 || y + 1 >= matrix_size) {
             return true;

@@ -23,8 +23,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
@@ -152,7 +150,7 @@ public class GameModel {
      */
     public List<Tile> selectTiles(List<Coordinates> coordinates) throws NullTileException, NoValidMoveException {
         if (this.currentPlayer.getMyShelf().maxTiles() < coordinates.size())
-            throw new NoValidMoveException();
+            throw new NoValidMoveException("Too many tiles selected");
         this.board.convalidateMove(coordinates);
         List<Tile> tiles = this.board.getTiles(coordinates);
         talent.onEvent(MockFactory.getMock(this.board));

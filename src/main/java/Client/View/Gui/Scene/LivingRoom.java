@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static Client.ClientApp.*;
 
@@ -180,6 +181,9 @@ public class LivingRoom extends Scene {
 
             if (colIndex >= 0 && rowIndex >= 0) {
 
+                if (!areSelectable(colIndex, rowIndex))
+                    return;
+
                 // rectangle to highlight
                 Rectangle toHighlight = getRectangle(highlightBoard, colIndex + tmp, rowIndex + tmp);
                 System.out.println("x: " + rowIndex + ", y: " + colIndex);
@@ -192,34 +196,23 @@ public class LivingRoom extends Scene {
                     toHighlight.setStroke(Color.TRANSPARENT);
                     selectedTilesMap.remove(tile);
                 } else {
-                    toHighlight.setStroke(Color.BLACK);
-                    toHighlight.setStrokeWidth(2);
-                    if (getPane(gridBoard, colIndex + tmp, rowIndex + tmp) != null)
+                    if (getPane(gridBoard, colIndex + tmp, rowIndex + tmp) != null && getPane(gridBoard, colIndex + tmp, rowIndex + tmp).getChildren().size() > 0) {
                         selectedTilesMap.put(tile, (ImageView) getPane(gridBoard, colIndex + tmp, rowIndex + tmp).getChildren().get(0));
+                        toHighlight.setStroke(Color.BLACK);
+                        toHighlight.setStrokeWidth(2);
+                    }
                 }
-                /*
-                 * if (selectedTiles.contains(tile)) {
-                 *                     toHighlight.setStroke(Color.TRANSPARENT);
-                 *                     selectedTiles.remove(tile);
-                 *                 } else {
-                 *                     toHighlight.setStroke(Color.BLACK);
-                 *                     toHighlight.setStrokeWidth(2);
-                 *                     selectedTiles.add(new Coordinates(rowIndex, colIndex));
-                 *                 }
-                 *
-                 *                 // image handler
-                 *                 Pane selectedPane = getPane(gridBoard, colIndex + tmp, rowIndex + tmp);
-                 *                 if (selectedPane != null) {
-                 *                     ImageView selectedImageView = (ImageView) selectedPane.getChildren().get(0);
-                 *                     if (!selectedTilesImg.contains(selectedImageView) && selectedImageView != null) {
-                 *                         selectedTilesImg.add(selectedImageView);
-                 *                     } else selectedTilesImg.remove(selectedImageView);
-                 *                 }
-                 */
-
             }
         });
         setRoot(mainHBox);
+    }
+
+    private boolean areSelectable(int y, int x) {
+        if (x - 1 < 0 || x + 1 >= mockModel.getMockBoard().getBoard().length || y - 1 < 0 || y + 1 >= mockModel.getMockBoard().getBoard().length) {
+            return true;
+        }
+        Cell[][] board = mockModel.getMockBoard().getBoard();
+        return Stream.of(board[x - 1][y].getTile(), board[x + 1][y].getTile(), board[x][y - 1].getTile(), board[x][y + 1].getTile()).anyMatch(Objects::isNull);
     }
 
     private static int column = -1;
@@ -413,7 +406,10 @@ public class LivingRoom extends Scene {
 
         pGoalGrid.setOnMouseClicked(event -> {
             if (mockModel.getTurnPhase() == TurnPhase.PICKING) {
+                if (selectedTilesMap.size() == 0)
+                    return;
                 List<Coordinates> selectedTiles = new ArrayList<>(selectedTilesMap.keySet());
+                System.out.println("selected tiles: " + selectedTiles);
                 try {
                     network.selectTiles(localPlayer, selectedTiles);
                 } catch (RemoteException e) {
@@ -480,7 +476,7 @@ public class LivingRoom extends Scene {
         hBoxMyShelfAndCG.setSpacing(20);
         hBoxMyShelfAndCG.getChildren().addAll(pGoalPane, commonGoal);
 
-        System.out.println("adding common and personal shelf");
+        //System.out.println("adding common and personal shelf");
         vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
 
         // chat
@@ -625,8 +621,6 @@ public class LivingRoom extends Scene {
 
         Button insert = new Button("insert");
         insert.setOnAction(e -> {
-            System.out.println(orderTiles);
-            System.out.println(column);
             try {
                 insertTiles();
             } catch (RemoteException ex) {
@@ -752,9 +746,7 @@ public class LivingRoom extends Scene {
      * Insert the tile in the shelf.
      */
     public static void insertTiles() throws RemoteException {
-        System.out.println("insert tiles");
-        System.out.println("List<Int>: " + orderTiles);
-        System.out.println("Column: " + column);
+        System.out.println("insert tiles: " + orderTiles + " in column: " + column);
         List<Integer> clone = new ArrayList<>(orderTiles);
         network.insertTiles(localPlayer, clone, column);
         orderTiles.clear();
@@ -809,7 +801,7 @@ public class LivingRoom extends Scene {
         // shelves
         for (int k = 0; k < mockModel.getMockPlayers().size(); k++) {
             if (!localPlayer.equals(mockModel.getMockPlayers().get(k).getPlayerID())) {
-                System.out.println("Update other's shelves!");
+                //System.out.println("Update other's shelves!");
                 Tile[][] othersShelf = mockModel.getMockPlayers().get(k).getShelf();
                 GridPane playerGrid = othersShelves.get(grids);
                 grids++;
@@ -858,7 +850,7 @@ public class LivingRoom extends Scene {
      * @param board most recent update of the board.
      */
     public static void updateBoard(Cell[][] board) {
-        System.out.println("updating the board");
+        //System.out.println("updating the board");
         int tmp = 0;
         if (numPlayers == 2) tmp = 1;
 

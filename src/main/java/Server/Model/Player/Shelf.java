@@ -140,9 +140,9 @@ public class Shelf {
         int max = 0;
         for(int i = 0; i < numberColumns(); i++){
             for (int j = numberRows()-1; j >= 0; j--) {
-                if (myShelf[j][i] == null)
+                if (myShelf[j][i] != null)
                     continue;
-                if (j > max)
+                if (j++ > max)
                     max = j;
                 break;
             }
