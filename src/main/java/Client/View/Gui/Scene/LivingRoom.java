@@ -49,6 +49,10 @@ public class LivingRoom extends Scene {
     private static final List<Integer> orderTiles = new ArrayList<>();
     private static int column = -1;
 
+    /**
+     * Class constructor.
+     * @param app
+     */
     public LivingRoom(GuiApplication app) {
 
         super(new Pane(), 1400, 768);
@@ -209,11 +213,19 @@ public class LivingRoom extends Scene {
         return res;
     }
 
+    /**
+     * If you are the first player, this method will redirect you in the Lobby Scene where you can select
+     * will join the game.
+     */
     public static void toLobbySize() {
         Scene lobbySize = new LobbyScene(app);
         app.switchScene(lobbySize);
     }
 
+    /**
+     * Update mockModel which contains
+     * @param mockmodel
+     */
     public static void updateMockModel(MockModel mockmodel) {
         mockModel = mockmodel;
     }
