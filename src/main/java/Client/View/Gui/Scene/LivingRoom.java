@@ -559,6 +559,7 @@ public class LivingRoom extends Scene {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Selected Tiles");
         alert.setHeaderText("Selected tiles: ");
+        alert.getButtonTypes().clear();
 
         // vBox -> hBox -> shelf
 
@@ -627,6 +628,11 @@ public class LivingRoom extends Scene {
 
         vBoxMain.getChildren().addAll(selectedTilesHBox, hBoxArrows, personalGoalPane, insert);
 
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        alert.getButtonTypes().add(okButtonType);
+
+        Button okButton = (Button) alert.getDialogPane().lookupButton(okButtonType);
+        okButton.setText("VIEW BOARD");
 
         alert.getDialogPane().setContent(vBoxMain);
 
