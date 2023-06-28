@@ -47,7 +47,7 @@ public class LivingRoom extends Scene {
     private static Pane boardPane;
     private static final List<Pane> selectTilesPane = new ArrayList<>();
     private static final List<Integer> orderTiles = new ArrayList<>();
-    private static List<Pane> arrowsPaneList = new ArrayList<>();
+    private static final List<Pane> arrowsPaneList = new ArrayList<>();
 
     /**
      * Class constructor.
