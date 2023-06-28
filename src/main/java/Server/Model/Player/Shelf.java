@@ -135,4 +135,20 @@ public class Shelf {
     public void placeTile(Tile tile, int row, int column) {
         myShelf[row][column] = tile;
     }
+
+    public int maxTiles() {
+        int max = 0;
+        for(int i = 0; i < numberColumns(); i++){
+            for (int j = numberRows()-1; j >= 0; j--) {
+                if (myShelf[j][i] == null)
+                    continue;
+                if (j > max)
+                    max = j;
+                break;
+            }
+            if (max == numberRows())
+                break;
+        }
+        return max;
+    }
 }

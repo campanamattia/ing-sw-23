@@ -152,6 +152,8 @@ public class GameModel {
      * @throws NoValidMoveException if the move is not valid
      */
     public List<Tile> selectTiles(List<Coordinates> coordinates) throws NullTileException, NoValidMoveException {
+        if (this.currentPlayer.getMyShelf().maxTiles() < coordinates.size())
+            throw new NoValidMoveException();
         this.board.convalidateMove(coordinates);
         List<Tile> tiles = this.board.getTiles(coordinates);
         talent.onEvent(MockFactory.getMock(this.board));

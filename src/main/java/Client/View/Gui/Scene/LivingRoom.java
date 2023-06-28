@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,8 +34,8 @@ public class LivingRoom extends Scene {
     private static MockModel mockModel;
     private static final HBox hBoxMyShelfAndCG = new HBox();
     private static VBox vBoxShelves;
-    private static final List<ImageView> selectedTilesImg = new ArrayList<>();
-    private static final List<Coordinates> selectedTiles = new ArrayList<>();
+    private static final HashMap<Coordinates, ImageView> selectedTilesMap = new HashMap<>();
+    private static List<ImageView> selectedTilesImg = new ArrayList<>();
     private static final List<GridPane> othersShelves = new ArrayList<>();
     private static ScrollPane chatTextArea;
     private static final VBox chatTextAreaVbox = new VBox();
@@ -180,25 +181,39 @@ public class LivingRoom extends Scene {
                 Rectangle toHighlight = getRectangle(highlightBoard, colIndex + tmp, rowIndex + tmp);
                 System.out.println("x: " + rowIndex + ", y: " + colIndex);
 
-                // tile selected
+
+
                 Coordinates tile = new Coordinates(rowIndex, colIndex);
-                if (selectedTiles.contains(tile)) {
+
+                if (selectedTilesMap.containsKey(tile)){
                     toHighlight.setStroke(Color.TRANSPARENT);
-                    selectedTiles.remove(tile);
+                    selectedTilesMap.remove(tile);
                 } else {
                     toHighlight.setStroke(Color.BLACK);
                     toHighlight.setStrokeWidth(2);
-                    selectedTiles.add(new Coordinates(rowIndex, colIndex));
+                    if (getPane(gridBoard, colIndex + tmp, rowIndex + tmp) != null)
+                        selectedTilesMap.put(tile, (ImageView) getPane(gridBoard, colIndex + tmp, rowIndex + tmp).getChildren().get(0));
                 }
+                /*
+                 * if (selectedTiles.contains(tile)) {
+                 *                     toHighlight.setStroke(Color.TRANSPARENT);
+                 *                     selectedTiles.remove(tile);
+                 *                 } else {
+                 *                     toHighlight.setStroke(Color.BLACK);
+                 *                     toHighlight.setStrokeWidth(2);
+                 *                     selectedTiles.add(new Coordinates(rowIndex, colIndex));
+                 *                 }
+                 *
+                 *                 // image handler
+                 *                 Pane selectedPane = getPane(gridBoard, colIndex + tmp, rowIndex + tmp);
+                 *                 if (selectedPane != null) {
+                 *                     ImageView selectedImageView = (ImageView) selectedPane.getChildren().get(0);
+                 *                     if (!selectedTilesImg.contains(selectedImageView) && selectedImageView != null) {
+                 *                         selectedTilesImg.add(selectedImageView);
+                 *                     } else selectedTilesImg.remove(selectedImageView);
+                 *                 }
+                 */
 
-                // image handler
-                Pane selectedPane = getPane(gridBoard, colIndex + tmp, rowIndex + tmp);
-                if (selectedPane != null) {
-                    ImageView selectedImageView = (ImageView) selectedPane.getChildren().get(0);
-                    if (!selectedTilesImg.contains(selectedImageView) && selectedImageView != null) {
-                        selectedTilesImg.add(selectedImageView);
-                    } else selectedTilesImg.remove(selectedImageView);
-                }
             }
         });
         setRoot(mainHBox);
@@ -254,7 +269,6 @@ public class LivingRoom extends Scene {
     }
 
     public static void outcomeInsertTiles() {
-        selectedTiles.clear();
         selectedTilesImg.clear();
     }
 
@@ -394,6 +408,7 @@ public class LivingRoom extends Scene {
 
         pGoalGrid.setOnMouseClicked(event -> {
             if (mockModel.getTurnPhase() == TurnPhase.PICKING) {
+                List<Coordinates> selectedTiles = new ArrayList<>(selectedTilesMap.keySet());
                 try {
                     network.selectTiles(localPlayer, selectedTiles);
                 } catch (RemoteException e) {
@@ -683,7 +698,7 @@ public class LivingRoom extends Scene {
         tilePane.getChildren().add(toShow);
     }
 
-    private static void handleClickTileOrder(String id) {
+    private synchronized static void handleClickTileOrder(String id) {
         if (!orderTiles.contains(Integer.parseInt(id))) {
             orderTiles.add(Integer.parseInt(id));
         } else {
@@ -698,6 +713,7 @@ public class LivingRoom extends Scene {
      */
     public static void outcomeSelectTiles() {
         clearBoard();
+        selectedTilesImg = new ArrayList<>(selectedTilesMap.values());
         printSelectedTiles();
     }
 
@@ -717,8 +733,7 @@ public class LivingRoom extends Scene {
      */
     public static void printError(String message) {
         clearBoard();
-        selectedTilesImg.clear();
-        selectedTiles.clear();
+        selectedTilesMap.clear();
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(null);
@@ -733,8 +748,10 @@ public class LivingRoom extends Scene {
      */
     public static void insertTiles() throws RemoteException {
         System.out.println("insert tiles");
-
-        network.insertTiles(localPlayer, orderTiles, column);
+        System.out.println("List<Int>: " + orderTiles);
+        System.out.println("Column: " + column);
+        List<Integer> clone = new ArrayList<>(orderTiles);
+        network.insertTiles(localPlayer, clone, column);
         orderTiles.clear();
     }
 
@@ -912,7 +929,7 @@ public class LivingRoom extends Scene {
     }
 
     public static void setUp(){
-        selectedTiles.clear();
+        selectedTilesMap.clear();
         selectedTilesImg.clear();
     }
 
