@@ -8,6 +8,7 @@ import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -41,6 +42,7 @@ public class LivingRoom extends Scene {
     private static List<ImageView> selectedTilesImg = new ArrayList<>();
     private static final List<GridPane> othersShelves = new ArrayList<>();
     private static ScrollPane chatTextArea;
+    private static final Label systemTextArea = new Label("SYSTEM FIELD");
     private static final VBox chatTextAreaVbox = new VBox();
     private static GridPane highlightBoard;
     private static int numPlayers;
@@ -142,10 +144,6 @@ public class LivingRoom extends Scene {
         vBoxShelves = new VBox();
         vBoxShelves.setSpacing(10);
 
-        HBox mainHBox = new HBox();
-        mainHBox.setSpacing(10);
-        mainHBox.getChildren().addAll(boardPane, vBoxShelves);
-
         highlightBoard.setOnMouseClicked(event -> {
             int tmp = 0;
             if (mockModel.getMockPlayers().size() == 2) tmp = 1;
@@ -203,6 +201,17 @@ public class LivingRoom extends Scene {
                 }
             }
         });
+
+
+        HBox mainHBox = new HBox();
+        mainHBox.setSpacing(10);
+
+        VBox systemInfoAndBoardVBox = new VBox();
+        systemInfoAndBoardVBox.setSpacing(10);
+        systemInfoAndBoardVBox.getChildren().addAll(boardPane,systemTextArea);
+
+        mainHBox.getChildren().addAll(systemInfoAndBoardVBox, vBoxShelves);
+
         setRoot(mainHBox);
     }
 
@@ -946,6 +955,7 @@ public class LivingRoom extends Scene {
     }
 
     public static void setUp(){
+        clearBoard();
         selectedTilesMap.clear();
         selectedTilesImg.clear();
     }
@@ -956,11 +966,9 @@ public class LivingRoom extends Scene {
      * @param info message to print.
      */
     public static void writeInfos(String info) {
-        if (chatTextArea != null) {
-            Label tmp = new Label(info);
-            tmp.getStyleClass().add("text-info-chat");
-            chatTextAreaVbox.getChildren().add(tmp);
-        }
+        systemTextArea.setText("");
+        systemTextArea.getStyleClass().add("text-info-chat");
+        systemTextArea.setText(info);
     }
 
     /**

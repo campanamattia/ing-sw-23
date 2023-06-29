@@ -165,7 +165,8 @@
 .text-info-chat {
     -fx-font-weight: bold;
     -fx-font-size: 15px;
-    -fx-text-fill: red;
+    -fx-text-fill: #444444;
+    -fx-text-alignment: center;
 }
 
 .vBox-chat {
