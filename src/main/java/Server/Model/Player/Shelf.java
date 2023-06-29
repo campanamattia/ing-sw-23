@@ -136,18 +136,21 @@ public class Shelf {
         myShelf[row][column] = tile;
     }
 
+    /**
+     * Find how many tiles the client can insert
+     * @return max Tile a player can insert
+     */
     public int maxTiles() {
         int max = 0;
-        for(int i = 0; i < numberColumns(); i++){
-            for (int j = numberRows()-1; j >= 0; j--) {
-                if (myShelf[j][i] != null)
-                    continue;
-                if (j++ > max)
-                    max = j;
-                break;
+        for (int i = 0; i < numberColumns(); i++){
+            int j;
+            for (j = 0; j < numberRows(); j++){
+                if (myShelf[j][i] != null){
+                    break;
+                }
             }
-            if (max == numberRows())
-                break;
+            if (j > max)
+                max = j;
         }
         return max;
     }

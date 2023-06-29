@@ -186,23 +186,13 @@ public class Board {
     }
 
     private boolean allSideFree(Coordinates coordinates) {
-
-        return IntStream.of(coordinates.x() - 1, coordinates.x() + 1, coordinates.y() - 1, coordinates.y() + 1)
-                .mapToObj(coord -> new Coordinates(coord / matrix_size, coord % matrix_size))
-                .filter(this::areValidCoordinates)
-                .allMatch(coord -> board[coord.x()][coord.y()].getTile() == null);
-
-        /*
-         * if (areValidCoordinates(new Coordinates(coordinates.x() - 1, coordinates.y())) && board[coordinates.x() - 1][coordinates.y()].getTile() != null)
-         *             return false;
-         *         if (areValidCoordinates(new Coordinates(coordinates.x() + 1, coordinates.y())) && board[coordinates.x() + 1][coordinates.y()].getTile() != null)
-         *             return false;
-         *         if (areValidCoordinates(new Coordinates(coordinates.x(), coordinates.y() - 1)) && board[coordinates.x()][coordinates.y() - 1].getTile() != null)
-         *             return false;
-         *         if (areValidCoordinates(new Coordinates(coordinates.x(), coordinates.y() + 1)) && board[coordinates.x()][coordinates.y() + 1].getTile() != null)
-         *             return false;
-         *         return true;
-         */
+         if (areValidCoordinates(new Coordinates(coordinates.x() - 1, coordinates.y())) && board[coordinates.x() - 1][coordinates.y()].getTile() != null)
+             return false;
+         if (areValidCoordinates(new Coordinates(coordinates.x() + 1, coordinates.y())) && board[coordinates.x() + 1][coordinates.y()].getTile() != null)
+             return false;
+         if (areValidCoordinates(new Coordinates(coordinates.x(), coordinates.y() - 1)) && board[coordinates.x()][coordinates.y() - 1].getTile() != null)
+             return false;
+        return !areValidCoordinates(new Coordinates(coordinates.x(), coordinates.y() + 1)) || board[coordinates.x()][coordinates.y() + 1].getTile() == null;
     }
 
     /**
@@ -211,6 +201,7 @@ public class Board {
     public Cell[][] getBoard() {
         return board;
     }
+
 
     @TestOnly
     public void setTilesTaken(int n) {
