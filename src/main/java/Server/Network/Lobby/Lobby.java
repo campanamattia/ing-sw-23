@@ -368,23 +368,6 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     public void endGame(GameController game) {
         logger.info("Game " + game.getGameID() + " ended");
         this.games.remove(game);
-        executorService.execute(() -> {
-            try {
-                Thread.sleep(70000);
-            } catch (InterruptedException e) {
-                logger.severe(e.getMessage());
-                Thread.currentThread().interrupt();
-            }
-            executorService.execute(() -> {
-                for (ClientHandler handler : game.activePlayers()) {
-                    try {
-                        logOut(handler.playerID(), game.getGameID());
-                    } catch (RemoteException e) {
-                        logger.severe(e.getMessage());
-                    }
-                }
-            });
-        });
     }
 
     private void sendException(RemoteView client, String message) {

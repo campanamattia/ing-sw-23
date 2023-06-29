@@ -226,7 +226,8 @@ public class Gui extends View {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                System.exit(0);
+                //System.exit(0);
+                System.out.println("Game ended");
             });
             case LAST_ROUND -> guiApplication.lastRound();
         }
