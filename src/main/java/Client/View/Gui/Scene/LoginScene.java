@@ -61,7 +61,7 @@ public class LoginScene extends Scene {
 
         if(lobbyInfo != null && lobbyInfo.get(1).keySet().size() != 0){
             for (String game : lobbyInfo.get(1).keySet()) {
-                String toShow = "LobbyID: " + game + TAB + " Waiting Room: " + lobbyInfo.get(1).get(game);
+                String toShow = "GameID: " + game + TAB + " Waiting Room: " + lobbyInfo.get(1).get(game);
                 Font customFont = Font.loadFont(String.valueOf(GuiApplication.class.getResource("/font/Poppins-Regular.ttf")),15);
                 Label gameLabel = new Label(toShow);
                 gameLabel.setFont(customFont);
