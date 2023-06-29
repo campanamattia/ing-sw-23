@@ -7,6 +7,9 @@ import java.rmi.RemoteException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * The main client application class responsible for launching the game client.
+ */
 public class ClientApp {
 
     public static final String STYLEPATH = String.valueOf(ClientApp.class.getResource("/css/style.css"));
@@ -21,6 +24,12 @@ public class ClientApp {
     public static Network network;
     public static ExecutorService executorService;
 
+    /**
+     * The main entry point for the game client application.
+     *
+     * @param args Command line arguments (optional).
+     * @throws RemoteException If an exception occurs during remote communication.
+     */
     public static void main (String[] args) throws RemoteException {
         executorService = Executors.newCachedThreadPool();
         setDefault();
@@ -70,6 +79,9 @@ public class ClientApp {
         }
     }
 
+    /**
+     * Sets the default network settings based on the configuration file.
+     */
     private static void setDefault() {
         IP_SERVER = NetworkSettings.ipHostFromJSON();
         SOCKET_PORT = NetworkSettings.socketFromJSON();

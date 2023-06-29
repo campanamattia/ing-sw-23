@@ -1,6 +1,6 @@
 package Utils;
 
-import Client.View.Cli.CliColor;
+import Enumeration.CliColor;
 
 import java.io.Serializable;
 
