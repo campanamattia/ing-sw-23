@@ -2,7 +2,6 @@ package Messages.Client.GameController;
 
 import Interface.Server.GameCommand;
 import Messages.ClientMessage;
-import Server.Controller.GameController;
 import Server.Network.Client.SocketHandler;
 import Server.ServerApp;
 

@@ -150,6 +150,13 @@ public class Cli extends View {
         }
     }
 
+    /**
+     * Asks the player to enter the lobby ID and their nickname to join the lobby.
+     * If the lobby ID is not found, a new lobby will be instantiated.
+     *
+     * @param lobbyInfo the list of lobby information containing lobby and game details
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException {
         String inputLobby;
@@ -185,6 +192,12 @@ public class Cli extends View {
         network.login(inputName, inputLobby, this, network);
     }
 
+    /**
+     * Asks the player to enter the number of players for the lobby size.
+     * The player must enter a number between 2 and 4 (inclusive).
+     *
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void askLobbySize() throws RemoteException {
         int playerNumber;
