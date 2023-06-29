@@ -295,7 +295,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
     public void rejoin(String playerID, ClientHandler client) {
         try {
             Player player = this.gameModel.getPlayer(playerID);
-            player.setStatus(true);
+            player.setOnline(true);
         } catch (PlayerNotFoundException e) {
             logger.severe(e.toString());
             sendException(e, client);
@@ -338,7 +338,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         try {
             Player player = this.gameModel.getPlayer(playerID);
             this.gameModel.getTalent().removeScout(playerID);
-            player.setStatus(false);
+            player.setOnline(false);
         } catch (PlayerNotFoundException e) {
             logger.severe(e.getMessage());
             return;
@@ -447,14 +447,22 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
 
     private void sendLeaderBoard(List<Rank> leaderBoard) {
         for (ClientHandler client : activePlayers()) {
-            List<Rank> leaderBoardCopy = new ArrayList<>(leaderBoard);
+            List<Rank> clone = cloneLeaderBoard(leaderBoard);
             executorService.execute(() -> {
                 try {
-                    client.remoteView().endGame(leaderBoardCopy);
+                    client.remoteView().endGame(clone);
                 } catch (RemoteException e) {
                     logger.severe(e.getMessage());
                 }
             });
         }
+    }
+
+    private List<Rank> cloneLeaderBoard(List<Rank> leaderBoard) {
+        List<Rank> clone = new ArrayList<>();
+        for (Rank rank : leaderBoard) {
+            clone.add(rank.clone());
+        }
+        return clone;
     }
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * The Player class represents a player in the game.
- * It contains information about the player's personal goal, shelf, score and status.
+ * It contains information about the player's personal goal, shelf, score and online.
  */
 public class Player {
     /**
@@ -25,11 +25,15 @@ public class Player {
     /**
      * The player's score.
      */
-    private int score;
+    private int sharedScore;
+
+    private int personalScore;
+
+    private int patternScore;
     /**
-     * The player's status.
+     * The player's online.
      */
-    private boolean status;
+    private boolean online;
 
     /**
      * Constructs a Player object based on the provided player ID and personal goal.
@@ -39,8 +43,10 @@ public class Player {
      */
     public Player(String playerID, PersonalGoal pGoal) {
         this.playerID = playerID;
-        this.status = true;
-        this.score = 0;
+        this.online = true;
+        this.personalScore = 0;
+        this.patternScore = 0;
+        this.sharedScore = 0;
         this.personalGoal = pGoal;
         this.myShelf = new Shelf();
     }
@@ -61,25 +67,43 @@ public class Player {
      *
      * @param score the score to be added
      */
-    public void updateScore(int score) {
-        this.score = this.score + score;
+    public void updateSharedScore(int score) {
+        this.sharedScore = this.sharedScore + score;
     }
 
     /**
-     * Sets the player's status to the given status.
+     * Updates the player's score by adding the given score.
      *
-     * @param status the status to be set
+     * @param score the score to be added
      */
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void updatePersonalScore(int score) {
+        this.personalScore = this.personalScore + score;
+    }
+
+    /**
+     * Updates the player's score by adding the given score.
+     *
+     * @param score the score to be added
+     */
+    public void updatePatternScore(int score) {
+        this.patternScore = this.patternScore + score;
+    }
+
+    /**
+     * Sets the player's online to the given online.
+     *
+     * @param online the online to be set
+     */
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 
     /**
      * Ends the game for the player by checking the personal goal and the shelf.
      */
     public void endGame() {
-        this.updateScore(personalGoal.check(myShelf.getMyShelf()));
-        this.updateScore(myShelf.checkEndGame());
+        updatePersonalScore(personalGoal.check(myShelf.getMyShelf()));
+        updatePatternScore(myShelf.checkEndGame());
     }
 
     /**
@@ -87,8 +111,20 @@ public class Player {
      *
      * @return the player's score
      */
-    public int getScore() {
-        return score;
+    public int getTotalScore() {
+        return this.sharedScore + this.personalScore + this.patternScore;
+    }
+
+    public int getSharedScore() {
+        return sharedScore;
+    }
+
+    public int getPersonalScore() {
+        return personalScore;
+    }
+
+    public int getPatternScore() {
+        return patternScore;
     }
 
     /**
@@ -119,12 +155,12 @@ public class Player {
     }
 
     /**
-     * Returns the player's status.
+     * Returns the player's online.
      *
-     * @return the player's status
+     * @return the player's online
      */
-    public Boolean getStatus() {
-        return this.status;
+    public Boolean isOnline() {
+        return this.online;
     }
 
     /**

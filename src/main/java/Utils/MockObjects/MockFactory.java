@@ -50,7 +50,7 @@ public class MockFactory {
         mock.setPlayerID(player.getPlayerID());
         mock.setPersonalGoal(player.getPersonalGoal().getPersonalGoal().clone());
         mock.setShelf(player.getMyShelf().getMyShelf().clone());
-        mock.setScore(player.getScore());
+        mock.setScore(player.getSharedScore());
         return mock;
     }
 

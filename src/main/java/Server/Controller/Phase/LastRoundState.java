@@ -32,7 +32,7 @@ public class LastRoundState extends PhaseController {
             if(nextIndex == 0 || players.get(nextIndex).getPlayerID().equals(this.firstPlayer))
                 throw new EndGameException();
             this.currentPlayer = this.players.get(nextIndex);
-        }while(! this.currentPlayer.getStatus());
+        }while(! this.currentPlayer.isOnline());
     }
 
     /**

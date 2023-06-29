@@ -366,10 +366,10 @@ public class Cli extends View {
     public synchronized void endGame(List<Rank> classification) {
         System.out.println(CliColor.BOLD + "Final leaderboard:" + CliColor.RESET);
         Rank first = classification.get(0);
-        for (Rank(String id, int score) : classification) {
-            if (score == first.score()) {
-                printMessage(id + " " + score + " points");
-            } else System.out.println(id + " " + score + " points");
+        for (Rank rank : classification) {
+            if (rank.getTotalScore() == first.getTotalScore()) {
+                printMessage(rank.toString());
+            } else System.out.println(rank);
         }
     }
 

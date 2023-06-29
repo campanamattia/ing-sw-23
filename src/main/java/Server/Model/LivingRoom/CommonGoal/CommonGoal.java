@@ -79,6 +79,6 @@ public abstract class CommonGoal {
     protected void accomplished(Player player) {
         System.out.println("Player " + player.getPlayerID() + " has accomplished the common goal " + this.enumeration);
         this.accomplished.add(player.getPlayerID());
-        player.updateScore(this.scoringToken.pop());
+        player.updateSharedScore(this.scoringToken.pop());
     }
 }

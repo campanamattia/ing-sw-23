@@ -28,12 +28,12 @@ public class NormalState extends PhaseController {
     @Override
     public void nextPlayer() throws GamePhaseException {
         if(this.currentPlayer.getMyShelf().full()) {
-            this.currentPlayer.updateScore(1);
+            this.currentPlayer.updateSharedScore(1);
             throw new EndingStateException();
         }
         do{
             int nextIndex = (this.players.indexOf(this.currentPlayer)+1) % players.size();
             this.currentPlayer = this.players.get(nextIndex);
-        }while(! this.currentPlayer.getStatus());
+        }while(! this.currentPlayer.isOnline());
     }
 }
