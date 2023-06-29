@@ -261,11 +261,13 @@ public class LivingRoom extends Scene {
             if (peek != peekCg1) {
                 ObservableList<Node> children = cg1StackPane.getChildren();
                 if (!children.isEmpty()) children.remove(children.size() - 1);
+                peekCg1 = peek;
             }
         } else {
             if (peek != peekCg2) {
                 ObservableList<Node> children = cg2StackPane.getChildren();
                 if (!children.isEmpty()) children.remove(children.size() - 1);
+                peekCg2 = peek;
             }
         }
     }
@@ -482,6 +484,8 @@ public class LivingRoom extends Scene {
 
         hBoxMyShelfAndCG.setSpacing(20);
         hBoxMyShelfAndCG.getChildren().addAll(pGoalPane, commonGoal);
+
+
 
         //System.out.println("adding common and personal shelf");
         vBoxShelves.getChildren().add(hBoxMyShelfAndCG);
