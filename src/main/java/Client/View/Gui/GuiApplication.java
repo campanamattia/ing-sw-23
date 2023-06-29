@@ -128,7 +128,7 @@ public class GuiApplication extends Application {
      * @param e exception to be shown.
      */
     public void outcomeException(Exception e) {
-        Platform.runLater(() -> LivingRoom.printError(e.getMessage()));
+        Platform.runLater(() -> printError(e.getMessage()));
     }
 
     /**
