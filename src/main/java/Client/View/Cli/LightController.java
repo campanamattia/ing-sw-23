@@ -39,8 +39,10 @@ public class LightController {
 
         // Check if the data is in the correct format
         List<Coordinates> coordinates = checkSelectFormat(split[1]);
-        if (coordinates == null)
+        if (coordinates == null) {
+            cli.printError("You can't select the same tile twice");
             return;
+        }
 
         // Send the command to the server
         try {
