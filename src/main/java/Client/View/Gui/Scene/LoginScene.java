@@ -43,7 +43,7 @@ public class LoginScene extends Scene {
         vBoxGameAndLobbies.setSpacing(20);
 
         createLobby = new TextField();
-        createLobby.setPromptText("create/join a lobby/game: ");
+        createLobby.setPromptText("Insert lobby/game: ");
         createLobby.getStyleClass().add("text-field");
         if(lobbyInfo != null && lobbyInfo.get(0).keySet().size() != 0){
             for (String lobby : lobbyInfo.get(0).keySet()) {
@@ -76,6 +76,7 @@ public class LoginScene extends Scene {
         playerID = new TextField();
         playerID.setPromptText("Insert username: ");
         playerID.getStyleClass().add("text-field");
+        playerID.setPrefWidth(300);
 
         Button sendButton = new Button("Send");
         sendButton.setOnAction(e-> {
@@ -86,15 +87,17 @@ public class LoginScene extends Scene {
             }
         });
 
-        VBox vBoxInput = new VBox();
-        vBoxInput.getChildren().addAll(playerID,createLobby);
-        vBoxInput.setSpacing(50);
+        HBox hBoxInput = new HBox();
+        hBoxInput.getChildren().addAll(createLobby,playerID);
+        hBoxInput.setSpacing(50);
+        hBoxInput.setAlignment(Pos.CENTER);
 
-        HBox hBoxMain = new HBox(100,vBoxGameAndLobbies,vBoxInput);
-        hBoxMain.setAlignment(Pos.CENTER);
+        vBoxGameAndLobbies.setAlignment(Pos.CENTER);
+        VBox vBoxMain = new VBox(100,hBoxInput,vBoxGameAndLobbies);
+        vBoxMain.setAlignment(Pos.CENTER);
 
         backgroundBox.setAlignment(Pos.TOP_CENTER);
-        backgroundBox.getChildren().addAll(label,hBoxMain, sendButton);
+        backgroundBox.getChildren().addAll(label,vBoxMain, sendButton);
 
 
 
