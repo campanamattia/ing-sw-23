@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SuppressWarnings("ALL")
 class ShelfTest {
-    static Shelf TestShelf = new Shelf();
 
+    static Shelf TestShelf;
 
     @BeforeEach
     void setUp() {
@@ -58,14 +58,14 @@ class ShelfTest {
 
         //test class with the same methods of shelf but with different constructor
         class FullShelf {
-            private final Tile[][] myShelf;
+            private final Tile[][] TestShelf;
 
             public FullShelf() {
-                this.myShelf = new Tile[6][5];
+                this.TestShelf = new Tile[6][5];
                 Tile Insert = new Tile(Color.WHITE);
                 for (int i = 0; i < 6; i++) {
                     for (int j = 0; j < 5; j++) {
-                        this.myShelf[i][j] = Insert;
+                        this.TestShelf[i][j] = Insert;
                     }
                 }
             }
@@ -75,11 +75,11 @@ class ShelfTest {
                 int tmp = tiles.size();
                 int full = 0;
 
-                if (this.myShelf[tiles.size() - 1][n] != null) throw new ColumnNotValidException(n);
+                if (this.TestShelf[tiles.size() - 1][n] != null) throw new ColumnNotValidException(n);
                 for (int i = 5; i > 0; i--) {
-                    if (this.myShelf[i][n] == null) {
+                    if (this.TestShelf[i][n] == null) {
                         if (full < tmp) {
-                            this.myShelf[i][n] = tiles.get(full);
+                            this.TestShelf[i][n] = tiles.get(full);
                             full++;
                         }
                     }
@@ -100,7 +100,7 @@ class ShelfTest {
 
                 for (int j = 0; j < 5; j++) {
                     for (int i = 0; i < 6; i++) {
-                        if (this.myShelf[i][j] == null) count++;
+                        if (this.TestShelf[i][j] == null) count++;
                         else break;
                     }
                     if (count > max) max = count;
@@ -109,11 +109,11 @@ class ShelfTest {
             }
 
             public Tile getTile(int i, int j) {
-                return myShelf[i][j];
+                return TestShelf[i][j];
             }
 
-            public Tile[][] getMyShelf() {
-                return myShelf;
+            public Tile[][] getTestShelf() {
+                return TestShelf;
             }
 
             public int checkEndGame() {
@@ -163,7 +163,67 @@ class ShelfTest {
 
         clear();
         assertEquals(6, TestShelf.maxTiles());
-        
+
+    }
+
+    @Test
+    void testCheckEndGame_NoGroups_ReturnsZero() {
+        int result = TestShelf.checkEndGame();
+        assertEquals(0, result);
+    }
+
+    @Test
+    void testCheckEndGame_SingleGroup_ReturnsExpectedScore() {
+        TestShelf.placeTile(new Tile(Color.CYAN), 0, 0);
+        TestShelf.placeTile(new Tile(Color.CYAN), 0, 1);
+        TestShelf.placeTile(new Tile(Color.CYAN), 1, 1);
+        TestShelf.placeTile(new Tile(Color.CYAN), 1, 2);
+        TestShelf.placeTile(new Tile(Color.CYAN), 2, 2);
+
+        int result = TestShelf.checkEndGame();
+        assertEquals(5, result);
+    }
+
+    @Test
+    void testCheckEndGame_MultipleGroups_ReturnsExpectedScore() {
+        TestShelf.placeTile(new Tile(Color.CYAN), 0, 0);
+        TestShelf.placeTile(new Tile(Color.CYAN), 0, 1);
+        TestShelf.placeTile(new Tile(Color.CYAN), 1, 1);
+        TestShelf.placeTile(new Tile(Color.CYAN), 1, 2);
+        TestShelf.placeTile(new Tile(Color.CYAN), 2, 2);
+
+        TestShelf.placeTile(new Tile(Color.YELLOW), 2, 0);
+        TestShelf.placeTile(new Tile(Color.YELLOW), 2, 1);
+        TestShelf.placeTile(new Tile(Color.YELLOW), 1, 1);
+        TestShelf.placeTile(new Tile(Color.YELLOW), 1, 0);
+        TestShelf.placeTile(new Tile(Color.YELLOW), 0, 0);
+
+
+        int result = TestShelf.checkEndGame();
+        assertEquals(5, result);
+    }
+
+    @Test
+    void testCheckEndGame_GroupsWithDifferentColors_ReturnsExpectedScore() {
+        TestShelf.placeTile(new Tile(Color.CYAN), 0, 0);
+        TestShelf.placeTile(new Tile(Color.CYAN), 0, 1);
+        TestShelf.placeTile(new Tile(Color.CYAN), 1, 1);
+        TestShelf.placeTile(new Tile(Color.CYAN), 1, 2);
+        TestShelf.placeTile(new Tile(Color.CYAN), 2, 2);
+
+        TestShelf.placeTile(new Tile(Color.BLUE), 2, 0);
+        TestShelf.placeTile(new Tile(Color.BLUE), 2, 1);
+        TestShelf.placeTile(new Tile(Color.BLUE), 1, 1);
+        TestShelf.placeTile(new Tile(Color.BLUE), 1, 0);
+        TestShelf.placeTile(new Tile(Color.BLUE), 0, 0);
+
+        TestShelf.placeTile(new Tile(Color.GREEN), 2, 3);
+        TestShelf.placeTile(new Tile(Color.GREEN), 2, 4);
+        TestShelf.placeTile(new Tile(Color.GREEN), 3, 4);
+        TestShelf.placeTile(new Tile(Color.GREEN), 3, 3);
+        TestShelf.placeTile(new Tile(Color.GREEN), 4, 3);
+        int result = TestShelf.checkEndGame();
+        assertEquals(10, result);
     }
 
     private void clear() {

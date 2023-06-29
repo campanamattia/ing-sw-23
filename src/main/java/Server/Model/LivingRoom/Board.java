@@ -210,6 +210,17 @@ public class Board {
         return board;
     }
 
+    @TestOnly
+    public boolean equals(Cell[][] board){
+        for(int i = 0; i < this.matrix_size; i++){
+            for(int j = 0; j < this.matrix_size; j++){
+                if (board[i][j] != this.board[i][j])
+                    return false;
+            }
+        }
+        return true;
+    }
+
 
     @TestOnly
     public void setTilesTaken(int n) {
@@ -238,10 +249,5 @@ public class Board {
         for (int i = 0; i < tiles.size(); i++) {
             board[coordinates.get(i).x()][coordinates.get(i).y()].setTile(tiles.get(i));
         }
-    }
-
-    @TestOnly
-    public void enough(Bag bag) throws CantRefillBoardException {
-        if (tilesTaken.size() > bag.getLastTiles()) throw new CantRefillBoardException();
     }
 }

@@ -14,7 +14,7 @@
     {
       "enum": 1,
       "description": "Four groups each containing at least 4 tiles of the same type (not necessarily in the depicted shape). The tiles of one group can be different from those of another group.",
-      "numAdjacent": 2,
+      "numAdjacent": 4,
       "numGroup": 4
     },
     {

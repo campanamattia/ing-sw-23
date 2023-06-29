@@ -123,6 +123,11 @@ class BoardTest {
         });
     }
 
+    @Test
+    public void getBoard(){
+        assertTrue(this.board.equals(this.board.getBoard()));
+    }
+
     private JsonObject decoBoard() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;

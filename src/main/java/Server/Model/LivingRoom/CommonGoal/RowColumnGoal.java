@@ -9,18 +9,19 @@ import Enumeration.Color;
 import java.util.*;
 
 /**
- * The RowColumnGoal class represents a goal where players must create row or column of tile with different pattern.
- * It extends the CommonGoal class and contains a number of column, the number of row, and the max number of tile different for column/row.
+ * The RowColumnGoal class represents a goal where players must create row or column of tile with a different pattern.
+ * It extends the CommonGoal class and contains a number of columns,
+ * the number of rows, and the max number of tile different for column/row.
  */
 public class RowColumnGoal extends CommonGoal {
 
     /**
-     * The number of required column.
+     * The number of required columns.
      */
     private final int numColumn;
 
     /**
-     * The number of required row.
+     * The number of required rows.
      */
     private final int numRow;
 
@@ -31,9 +32,9 @@ public class RowColumnGoal extends CommonGoal {
 
     /**
      Create a new RowColumnGoal instance with the provided token list and JSON object.
-     @param tokenList The list of scoring tokens earnable by players, based on how many players are in the game.
+     @param tokenList The list of scoring tokens wearable by players, based on how many players are in the game.
      @param jsonObject The JSON object containing the properties for this objective.
-     It must have "enum", "description", "numColumn", "numRow", and "maxDifferent" properties.
+     It must have "enum," "description," "numColumn", "numRow", and "maxDifferent" properties.
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public RowColumnGoal (List<Integer> tokenList, @NotNull JsonObject jsonObject) {
@@ -74,7 +75,7 @@ public class RowColumnGoal extends CommonGoal {
                 }
 
                 if (colorColumn.size() == shelf.numberRows()) {
-                    if (maxDifferent == -1 && colorColumn.stream().distinct().count() == 1) {
+                    if (maxDifferent == -1 && colorColumn.stream().distinct().count() == 6) {
                         countColumn++;
                     } else if (maxDifferent != -1 && colorColumn.stream().distinct().count() <= maxDifferent) {
                         countColumn++;
@@ -101,7 +102,7 @@ public class RowColumnGoal extends CommonGoal {
                 }
 
                 if (colorRow.size() == shelf.numberColumns()) {
-                    if (maxDifferent == -1 && colorRow.stream().distinct().count() == 1) {
+                    if (maxDifferent == -1 && colorRow.stream().distinct().count() == 5) {
                         countRow++;
                     } else if (maxDifferent != -1 && colorRow.stream().distinct().count() <= maxDifferent) {
                         countRow++;

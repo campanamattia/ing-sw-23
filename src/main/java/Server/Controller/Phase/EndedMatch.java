@@ -24,7 +24,7 @@ public class EndedMatch {
 
         List<Rank> list = new ArrayList<>();
         for (Player player : players)
-            list.add(new Rank(player.getPlayerID(), player.getPersonalScore(), player.getPatternScore(), player.getSharedScore(), player.getTotalScore()));
+            list.add(new Rank(player.getPlayerID(), player.getTotalScore(), player.getPersonalScore(), player.getPatternScore(), player.getSharedScore()));
 
         List<Rank> leaderboard = new ArrayList<>();
         for (Rank rank : list){
