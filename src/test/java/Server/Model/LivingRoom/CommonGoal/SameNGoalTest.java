@@ -81,7 +81,7 @@ class SameNGoalTest {
 
         sameNGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1,sameNGoal.getAccomplished().size());
     }
 
@@ -113,7 +113,7 @@ class SameNGoalTest {
 
         sameNGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1,sameNGoal.getAccomplished().size());
     }
 
@@ -145,7 +145,7 @@ class SameNGoalTest {
 
         sameNGoal.check(player);
 
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
         assertEquals(0,sameNGoal.getAccomplished().size());
     }
 

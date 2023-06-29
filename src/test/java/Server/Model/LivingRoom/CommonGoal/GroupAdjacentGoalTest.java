@@ -89,7 +89,7 @@ class GroupAdjacentGoalTest {
 
         groupAdjacentGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
     }
 
     @Test
@@ -122,7 +122,7 @@ class GroupAdjacentGoalTest {
 
         groupAdjacentGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1,groupAdjacentGoal.getScoringToken().size());
     }
 
@@ -155,7 +155,7 @@ class GroupAdjacentGoalTest {
 
         groupAdjacentGoal.check(player);
 
-        assertEquals(0,player.getScore());
+        assertEquals(0,player.getSharedScore());
         assertEquals(2,groupAdjacentGoal.getScoringToken().size());
     }
 
@@ -189,7 +189,7 @@ class GroupAdjacentGoalTest {
 
         groupAdjacentGoal.check(player);
 
-        assertEquals(0,player.getScore());
+        assertEquals(0,player.getSharedScore());
         assertEquals(2,groupAdjacentGoal.getScoringToken().size());
     }
 

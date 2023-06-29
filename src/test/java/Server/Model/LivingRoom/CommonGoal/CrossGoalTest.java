@@ -68,7 +68,7 @@ class CrossGoalTest {
 
         assertTrue(crossGoal.getAccomplished().isEmpty());
         assertTrue(crossGoal.getScoringToken().contains(2));
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
     }
 
     @Test
@@ -91,7 +91,7 @@ class CrossGoalTest {
         assertTrue(crossGoal.getAccomplished().contains("ale"));
         assertTrue(crossGoal.getScoringToken().contains(2));
         assertFalse(crossGoal.getScoringToken().contains(4));
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
     }
 
     @Test
@@ -111,7 +111,7 @@ class CrossGoalTest {
 
         assertTrue(crossGoal.getAccomplished().isEmpty());
         assertTrue(crossGoal.getScoringToken().contains(4));
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
     }
 
     @Test

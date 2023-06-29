@@ -80,7 +80,7 @@ class StaircaseGoalTest {
 
         staircaseGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1, staircaseGoal.getAccomplished().size());
     }
 
@@ -113,7 +113,7 @@ class StaircaseGoalTest {
 
         staircaseGoal.check(player);
 
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
         assertEquals(0, staircaseGoal.getAccomplished().size());
     }
 

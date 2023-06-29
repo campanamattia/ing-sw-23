@@ -77,7 +77,7 @@ class RowColumnGoalTest {
 
         rowColumnGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1, rowColumnGoal.getAccomplished().size());
     }
 
@@ -108,7 +108,7 @@ class RowColumnGoalTest {
 
         rowColumnGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1, rowColumnGoal.getAccomplished().size());
         assertEquals(1, rowColumnGoal.getScoringToken().size());
         assertTrue(rowColumnGoal.getScoringToken().contains(2));
@@ -139,7 +139,7 @@ class RowColumnGoalTest {
 
         rowColumnGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1, rowColumnGoal.getAccomplished().size());
         assertEquals(1, rowColumnGoal.getScoringToken().size());
         assertTrue(rowColumnGoal.getScoringToken().contains(2));
@@ -170,7 +170,7 @@ class RowColumnGoalTest {
 
         rowColumnGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1, rowColumnGoal.getAccomplished().size());
         assertEquals(1, rowColumnGoal.getScoringToken().size());
         assertTrue(rowColumnGoal.getScoringToken().contains(2));
@@ -203,7 +203,7 @@ class RowColumnGoalTest {
 
         rowColumnGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1, rowColumnGoal.getAccomplished().size());
         assertEquals(1, rowColumnGoal.getScoringToken().size());
         assertTrue(rowColumnGoal.getScoringToken().contains(2));
@@ -236,7 +236,7 @@ class RowColumnGoalTest {
 
         rowColumnGoal.check(player);
 
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
         assertEquals(0, rowColumnGoal.getAccomplished().size());
         assertEquals(2, rowColumnGoal.getScoringToken().size());
         assertTrue(rowColumnGoal.getScoringToken().contains(2));
