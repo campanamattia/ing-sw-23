@@ -6,6 +6,8 @@ import Utils.Rank;
 import java.util.ArrayList;
 import java.util.List;
 
+import static Server.ServerApp.logger;
+
 
 /**
  * The EndedMatch class represents the phase where the match has ended.
@@ -35,6 +37,7 @@ public class EndedMatch {
                 }
             }
         }
+        logger.info("Leaderboard: " + leaderboard);
         return leaderboard;
     }
 }
