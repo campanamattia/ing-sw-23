@@ -12,7 +12,10 @@ import javafx.scene.text.Font;
 
 import java.util.List;
 
-
+/**
+ * The `EndGameScene` class represents the scene that is displayed at the end of the game, showing the final rankings of the players.
+ * It extends the JavaFX `Scene` class and provides a UI for displaying the winner and the ranks of all the players.
+ */
 public class EndGameScene extends Scene {
     private static VBox rank_1_2;
     private static VBox rank_3_4;

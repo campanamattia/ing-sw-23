@@ -19,6 +19,11 @@ import java.util.Map;
 
 import static Client.ClientApp.*;
 
+/**
+ * This class represents a graphic interface for the application.
+ * It extends the View class and provides methods for interacting with the user scenes and active listeners.
+ * The GUI communicates with GuiApplication and displays the game board, chat messages, and player updates.
+ */
 public class Gui extends View {
     private final GuiApplication guiApplication;
 

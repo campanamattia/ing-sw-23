@@ -30,6 +30,11 @@ import java.util.stream.Stream;
 
 import static Client.ClientApp.*;
 
+/**
+ * The `LivingRoom` class represents the scene that is displayed at the end of the game,
+ * showing the final rankings of the players.
+ * It extends the JavaFX `Scene` class and provides a UI to display the game state and interacts with the player.
+ */
 public class LivingRoom extends Scene {
     private static GuiApplication app;
     private ImageView boardImage;

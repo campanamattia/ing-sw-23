@@ -15,6 +15,13 @@ import java.util.Map;
 
 import static Client.ClientApp.*;
 
+/**
+ * The `ConnectionScene` class represents the scene for establishing a connection to the game server.
+ * It extends the JavaFX `Scene`
+ * class and provides a UI for the user to choose the type of connection
+ * (RMI or SOCKET) and enter the server IP and port.
+ */
+
 public class ConnectionScene extends Scene {
 
     private static GuiApplication app;

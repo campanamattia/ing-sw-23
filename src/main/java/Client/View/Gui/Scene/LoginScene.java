@@ -16,6 +16,11 @@ import java.util.Map;
 
 import static Client.ClientApp.*;
 
+/**
+ * The `LoginScene` class represents the scene where players can log in and join lobbies or create a new lobby.
+ * It extends the JavaFX `Scene` class and provides a UI for entering a username,
+ * creating a lobby/game, and displaying active lobbies/games.
+ */
 public class LoginScene extends Scene {
     private static GuiApplication app;
     private final TextField playerID;

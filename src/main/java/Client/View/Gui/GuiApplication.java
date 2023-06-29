@@ -21,6 +21,14 @@ import java.util.*;
 
 import static Client.ClientApp.localPlayer;
 
+/**
+ * The `GuiApplication` class represents the main entry point for the JavaFX-based graphical user interface (GUI) of the application.
+ * It extends the `Application` class provided by JavaFX and provides methods to manage scenes, switch between scenes, and handle UI events.
+ * The GUI application is responsible for displaying the game interface, user interactions, and updating the UI based on the game's state.
+ * It acts as a bridge between the underlying game logic and the graphical representation of the game.
+ * The class initializes the JavaFX environment, sets up the primary stage, and launches the GUI application.
+ * It also provides methods to switch scenes, handle login and lobby events, display the game board, update UI components, and handle exceptions.
+ */
 
 public class GuiApplication extends Application {
 

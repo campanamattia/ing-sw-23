@@ -11,6 +11,10 @@ import java.rmi.RemoteException;
 
 import static Client.ClientApp.*;
 
+/**
+ * The `LobbyScene` class represents the scene where players can join a lobby and set up the game.
+ * It extends the JavaFX `Scene` class and provides a UI for selecting the lobby size.
+ */
 public class LobbyScene extends Scene {
     private final GuiApplication app;
 
