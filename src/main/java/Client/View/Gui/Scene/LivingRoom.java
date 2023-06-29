@@ -532,22 +532,17 @@ public class LivingRoom extends Scene {
                 playerButton = new Button(mockModel.getMockPlayers().get(i).getPlayerID());
                 playerButton.getStyleClass().add("chat-button");
                 playerButton.setId(mockModel.getMockPlayers().get(i).getPlayerID());
-                playerButton.setOnMouseClicked(e->{
-                    handleClickChat(messageField, playerButton.getId());
-                    alert.close();
-                });
-                dest.getChildren().add(playerButton);
             }
             else{
                 playerButton = new Button("ALL");
                 playerButton.getStyleClass().add("chat-button");
                 playerButton.setId("ALL");
-                playerButton.setOnMouseClicked(e->{
-                    handleClickChat(messageField, playerButton.getId());
-                    alert.close();
-                });
-                dest.getChildren().add(playerButton);
             }
+            playerButton.setOnMouseClicked(e->{
+                handleClickChat(messageField, playerButton.getId());
+                alert.close();
+            });
+            dest.getChildren().add(playerButton);
         }
 
         alert.getDialogPane().setContent(dest);

@@ -11,6 +11,9 @@ import Utils.Rank;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -213,5 +216,29 @@ public class GuiApplication extends Application {
 
     public void lastRound() {
         Platform.runLater(LivingRoom::lastRound);
+    }
+
+    public void printError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("ERROR");
+        alert.setHeaderText(null);
+        alert.setContentText(message.toUpperCase());
+
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().clear();
+
+        ImageView icon = new ImageView(String.valueOf(GuiApplication.class.getResource("/img/misc/X.png")));
+        icon.setPreserveRatio(true);
+        icon.setFitWidth(40);
+        alert.setGraphic(icon);
+
+        // Set OK button
+        alert.getButtonTypes().setAll(ButtonType.OK);
+
+        // Set the owner window
+        alert.initOwner(alert.getOwner());
+
+        // Show the alert and wait for user response
+        alert.showAndWait();
     }
 }

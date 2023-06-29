@@ -9,7 +9,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -106,6 +105,11 @@ public class LoginScene extends Scene {
         String username = playerID.getText();
         String lobbyName = createLobby.getText();
 
+        if(username.equals("")){
+            app.printError("INSERT A USERNAME");
+            return;
+        }
+
         if(lobbyName != null)
             network.login(username,lobbyName,view,network);
     }
@@ -116,23 +120,5 @@ public class LoginScene extends Scene {
     public static void toLobbyScene(){
         Scene livingRoom = new LivingRoom(app);
         app.switchScene(livingRoom);
-    }
-    private void printError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("ERROR");
-        alert.setHeaderText(null);
-        alert.setContentText(message.toUpperCase());
-
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().clear();
-
-        // Set OK button
-        alert.getButtonTypes().setAll(ButtonType.OK);
-
-        // Set the owner window
-        alert.initOwner(this.getWindow());
-
-        // Show the alert and wait for user response
-        alert.showAndWait();
     }
 }
