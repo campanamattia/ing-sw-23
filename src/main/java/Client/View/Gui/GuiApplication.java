@@ -1,6 +1,7 @@
 package Client.View.Gui;
 
 import Client.View.Gui.Scene.ConnectionScene;
+import Client.View.Gui.Scene.EndGameScene;
 import Client.View.Gui.Scene.LivingRoom;
 import Client.View.Gui.Scene.LoginScene;
 import Utils.Cell;
@@ -150,7 +151,7 @@ public class GuiApplication extends Application {
      */
     public void endGame(List<Rank> leaderboard) {
         System.out.println(leaderboard);
-        Platform.runLater(() -> LivingRoom.endGame(leaderboard));
+        Platform.runLater(() -> LivingRoom.toEndGame(leaderboard));
     }
 
     /**
@@ -242,5 +243,9 @@ public class GuiApplication extends Application {
 
         // Show the alert and wait for user response
         alert.showAndWait();
+    }
+
+    public void updateRanks(List<Rank> leaderboard) {
+        Platform.runLater(()-> EndGameScene.updateRanks(leaderboard));
     }
 }
