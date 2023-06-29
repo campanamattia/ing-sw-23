@@ -64,7 +64,7 @@ public class ServerApp {
         initLogger();
 
         if (args.length < 1) {
-            logger.severe("USAGE: java -jar --enable-preview MSH-SERVER-v1.01.jar <ipHost> [<-s socketPort> <-r rmiPort>]");
+            logger.severe("USAGE: java -jar --enable-preview MSH-SERVER-v1.01.jar <ipHost> [<-s><socketPort> <-r><rmiPort>]");
             System.exit(-1);
         }
         ipHost = args[0];

@@ -35,7 +35,7 @@ public class ClientApp {
         setDefault();
 
         if (args.length != 1){
-            System.out.println("Usage: java -jar --enable-preview MyShelfie.jar <GUI/CLI>");
+            System.out.println("Usage: java -jar --enable-preview MSH-CLIENT-v1.01.jar <GUI/CLI>");
             System.exit(-1);
         }
 
@@ -43,7 +43,7 @@ public class ClientApp {
             case "GUI", "gui" -> view = ViewFactory.instanceView("GUI");
             case "CLI", "cli" -> view = ViewFactory.instanceView("CLI");
             default -> {
-                System.out.println("Usage: java -jar --enable-preview MyShelfie.jar <GUI/CLI>");
+                System.out.println("Usage: java -jar --enable-preview MSH-CLIENT-v1.01.jar <GUI/CLI>");
                 System.exit(-1);
             }
         }

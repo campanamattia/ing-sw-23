@@ -6,7 +6,6 @@ import Utils.*;
 import Utils.Cell;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
