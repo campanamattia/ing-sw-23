@@ -50,6 +50,7 @@ public class GuiApplication extends Application {
         Scene connectionScene = new ConnectionScene(this);
         this.switchScene(connectionScene);
         primaryStage.setResizable(false);
+        primaryStage.setOnCloseRequest(e-> System.exit(-1));
         primaryStage.show();
     }
 
