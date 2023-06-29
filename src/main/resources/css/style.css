@@ -71,19 +71,6 @@
     -fx-text-fill: white;
 }
 
-.button {
-    -fx-background-color: linear-gradient(#FFFFFF, #D7D7D7);
-    -fx-background-radius: 4px;
-    -fx-background-size: 100% 100%;
-    -fx-background-position: center;
-    -fx-background-repeat: no-repeat;
-    -fx-font-size: 25px;
-    -fx-pref-width: 150px;
-    -fx-pref-height: 50px;
-    -fx-alignment: center;
-    -fx-cursor: hand;
-}
-
 .text-field {
     -fx-border-radius: 5px;
     -fx-padding: 5px;
@@ -184,4 +171,25 @@
 .vBox-chat {
     -fx-pref-width: 550px;
     -fx-pref-height: 200px;
+}
+
+.button {
+    -fx-background-color: #8B4513;
+    -fx-background-radius: 5;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
+    -fx-alignment: center;
+}
+
+.button:hover {
+    -fx-background-color: #7B3F00;
+}
+
+.button:pressed {
+    -fx-background-color: #A0522D;
 }

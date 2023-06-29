@@ -19,7 +19,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -484,14 +483,6 @@ public class LivingRoom extends Scene {
         VBox chatLayout = new VBox();
         chatLayout.setSpacing(10);
 
-        ComboBox<String> recipient = new ComboBox<>();
-        recipient.getStyleClass().add("combo-box-chat");
-        for (int i = 0; i < mockModel.getMockPlayers().size(); i++) {
-            if (!localPlayer.equals(mockModel.getMockPlayers().get(i).getPlayerID()))
-                recipient.getItems().add(mockModel.getMockPlayers().get(i).getPlayerID());
-        }
-        recipient.getItems().add("all");
-
         chatTextArea = new ScrollPane();
         chatTextArea.getStyleClass().add("chat-area");
         chatTextArea.setContent(chatTextAreaVbox);
@@ -509,23 +500,55 @@ public class LivingRoom extends Scene {
         hBoxInputMessage.setPrefWidth(600);
         hBoxInputMessage.setPrefHeight(25);
 
-        hBoxInputMessage.getChildren().addAll(messageField, recipient, sendButton);
+        hBoxInputMessage.getChildren().addAll(messageField, sendButton);
 
         chatLayout.getChildren().addAll(chatTextArea, hBoxInputMessage);
         vBoxShelves.getChildren().add(chatLayout);
 
-        sendButton.setOnAction(event -> sendMessage(messageField, recipient));
+        sendButton.setOnAction(event -> sendMessage(messageField));
 
-        messageField.setOnAction(event -> sendMessage(messageField, recipient));
+        messageField.setOnAction(event -> sendMessage(messageField));
 
         // upgrading shelves in case of reconnection
         updateShelves();
     }
 
-    private static void sendMessage(TextField messageField, ComboBox<String> recipient) {
+    private static void sendMessage(TextField messageField) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("CHAT");
+        alert.setHeaderText("MESSAGE TO: ");
+
+        VBox dest = new VBox();
+        dest.setSpacing(10);
+
+        for (int i = 0; i < mockModel.getMockPlayers().size(); i++) {
+            Button playerButton;
+            if (!localPlayer.equals(mockModel.getMockPlayers().get(i).getPlayerID())) {
+                playerButton = new Button(mockModel.getMockPlayers().get(i).getPlayerID());
+                playerButton.getStyleClass().add("chat-button");
+                playerButton.setId(mockModel.getMockPlayers().get(i).getPlayerID());
+            }
+            else{
+                playerButton = new Button("ALL");
+                playerButton.getStyleClass().add("chat-button");
+                playerButton.setId("ALL");
+            }
+            playerButton.setOnMouseClicked(e->{
+                handleClickChat(messageField, playerButton.getId());
+                alert.close();
+            });
+            dest.getChildren().add(playerButton);
+        }
+
+        alert.getDialogPane().setContent(dest);
+
+        alert.showAndWait();
+    }
+
+    private static void handleClickChat(TextField messageField, String dest) {
         String message = messageField.getText();
-        String dest = recipient.getValue();
-        if (Objects.equals(dest, "all")) dest = null;
+
+        if (Objects.equals(dest, "ALL")) dest = null;
         try {
             network.writeChat(localPlayer, message, dest);
         } catch (RemoteException e) {
@@ -723,23 +746,6 @@ public class LivingRoom extends Scene {
                 rt.setStroke(Color.TRANSPARENT);
             }
         }
-    }
-
-    /**
-     * Print the error message on screen.
-     *
-     * @param message message to show.
-     */
-    public static void printError(String message) {
-        clearBoard();
-        selectedTilesMap.clear();
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.showAndWait();
     }
 
     /**

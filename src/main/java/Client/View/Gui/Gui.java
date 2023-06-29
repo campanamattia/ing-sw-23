@@ -160,21 +160,12 @@ public class Gui extends View {
      */
     @Override
     public void askPlayerInfo(List<Map<String, String>> lobbyInfo) throws RemoteException {
-        if (lobbyInfo != null) {
-            List<String> lobbies = new ArrayList<>(lobbyInfo.get(0).keySet());
-            List<String> games = new ArrayList<>(lobbyInfo.get(1).keySet());
-            guiApplication.setLobbies(lobbies);
-            guiApplication.setActiveGames(games);
-            guiApplication.askPlayerInfo();
-        } else {
-            guiApplication.setLobbies(null);
-            guiApplication.askPlayerInfo();
-        }
+        guiApplication.askPlayerInfo(lobbyInfo);
     }
 
     /**
      * Receiving from the server a light model, that contains all the information about the current game.
-     * @param mockModel Model of MVC pattern but simplified.
+     * @param mockModel Model of an MVC pattern but simplified.
      */
     @Override
     public void allGame(MockModel mockModel) throws RemoteException {

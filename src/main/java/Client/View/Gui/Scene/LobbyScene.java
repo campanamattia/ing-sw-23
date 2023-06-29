@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
 
@@ -14,7 +13,6 @@ import static Client.ClientApp.*;
 
 public class LobbyScene extends Scene {
     private final GuiApplication app;
-    private final ComboBox<Integer> lobbySize;
 
     /**
      * Class constructor.
@@ -28,57 +26,31 @@ public class LobbyScene extends Scene {
         Label label = new Label("Setup Lobby: ");
         label.getStyleClass().add("label-title");
 
-        lobbySize = new ComboBox<>();
-        lobbySize.setPrefWidth(300);
-        lobbySize.setPrefHeight(20);
-        lobbySize.setPromptText("Insert the number of players: ");
-        lobbySize.getItems().addAll(2,3,4);
+        VBox backGroundVBox = new VBox();
+        backGroundVBox.setSpacing(30);
+        backGroundVBox.setAlignment(Pos.CENTER);
+        backGroundVBox.getChildren().add(label);
+        for(int i=2;i<=4;i++){
+            Button button = new Button(String.valueOf(i));
+            button.setId(String.valueOf(i));
+            button.getStyleClass().add("button-lobby-size");
+            button.setOnAction(e-> {
+                try {
+                    handleJoinGameButton(Integer.parseInt(button.getId()));
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+            backGroundVBox.getChildren().add(button);
+        }
 
-        Button joinGameButton = new Button("Join Game!");
-        joinGameButton.setOnAction(e -> {
-            try {
-                handleJoinGameButton();
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-
-        VBox backgroundBox = new VBox();
-        backgroundBox.setSpacing(40);
-        backgroundBox.setAlignment(Pos.CENTER);
-        backgroundBox.getChildren().addAll(label, lobbySize,joinGameButton);
-
-        setRoot(backgroundBox);
+        setRoot(backGroundVBox);
 
     }
-    private void handleJoinGameButton() throws RemoteException {
-        Integer selectedLobbySize = lobbySize.getValue();
-        if(selectedLobbySize != null)
-            network.setLobbySize(localPlayer,lobbyID,selectedLobbySize);
-        else {
-            printError();
-            return;
-        }
+    private void handleJoinGameButton(int size) throws RemoteException {
+        network.setLobbySize(localPlayer,lobbyID,size);
+
         Scene livingRoom = new LivingRoom(app);
         app.switchScene(livingRoom);
     }
-    private void printError() {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("ERROR");
-        alert.setHeaderText(null);
-        alert.setContentText("Select the size of the lobby!".toUpperCase());
-
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().clear();
-
-        // Set OK button
-        alert.getButtonTypes().setAll(ButtonType.OK);
-
-        // Set the owner window
-        alert.initOwner(this.getWindow());
-
-        // Show the alert and wait for user response
-        alert.showAndWait();
-    }
-
 }

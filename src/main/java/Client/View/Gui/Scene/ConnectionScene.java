@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 
 import static Client.ClientApp.*;
 
@@ -71,7 +72,7 @@ public class ConnectionScene extends Scene {
         try {
             network = NetworkFactory.instanceNetwork("RMI");
         } catch (RemoteException e) {
-            printError("ERROR: " + e.getMessage());
+            app.printError("ERROR: " + e.getMessage());
             System.exit(-1);
         }
         //network.init(ipField.getText(), Integer.parseInt(portField.getText()));
@@ -86,7 +87,7 @@ public class ConnectionScene extends Scene {
         try {
             network = NetworkFactory.instanceNetwork("SOCKET");
         } catch (RemoteException e) {
-            printError("ERROR: " + e.getMessage());
+            app.printError("ERROR: " + e.getMessage());
             System.exit(-1);
         }
         //network.init(ipField.getText(), Integer.parseInt(portField.getText()));
@@ -95,12 +96,10 @@ public class ConnectionScene extends Scene {
     }
 
     /**
-     * Calls switchScene and set as current scene the LoginScene.
-     * @param activeLobbies active lobbies to join.
-     * @param activeGames active games to join.
+     * Calls switchScene and set as the current scene the LoginScene.
      */
-    public static void toLoginScene(List<String> activeLobbies, List<String> activeGames) {
-        Scene loginScene = new LoginScene(app, activeLobbies, activeGames);
+    public static void toLoginScene(List<Map<String, String>> lobbyInfo) {
+        Scene loginScene = new LoginScene(app, lobbyInfo);
         app.switchScene(loginScene);
     }
 
@@ -121,11 +120,11 @@ public class ConnectionScene extends Scene {
                         RMI_PORT = port;
                         return true;
                     } else {
-                        printError("ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + ".");
+                        app.printError("ERROR: MIN PORT = " + MIN_PORT + ", MAX PORT = " + MAX_PORT + ".");
                         return false;
                     }
                 } catch (NumberFormatException e) {
-                    printError("ERROR: Please insert only numbers or 'default'.");
+                    app.printError("ERROR: Please insert only numbers or 'default'.");
                     return false;
                 }
             }
@@ -146,7 +145,7 @@ public class ConnectionScene extends Scene {
             default -> {
                 String zeroTo255 = "([01]?\\d{1,2}|2[0-4]\\d|25[0-5])";
                 String IP_REGEX = "^(" + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + ")$";
-                if (!portField.getText().matches(IP_REGEX)) printError("Invalid IP address");
+                if (!portField.getText().matches(IP_REGEX)) app.printError("Invalid IP address");
                 else {
                     IP_SERVER = ipField.getText();
                     return true;
@@ -154,26 +153,6 @@ public class ConnectionScene extends Scene {
             }
         }
         return false;
-    }
-
-    @SuppressWarnings("DuplicatedCode")
-    private void printError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("ERROR");
-        alert.setHeaderText(null);
-        alert.setContentText(message.toUpperCase());
-
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().clear();
-
-        // Set OK button
-        alert.getButtonTypes().setAll(ButtonType.OK);
-
-        // Set the owner window
-        alert.initOwner(this.getWindow());
-
-        // Show the alert and wait for user response
-        alert.showAndWait();
     }
 
 }
