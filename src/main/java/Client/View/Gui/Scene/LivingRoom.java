@@ -19,7 +19,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -753,23 +752,6 @@ public class LivingRoom extends Scene {
                 rt.setStroke(Color.TRANSPARENT);
             }
         }
-    }
-
-    /**
-     * Print the error message on screen.
-     *
-     * @param message message to show.
-     */
-    public static void printError(String message) {
-        clearBoard();
-        selectedTilesMap.clear();
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.showAndWait();
     }
 
     /**
