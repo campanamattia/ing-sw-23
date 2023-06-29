@@ -16,10 +16,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 import static Client.ClientApp.localPlayer;
 
@@ -152,6 +149,7 @@ public class GuiApplication extends Application {
      * @param leaderboard rank of players.
      */
     public void endGame(List<Rank> leaderboard) {
+        System.out.println(leaderboard);
         Platform.runLater(() -> LivingRoom.endGame(leaderboard));
     }
 
@@ -186,7 +184,11 @@ public class GuiApplication extends Application {
      * @param mockCommonGoal most recent version of common goals.
      */
     public void updateCommonGoal(MockCommonGoal mockCommonGoal) {
-        Platform.runLater(() -> LivingRoom.updateCommonGoal(mockCommonGoal.getEnumeration(), mockCommonGoal.getScoringToken().peek()));
+        try {
+            Platform.runLater(() -> LivingRoom.updateCommonGoal(mockCommonGoal.getEnumeration(), mockCommonGoal.getScoringToken().peek()));
+        } catch (EmptyStackException e){
+            Platform.runLater(() -> LivingRoom.updateCommonGoal(mockCommonGoal.getEnumeration(), 0));
+        }
     }
 
     /**
