@@ -7,4 +7,11 @@ import java.io.Serializable;
  */
 public record Coordinates(int x, int y) implements Serializable {
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Coordinates other) {
+            return this.x == other.x && this.y == other.y;
+        }
+        return false;
+    }
 }

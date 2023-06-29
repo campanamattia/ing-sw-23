@@ -92,6 +92,9 @@ public class Board {
         if (coordinates.isEmpty() || coordinates.size() > 3)
             throw new NoValidMoveException("The number of tiles is not valid.");
 
+        if (hasDuplicates(coordinates))
+            throw new NoValidMoveException("The tiles are not unique.");
+
         for (Coordinates(int x, int y) : coordinates) {
             if (!areValidCoordinates(new Coordinates(x, y)))
                 throw new NoValidMoveException("The coordinates [" + x + "][" + y + "] are not valid.");
@@ -104,6 +107,10 @@ public class Board {
         }
 
         if (!areAligned(coordinates)) throw new NoValidMoveException("The tiles are not aligned.");
+    }
+
+    private boolean hasDuplicates(List<Coordinates> coordinates) {
+        return coordinates.stream().distinct().count() != coordinates.size();
     }
 
     private boolean areAligned(List<Coordinates> coordinates) {
