@@ -23,6 +23,8 @@ public class EndGameScene extends Scene {
         VBox rank = new VBox();
         Label playerID;
         for (Rank value : ranks) {
+            if(value == null)
+                break;
             playerID = new Label(value.getPlayerID());
             rank.getChildren().add(playerID);
         }
