@@ -7,9 +7,7 @@ import Utils.Tile;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * The VerticesGoal class represents a goal where players must have a tile on the vertice of the shelf.
@@ -25,12 +23,9 @@ public class VerticesGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public VerticesGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
+        super();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -54,8 +49,7 @@ public class VerticesGoal extends CommonGoal {
             if (topLeftTile.color() == topRightTile.color() &&
                     topLeftTile.color() == lowLeftTile.color() &&
                     topLeftTile.color() == lowRightTile.color()) {
-                accomplished.add(player.getPlayerID());
-                player.updateScore(scoringToken.pop());
+                accomplished(player);
             }
         }
         catch (NullPointerException ignored) {

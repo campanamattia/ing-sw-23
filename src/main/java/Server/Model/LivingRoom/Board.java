@@ -107,16 +107,17 @@ public class Board {
     }
 
     private boolean areAligned(List<Coordinates> coordinates) {
-        if (coordinates.size() == 1) return true;
+        List<Coordinates> list = new ArrayList<>(coordinates);
+        if (list.size() == 1) return true;
 
-        boolean isHorizontal = coordinates.get(0).x() == coordinates.get(1).x();
+        boolean isHorizontal = list.get(0).x() == list.get(1).x();
 
-        if (isHorizontal) coordinates.sort(Comparator.comparingInt(Coordinates::y));
-        else coordinates.sort(Comparator.comparingInt(Coordinates::x));
+        if (isHorizontal) list.sort(Comparator.comparingInt(Coordinates::y));
+        else list.sort(Comparator.comparingInt(Coordinates::x));
 
-        return IntStream.range(1, coordinates.size()).allMatch(i -> {
-            Coordinates prev = coordinates.get(i - 1);
-            Coordinates current = coordinates.get(i);
+        return IntStream.range(1, list.size()).allMatch(i -> {
+            Coordinates prev = list.get(i - 1);
+            Coordinates current = list.get(i);
             return isHorizontal ? prev.x() == prev.x() && abs(prev.y() - current.y()) == 1 : prev.y() == current.y() && abs(prev.x() - current.x()) == 1;
         });
     }

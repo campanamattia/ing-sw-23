@@ -32,14 +32,11 @@ public class SquareGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public SquareGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
+        super();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
         this.dimSquare = jsonObject.get("dimSquare").getAsInt();
         this.numGroup = jsonObject.get("numGroup").getAsInt();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -72,8 +69,7 @@ public class SquareGoal extends CommonGoal {
             }
         }
         if (countGroup >= numGroup) {
-            accomplished.add(player.getPlayerID());
-            player.updateScore(scoringToken.pop());
+            accomplished(player);
         }
     }
 

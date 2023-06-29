@@ -37,15 +37,12 @@ public class RowColumnGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public RowColumnGoal (List<Integer> tokenList, @NotNull JsonObject jsonObject) {
+        super();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
         this.numColumn = jsonObject.get("numColumn").getAsInt();
         this.numRow = jsonObject.get("numRow").getAsInt();
         this.maxDifferent = jsonObject.get("maxDifferent").getAsInt();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -86,8 +83,7 @@ public class RowColumnGoal extends CommonGoal {
             }
 
             if (countColumn >= numColumn) {
-                accomplished.add(player.getPlayerID());
-                player.updateScore(scoringToken.pop());
+                accomplished(player);
                 return;
             }
         }
@@ -114,8 +110,7 @@ public class RowColumnGoal extends CommonGoal {
             }
 
             if (countRow >= numRow) {
-                accomplished.add(player.getPlayerID());
-                player.updateScore(scoringToken.pop());
+                accomplished(player);
             }
         }
     }

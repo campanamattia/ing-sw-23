@@ -3,6 +3,7 @@ package Server.Model.Player;
 import Enumeration.Color;
 import Exception.Player.ColumnNotValidException;
 import Utils.Tile;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,14 +125,7 @@ public class Shelf {
         return myShelf[0].length;
     }
 
-    /**
-     * Places a tile at the specified position on the shelf.
-     * For testing purposes only.
-     *
-     * @param tile   The tile to place.
-     * @param row    The row index of the position.
-     * @param column The column index of the position.
-     */
+    @TestOnly
     public void placeTile(Tile tile, int row, int column) {
         myShelf[row][column] = tile;
     }

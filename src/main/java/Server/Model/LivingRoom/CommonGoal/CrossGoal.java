@@ -28,13 +28,10 @@ public class CrossGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public CrossGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
+        super();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
         this.numGroup = jsonObject.get("numGroup").getAsInt();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -67,8 +64,7 @@ public class CrossGoal extends CommonGoal {
             }
         }
         if (countGroup >= numGroup) {
-            accomplished.add(player.getPlayerID());
-            player.updateScore(scoringToken.pop());
+            accomplished(player);
         }
     }
 }

@@ -31,13 +31,10 @@ public class DiagonalGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public DiagonalGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
+        super();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
         this.numDiagonal = jsonObject.get("numDiagonal").getAsInt();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -96,8 +93,7 @@ public class DiagonalGoal extends CommonGoal {
         }
 
         if (countGroup >= numDiagonal) {
-            accomplished.add(player.getPlayerID());
-            player.updateScore(scoringToken.pop());
+            accomplished(player);
         }
     }
 }

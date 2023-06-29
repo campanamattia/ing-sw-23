@@ -33,7 +33,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 
@@ -52,7 +51,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
     /**
      * The GameModel class represents the model for a game. It contains the gameModel board, players, and common goals.
      */
-    private GameModel gameModel;
+    private final GameModel gameModel;
     /**
      * The players HashMap contains the players of the gameModel.
      */
@@ -68,7 +67,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
     /**
      * The currentPlayer attribute represents the current player of the gameModel.
      */
-    private CurrentPlayer currentPlayer;
+    private final CurrentPlayer currentPlayer;
     /**
      * The wait attribute represents the timer used to wait for players to rejoin the game
      */
@@ -102,9 +101,11 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         try {
             this.gameModel.checkRefill();
         } catch (CantRefillBoardException e) {
-            lobby.endGame(this);
-            sendLeaderBoard(EndedMatch.doRank(this.gameModel.getPlayers()));
-            this.turnPhase = TurnPhase.ENDED;
+            executorService.execute(() -> {
+                lobby.endGame(this);
+                sendLeaderBoard(EndedMatch.doRank(this.gameModel.getPlayers()));
+                this.turnPhase = TurnPhase.ENDED;
+            });
         }
 
         if (activePlayers().size() == 1) {
@@ -136,10 +137,12 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         try {
             nextPlayer();
         } catch (EndGameException e) {
-            this.phaseController = null;
-            sendLeaderBoard(EndedMatch.doRank(this.gameModel.getPlayers()));
-            lobby.endGame(this);
-            this.turnPhase = TurnPhase.ENDED;
+            executorService.execute(() -> {
+                this.phaseController = null;
+                sendLeaderBoard(EndedMatch.doRank(this.gameModel.getPlayers()));
+                lobby.endGame(this);
+                this.turnPhase = TurnPhase.ENDED;
+            });
             return;
         }
         for (ClientHandler client : activePlayers()) {
@@ -239,8 +242,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             return;
         }
 
-        if (this.turnPhase == TurnPhase.ENDED)
-            return;
+        if (this.turnPhase == TurnPhase.ENDED) return;
         if (isWaiting) {
             sendException(new RuntimeException("Waiting for other players to reconnect"), this.players.get(playerID));
             return;
@@ -300,7 +302,7 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
             return;
         }
 
-        for (ClientHandler clientHandler : activePlayers()){
+        for (ClientHandler clientHandler : activePlayers()) {
             executorService.execute(() -> {
                 try {
                     clientHandler.remoteView().reloadPlayer(playerID);
@@ -330,7 +332,6 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
      * Logs out a player from the game and updates their status.
      *
      * @param playerID The ID of the player to be logged out.
-     * @throws RemoteException If a remote communication error occurs.
      */
     public void logOut(String playerID) {
         // Set the player's status to logged out
@@ -390,11 +391,9 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
 
 
     private TurnPhase ableTo(String playerID) throws NotYourTurnException {
-        if (this.turnPhase == TurnPhase.ENDED)
-            return null;
+        if (this.turnPhase == TurnPhase.ENDED) return null;
 
-        if (playerID.equals(this.currentPlayer.getCurrentPlayer().getPlayerID()))
-            return this.turnPhase;
+        if (playerID.equals(this.currentPlayer.getCurrentPlayer().getPlayerID())) return this.turnPhase;
         throw new NotYourTurnException(this.gameModel.getCurrentPlayer().getPlayerID());
     }
 
@@ -425,18 +424,6 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         return this.players.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    private void sendException(Exception e){
-        for (ClientHandler client : activePlayers()) {
-            executorService.execute(() -> {
-                try {
-                    client.remoteView().outcomeException(e);
-                } catch (RemoteException ex) {
-                    logger.severe(ex.getMessage());
-                }
-            });
-        }
-    }
-
     private void sendException(Exception e, ClientHandler client) {
         executorService.execute(() -> {
             try {
@@ -447,18 +434,18 @@ public class GameController extends UnicastRemoteObject implements GameCommand, 
         });
     }
 
-    private void sendMessage(GameWarning warning){
+    private void sendMessage(GameWarning warning) {
         for (ClientHandler client : activePlayers())
-            executorService.execute(()->{
-                try{
+            executorService.execute(() -> {
+                try {
                     client.remoteView().outcomeMessage(warning);
-                } catch (RemoteException e){
+                } catch (RemoteException e) {
                     logger.severe(e.getMessage());
                 }
             });
     }
 
-    private void sendLeaderBoard(List<Rank> leaderBoard){
+    private void sendLeaderBoard(List<Rank> leaderBoard) {
         for (ClientHandler client : activePlayers()) {
             List<Rank> leaderBoardCopy = new ArrayList<>(leaderBoard);
             executorService.execute(() -> {

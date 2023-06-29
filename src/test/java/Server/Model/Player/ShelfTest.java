@@ -3,43 +3,54 @@ package Server.Model.Player;
 import Enumeration.Color;
 import Exception.Player.ColumnNotValidException;
 import Utils.Tile;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 @SuppressWarnings("ALL")
 class ShelfTest {
+    static Shelf TestShelf = new Shelf();
+
+
+    @BeforeEach
+    void setUp() {
+        TestShelf = new Shelf();
+    }
 
     @Test
-    void insert() throws ColumnNotValidException {
+    void insert() {
 
-        Shelf TestShelf = new Shelf();
-        List<Tile> InsTiles = new ArrayList<>();
-
-
-        InsTiles.add(new Tile(Color.PINK));
-        InsTiles.add(new Tile(Color.CYAN));
-        InsTiles.add(new Tile(Color.WHITE));
+        assertDoesNotThrow(() -> {
+            List<Tile> InsTiles = new ArrayList<>();
 
 
-        int tmp = InsTiles.size();
+            InsTiles.add(new Tile(Color.PINK));
+            InsTiles.add(new Tile(Color.CYAN));
+            InsTiles.add(new Tile(Color.WHITE));
 
-        //test if tiles are correctly insert in the arraylist
-        System.out.println(tmp);
 
-        TestShelf.insert(0, InsTiles);
+            int tmp = InsTiles.size();
 
-        //test for the correct execution of the method insert
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 5; j++) {
-                if (TestShelf.getTile(i, j) != null) {
-                    System.out.println(TestShelf.getTile(i, j).color() + " ");
+            //test if tiles are correctly insert in the arraylist
+            System.out.println(tmp);
+
+            TestShelf.insert(0, InsTiles);
+
+            //test for the correct execution of the method insert
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < 5; j++) {
+                    if (TestShelf.getTile(i, j) != null) {
+                        System.out.println(TestShelf.getTile(i, j).color() + " ");
+                    }
                 }
+
             }
-
-        }
-
+        });
     }
 
     @Test
@@ -126,7 +137,40 @@ class ShelfTest {
 
         //full should give true
         System.out.println(i);
+    }
 
+    @Test
+    void maxTiles() {
+        for (int k = 0; k < TestShelf.numberRows(); k++) {
+            clear();
+            for (int i = TestShelf.numberRows() - 1; i >= k; i--) {
+                for (int j = TestShelf.numberColumns() - 1; j >= 0; j--) {
+                    TestShelf.placeTile(new Tile(Color.PINK), i, j);
+                }
+            }
+            assertEquals(k, TestShelf.maxTiles());
+        }
 
+        for (int k = 0; k < TestShelf.numberColumns(); k++) {
+            clear();
+            for (int i = TestShelf.numberRows() - 1; i >= 0; i--) {
+                for (int j = TestShelf.numberColumns() - 1; j >= k; j--) {
+                    TestShelf.placeTile(new Tile(Color.PINK), i, j);
+                }
+            }
+            assertEquals((k == 0) ? 0 : 6, TestShelf.maxTiles());
+        }
+
+        clear();
+        assertEquals(6, TestShelf.maxTiles());
+        
+    }
+
+    private void clear() {
+        for (int i = TestShelf.numberRows() - 1; i >= 0; i--) {
+            for (int j = TestShelf.numberColumns() - 1; j >= 0; j--) {
+                TestShelf.placeTile(null, i, j);
+            }
+        }
     }
 }

@@ -6,9 +6,7 @@ import Server.Model.Player.Shelf;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * The SameNGoal class represents a goal where a player must have a certain number of tiles
@@ -30,13 +28,10 @@ public class SameNGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public SameNGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
+        super();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
         this.numEquals = jsonObject.get("numEquals").getAsInt();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -66,48 +61,42 @@ public class SameNGoal extends CommonGoal {
                     case PINK -> {
                         countPink++;
                         if (countPink == numEquals) {
-                            accomplished.add(player.getPlayerID());
-                            player.updateScore(scoringToken.pop());
+                            accomplished(player);
                             return;
                         }
                     }
                     case CYAN -> {
                         countCyan++;
                         if (countCyan == numEquals) {
-                            accomplished.add(player.getPlayerID());
-                            player.updateScore(scoringToken.pop());
+                            accomplished(player);
                             return;
                         }
                     }
                     case BLUE -> {
                         countBlue++;
                         if (countBlue == numEquals) {
-                            accomplished.add(player.getPlayerID());
-                            player.updateScore(scoringToken.pop());
+                            accomplished(player);
                             return;
                         }
                     }
                     case GREEN -> {
                         countGreen++;
                         if (countGreen == numEquals) {
-                            accomplished.add(player.getPlayerID());
-                            player.updateScore(scoringToken.pop());
+                            accomplished(player);
                             return;
                         }
                     }
                     case WHITE -> {
                         countWhite++;
                         if (countWhite == numEquals) {
-                            accomplished.add(player.getPlayerID());
-                            player.updateScore(scoringToken.pop());
+                            accomplished(player);
                             return;
                         }
                     }
                     case YELLOW -> {
                         countYellow++;
                         if (countYellow == numEquals) {
-                            accomplished.add(player.getPlayerID());
-                            player.updateScore(scoringToken.pop());
+                            accomplished(player);
                             return;
                         }
                     }

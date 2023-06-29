@@ -32,15 +32,11 @@ public class GroupAdjacentGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public GroupAdjacentGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
-
+        super();
         this.description = jsonObject.get("description").getAsString();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.numGroup = jsonObject.get("numGroup").getAsInt();
         this.numAdjacent = jsonObject.get("numAdjacent").getAsInt();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -73,8 +69,7 @@ public class GroupAdjacentGoal extends CommonGoal {
                         groups ++;
                     }
                     if (groups >= numGroup) {
-                        accomplished.add(player.getPlayerID());
-                        player.updateScore(scoringToken.pop());
+                        accomplished(player);
                         return;
                     }
                 }
