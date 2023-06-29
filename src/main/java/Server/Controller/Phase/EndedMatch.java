@@ -22,17 +22,23 @@ public class EndedMatch {
         for (Player player : players)
             player.endGame();
 
-        List<Rank> leaderboard = new ArrayList<>();
+        List<Rank> list = new ArrayList<>();
+        for (Player player : players)
+            list.add(new Rank(player.getPlayerID(), player.getPersonalScore(), player.getPatternScore(), player.getSharedScore(), player.getTotalScore()));
 
-        for (Player player : players) {
-            if (leaderboard.isEmpty()) {
-                Rank rank = new Rank(player.getPlayerID(), player.getTotalScore(), player.getPersonalScore(), player.getSharedScore(), player.getPatternScore());
-                leaderboard.add(rank);
+        List<Rank> leaderboard = new ArrayList<>();
+        for (Rank rank : list){
+            if (leaderboard.isEmpty()){
+                leaderboard.add(rank.clone());
                 continue;
             }
-            for (Rank rank : leaderboard) {
-                if (player.getTotalScore() > rank.getTotalScore()) {
-                    leaderboard.add(leaderboard.indexOf(rank), new Rank(player.getPlayerID(), player.getTotalScore(), player.getPersonalScore(), player.getSharedScore(), player.getPatternScore()));
+            for (int i = 0; i < leaderboard.size(); i++){
+                if (rank.getTotalScore() > leaderboard.get(i).getTotalScore()){
+                    leaderboard.add(i, rank.clone());
+                    break;
+                }
+                if (i == leaderboard.size() - 1){
+                    leaderboard.add(rank.clone());
                     break;
                 }
             }
