@@ -14,7 +14,6 @@ import Utils.Rank;
 import Utils.Tile;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -221,14 +220,14 @@ public class Gui extends View {
         guiApplication.outcomeMessage(warning.getMs().toUpperCase());
 
         switch(warning){
-            case WON -> {
+            case WON -> executorService.execute(() -> {
                 try {
-                    Thread.sleep(30000);
+                    Thread.sleep(60000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
                 System.exit(0);
-            }
+            });
             case LAST_ROUND -> guiApplication.lastRound();
         }
     }

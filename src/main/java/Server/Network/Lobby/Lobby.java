@@ -9,7 +9,6 @@ import Server.ServerApp;
 import Utils.MockObjects.MockFactory;
 import Utils.MockObjects.MockModel;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
@@ -105,10 +104,8 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
      */
     public synchronized void login(String playerID, String lobbyID, RemoteView client, RemoteClient network) throws RemoteException {
         GameController game = findGame(lobbyID);
-        if (game != null)
-            rejoinGame(playerID, lobbyID, client, network, game);
-        else
-            logInLobby(playerID, lobbyID, client, network);
+        if (game != null) rejoinGame(playerID, lobbyID, client, network, game);
+        else logInLobby(playerID, lobbyID, client, network);
     }
 
     public GameController findGame(String gameID) {
@@ -116,12 +113,12 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     }
 
     private void rejoinGame(String playerID, String lobbyID, RemoteView client, RemoteClient network, GameController gameController) {
-        if (!gameController.getPlayers().containsKey(playerID)){
+        if (!gameController.getPlayers().containsKey(playerID)) {
             sendException(client, "Player is not in the game");
             askPlayerInfo(client);
             return;
         }
-        if (gameController.getPlayers().get(playerID) != null){
+        if (gameController.getPlayers().get(playerID) != null) {
             sendException(client, "Player is already playing");
             askPlayerInfo(client);
             return;
@@ -140,11 +137,11 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     }
 
     private void logInLobby(String playerID, String lobbyID, RemoteView client, RemoteClient network) throws RemoteException {
-        if (!this.lobby.containsKey(lobbyID)){
+        if (!this.lobby.containsKey(lobbyID)) {
             createLobby(lobbyID, playerID, client, network);
             return;
         }
-        if (this.lobby.get(lobbyID).containsKey(playerID)){
+        if (this.lobby.get(lobbyID).containsKey(playerID)) {
             sendException(client, "PlayerID already taken");
             askPlayerInfo(client);
             return;
@@ -234,7 +231,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         return lobbySize >= 2 && lobbySize <= 4;
     }
 
-    private void askLobbySize(RemoteView client){
+    private void askLobbySize(RemoteView client) {
         executorService.submit(() -> {
             try {
                 client.askLobbySize();
@@ -316,13 +313,11 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
         sendGame(game);
         this.lobby.remove(lobbyID);
         this.lobbySize.remove(lobbyID);
-        logger.info("Game started for lobby " + lobbyID + " with [" + game.activePlayers().stream()
-                .map(ClientHandler::playerID)
-                .collect(Collectors.joining(", ")) + "]");
+        logger.info("Game started for lobby " + lobbyID + " with [" + game.activePlayers().stream().map(ClientHandler::playerID).collect(Collectors.joining(", ")) + "]");
     }
 
-    private void sendGame(GameController game){
-        executorService.execute(()->{
+    private void sendGame(GameController game) {
+        executorService.execute(() -> {
             MockModel model = MockFactory.getMock(game.getGameModel());
             for (ClientHandler client : game.activePlayers()) {
                 try {
@@ -345,7 +340,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             return;
         }
         StringBuilder sb = new StringBuilder();
-        if (!lobby.isEmpty()){
+        if (!lobby.isEmpty()) {
             sb.append("Active lobbies:\n");
             for (String lobbyID : lobby.keySet()) {
                 sb.append("\t-\t").append(lobbyID).append(" with ").append(lobby.get(lobbyID).size()).append(" players\n\t\t[");
@@ -353,7 +348,7 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
             }
             logger.info(sb.toString());
         }
-        if (!games.isEmpty()){
+        if (!games.isEmpty()) {
             sb = new StringBuilder();
             sb.append("Active games:\n");
             for (GameController game : games) {
@@ -366,32 +361,35 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
 
     /**
      * It removes the ended game from the list of games
+     *
      * @param game the game that has ended
      */
     @SuppressWarnings("BlockingMethodInNonBlockingContext")
     public void endGame(GameController game) {
         logger.info("Game " + game.getGameID() + " ended");
-        try {
-            Thread.sleep(30010);
-        } catch (InterruptedException e) {
-            logger.severe(e.getMessage());
-            Thread.currentThread().interrupt();
-        }
-        executorService.execute(() ->{
-            for (ClientHandler handler : game.activePlayers()) {
-                try {
-                    logOut(handler.playerID(), game.getGameID());
-                } catch (RemoteException e) {
-                    logger.severe(e.getMessage());
-                }
-            }
-        });
         this.games.remove(game);
+        executorService.execute(() -> {
+            try {
+                Thread.sleep(70000);
+            } catch (InterruptedException e) {
+                logger.severe(e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+            executorService.execute(() -> {
+                for (ClientHandler handler : game.activePlayers()) {
+                    try {
+                        logOut(handler.playerID(), game.getGameID());
+                    } catch (RemoteException e) {
+                        logger.severe(e.getMessage());
+                    }
+                }
+            });
+        });
     }
 
     private void sendException(RemoteView client, String message) {
-        executorService.execute(()-> {
-            try{
+        executorService.execute(() -> {
+            try {
                 client.outcomeException(new RuntimeException(message));
             } catch (RemoteException e) {
                 logger.log(Level.SEVERE, e.getMessage());
@@ -400,8 +398,8 @@ public class Lobby extends UnicastRemoteObject implements LobbyInterface {
     }
 
     private void askPlayerInfo(RemoteView client) {
-        executorService.execute(()-> {
-            try{
+        executorService.execute(() -> {
+            try {
                 client.askPlayerInfo(getLobbyInfo());
             } catch (RemoteException e) {
                 logger.log(Level.SEVERE, e.getMessage());
