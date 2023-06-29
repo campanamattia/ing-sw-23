@@ -35,7 +35,7 @@ public class ClientRMI extends Network {
             try {
                 view.outcomeException(e);
             } catch (RemoteException ex) {
-                System.exit(404);
+                quit(404);
             }
         }
     }
@@ -46,7 +46,7 @@ public class ClientRMI extends Network {
             try {
                 this.gc.selectTiles(playerID, coordinates);
             } catch (RemoteException e) {
-                System.exit(404);
+                quit(404);
             }
         });
     }
@@ -57,7 +57,7 @@ public class ClientRMI extends Network {
             try {
                 this.gc.writeChat(from, message, to);
             } catch (RemoteException e) {
-                System.exit(404);
+                quit(404);
             }
         });
     }
@@ -69,7 +69,7 @@ public class ClientRMI extends Network {
             try {
                 this.gc.addScout(localPlayer, this);
             } catch (RemoteException e) {
-                System.exit(404);
+                quit(404);
             }
         });
     }
@@ -80,7 +80,7 @@ public class ClientRMI extends Network {
             try {
                 this.gc.insertTiles(playerID, sorted, column);
             } catch (RemoteException e) {
-                System.exit(404);
+                quit(404);
             }
         });
     }
@@ -92,7 +92,7 @@ public class ClientRMI extends Network {
             try {
                 this.lobby.getLobbyInfo(remote);
             } catch (RemoteException e) {
-                System.exit(404);
+                quit(404);
             }
         });
     }
@@ -103,7 +103,7 @@ public class ClientRMI extends Network {
             try {
                 this.lobby.setLobbySize(playerID, lobbyID, lobbySize);
             } catch (RemoteException e) {
-                System.exit(404);
+                quit(404);
             }
         });
     }
@@ -114,7 +114,7 @@ public class ClientRMI extends Network {
             try {
                 this.lobby.login(playerID, lobbyID, remoteView, client);
             } catch (RemoteException e) {
-                System.exit(404);
+                quit(404);
             }
         });
     }
@@ -125,7 +125,7 @@ public class ClientRMI extends Network {
             try {
                 this.lobby.ping(playerID, lobbyID);
             } catch (RemoteException e) {
-                System.exit(404);
+                quit(404);
             }
         });
     }
@@ -136,7 +136,7 @@ public class ClientRMI extends Network {
             try {
                 this.lobby.logOut(playerID, lobbyID);
             } catch (RemoteException e) {
-                System.exit(404);
+                quit(404);
             }
         });
     }
@@ -148,12 +148,11 @@ public class ClientRMI extends Network {
             try {
                 this.gc.addScout(localPlayer, this);
             } catch (RemoteException e) {
-                System.exit(404);
+                quit(404);
             }
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void update(Object objects) throws RemoteException {
         if (scouts.containsKey(objects.getClass())) {

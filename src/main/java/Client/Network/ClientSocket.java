@@ -49,7 +49,7 @@ public class ClientSocket extends Network {
                 executorService.execute(()->deserialize(ob));
             }
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Connection failed");
+            quit(404);
         }
     }
 
@@ -115,7 +115,7 @@ public class ClientSocket extends Network {
     public synchronized void logOut(String playerID, String lobbyID) throws RemoteException {
         ClientMessage clientMessage = new LogOutMessage(playerID, lobbyID);
         sendMessage(clientMessage);
-        System.exit(-1);
+        quit(404);
     }
 
     private synchronized void sendMessage(ClientMessage clientMessage) {
@@ -125,7 +125,7 @@ public class ClientSocket extends Network {
             this.out.reset();
         } catch (IOException e) {
             clientConnected.set(false);
-            System.exit(404);
+            quit(404);
         }
     }
 }

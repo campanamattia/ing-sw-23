@@ -40,6 +40,36 @@ public class ClientApp {
         }
     }
 
+    public static void quit(int i){
+        switch (i){
+            case 404 -> executorService.execute(() -> {
+                try {
+                    System.out.println("Server is down, please try again later");
+                    network.logOut(localPlayer, lobbyID);
+                } catch (RemoteException ignored) {
+                }
+                System.exit(404);
+            });
+            case 0 -> executorService.execute(() -> {
+                try {
+                    System.out.println("Bye bye");
+                    Thread.sleep(120000);
+                    network.logOut(localPlayer, lobbyID);
+                } catch (RemoteException | InterruptedException ignored) {
+                }
+                System.exit(0);
+            });
+            default -> executorService.execute(() -> {
+                try {
+                    System.out.println("Something went wrong, please try again later");
+                    network.logOut(localPlayer, lobbyID);
+                } catch (RemoteException ignored) {
+                }
+                System.exit(0);
+            });
+        }
+    }
+
     private static void setDefault() {
         IP_SERVER = NetworkSettings.ipHostFromJSON();
         SOCKET_PORT = NetworkSettings.socketFromJSON();

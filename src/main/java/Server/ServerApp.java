@@ -11,7 +11,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 import java.io.IOException;
-import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -84,8 +83,6 @@ public class ServerApp {
         Thread socketThread = new Thread(ServerApp::socketServer);
         socketThread.start();
 
-        logger.info("SERVER STARTED ON:\n\t" + ipHost + ":" + socketPort + " (socket)\n\t" + ipHost + ":" + rmiPort + " (RMI)");
-
         Scanner scanner = new Scanner(System.in);
         executorService = Executors.newCachedThreadPool();
         executorService.execute(() -> {
@@ -132,7 +129,7 @@ public class ServerApp {
             System.exit(-3);
         }
         logger.setLevel(Level.ALL);
-        logger.info("MY SHELFIE SERVER LOG " + LocalDateTime.now().format(dateFormatter) + "\n");
+        logger.info("MY SHELFIE SERVER LOG " + LocalDateTime.now().format(dateFormatter));
     }
 
     private static void initLobby() {

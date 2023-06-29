@@ -371,6 +371,7 @@ public class Cli extends View {
                 printMessage(rank.toString());
             } else System.out.println(rank);
         }
+        quit(0);
     }
 
     @Override

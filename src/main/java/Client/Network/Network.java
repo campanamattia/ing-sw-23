@@ -17,8 +17,8 @@ import Client.Network.Scouts.PlayerScout;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import static Client.ClientApp.executorService;
-import static Client.ClientApp.view;
+
+import static Client.ClientApp.*;
 
 @SuppressWarnings("rawtypes")
 public abstract class Network extends UnicastRemoteObject implements GameCommand, LobbyInterface, RemoteClient, Scout {
@@ -45,21 +45,15 @@ public abstract class Network extends UnicastRemoteObject implements GameCommand
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-        if(timer == null) timer = new Timer();
+        if (timer == null) timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                try {
-                    logOut(playerID, lobbyID);
-                    System.exit(-1);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
+                quit(404);
             }
         }, 10000); //15-seconds timeout
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void update(Object objects) throws RemoteException {
         if (scouts.containsKey(objects.getClass())) {
