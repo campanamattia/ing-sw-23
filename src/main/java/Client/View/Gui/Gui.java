@@ -187,7 +187,9 @@ public class Gui extends View {
      */
     @Override
     public void endGame(List<Rank> leaderboard) throws RemoteException {
+        System.out.println(leaderboard);
         guiApplication.endGame(leaderboard);
+        guiApplication.updateRanks(leaderboard);
     }
 
     /**

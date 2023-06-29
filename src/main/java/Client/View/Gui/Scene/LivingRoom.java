@@ -6,6 +6,7 @@ import Utils.*;
 import Utils.Cell;
 import Utils.MockObjects.MockCommonGoal;
 import Utils.MockObjects.MockModel;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -902,13 +903,12 @@ public class LivingRoom extends Scene {
      *
      * @param leaderboard rank of the player.
      */
-    public static void endGame(List<Rank> leaderboard) {
+    public static void toEndGame(List<Rank> leaderboard) {
         if (leaderboard == null){
             System.out.println("leaderboard null");
             return;
         }
-        EndGameScene endGameScene = new EndGameScene();
-        EndGameScene.setRanks(leaderboard);
+        EndGameScene endGameScene = new EndGameScene(app);
         app.switchScene(endGameScene);
     }
 

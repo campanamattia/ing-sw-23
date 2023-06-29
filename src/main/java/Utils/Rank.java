@@ -50,6 +50,6 @@ public class Rank implements Serializable, Cloneable {
 
     @Override
     public String toString(){
-        return "PlayerID: " + playerID  + "\n\tPersonalScore: " + personalScore + "\n\tPatternScore: " + patternScore + "\n\tSharedScore: " + sharedScore + "\n\tTotalScore: " + totalScore;
+        return "PlayerID: " + playerID  + "\n\tPersonalScore: " + personalScore + "\n\tPatternScore: " + patternScore + "\n\tSharedScore: " + sharedScore + "\n\tTOTAL SCORE: " + totalScore;
     }
 }
