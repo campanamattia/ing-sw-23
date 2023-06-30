@@ -51,7 +51,7 @@ public class EndGameScene extends Scene {
     public static void updateRanks(List<Rank> ranks) {
         Font customFont = Font.loadFont(String.valueOf(GuiApplication.class.getResource("/font/Poppins-Regular.ttf")),30);
         Label winner = new Label("THE WINNER IS: " + ranks.get(0).getPlayerID().toUpperCase());
-        winner.setFont(customFont);
+        winner.getStyleClass().add("label-title");
         winner.setStyle("-fx-text-fill: white;");
         mainVBox.getChildren().add(winner);
         System.out.println(ranks);

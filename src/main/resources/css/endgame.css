@@ -1,3 +1,13 @@
+@font-face {
+    font-family: 'CustomFont';
+    src: url("../font/Poppins-Regular.ttf");
+}
+
+* {
+    -fx-font-family: 'CustomFont';
+    -fx-text-fill: white;
+}
+
 .root{
     -fx-background-image: url("../img/Publisher_material/endgame.jpg");
     -fx-background-size: cover;
@@ -11,4 +21,9 @@
     -fx-pref-height: 500px;
     -fx-spacing: 20;
     -fx-alignment: center;
+}
+
+.label-title {
+    -fx-font-size: 50px;
+    -fx-font-weight: bold;
 }
