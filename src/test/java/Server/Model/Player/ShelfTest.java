@@ -3,6 +3,7 @@ package Server.Model.Player;
 import Enumeration.Color;
 import Exception.Player.ColumnNotValidException;
 import Utils.Tile;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -224,6 +225,30 @@ class ShelfTest {
         TestShelf.placeTile(new Tile(Color.GREEN), 4, 3);
         int result = TestShelf.checkEndGame();
         assertEquals(10, result);
+    }
+
+    @Test
+    public void testFull() throws ColumnNotValidException {
+        // Verifying the shelf is initially not full
+        Assertions.assertFalse(TestShelf.full());
+
+        // Filling up the shelf
+        for (int i = 0; i < TestShelf.numberRows(); i++) {
+            for (int j = 0; j < TestShelf.numberColumns(); j++) {
+                TestShelf.placeTile(new Tile(Color.PINK), i, j);
+            }
+        }
+
+        // Verifying the shelf is full after inserting 6 tiles into the first column
+        Assertions.assertTrue(TestShelf.full());
+    }
+
+    @Test
+    public void testGetMyShelf() {
+        Tile[][] myShelf = TestShelf.getMyShelf();
+        Assertions.assertNotNull(myShelf);
+        Assertions.assertEquals(6, myShelf.length);
+        Assertions.assertEquals(5, myShelf[0].length);
     }
 
     private void clear() {

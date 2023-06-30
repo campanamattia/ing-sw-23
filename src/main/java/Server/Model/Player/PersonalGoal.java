@@ -63,17 +63,6 @@ public class PersonalGoal {
     }
 
     /**
-     * Gets the tile at the specified coordinates in the personal goal.
-     *
-     * @param i the row index
-     * @param j the column index
-     * @return the tile at the specified coordinates
-     */
-    public Tile getPgoalTile(int i, int j){
-        return personalGoal[i][j];
-    }
-
-    /**
      * Returns the 2D array representing the personal goal.
      *
      * @return the personal goal as a 2D array of tiles
