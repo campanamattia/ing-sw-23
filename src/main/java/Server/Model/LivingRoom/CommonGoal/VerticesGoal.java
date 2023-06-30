@@ -7,9 +7,7 @@ import Utils.Tile;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * The VerticesGoal class represents a goal where players must have a tile on the vertice of the shelf.
@@ -25,12 +23,9 @@ public class VerticesGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public VerticesGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
+        super();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -42,7 +37,7 @@ public class VerticesGoal extends CommonGoal {
      */
     @Override
     public void check(Player player) throws NullPlayerException {
-        if (player == null) {
+        if (player == null || this.accomplished.contains(player.getPlayerID())) {
             throw new NullPlayerException();
         }
         Shelf shelf = player.getMyShelf();
@@ -51,11 +46,10 @@ public class VerticesGoal extends CommonGoal {
         Tile lowLeftTile = shelf.getTile(5,0);
         Tile lowRightTile = shelf.getTile(5,4);
         try {
-            if (topLeftTile.getTileColor() == topRightTile.getTileColor() &&
-                    topLeftTile.getTileColor() == lowLeftTile.getTileColor() &&
-                    topLeftTile.getTileColor() == lowRightTile.getTileColor()) {
-                accomplished.add(player.getPlayerID());
-                player.updateScore(scoringToken.pop());
+            if (topLeftTile.color() == topRightTile.color() &&
+                    topLeftTile.color() == lowLeftTile.color() &&
+                    topLeftTile.color() == lowRightTile.color()) {
+                accomplished(player);
             }
         }
         catch (NullPointerException ignored) {

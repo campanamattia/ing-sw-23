@@ -22,7 +22,7 @@ public abstract class CommonGoal {
     protected Stack<Integer> scoringToken;
 
     /**
-     * The enumeration of  common goal.
+     * The enumeration of common goal.
      */
     protected int enumeration;
 
@@ -31,13 +31,18 @@ public abstract class CommonGoal {
      */
     protected String description;
 
+    public CommonGoal(){
+        this.accomplished = new ArrayList<>();
+        this.scoringToken = new Stack<>();
+    }
+
 
     /**
      * Getter for accomplished.
      * @return the list of accomplishments associated with this common goal.
      */
     public List<String> getAccomplished() {
-        return accomplished;
+        return this.accomplished;
     }
 
     /**
@@ -71,4 +76,9 @@ public abstract class CommonGoal {
      */
     public abstract void check(Player player) throws NullPlayerException;
 
+    protected void accomplished(Player player) {
+        System.out.println("Player " + player.getPlayerID() + " has accomplished the common goal " + this.enumeration);
+        this.accomplished.add(player.getPlayerID());
+        player.updateSharedScore(this.scoringToken.pop());
+    }
 }

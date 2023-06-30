@@ -32,15 +32,11 @@ public class GroupAdjacentGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public GroupAdjacentGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
-
+        super();
         this.description = jsonObject.get("description").getAsString();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.numGroup = jsonObject.get("numGroup").getAsInt();
         this.numAdjacent = jsonObject.get("numAdjacent").getAsInt();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -52,7 +48,7 @@ public class GroupAdjacentGoal extends CommonGoal {
      */
     @Override
     public void check(Player player) throws NullPlayerException {
-        if (player == null) {
+        if (player == null || this.accomplished.contains(player.getPlayerID())) {
             throw new NullPlayerException();
         }
 
@@ -67,14 +63,13 @@ public class GroupAdjacentGoal extends CommonGoal {
                         visited[i][j] = true;
                         continue;
                     }
-                    Color color = shelf.getTile(i, j).getTileColor();
+                    Color color = shelf.getTile(i, j).color();
                     int count = countSameAdjacent(shelf, visited, i, j, color);
                     if (count >= numAdjacent) {
                         groups ++;
                     }
                     if (groups >= numGroup) {
-                        accomplished.add(player.getPlayerID());
-                        player.updateScore(scoringToken.pop());
+                        accomplished(player);
                         return;
                     }
                 }
@@ -94,7 +89,7 @@ public class GroupAdjacentGoal extends CommonGoal {
      */
     public static int countSameAdjacent(Shelf shelf, boolean[][] visited, int row, int column, Color color) {
         if (row < 0 || row >= shelf.numberRows() || column >= shelf.numberColumns() || column < 0 || visited[row][column] ||
-                shelf.getTile(row, column) == null || shelf.getTile(row, column).getTileColor() != color ) {
+                shelf.getTile(row, column) == null || shelf.getTile(row, column).color() != color ) {
             return 0;
         }
         visited[row][column] = true;

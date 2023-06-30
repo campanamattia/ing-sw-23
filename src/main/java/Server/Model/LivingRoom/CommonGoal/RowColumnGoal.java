@@ -9,18 +9,19 @@ import Enumeration.Color;
 import java.util.*;
 
 /**
- * The RowColumnGoal class represents a goal where players must create row or column of tile with different pattern.
- * It extends the CommonGoal class and contains a number of column, the number of row, and the max number of tile different for column/row.
+ * The RowColumnGoal class represents a goal where players must create row or column of tile with a different pattern.
+ * It extends the CommonGoal class and contains a number of columns,
+ * the number of rows, and the max number of tile different for column/row.
  */
 public class RowColumnGoal extends CommonGoal {
 
     /**
-     * The number of required column.
+     * The number of required columns.
      */
     private final int numColumn;
 
     /**
-     * The number of required row.
+     * The number of required rows.
      */
     private final int numRow;
 
@@ -31,21 +32,18 @@ public class RowColumnGoal extends CommonGoal {
 
     /**
      Create a new RowColumnGoal instance with the provided token list and JSON object.
-     @param tokenList The list of scoring tokens earnable by players, based on how many players are in the game.
+     @param tokenList The list of scoring tokens wearable by players, based on how many players are in the game.
      @param jsonObject The JSON object containing the properties for this objective.
-     It must have "enum", "description", "numColumn", "numRow", and "maxDifferent" properties.
+     It must have "enum," "description," "numColumn", "numRow", and "maxDifferent" properties.
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public RowColumnGoal (List<Integer> tokenList, @NotNull JsonObject jsonObject) {
+        super();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
         this.numColumn = jsonObject.get("numColumn").getAsInt();
         this.numRow = jsonObject.get("numRow").getAsInt();
         this.maxDifferent = jsonObject.get("maxDifferent").getAsInt();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -57,7 +55,7 @@ public class RowColumnGoal extends CommonGoal {
      @throws NullPlayerException if the player parameter is null.
      */
     public void check (Player player) throws NullPlayerException {
-        if (player == null) {
+        if (player == null || this.accomplished.contains(player.getPlayerID())) {
             throw new NullPlayerException();
         }
 
@@ -70,14 +68,14 @@ public class RowColumnGoal extends CommonGoal {
                 List<Color> colorColumn = new ArrayList<>();
                 for (int i = 0; i < shelf.numberRows(); i++) {
                     if (shelf.getTile(i, j) != null) {
-                        colorColumn.add(shelf.getTile(i, j).getTileColor());
+                        colorColumn.add(shelf.getTile(i, j).color());
                     } else {
                         break;
                     }
                 }
 
                 if (colorColumn.size() == shelf.numberRows()) {
-                    if (maxDifferent == -1 && colorColumn.stream().distinct().count() == 1) {
+                    if (maxDifferent == -1 && colorColumn.stream().distinct().count() == 6) {
                         countColumn++;
                     } else if (maxDifferent != -1 && colorColumn.stream().distinct().count() <= maxDifferent) {
                         countColumn++;
@@ -86,8 +84,7 @@ public class RowColumnGoal extends CommonGoal {
             }
 
             if (countColumn >= numColumn) {
-                accomplished.add(player.getPlayerID());
-                player.updateScore(scoringToken.pop());
+                accomplished(player);
                 return;
             }
         }
@@ -98,14 +95,14 @@ public class RowColumnGoal extends CommonGoal {
                 List<Color> colorRow = new ArrayList<>();
                 for (int j = 0; j < shelf.numberColumns(); j++) {
                     if (shelf.getTile(i, j) != null) {
-                        colorRow.add(shelf.getTile(i, j).getTileColor());
+                        colorRow.add(shelf.getTile(i, j).color());
                     } else {
                         break;
                     }
                 }
 
                 if (colorRow.size() == shelf.numberColumns()) {
-                    if (maxDifferent == -1 && colorRow.stream().distinct().count() == 1) {
+                    if (maxDifferent == -1 && colorRow.stream().distinct().count() == 5) {
                         countRow++;
                     } else if (maxDifferent != -1 && colorRow.stream().distinct().count() <= maxDifferent) {
                         countRow++;
@@ -114,8 +111,7 @@ public class RowColumnGoal extends CommonGoal {
             }
 
             if (countRow >= numRow) {
-                accomplished.add(player.getPlayerID());
-                player.updateScore(scoringToken.pop());
+                accomplished(player);
             }
         }
     }

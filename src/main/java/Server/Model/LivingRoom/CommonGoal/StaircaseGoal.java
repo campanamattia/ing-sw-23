@@ -6,9 +6,7 @@ import Server.Model.Player.Shelf;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import static java.lang.Math.min;
 
@@ -26,12 +24,9 @@ public class StaircaseGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public StaircaseGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
+        super();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -43,7 +38,7 @@ public class StaircaseGoal extends CommonGoal {
      */
     @Override
     public void check(Player player) throws NullPlayerException {
-        if(player == null) {
+        if(player == null || this.accomplished.contains(player.getPlayerID())) {
             throw new NullPlayerException();
         }
 
@@ -83,8 +78,7 @@ public class StaircaseGoal extends CommonGoal {
         }
 
         if (countSx1 == min || countSx2 == min || countDx1 == min || countDx2 == min) {
-            accomplished.add(player.getPlayerID());
-            player.updateScore(scoringToken.pop());
+            accomplished(player);
         }
     }
 

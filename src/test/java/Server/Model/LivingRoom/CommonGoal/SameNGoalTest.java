@@ -2,7 +2,6 @@ package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
 import Enumeration.Color;
-import Server.Model.LivingRoom.CommonGoal.SameNGoal;
 import Server.Model.Player.PersonalGoal;
 import Server.Model.Player.Player;
 import Server.Model.Player.Shelf;
@@ -82,7 +81,7 @@ class SameNGoalTest {
 
         sameNGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1,sameNGoal.getAccomplished().size());
     }
 
@@ -114,7 +113,7 @@ class SameNGoalTest {
 
         sameNGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1,sameNGoal.getAccomplished().size());
     }
 
@@ -146,14 +145,14 @@ class SameNGoalTest {
 
         sameNGoal.check(player);
 
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
         assertEquals(0,sameNGoal.getAccomplished().size());
     }
 
     private JsonArray decoPersonal() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader("src/main/resources/personalGoal.json"));
+        reader = new JsonReader(new FileReader("src/test/resources/personalGoal.json"));
         return gson.fromJson(reader, JsonArray.class);
     }
 }

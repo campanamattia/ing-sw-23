@@ -3,6 +3,7 @@ package Server.Model.Player;
 import Enumeration.Color;
 import Exception.Player.ColumnNotValidException;
 import Utils.Tile;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,7 @@ public class Shelf {
         for (int i = 0; i < numberRows(); i++) {
             for (int j = 0; j < numberColumns(); j++) {
                 if (this.myShelf[i][j] != null && !visited[i][j]) {
-                    scores.add(getGroupScore(i, j, visited, this.myShelf[i][j].getColor()));
+                    scores.add(getGroupScore(i, j, visited, this.myShelf[i][j].color()));
                 }
             }
         }
@@ -94,7 +95,7 @@ public class Shelf {
             return 0;
         }
 
-        if (myShelf[row][column].getColor() == color) {
+        if (myShelf[row][column].color() == color) {
             visited[row][column] = true;
             return 1
                     + getGroupScore(row + 1, column, visited, color)
@@ -124,15 +125,27 @@ public class Shelf {
         return myShelf[0].length;
     }
 
-    /**
-     * Places a tile at the specified position on the shelf.
-     * For testing purposes only.
-     *
-     * @param tile   The tile to place.
-     * @param row    The row index of the position.
-     * @param column The column index of the position.
-     */
+    @TestOnly
     public void placeTile(Tile tile, int row, int column) {
         myShelf[row][column] = tile;
+    }
+
+    /**
+     * Find how many tiles the client can insert
+     * @return max Tile a player can insert
+     */
+    public int maxTiles() {
+        int max = 0;
+        for (int i = 0; i < numberColumns(); i++){
+            int j;
+            for (j = 0; j < numberRows(); j++){
+                if (myShelf[j][i] != null){
+                    break;
+                }
+            }
+            if (j > max)
+                max = j;
+        }
+        return max;
     }
 }

@@ -2,7 +2,6 @@ package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
 import Enumeration.Color;
-import Server.Model.LivingRoom.CommonGoal.CrossGoal;
 import Server.Model.Player.PersonalGoal;
 import Server.Model.Player.Player;
 import Server.Model.Player.Shelf;
@@ -69,7 +68,7 @@ class CrossGoalTest {
 
         assertTrue(crossGoal.getAccomplished().isEmpty());
         assertTrue(crossGoal.getScoringToken().contains(2));
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
     }
 
     @Test
@@ -92,7 +91,7 @@ class CrossGoalTest {
         assertTrue(crossGoal.getAccomplished().contains("ale"));
         assertTrue(crossGoal.getScoringToken().contains(2));
         assertFalse(crossGoal.getScoringToken().contains(4));
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
     }
 
     @Test
@@ -112,7 +111,7 @@ class CrossGoalTest {
 
         assertTrue(crossGoal.getAccomplished().isEmpty());
         assertTrue(crossGoal.getScoringToken().contains(4));
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
     }
 
     @Test
@@ -128,7 +127,7 @@ class CrossGoalTest {
     private JsonArray decoPersonal() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader("src/main/resources/personalGoal.json"));
+        reader = new JsonReader(new FileReader("src/test/resources/personalGoal.json"));
         return gson.fromJson(reader, JsonArray.class);
     }
 }

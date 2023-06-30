@@ -1,6 +1,5 @@
 package Client.Network;
 
-import Client.View.View;
 import Interface.Client.RemoteClient;
 import Interface.Client.RemoteView;
 import Interface.Scout;
@@ -14,163 +13,242 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
 
-import static Client.ClientApp.executorService;
-import static Client.ClientApp.view;
+import static Client.ClientApp.*;
 
-
+/**
+ * The {@code ClientRMI} class represents a client's network implementation using RMI for client-server communication.
+ * It extends the {@code Network} class and provides methods to initialize the RMI connection, send messages to the server,
+ * and handle incoming messages from the server.
+ */
 public class ClientRMI extends Network {
     private GameCommand gc;
     private LobbyInterface lobby;
 
-    public ClientRMI(View view) throws RemoteException {
-        super(view);
+    /**
+     * Constructs a new instance of the {@code ClientRMI} class.
+     *
+     * @throws RemoteException if a remote communication error occurs
+     */
+    public ClientRMI() throws RemoteException {
+        super();
     }
 
+    /**
+     * Initializes the RMI connection and retrieves the lobby information from the server.
+     */
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
     @Override
-    public void init(String ip, int port) {
-        port = (port == -1) ? 50001 : port;
+    public void init() {
         try {
-            Registry registry = LocateRegistry.getRegistry(ip, port);
+            Registry registry = LocateRegistry.getRegistry(IP_SERVER, RMI_PORT);
             this.lobby = (LobbyInterface) registry.lookup("Lobby");
             this.lobby.getLobbyInfo(view);
         } catch (Exception e) {
             try {
                 view.outcomeException(e);
             } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
+                quit(404);
             }
         }
     }
 
+    /**
+     * Selects tiles for a player.
+     *
+     * @param playerID    the ID of the player
+     * @param coordinates the list of coordinates representing the selected tiles
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void selectTiles(String playerID, List<Coordinates> coordinates) throws RemoteException {
         executorService.execute(() -> {
             try {
                 this.gc.selectTiles(playerID, coordinates);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                quit(404);
             }
         });
     }
 
+    /**
+     * Writes a chat message.
+     * @param from   the ID of the sender
+     * @param message the chat message
+     * @param to     the ID of the recipient (optional)
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void writeChat(String from, String message, String to) throws RemoteException {
         executorService.execute(() -> {
             try {
                 this.gc.writeChat(from, message, to);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                quit(404);
             }
         });
     }
 
+    /**
+     * Adds a scout for a player.
+     *
+     * @param playerID the ID of the player
+     * @param scout    the scout object
+     * @throws RemoteException if a remote communication error occurs
+     */
+    @SuppressWarnings("rawtypes")
     @Override
-    public void addScout(Scout scout) throws RemoteException {
+    public void addScout(String playerID, Scout scout) throws RemoteException {
         executorService.execute(() -> {
             try {
-                this.gc.addScout(this);
+                this.gc.addScout(localPlayer, this);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                quit(404);
             }
         });
     }
 
+    /**
+     * Sends a message to insert tiles into a specific column.
+     *
+     * @param playerID the ID of the player
+     * @param sorted   the list of tile sorting indexes
+     * @param column   the column number
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void insertTiles(String playerID, List<Integer> sorted, int column) throws RemoteException {
         executorService.execute(() -> {
             try {
                 this.gc.insertTiles(playerID, sorted, column);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                quit(404);
             }
         });
     }
 
 
+    /**
+     * Sends a request to the server to get the lobby information.
+     *
+     * @param remote the remote view to update with the lobby information
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void getLobbyInfo(RemoteView remote) throws RemoteException {
         executorService.execute(() -> {
             try {
                 this.lobby.getLobbyInfo(remote);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                quit(404);
             }
         });
     }
 
+    /**
+     * Sets the size of the lobby.
+     *
+     * @param playerID  the ID of the player
+     * @param lobbyID   the ID of the lobby
+     * @param lobbySize the size of the lobby
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void setLobbySize(String playerID, String lobbyID, int lobbySize) throws RemoteException {
         executorService.execute(() -> {
             try {
                 this.lobby.setLobbySize(playerID, lobbyID, lobbySize);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                quit(404);
             }
         });
     }
 
+    /**
+     * Logs in a player to the lobby.
+     *
+     * @param playerID    the ID of the player
+     * @param lobbyID     the ID of the lobby
+     * @param remoteView  the remote view associated with the player
+     * @param client      the remote client network interface
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void login(String playerID, String lobbyID, RemoteView remoteView, RemoteClient client) throws RemoteException {
         executorService.execute(() -> {
             try {
                 this.lobby.login(playerID, lobbyID, remoteView, client);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                quit(404);
             }
         });
     }
 
+    /**
+     * Sends a ping message to the server.
+     *
+     * @param playerID the ID of the player
+     * @param lobbyID  the ID of the lobby
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void ping(String playerID, String lobbyID) throws RemoteException {
         executorService.execute(() -> {
             try {
                 this.lobby.ping(playerID, lobbyID);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                quit(404);
             }
         });
     }
 
-    @Override
-    public void getGameController(String lobbyID, RemoteClient remote) throws RemoteException {
-        executorService.execute(() -> {
-            try {
-                this.lobby.getGameController(lobbyID, remote);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
+    /**
+     * Logs out the player from the lobby.
+     *
+     * @param playerID the ID of the player
+     * @param lobbyID  the ID of the lobby
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void logOut(String playerID, String lobbyID) throws RemoteException {
         executorService.execute(() -> {
             try {
                 this.lobby.logOut(playerID, lobbyID);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                quit(404);
             }
         });
     }
 
+    /**
+     * Sets the game controller for the client.
+     *
+     * @param gameController the game controller object
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void setGameController(GameCommand gameController) throws RemoteException {
         this.gc = gameController;
         executorService.execute(() -> {
             try {
-                this.gc.addScout(this);
+                this.gc.addScout(localPlayer, this);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                quit(404);
             }
         });
     }
 
+    /**
+     * Updates the client with the received objects.
+     *
+     * @param objects the objects to update the client with
+     * @throws RemoteException if a remote communication error occurs
+     */
     @Override
     public void update(Object objects) throws RemoteException {
         if (scouts.containsKey(objects.getClass())) {
             scouts.get(objects.getClass()).update(objects);
         } else {
-            view.printError("Scout-Handler not found");
+            view.outcomeException(new RuntimeException("Scout-Handler not found"));
             throw new RemoteException("Scout not found");
         }
     }

@@ -2,7 +2,6 @@ package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
 import Enumeration.Color;
-import Server.Model.LivingRoom.CommonGoal.DiagonalGoal;
 import Server.Model.Player.PersonalGoal;
 import Server.Model.Player.Player;
 import Utils.Tile;
@@ -22,7 +21,7 @@ class DiagonalGoalTest {
     JsonArray array;
     {
         try {
-            array = decoPersonal("src/main/resources/personalGoal.json");
+            array = decoPersonal();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -54,7 +53,7 @@ class DiagonalGoalTest {
 
         assertTrue(diagonalGoal.getAccomplished().isEmpty());
         assertEquals(2, tokenList.size());
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
     }
 
     @Test
@@ -86,7 +85,7 @@ class DiagonalGoalTest {
 
         assertTrue(diagonalGoal.getAccomplished().isEmpty());
         assertEquals(2, tokenList.size());
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
     }
 
     @Test
@@ -118,7 +117,7 @@ class DiagonalGoalTest {
 
         assertTrue(diagonalGoal.getAccomplished().contains(player.getPlayerID()));
         assertEquals(1,diagonalGoal.getScoringToken().size());
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(2 ,diagonalGoal.getScoringToken().peek());
     }
 
@@ -158,7 +157,7 @@ class DiagonalGoalTest {
 
         assertTrue(diagonalGoal.getAccomplished().contains(player.getPlayerID()));
         assertEquals(1,diagonalGoal.getScoringToken().size());
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(2 ,diagonalGoal.getScoringToken().peek());
     }
 
@@ -208,18 +207,18 @@ class DiagonalGoalTest {
 
         assertEquals(2,diagonalGoal.getAccomplished().size());
         assertEquals(0, diagonalGoal.getScoringToken().size());
-        assertEquals(4, player1.getScore());
-        assertEquals(2,player2.getScore());
+        assertEquals(4, player1.getSharedScore());
+        assertEquals(2,player2.getSharedScore());
     }
 
 
 
 
 
-    private JsonArray decoPersonal(String filepath) throws FileNotFoundException {
+    private JsonArray decoPersonal() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader(filepath));
+        reader = new JsonReader(new FileReader("src/test/resources/personalGoal.json"));
         return gson.fromJson(reader, JsonArray.class);
     }
 }

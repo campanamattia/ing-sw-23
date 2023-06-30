@@ -31,13 +31,10 @@ public class DiagonalGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public DiagonalGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
+        super();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
         this.numDiagonal = jsonObject.get("numDiagonal").getAsInt();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -49,7 +46,7 @@ public class DiagonalGoal extends CommonGoal {
      */
     @Override
     public void check(Player player) throws NullPlayerException {
-        if (player == null){
+        if (player == null || this.accomplished.contains(player.getPlayerID())){
             throw new NullPlayerException();
         }
 
@@ -57,7 +54,7 @@ public class DiagonalGoal extends CommonGoal {
         int countGroup = 0;
         int min = min(shelf.numberRows(),shelf.numberColumns());
 
-        // creating list for count the four different way to found diagonal
+        // creating a list for count the four different way to found diagonal
         List<Color> lSx1 = new ArrayList<>(), lSx2 = new ArrayList<>(), lDx1 = new ArrayList<>(), lDx2 = new ArrayList<>();
 
         for (int i = 0; i < shelf.numberRows(); i++) {
@@ -68,16 +65,16 @@ public class DiagonalGoal extends CommonGoal {
                 }
 
                 if (i == j) {
-                    lSx1.add(shelf.getTile(i,j).getTileColor());
+                    lSx1.add(shelf.getTile(i,j).color());
                 }
                 if (i == j + 1) {
-                    lSx2.add(shelf.getTile(i,j).getTileColor());
+                    lSx2.add(shelf.getTile(i,j).color());
                 }
                 if (i + j == min - 1) {
-                    lDx1.add(shelf.getTile(i,j).getTileColor());
+                    lDx1.add(shelf.getTile(i,j).color());
                 }
                 if (i + j == min) {
-                    lDx2.add(shelf.getTile(i,j).getTileColor());
+                    lDx2.add(shelf.getTile(i,j).color());
                 }
             }
         }
@@ -96,8 +93,7 @@ public class DiagonalGoal extends CommonGoal {
         }
 
         if (countGroup >= numDiagonal) {
-            accomplished.add(player.getPlayerID());
-            player.updateScore(scoringToken.pop());
+            accomplished(player);
         }
     }
 }

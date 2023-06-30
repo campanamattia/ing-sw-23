@@ -2,7 +2,6 @@ package Server.Model.LivingRoom.CommonGoal;
 
 import Exception.CommonGoal.NullPlayerException;
 import Enumeration.Color;
-import Server.Model.LivingRoom.CommonGoal.StaircaseGoal;
 import Server.Model.Player.PersonalGoal;
 import Server.Model.Player.Player;
 import Server.Model.Player.Shelf;
@@ -25,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class StaircaseGoalTest {
 
     private Player player;
-    private PersonalGoal pGoal;
     private StaircaseGoal staircaseGoal;
     private Shelf shelf;
     private JsonObject jsonObject;
@@ -43,7 +41,7 @@ class StaircaseGoalTest {
             }
         }
         Random random = new Random();
-        pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
+        PersonalGoal pGoal = new PersonalGoal(array.remove(random.nextInt(array.size())).getAsJsonObject());
         player = new Player("ale", pGoal);
 
         tokenList = new Stack<>();
@@ -82,7 +80,7 @@ class StaircaseGoalTest {
 
         staircaseGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1, staircaseGoal.getAccomplished().size());
     }
 
@@ -115,7 +113,7 @@ class StaircaseGoalTest {
 
         staircaseGoal.check(player);
 
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
         assertEquals(0, staircaseGoal.getAccomplished().size());
     }
 
@@ -125,7 +123,7 @@ class StaircaseGoalTest {
     private JsonArray decoPersonal() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader("src/main/resources/personalGoal.json"));
+        reader = new JsonReader(new FileReader("src/test/resources/personalGoal.json"));
         return gson.fromJson(reader, JsonArray.class);
     }
 }

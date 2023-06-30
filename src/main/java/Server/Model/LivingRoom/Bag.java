@@ -2,7 +2,6 @@ package Server.Model.LivingRoom;
 
 import Enumeration.Color;
 import Utils.Tile;
-import com.google.gson.annotations.Expose;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -11,10 +10,17 @@ import java.util.concurrent.ArrayBlockingQueue;
  * Class bag, it's the container of all tiles playable during a game.
  */
 public class Bag {
-    @Expose
+    /**
+     * The capacity of the bag.
+     */
     public final int CAPACITY = 132;
-    @Expose
+    /**
+     * The bag of tiles.
+     */
     private final ArrayBlockingQueue<Tile> bag;
+    /**
+     * The number of tiles for each color.
+     */
     private static final int  nTilesForColor = 22;
 
     /**
@@ -27,7 +33,7 @@ public class Bag {
         generateTile(array,offset);
         // shuffle
         shuffleArray(array);
-        this.bag = new ArrayBlockingQueue<Tile>(CAPACITY);
+        this.bag = new ArrayBlockingQueue<>(CAPACITY);
         Collections.addAll(bag, array);
     }
 
@@ -45,7 +51,7 @@ public class Bag {
      * @return list of tiles taken from the bag.
      */
     public ArrayList<Tile> draw(int n){
-        ArrayList<Tile> extraction = new ArrayList<Tile>();
+        ArrayList<Tile> extraction = new ArrayList<>();
         for(int i=0;i<n;i++){
             extraction.add(bag.poll());
 
@@ -80,7 +86,4 @@ public class Bag {
         }
     }
 
-    public ArrayBlockingQueue<Tile> getBag() {
-        return bag;
-    }
 }

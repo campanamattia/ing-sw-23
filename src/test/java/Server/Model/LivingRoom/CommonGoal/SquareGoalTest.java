@@ -62,7 +62,7 @@ class SquareGoalTest {
 
         squareGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1, squareGoal.getAccomplished().size());
 
     }
@@ -97,7 +97,7 @@ class SquareGoalTest {
 
         squareGoal.check(player);
 
-        assertEquals(4, player.getScore());
+        assertEquals(4, player.getSharedScore());
         assertEquals(1, squareGoal.getAccomplished().size());
     }
 
@@ -132,7 +132,7 @@ class SquareGoalTest {
 
         squareGoal.check(player);
 
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
         assertEquals(0, squareGoal.getAccomplished().size());
     }
 
@@ -168,7 +168,7 @@ class SquareGoalTest {
 
         squareGoal.check(player);
 
-        assertEquals(0, player.getScore());
+        assertEquals(0, player.getSharedScore());
         assertEquals(0, squareGoal.getAccomplished().size());
     }
 
@@ -177,7 +177,7 @@ class SquareGoalTest {
     private JsonArray decoPersonal() throws FileNotFoundException {
         Gson gson = new Gson();
         JsonReader reader;
-        reader = new JsonReader(new FileReader("src/main/resources/personalGoal.json"));
+        reader = new JsonReader(new FileReader("src/test/resources/personalGoal.json"));
         return gson.fromJson(reader, JsonArray.class);
     }
 }

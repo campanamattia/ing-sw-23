@@ -28,13 +28,10 @@ public class CrossGoal extends CommonGoal {
      @throws NullPointerException if the jsonObject parameter is null.
      */
     public CrossGoal(List<Integer> tokenList, @NotNull JsonObject jsonObject) {
+        super();
         this.enumeration = jsonObject.get("enum").getAsInt();
         this.description = jsonObject.get("description").getAsString();
         this.numGroup = jsonObject.get("numGroup").getAsInt();
-
-        this.accomplished = new ArrayList<>();
-
-        this.scoringToken = new Stack<>();
         scoringToken.addAll(tokenList);
     }
 
@@ -47,7 +44,7 @@ public class CrossGoal extends CommonGoal {
      */
     @Override
     public void check(Player player) throws NullPlayerException {
-        if (player == null) {
+        if (player == null || this.accomplished.contains(player.getPlayerID())) {
             throw new NullPlayerException();
         }
         Shelf shelf = player.getMyShelf();
@@ -55,10 +52,10 @@ public class CrossGoal extends CommonGoal {
         for (int i = 1; i < shelf.numberRows() - 1; i++) {
             for (int j = 1; j < shelf.numberColumns() - 1 ; j++) {
                 try {
-                    if ((shelf.getTile(i, j).getTileColor() == shelf.getTile(i - 1, j - 1).getTileColor()) &&
-                            (shelf.getTile(i, j).getTileColor() == shelf.getTile(i - 1, j + 1).getTileColor()) &&
-                            (shelf.getTile(i, j).getTileColor() == shelf.getTile(i + 1, j - 1).getTileColor()) &&
-                            (shelf.getTile(i, j).getTileColor() == shelf.getTile(i + 1, j + 1).getTileColor())) {
+                    if ((shelf.getTile(i, j).color() == shelf.getTile(i - 1, j - 1).color()) &&
+                            (shelf.getTile(i, j).color() == shelf.getTile(i - 1, j + 1).color()) &&
+                            (shelf.getTile(i, j).color() == shelf.getTile(i + 1, j - 1).color()) &&
+                            (shelf.getTile(i, j).color() == shelf.getTile(i + 1, j + 1).color())) {
                         countGroup++;
                     }
                 } catch (NullPointerException ignored) {
@@ -67,8 +64,7 @@ public class CrossGoal extends CommonGoal {
             }
         }
         if (countGroup >= numGroup) {
-            accomplished.add(player.getPlayerID());
-            player.updateScore(scoringToken.pop());
+            accomplished(player);
         }
     }
 }
