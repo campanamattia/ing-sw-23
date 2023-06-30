@@ -41,7 +41,7 @@
 
 
 # Jar
-The jars are used to launch the software. A detailed guide on how to launch jar files is present in the next section. It is possible to find them at [_this link_](link after we update it in delivers).
+The jars are used to launch the software. A detailed guide on how to launch jar files is present in the next section. It is possible to find them at [_this link_](https://github.com/campanamattia/IS23-AM01/tree/main/deliverables/JAR).
 
 
 ## Jar Execution
