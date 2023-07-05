@@ -549,7 +549,10 @@ public class Cli extends View {
             System.out.println(CliColor.BOLD + "\rNew Message" + CliColor.RESET);
             return;
         }
-        if (message.from().equals(localPlayer)) printMessage("Message sent correctly");
+        if (message.from().equals(localPlayer)) {
+            printMessage("Message sent correctly");
+            this.mockModel.addMessage(message);
+        }
     }
 
     /**

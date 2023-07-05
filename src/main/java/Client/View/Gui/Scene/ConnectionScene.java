@@ -151,7 +151,7 @@ public class ConnectionScene extends Scene {
             default -> {
                 String zeroTo255 = "([01]?\\d{1,2}|2[0-4]\\d|25[0-5])";
                 String IP_REGEX = "^(" + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + ")$";
-                if (!portField.getText().matches(IP_REGEX)) app.printError("Invalid IP address");
+                if (!ipField.getText().matches(IP_REGEX)) app.printError("Invalid IP address");
                 else {
                     IP_SERVER = ipField.getText();
                     return true;
