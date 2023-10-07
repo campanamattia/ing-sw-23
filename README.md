@@ -72,4 +72,7 @@ Upon launching the client, you will be prompted to specify the type of connectio
 
 
 ## License
-This project has been developed in collaboration with [Cranio Creations](https://www.craniocreations.it/prodotto/my-shelfie).
+[**MyShelfie**](https://www.craniocreations.it/prodotto/my-shelfie) is property of [_Cranio Creations_] and all of the copyrighted graphical assets used in this project were supplied by [**Politecnico di Milano**] in collaboration with their rights' holders.
+
+[_Cranio Creations_]: https://www.craniocreations.it/
+[**Politecnico di Milano**]: https://www.polimi.it/
